@@ -14,6 +14,11 @@ interface UploadInitResponse {
   publicUrl: string;
 }
 
+interface MediaListResponse {
+  ok: boolean;
+  assets?: MediaAsset[];
+}
+
 /* ==========================================================
    MEDIA SERVICE
 ========================================================== */
@@ -23,18 +28,16 @@ class MediaService {
      GET LIBRARY
   ======================================================== */
 
-  async getAssets(
-    siteId: string
-  ): Promise<MediaAsset[]> {
-    const response = await fetch(
-      `/api/media?siteId=${siteId}`
-    );
+  async getAssets(siteId: string): Promise<MediaAsset[]> {
+    const response = await fetch(`/api/builder-v2/assets?siteId=${siteId}`);
 
     if (!response.ok) {
       throw new Error("Failed to load media library");
     }
 
-    return response.json();
+    const json = (await response.json()) as MediaListResponse;
+
+    return json.assets ?? [];
   }
 
   /* ========================================================
@@ -45,28 +48,20 @@ class MediaService {
     file: File,
     siteId: string
   ): Promise<UploadInitResponse> {
-
-    const response = await fetch(
-      "/api/uploads/image/init",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          siteId,
-          fileName: file.name,
-          fileType: file.type,
-        }),
-      }
-    );
+    const response = await fetch("/api/uploads/image/init", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        siteId,
+        fileName: file.name,
+        fileType: file.type,
+      }),
+    });
 
     if (!response.ok) {
-      throw new Error(
-        "Unable to initialize upload."
-      );
+      throw new Error("Unable to initialize upload.");
     }
 
     return response.json();
@@ -76,33 +71,19 @@ class MediaService {
      UPLOAD TO R2
   ======================================================== */
 
-  async uploadImage(
-    file: File,
-    siteId: string
-  ): Promise<string> {
-
-    const {
-      uploadUrl,
-      publicUrl,
-    } = await this.initializeUpload(
-      file,
-      siteId
-    );
+  async uploadImage(file: File, siteId: string): Promise<string> {
+    const { uploadUrl, publicUrl } = await this.initializeUpload(file, siteId);
 
     const upload = await fetch(uploadUrl, {
       method: "PUT",
-
       headers: {
         "Content-Type": file.type,
       },
-
       body: file,
     });
 
     if (!upload.ok) {
-      throw new Error(
-        "Image upload failed."
-      );
+      throw new Error("Image upload failed.");
     }
 
     return publicUrl;
@@ -112,37 +93,21 @@ class MediaService {
      GENERATE AI IMAGES
   ======================================================== */
 
-  async generateImages(
-    request: GenerateImageRequest
-  ) {
-
-    const response = await fetch(
-      "/api/ai-v8/generate-images",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          prompts: [request.prompt],
-
-          industry:
-            request.industry ??
-            "GENERIC",
-
-          size:
-            request.size ??
-            "landscape",
-        }),
-      }
-    );
+  async generateImages(request: GenerateImageRequest) {
+    const response = await fetch("/api/ai-v8/generate-images", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompts: [request.prompt],
+        industry: request.industry ?? "GENERIC",
+        size: request.size ?? "landscape",
+      }),
+    });
 
     if (!response.ok) {
-      throw new Error(
-        "Image generation failed."
-      );
+      throw new Error("Image generation failed.");
     }
 
     return response.json();
@@ -152,42 +117,32 @@ class MediaService {
      DELETE
   ======================================================== */
 
-  async deleteAsset(
-    assetId: string
-  ) {
+  async deleteAsset(assetId: string) {
+    const response = await fetch(`/api/builder-v2/assets/${assetId}`, {
+      method: "DELETE",
+    });
 
-    await fetch(
-      `/api/media/${assetId}`,
-      {
-        method: "DELETE",
-      }
-    );
-
+    if (!response.ok) {
+      throw new Error("Delete failed.");
+    }
   }
 
   /* ========================================================
      SEARCH
   ======================================================== */
 
-  async searchAssets(
-    siteId: string,
-    query: string
-  ) {
-
+  async searchAssets(siteId: string, query: string): Promise<MediaAsset[]> {
     const response = await fetch(
-
-      `/api/media?siteId=${siteId}&q=${encodeURIComponent(query)}`
-
+      `/api/builder-v2/assets?siteId=${siteId}&q=${encodeURIComponent(query)}`
     );
 
     if (!response.ok) {
-      throw new Error(
-        "Search failed."
-      );
+      throw new Error("Search failed.");
     }
 
-    return response.json();
+    const json = (await response.json()) as MediaListResponse;
 
+    return json.assets ?? [];
   }
 }
 
@@ -195,5 +150,4 @@ class MediaService {
    SINGLETON
 ========================================================== */
 
-export const mediaService =
-  new MediaService();
+export const mediaService = new MediaService();

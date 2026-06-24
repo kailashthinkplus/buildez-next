@@ -18,8 +18,8 @@ export async function GET(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-
     const siteId = searchParams.get("siteId");
+    const query = searchParams.get("q")?.trim() ?? "";
 
     if (!siteId) {
       return NextResponse.json(
@@ -31,6 +31,16 @@ export async function GET(req: Request) {
     const assets = await prisma.mediaAsset.findMany({
       where: {
         siteId,
+        ...(query
+          ? {
+              OR: [
+                { filename: { contains: query, mode: "insensitive" } },
+                { alt: { contains: query, mode: "insensitive" } },
+                { title: { contains: query, mode: "insensitive" } },
+                { tags: { has: query } },
+              ],
+            }
+          : {}),
       },
       orderBy: {
         createdAt: "desc",
@@ -41,7 +51,6 @@ export async function GET(req: Request) {
       ok: true,
       assets,
     });
-
   } catch (err: any) {
     console.error(err);
 
@@ -63,7 +72,6 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-
     const user = await getCurrentUser(req);
 
     if (!user) {
@@ -76,41 +84,23 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const {
-
       siteId,
-
       url,
-
       filename,
-
       fileHash,
-
       fileSize,
-
       mimeType,
-
       mediaType,
-
       width,
-
       height,
-
       source,
-
       provider,
-
       prompt,
-
       aspectRatio,
-
       thumbnailUrl,
-
       dominantColor,
-
       blurhash,
-
       tags = [],
-
     } = body;
 
     const existing = await prisma.mediaAsset.findUnique({
@@ -129,43 +119,24 @@ export async function POST(req: Request) {
 
     const asset = await prisma.mediaAsset.create({
       data: {
-
         siteId,
-
         uploadedById: user.id,
-
         url,
-
         filename,
-
         fileHash,
-
         fileSize,
-
         mimeType,
-
         mediaType,
-
         width,
-
         height,
-
         thumbnailUrl,
-
         source,
-
         provider,
-
         prompt,
-
         aspectRatio,
-
         dominantColor,
-
         blurhash,
-
         tags,
-
       },
     });
 
@@ -173,9 +144,7 @@ export async function POST(req: Request) {
       ok: true,
       asset,
     });
-
   } catch (err: any) {
-
     console.error(err);
 
     return NextResponse.json(
@@ -187,6 +156,5 @@ export async function POST(req: Request) {
         status: 500,
       }
     );
-
   }
 }
