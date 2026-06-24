@@ -1,0 +1,18 @@
+--- a
++++ b
+@@ -248,11 +248,13 @@
+     case "column":
+       const width = props?.width || "100%";
+       const columnLayout = props?.layout || "vertical";
+-      const columnClass = columnLayout === "horizontal" ? "flex flex-row" : "flex flex-col";
++      const columnClass = columnLayout === "horizontal" ? "flex flex-row flex-wrap items-start" : "flex flex-col";
+       
+       return (
+         <div
+-          className={`${baseClass} ${columnClass} min-h-24 p-2 bg-slate-50/40`}
++          className={`${baseClass} ${columnClass} ${
++            columnLayout === "horizontal" ? "w-full" : ""
++          } min-h-24 p-2 bg-slate-50/40`}
+           style={{ ...nodeStyle, width: toCssUnit(props?.width ?? width) } as React.CSSProperties}
+           data-builder-node="true"
+           data-node-id={node.id}
