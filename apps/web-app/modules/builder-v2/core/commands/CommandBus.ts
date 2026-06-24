@@ -78,6 +78,14 @@ export class CommandBus {
     return structuredClone(this.blueprint);
   }
 
+  canUndo(): boolean {
+    return this.history.length > 0;
+  }
+
+  canRedo(): boolean {
+    return this.future.length > 0;
+  }
+
   subscribe(listener: Listener): () => void {
     this.listeners.add(listener);
 

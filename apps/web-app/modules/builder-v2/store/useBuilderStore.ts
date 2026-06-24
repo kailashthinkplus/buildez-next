@@ -24,6 +24,12 @@ interface BuilderState {
 
   dirty: boolean;
 
+  revision: number;
+
+  canUndo: boolean;
+
+  canRedo: boolean;
+
   clipboard: BuilderNode | null;
 
   /* --------------------------------------------------------
@@ -38,7 +44,7 @@ interface BuilderState {
 
   markDirty(): void;
 
-  clearDirty(): void;
+  clearDirty(expectedRevision?: number): void;
 }
 
 /* ==========================================================
@@ -62,6 +68,12 @@ export const useBuilderStore = create<BuilderState>((set) => ({
 
   dirty: false,
 
+  revision: 0,
+
+  canUndo: false,
+
+  canRedo: false,
+
   clipboard: null,
 
   /* --------------------------------------------------------
@@ -78,14 +90,20 @@ export const useBuilderStore = create<BuilderState>((set) => ({
       blueprint,
       loading: false,
       dirty: false,
+      revision: 0,
+      canUndo: false,
+      canRedo: false,
     });
 
     unsubscribeCommandBus = commandBus.subscribe(
       (nextBlueprint) => {
-        set({
+        set((state) => ({
           blueprint: nextBlueprint,
           dirty: true,
-        });
+          revision: state.revision + 1,
+          canUndo: commandBus.canUndo(),
+          canRedo: commandBus.canRedo(),
+        }));
       }
     );
   },
@@ -121,9 +139,18 @@ export const useBuilderStore = create<BuilderState>((set) => ({
     });
   },
 
-  clearDirty() {
-    set({
-      dirty: false,
+  clearDirty(expectedRevision) {
+    set((state) => {
+      if (
+        expectedRevision !== undefined &&
+        state.revision !== expectedRevision
+      ) {
+        return state;
+      }
+
+      return {
+        dirty: false,
+      };
     });
   },
 }));

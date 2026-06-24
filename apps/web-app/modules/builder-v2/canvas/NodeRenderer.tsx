@@ -3,6 +3,7 @@
 import type { BuilderBlueprint, BuilderNode } from "../types/blueprint";
 import { useSelectionStore } from "../store/useSelectionStore";
 import { useCanvasStore } from "../store/useCanvasStore";
+import { useHoverStore } from "../store/useHoverStore";
 import { commandBus } from "../core/commands/CommandBus";
 import { UpdateNodeCommand } from "../core/commands/MoveNodeCommand";
 
@@ -31,7 +32,16 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
   const selectedId = useSelectionStore((s) => s.selectedNodeId);
   const select = useSelectionStore((s) => s.select);
   const showOutlines = useCanvasStore((s) => s.showOutlines);
+  const setHoveredNodeId = useHoverStore((s) => s.setHoveredNodeId);
   const isSelected = selectedId === node.id;
+
+  const handleMouseEnter = () => {
+    setHoveredNodeId(node.id);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredNodeId(null);
+  };
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.effectAllowed = "move";
@@ -180,6 +190,8 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
           data-drop-target="true"
           data-node-id={node.id}
           onClick={handleClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           style={nodeStyle}
         >
           {children.map((child) => (
@@ -195,6 +207,8 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
           data-drop-target="true"
           data-node-id={node.id}
           onClick={handleClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           draggable={node.id !== blueprint.root}
           onDragStart={handleDragStart}
           onDragOver={handleDragOver}
@@ -267,13 +281,15 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
           className={`${baseClass} ${columnClass} min-h-24 p-2 bg-slate-50/40`}
           style={{
   ...nodeStyle,
-  flex: node.style?.flex ?? 1,
+  flex: (node.style?.flex as React.CSSProperties["flex"]) ?? 1,
   minWidth: 0,
   width: width ? toCssUnit(width) : undefined,
 }}
           data-drop-target="true"
           data-node-id={node.id}
           onClick={handleClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           draggable={node.id !== blueprint.root}
           onDragStart={handleDragStart}
           onDragOver={handleDragOver}

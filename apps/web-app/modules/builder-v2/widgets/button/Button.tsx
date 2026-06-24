@@ -27,7 +27,7 @@ export default function Button({ node }: Props) {
           border: "none",
         }}
       >
-        {props.text}
+        {String(props.text ?? "Button")}
       </button>
 
     </WidgetFrame>

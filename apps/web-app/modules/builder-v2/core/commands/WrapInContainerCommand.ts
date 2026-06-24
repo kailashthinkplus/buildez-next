@@ -1,4 +1,4 @@
-import type { BuilderBlueprint } from "../../types/blueprint";
+import type { BuilderBlueprint, BuilderNode } from "../../types/blueprint";
 import type { BuilderCommand } from "./BuilderCommand";
 
 export class WrapInContainerCommand implements BuilderCommand {
@@ -28,7 +28,7 @@ export class WrapInContainerCommand implements BuilderCommand {
     }
 
     const containerId = crypto.randomUUID();
-    const container = {
+    const container: BuilderNode = {
       id: containerId,
       type: "container" as const,
       name: "Container",

@@ -44,6 +44,8 @@ export interface ResponsiveValue<T> {
   mobile?: T;
 }
 
+export type ResponsiveStyleValue<T> = T | ResponsiveValue<T>;
+
 /* ==========================================================
    Style
 ========================================================== */
@@ -57,7 +59,7 @@ export interface BuilderStyle {
 
   fontFamily?: string;
 
-  fontSize?: ResponsiveValue<number>;
+  fontSize?: ResponsiveStyleValue<number>;
 
   fontWeight?: number;
 
@@ -82,39 +84,39 @@ export interface BuilderStyle {
     | "underline"
     | "line-through";
 
-  width?: ResponsiveValue<string | number>;
+  width?: ResponsiveStyleValue<string | number>;
 
-  height?: ResponsiveValue<string | number>;
+  height?: ResponsiveStyleValue<string | number>;
 
-  minWidth?: ResponsiveValue<string | number>;
+  minWidth?: ResponsiveStyleValue<string | number>;
 
-  minHeight?: ResponsiveValue<string | number>;
+  minHeight?: ResponsiveStyleValue<string | number>;
 
-  maxWidth?: ResponsiveValue<string | number>;
+  maxWidth?: ResponsiveStyleValue<string | number>;
 
-  maxHeight?: ResponsiveValue<string | number>;
+  maxHeight?: ResponsiveStyleValue<string | number>;
 
-  margin?: ResponsiveValue<string | number>;
+  margin?: ResponsiveStyleValue<string | number>;
 
-  marginTop?: ResponsiveValue<string | number>;
+  marginTop?: ResponsiveStyleValue<string | number>;
 
-  marginBottom?: ResponsiveValue<string | number>;
+  marginBottom?: ResponsiveStyleValue<string | number>;
 
-  marginLeft?: ResponsiveValue<string | number>;
+  marginLeft?: ResponsiveStyleValue<string | number>;
 
-  marginRight?: ResponsiveValue<string | number>;
+  marginRight?: ResponsiveStyleValue<string | number>;
 
-  padding?: ResponsiveValue<string | number>;
+  padding?: ResponsiveStyleValue<string | number>;
 
-  paddingTop?: ResponsiveValue<string | number>;
+  paddingTop?: ResponsiveStyleValue<string | number>;
 
-  paddingBottom?: ResponsiveValue<string | number>;
+  paddingBottom?: ResponsiveStyleValue<string | number>;
 
-  paddingLeft?: ResponsiveValue<string | number>;
+  paddingLeft?: ResponsiveStyleValue<string | number>;
 
-  paddingRight?: ResponsiveValue<string | number>;
+  paddingRight?: ResponsiveStyleValue<string | number>;
 
-  borderRadius?: ResponsiveValue<string | number>;
+  borderRadius?: ResponsiveStyleValue<string | number>;
 
   border?: string;
 
@@ -135,7 +137,7 @@ export interface BuilderStyle {
 
   alignItems?: string;
 
-  gap?: ResponsiveValue<string | number>;
+  gap?: ResponsiveStyleValue<string | number>;
 
   position?:
     | "static"
@@ -144,13 +146,13 @@ export interface BuilderStyle {
     | "fixed"
     | "sticky";
 
-  top?: ResponsiveValue<string | number>;
+  top?: ResponsiveStyleValue<string | number>;
 
-  left?: ResponsiveValue<string | number>;
+  left?: ResponsiveStyleValue<string | number>;
 
-  right?: ResponsiveValue<string | number>;
+  right?: ResponsiveStyleValue<string | number>;
 
-  bottom?: ResponsiveValue<string | number>;
+  bottom?: ResponsiveStyleValue<string | number>;
 
   overflow?: string;
 

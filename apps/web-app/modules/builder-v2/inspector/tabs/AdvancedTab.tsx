@@ -1,6 +1,6 @@
 "use client";
 
-import type { BuilderNode } from "../../types/blueprint";
+import type { BuilderNode, BuilderStyle } from "../../types/blueprint";
 
 /* ============================================================
    TYPES
@@ -15,12 +15,15 @@ interface AdvancedTabProps {
    HELPERS
 ============================================================ */
 
-function getStyle(node: BuilderNode) {
-  return node.props?.style ?? {};
+function getStyle(node: BuilderNode): BuilderStyle {
+  return node.style ?? {};
 }
 
-function getAdvanced(node: BuilderNode) {
-  return node.props?.advanced ?? {};
+function getAdvanced(node: BuilderNode): Record<string, any> {
+  const advanced = node.props?.advanced;
+  return advanced && typeof advanced === "object"
+    ? (advanced as Record<string, any>)
+    : {};
 }
 
 function updateStyle(
@@ -29,18 +32,15 @@ function updateStyle(
   nextStyle: Record<string, any>
 ) {
   onUpdateNode(node.id, {
-    props: {
-      ...node.props,
-      style: {
-        ...getStyle(node),
-        ...nextStyle,
-      },
+    style: {
+      ...getStyle(node),
+      ...nextStyle,
     },
   });
 }
 
 function updateAdvanced(
-  node: BlueprintNode,
+  node: BuilderNode,
   onUpdateNode: AdvancedTabProps["onUpdateNode"],
   nextAdvanced: Record<string, any>
 ) {
@@ -56,7 +56,20 @@ function updateAdvanced(
 }
 
 const px = (v?: string) => (v ? `${v}px` : undefined);
-const stripPx = (v?: string) => (v ? String(v).replace("px", "") : "");
+const stripPx = (value: unknown) => {
+  if (value && typeof value === "object") {
+    const responsive = value as Record<string, unknown>;
+    value =
+      responsive.desktop ??
+      responsive.laptop ??
+      responsive.tablet ??
+      responsive.mobile;
+  }
+
+  return value === undefined || value === null
+    ? ""
+    : String(value).replace("px", "");
+};
 
 /* ============================================================
    ADVANCED TAB

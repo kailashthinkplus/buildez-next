@@ -22,7 +22,7 @@ export default function Text({ node }: Props) {
           marginBottom: style.marginBottom,
         }}
       >
-        {props.text}
+        {String(props.text ?? "")}
       </p>
     </WidgetFrame>
   );

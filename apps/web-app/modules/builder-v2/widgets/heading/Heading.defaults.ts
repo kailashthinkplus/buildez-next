@@ -1,3 +1,5 @@
+import type { BuilderStyle } from "../../types/blueprint";
+
 const HeadingDefaults = {
   props: {
     text: "Your Heading",
@@ -11,7 +13,7 @@ const HeadingDefaults = {
     lineHeight: 1.2,
     textAlign: "left",
     marginBottom: 16,
-  },
+  } satisfies BuilderStyle,
 };
 
 export default HeadingDefaults;

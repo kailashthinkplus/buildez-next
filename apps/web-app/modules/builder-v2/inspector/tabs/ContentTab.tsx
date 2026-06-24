@@ -224,7 +224,7 @@ export default function ContentTab({
             <label className="flex items-center gap-2 text-xs text-white/70">
               <input
                 type="checkbox"
-                checked={node.props?.autoplay ?? false}
+                checked={Boolean(node.props?.autoplay)}
                 onChange={(e) =>
                   onUpdateNode(node.id, {
                     props: { ...node.props, autoplay: e.target.checked },
@@ -237,7 +237,7 @@ export default function ContentTab({
             <label className="flex items-center gap-2 text-xs text-white/70">
               <input
                 type="checkbox"
-                checked={node.props?.controls ?? true}
+                checked={node.props?.controls !== false}
                 onChange={(e) =>
                   onUpdateNode(node.id, {
                     props: { ...node.props, controls: e.target.checked },
@@ -250,7 +250,7 @@ export default function ContentTab({
             <label className="flex items-center gap-2 text-xs text-white/70">
               <input
                 type="checkbox"
-                checked={node.props?.loop ?? false}
+                checked={Boolean(node.props?.loop)}
                 onChange={(e) =>
                   onUpdateNode(node.id, {
                     props: { ...node.props, loop: e.target.checked },

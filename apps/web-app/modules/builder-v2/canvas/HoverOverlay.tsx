@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useHoverStore } from "../store/useHoverStore";
 
 export default function HoverOverlay() {
-  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const hoveredNodeId = useHoverStore((s) => s.hoveredNodeId);
+
+  if (!hoveredNodeId) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-30">

@@ -1,20 +1,12 @@
 "use client";
 
-import type {
-  BuilderNode,
-  HeadingProps,
-} from "../../types/blueprint";
+import type { BuilderNode, HeadingProps } from "../../types/blueprint";
 
 import WidgetFrame from "../sdk/WidgetFrame";
 import { useWidget } from "../sdk/useWidget";
 
-interface HeadingNode extends BuilderNode {
-  type: "heading";
-  props: HeadingProps;
-}
-
 interface Props {
-  node: HeadingNode;
+  node: BuilderNode;
 }
 
 export default function Heading({
@@ -24,10 +16,9 @@ export default function Heading({
   const {
     props,
     style,
-  } = useWidget(node);
+  } = useWidget<HeadingProps>(node);
 
-  const Tag =
-    (props.level ?? "h2") as keyof JSX.IntrinsicElements;
+  const Tag = (props.level ?? "h2") as React.ElementType;
 
   return (
     <WidgetFrame nodeId={node.id}>

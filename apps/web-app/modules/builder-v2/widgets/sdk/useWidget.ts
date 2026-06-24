@@ -4,6 +4,7 @@ import { useMemo } from "react";
 
 import { useBuilderStore } from "../../store/useBuilderStore";
 import { useSelectionStore } from "../../store/useSelectionStore";
+import { useCanvasStore } from "../../store/useCanvasStore";
 
 import type {
   BuilderNode,
@@ -25,7 +26,7 @@ export interface WidgetHookResult<
 
   props: TProps;
 
-  style: BuilderStyle;
+  style: Record<string, any>;
 
   children: BuilderNode[];
 
@@ -64,6 +65,28 @@ export function useWidget<
     (s) => s.hoveredNodeId
   );
 
+  const device = useCanvasStore((s) => s.device);
+
+  const style = useMemo(() => {
+    const resolved: Record<string, any> = {};
+
+    for (const [key, value] of Object.entries(node.style ?? {})) {
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        const responsive = value as Record<string, unknown>;
+        resolved[key] =
+          responsive[device] ??
+          responsive.desktop ??
+          responsive.laptop ??
+          responsive.tablet ??
+          responsive.mobile;
+      } else {
+        resolved[key] = value;
+      }
+    }
+
+    return resolved;
+  }, [device, node.style]);
+
   /* --------------------------------------------------------
      Resolve Children
   -------------------------------------------------------- */
@@ -97,8 +120,7 @@ export function useWidget<
       (node.props ??
         {}) as TProps,
 
-    style:
-      node.style ?? {},
+    style,
 
     children,
 

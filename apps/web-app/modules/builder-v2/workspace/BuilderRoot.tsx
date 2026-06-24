@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 import BuilderProvider from "./BuilderProvider";
 import BuilderShell from "./BuilderShell";
@@ -95,95 +94,67 @@ function isV2Blueprint(value: any): value is BuilderBlueprint {
   );
 }
 
-export default function BuilderRoot() {
-  const params = useParams();
-  const pageSlugWithId = params?.pageSlugWithId as string;
-  const pageId = pageSlugWithId?.split("-").pop() || "";
+interface BuilderRootProps {
+  pageId: string;
+  siteId: string;
+  pageTitle: string;
+  initialBlueprint: unknown;
+}
+
+export default function BuilderRoot({
+  pageId,
+  siteId,
+  pageTitle,
+  initialBlueprint,
+}: BuilderRootProps) {
 
   const setDesignTokens = useCanvasStore((s) => s.setDesignTokens);
 
-  const [v2Blueprint, setV2Blueprint] = useState<BuilderBlueprint | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [siteId, setSiteId] = useState<string | null>(null);
   const [logoUploadOpen, setLogoUploadOpen] = useState(false);
 
+  const v2Blueprint = useMemo(() => {
+    if (isV2Blueprint(initialBlueprint)) {
+      return initialBlueprint;
+    }
+
+    const rawBlueprint = initialBlueprint as any;
+    let normalized: any;
+
+    if (
+      rawBlueprint?.type === "page" &&
+      Array.isArray(rawBlueprint.children)
+    ) {
+      normalized = rawBlueprint;
+    } else if (
+      rawBlueprint?.page &&
+      Array.isArray(rawBlueprint.page.children)
+    ) {
+      normalized = {
+        id: rawBlueprint.page.id || pageId,
+        type: "page",
+        props: rawBlueprint.page.props ?? {},
+        children: rawBlueprint.page.children ?? [],
+      };
+    } else {
+      normalized = {
+        id: pageId,
+        type: "page",
+        props: {},
+        children: [],
+      };
+    }
+
+    return convertToV2Blueprint(normalized, pageTitle || "Untitled");
+  }, [initialBlueprint, pageId, pageTitle]);
+
   useEffect(() => {
-    if (!pageId) {
-      setError("Missing pageId");
-      setLoading(false);
-      return;
+    const root = v2Blueprint.nodes[v2Blueprint.root];
+    const designTokens = root?.props?.designTokens;
+
+    if (designTokens && typeof designTokens === "object") {
+      setDesignTokens(designTokens as any);
     }
-
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const res = await fetch(`/api/pages/${pageId}`, { credentials: "include" });
-        if (!res.ok) throw new Error(`Failed to load page (${res.status})`);
-        const json = await res.json();
-        const payload = json?.data ?? json;
-
-        const rawBlueprint = payload?.blueprint;
-
-        if (isV2Blueprint(rawBlueprint)) {
-          if (cancelled) return;
-
-          setV2Blueprint(rawBlueprint);
-
-          const resolvedSiteId =
-            payload?.site?.id || payload?.siteId || payload?.siteId || null;
-          if (resolvedSiteId) setSiteId(resolvedSiteId);
-
-          setError(null);
-          setLoading(false);
-          return;
-        }
-
-        let normalized: any;
-
-        if (rawBlueprint && rawBlueprint.type === "page" && Array.isArray(rawBlueprint.children)) {
-          normalized = rawBlueprint;
-        } else if (rawBlueprint && rawBlueprint.page && Array.isArray(rawBlueprint.page.children)) {
-          normalized = {
-            id: payload.id || pageId,
-            type: "page",
-            props: rawBlueprint.page.props ?? {},
-            children: rawBlueprint.page.children ?? [],
-          };
-        } else {
-          normalized = { id: payload.id || pageId, type: "page", props: {}, children: [] };
-        }
-
-        if (cancelled) return;
-
-        const v2 = convertToV2Blueprint(normalized, payload?.title || "Untitled");
-        setV2Blueprint(v2);
-
-        // Resolve siteId for logo uploads / branding
-        const resolvedSiteId =
-          payload?.site?.id || payload?.siteId || payload?.siteId || null;
-        if (resolvedSiteId) setSiteId(resolvedSiteId);
-
-        if (normalized?.props?.designTokens) {
-          setDesignTokens(normalized.props.designTokens);
-        }
-
-        setError(null);
-        setLoading(false);
-      } catch (err: any) {
-        if (cancelled) return;
-        console.error("Failed to load blueprint", err);
-        setError(err?.message || "Failed to load page");
-        setLoading(false);
-      }
-    }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [pageId, setDesignTokens]);
+  }, [setDesignTokens, v2Blueprint]);
 
   /* ----------------------------------------------------------
      Listen for requests to open the logo upload modal (from AiPanel)
@@ -197,29 +168,11 @@ export default function BuilderRoot() {
     return () => window.removeEventListener("ai:open-logo-upload", onOpen);
   }, []);
 
-  if (loading) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center text-white bg-[rgba(10,14,25,0.65)]">
-        Loading Builder…
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center text-red-400">
-        Error: {error}
-      </div>
-    );
-  }
-
   return (
     <>
-      {v2Blueprint && (
-        <BuilderProvider blueprint={v2Blueprint}>
-          <BuilderShell />
-        </BuilderProvider>
-      )}
+      <BuilderProvider blueprint={v2Blueprint}>
+        <BuilderShell pageId={pageId} />
+      </BuilderProvider>
 
       <ColumnStructurePicker
         open={false}
@@ -227,7 +180,7 @@ export default function BuilderRoot() {
         onSelect={() => {}}
       />
 
-      {logoUploadOpen && siteId && (
+      {logoUploadOpen && (
         <LogoUploadModal
           siteId={siteId}
           onComplete={({ logoUrl, palette }) => {

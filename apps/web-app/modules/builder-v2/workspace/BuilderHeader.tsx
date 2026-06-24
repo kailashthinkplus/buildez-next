@@ -19,7 +19,7 @@ import {
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useCanvasStore } from "../store/useCanvasStore";
@@ -41,7 +41,9 @@ interface PageItem {
   status: "Draft" | "Published";
 }
 
-interface BuilderHeaderProps {}
+interface BuilderHeaderProps {
+  pageId: string;
+}
 
 
 
@@ -50,15 +52,13 @@ interface BuilderHeaderProps {}
 ============================================================================ */
 
 export default function BuilderHeader(
-  {}: BuilderHeaderProps
+  { pageId }: BuilderHeaderProps
 ) {
   const router = useRouter();
   const params = useParams();
 
   const siteSlug = params?.siteSlug as string;
   const pageSlugWithId = params?.pageSlugWithId as string;
-  const pageId = pageSlugWithId?.split("-").at(-1);
-
   /* ------------------------------------------ -------------------
      CANVAS STORE
   ------------------------------------------------------------- */
@@ -83,8 +83,21 @@ const dirty = useBuilderStore(
   (s) => s.dirty
 );
 
-const canUndo = false;
-const canRedo = false;
+const revision = useBuilderStore(
+  (s) => s.revision
+);
+
+const canUndo = useBuilderStore(
+  (s) => s.canUndo
+);
+
+const canRedo = useBuilderStore(
+  (s) => s.canRedo
+);
+
+const clearDirty = useBuilderStore(
+  (s) => s.clearDirty
+);
 
   /* -------------------------------------------------------------
      LOCAL UI STATE
@@ -95,6 +108,8 @@ const canRedo = false;
   } | null>(null);
 
   const [saving, setSaving] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [saveError, setSaveError] = useState(false);
   const [publishing, setPublishing] = useState(false);
 
   const [pageMenuOpen, setPageMenuOpen] = useState(false);
@@ -155,12 +170,14 @@ const resolvedStatus =
      ACTIONS
   ------------------------------------------------------------- */
 
-async function handleSave() {
+const saveBlueprint = useCallback(async (showToast: boolean) => {
   if (!blueprint || !pageId) return;
 
+  const savingRevision = revision;
   setSaving(true);
+  setSaveError(false);
+
   try {
-    // POST to API to save blueprint
     const response = await fetch(
       `/api/builder-v2/blueprints/${pageId}`,
       {
@@ -175,20 +192,43 @@ async function handleSave() {
       throw new Error("Failed to save");
     }
 
-    setToast({
-      message: "Page saved successfully",
-      type: "success",
-    });
+    clearDirty(savingRevision);
+    setLastSavedAt(new Date());
+
+    if (showToast) {
+      setToast({
+        message: "Page saved successfully",
+        type: "success",
+      });
+    }
   } catch (error) {
     console.error("Save error:", error);
-    setToast({
-      message: "Failed to save page",
-      type: "error",
-    });
+    setSaveError(true);
+
+    if (showToast) {
+      setToast({
+        message: "Failed to save page",
+        type: "error",
+      });
+    }
   } finally {
     setSaving(false);
   }
+}, [blueprint, clearDirty, pageId, revision]);
+
+function handleSave() {
+  void saveBlueprint(true);
 }
+
+useEffect(() => {
+  if (!dirty || saving || !blueprint || !pageId) return;
+
+  const timeout = window.setTimeout(() => {
+    void saveBlueprint(false);
+  }, 2000);
+
+  return () => window.clearTimeout(timeout);
+}, [blueprint, dirty, pageId, revision, saveBlueprint, saving]);
 
 async function handlePublish() {
   if (!blueprint || !pageId) return;
@@ -334,7 +374,7 @@ function handleExport() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => commandBus.undo()}
-            disabled={false}
+            disabled={!canUndo}
             className={`p-2 rounded-xl ${
               canUndo ? "bg-white/[0.08]" : "opacity-40"
             }`}
@@ -344,7 +384,7 @@ function handleExport() {
 
           <button
             onClick={() => commandBus.redo()}
-            disabled={false}
+            disabled={!canRedo}
             className={`p-2 rounded-xl ${
               canRedo ? "bg-white/[0.08]" : "opacity-40"
             }`}
@@ -377,11 +417,20 @@ function handleExport() {
 
           <button
             onClick={handleSave}
-            disabled={saving}
+            disabled={saving || !dirty}
             className="px-3 py-1.5 rounded-xl text-sm bg-white/[0.08] border border-white/10 flex items-center gap-2 hover:bg-white/10 transition disabled:opacity-50"
             title="Save page blueprint"
           >
-            <Save size={16} /> {saving ? "Saving..." : "Save"}
+            <Save size={16} />
+            {saving
+              ? "Saving..."
+              : saveError
+              ? "Save failed"
+              : dirty
+              ? "Unsaved"
+              : lastSavedAt
+              ? "Saved"
+              : "Save"}
           </button>
 
 <button
