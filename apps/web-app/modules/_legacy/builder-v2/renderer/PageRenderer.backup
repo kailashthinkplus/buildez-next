@@ -1,0 +1,952 @@
+"use client";
+
+import React, {
+  useCallback,
+  useState,
+  CSSProperties,
+  useEffect,
+  useRef,
+} from "react";
+
+import { SectionToolbar } from "@app/app/(builder)/[siteSlug]/[pageSlugWithId]/toolbars/SectionToolbar";
+import { BlockToolbar } from "@app/app/(builder)/[siteSlug]/[pageSlugWithId]/toolbars/BlockToolbar";
+import { useCanvasStore } from "@/modules/builder/state/useCanvasStore";
+
+/* ============================================================
+   TYPES
+============================================================ */
+
+export type NodeType =
+  | "page"
+  | "section"
+  | "container"
+  | "column"
+  | "heading"
+  | "text"
+  | "image"
+  | "button"
+  | "spacer"
+  | "icon"
+  | "video";
+
+export interface BlueprintNode {
+  id: string;
+  type: NodeType;
+  props?: Record<string, any>;
+  children?: BlueprintNode[];
+}
+
+export interface PageRendererProps {
+  blueprint: BlueprintNode;
+  selectedId?: string | null;
+  onSelect?: (id: string | null) => void;
+  onUpdateNode?: (id: string, patch: Partial<BlueprintNode>) => void;
+  onDuplicateNode?: (id: string) => void;
+  onDeleteNode?: (id: string) => void;
+  onAddChild?: (parentId: string) => void;
+  onAIAction?: (id: string, type: NodeType) => void;
+}
+
+/* ============================================================
+   INTERNAL RENDER CONTEXT
+============================================================ */
+
+interface RenderContext extends PageRendererProps {
+  renderNode(node: BlueprintNode): React.ReactNode;
+  moveUp(id: string): void;
+  moveDown(id: string): void;
+}
+/* ============================================================
+   CONSTANTS
+============================================================ */
+
+const HOVER_OUTLINE = "1px dashed rgba(99,102,241,0.6)";
+const SELECT_OUTLINE = "2px solid rgba(99,102,241,1)";
+
+const DEFAULT_SECTION_STYLE: CSSProperties = {
+  width: "100%",
+};
+
+const DEFAULT_CONTAINER_STYLE: CSSProperties = {
+  maxWidth: "3480px",
+  marginLeft: "auto",
+  marginRight: "auto",
+  paddingLeft: "16px",
+  paddingRight: "16px",
+};
+
+const DEFAULT_COLUMN_STYLE: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "16px",
+};
+
+/* ============================================================
+   INSPECTOR → CANVAS STYLE MERGER (CANONICAL)
+============================================================ */
+
+function applyInspectorStyles(
+  base: CSSProperties,
+  style?: Record<string, any>
+): CSSProperties {
+  if (!style) return base;
+
+  return {
+    ...base,
+
+    /* Typography */
+    color: style.color,
+    fontFamily: style.fontFamily,
+    fontSize: style.fontSize,
+    fontWeight: style.fontWeight,
+    lineHeight: style.lineHeight,
+    letterSpacing: style.letterSpacing,
+    textAlign: style.textAlign,
+    textTransform: style.textTransform,
+    textDecoration: style.textDecoration,
+
+    /* Spacing (no shorthand) */
+    paddingTop: style.paddingTop,
+    paddingRight: style.paddingRight,
+    paddingBottom: style.paddingBottom,
+    paddingLeft: style.paddingLeft,
+
+    marginTop: style.marginTop,
+    marginRight: style.marginRight,
+    marginBottom: style.marginBottom,
+    marginLeft: style.marginLeft,
+
+    /* Visual */
+    background: style.background,
+    backgroundColor: style.backgroundColor,
+    backgroundImage: style.backgroundImage,
+    backgroundSize: style.backgroundSize,
+    backgroundPosition: style.backgroundPosition,
+    backgroundRepeat: style.backgroundRepeat,
+    borderRadius: style.borderRadius,
+    boxShadow: style.boxShadow,
+
+    /* Layout */
+    width: style.width,
+    maxWidth: style.maxWidth,
+    minHeight: style.minHeight,
+    position: style.position,
+    top: style.top,
+    right: style.right,
+    bottom: style.bottom,
+    left: style.left,
+
+    ...style,
+  };
+}
+/* ============================================================
+   SELECTION HELPERS
+============================================================ */
+
+function useStructureSelectable(
+  id: string,
+  selectedId?: string | null,
+  onSelect?: (id: string | null) => void
+) {
+  const [hovered, setHovered] = useState(false);
+  const selected = selectedId === id;
+
+  return {
+    selected,
+    style: {
+      outline: selected
+        ? SELECT_OUTLINE
+        : hovered
+        ? HOVER_OUTLINE
+        : "none",
+      outlineOffset: "0px",
+      cursor: "pointer",
+    } as CSSProperties,
+    handlers: {
+      onMouseEnter: () => setHovered(true),
+      onMouseLeave: () => setHovered(false),
+      onClick: (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onSelect?.(id);
+      },
+    },
+  };
+}
+
+function useSelectable(
+  id: string,
+  selectedId?: string | null,
+  onSelect?: (id: string | null) => void
+) {
+  const [hovered, setHovered] = useState(false);
+  const selected = selectedId === id;
+
+  return {
+    selected,
+    style: {
+      outline: selected
+        ? SELECT_OUTLINE
+        : hovered
+        ? HOVER_OUTLINE
+        : "none",
+      outlineOffset: selected ? "2px" : "0px",
+      cursor: "pointer",
+    } as CSSProperties,
+    handlers: {
+      onMouseEnter: () => setHovered(true),
+      onMouseLeave: () => setHovered(false),
+      onClick: (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onSelect?.(id);
+      },
+    },
+  };
+}
+
+/* ============================================================
+   DROPZONE
+============================================================ */
+
+function DropZone({ onAdd }: { onAdd?: () => void }) {
+  return (
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        onAdd?.();
+      }}
+      className="relative my-2 h-0 pointer-events-none"
+    >
+      <div
+        className="
+          absolute left-0 right-0 top-1/2 -translate-y-1/2
+          mx-auto h-1 w-2/3 rounded-full
+          bg-blue-500/80 opacity-0 transition
+          body.builder-dragging & {
+            opacity: 1;
+            pointer-events: auto;
+          }
+        "
+      />
+    </div>
+  );
+}
+/* ============================================================
+   MAIN RENDERER
+============================================================ */
+
+export function PageRenderer(props: PageRendererProps) {
+  const device = useCanvasStore((s) => s.device);
+
+  useEffect(() => {
+    function onMouseDown(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      const toolbar =
+        target.closest("[data-bez-block-toolbar]") ||
+        target.closest("[data-bez-section-toolbar]");
+      if (!toolbar) return;
+
+      const nodeEl = toolbar.closest("[data-node-id]");
+      if (!nodeEl) return;
+
+      const id = nodeEl.getAttribute("data-node-id");
+      if (!id) return;
+
+      window.dispatchEvent(
+        new CustomEvent("builder:start-drag", {
+          detail: {
+            id,
+            type: "block",
+            x: e.clientX,
+            y: e.clientY,
+            source: "canvas",
+          },
+        })
+      );
+
+      document.body.classList.add("builder-dragging");
+    }
+
+    window.addEventListener("mousedown", onMouseDown);
+    return () => window.removeEventListener("mousedown", onMouseDown);
+  }, []);
+
+  const moveUp = (id: string) =>
+    window.dispatchEvent(
+      new CustomEvent("builder:move-node", {
+        detail: { id, direction: "up" },
+      })
+    );
+
+  const moveDown = (id: string) =>
+    window.dispatchEvent(
+      new CustomEvent("builder:move-node", {
+        detail: { id, direction: "down" },
+      })
+    );
+
+  const renderNode = useCallback(
+    (node?: BlueprintNode | null): React.ReactNode => {
+      if (!node || typeof node !== "object") return null;
+
+      const ctx: RenderContext & {
+        device: "desktop" | "tablet" | "mobile";
+      } = {
+        ...props,
+        renderNode,
+        moveUp,
+        moveDown,
+        device,
+      };
+
+      switch (node.type) {
+case "page":
+  return (
+    <div
+      style={{ minHeight: "100vh", width: "100%" }}
+      onClick={(e) => {
+        e.stopPropagation();
+        props.onSelect?.(node.id);
+      }}
+    >
+      <DropZone onAdd={() => props.onAddChild?.(node.id)} />
+
+      {(node.children ?? []).map((c) => renderNode(c))}
+
+      <DropZone onAdd={() => props.onAddChild?.(node.id)} />
+    </div>
+  );
+
+        case "section":
+          return <Section key={node.id} node={node} ctx={ctx} />;
+
+        case "container":
+          return <Container key={node.id} node={node} ctx={ctx} />;
+
+        case "column":
+          return <Column key={node.id} node={node} ctx={ctx} />;
+
+        case "heading":
+          return <Heading key={node.id} node={node} ctx={ctx} />;
+
+        case "text":
+          return <Text key={node.id} node={node} ctx={ctx} />;
+
+        case "image":
+          return <Image key={node.id} node={node} ctx={ctx} />;
+
+        case "button":
+          return <Button key={node.id} node={node} ctx={ctx} />;
+
+        case "icon":
+          return <Icon key={node.id} node={node} ctx={ctx} />;
+
+        case "video":
+          return <Video key={node.id} node={node} ctx={ctx} />;
+
+        case "spacer":
+  return (
+    <div
+      key={node.id}
+      style={{ height: node.props?.height || 32 }}
+    />
+  );
+
+        default:
+          return null;
+      }
+    },
+    [props, device]
+  );
+
+  return <>{renderNode(props.blueprint)}</>;
+}
+/* ============================================================
+   SECTION
+============================================================ */
+
+function Section({
+  node,
+  ctx,
+}: {
+  node: BlueprintNode;
+  ctx: RenderContext;
+}) {
+  const sel = useStructureSelectable(
+    node.id,
+    ctx.selectedId,
+    ctx.onSelect
+  );
+
+  return (
+    <section
+      data-node-id={node.id}
+      {...sel.handlers}
+      style={applyInspectorStyles(
+        {
+          ...DEFAULT_SECTION_STYLE,
+          position: "relative",
+          outline: sel.style.outline,
+          outlineOffset: sel.style.outlineOffset,
+          cursor: "pointer",
+        },
+        node.props?.style
+      )}
+    >
+      <SectionToolbar
+        id={node.id}
+        nodeType="section"
+        label="Section"
+        isSelected={sel.selected}
+        onAddInside={() => ctx.onAddChild?.(node.id)}
+        onDuplicate={() => ctx.onDuplicateNode?.(node.id)}
+        onDelete={() => ctx.onDeleteNode?.(node.id)}
+        onMoveUp={() => ctx.moveUp(node.id)}
+        onMoveDown={() => ctx.moveDown(node.id)}
+        onAIRewrite={() =>
+        ctx.onAIAction?.(node.id, node.type)}
+      />
+
+      <DropZone onAdd={() => ctx.onAddChild?.(node.id)} />
+
+      {(node.children ?? []).map((child) =>
+        ctx.renderNode(child)
+      )}
+
+      <DropZone onAdd={() => ctx.onAddChild?.(node.id)} />
+    </section>
+  );
+}
+
+/* ============================================================
+   CONTAINER
+============================================================ */
+
+function Container({
+  node,
+  ctx,
+}: {
+  node: BlueprintNode;
+  ctx: RenderContext;
+}) {
+  const sel = useStructureSelectable(
+    node.id,
+    ctx.selectedId,
+    ctx.onSelect
+  );
+
+  const isColumns = node.props?.layout === "columns";
+  const device = (ctx as any).device ?? "desktop";
+  const shouldStack =
+    isColumns && (device === "mobile" || device === "tablet");
+
+  return (
+    <div
+      data-node-id={node.id}
+      {...sel.handlers}
+      style={applyInspectorStyles(
+        {
+          ...DEFAULT_CONTAINER_STYLE,
+          position: "relative",
+          display: isColumns ? "flex" : "block",
+          flexDirection: shouldStack ? "column" : "row",
+          gap: node.props?.gap ?? 24,
+          alignItems: "stretch",
+          outline: sel.style.outline,
+          outlineOffset: sel.style.outlineOffset,
+          cursor: "pointer",
+        },
+        node.props?.style
+      )}
+    >
+      <SectionToolbar
+        id={node.id}
+        nodeType="container"
+        label="Container"
+        isSelected={sel.selected}
+        onAddInside={() => ctx.onAddChild?.(node.id)}
+        onDuplicate={() => ctx.onDuplicateNode?.(node.id)}
+        onDelete={() => ctx.onDeleteNode?.(node.id)}
+        onMoveUp={() => ctx.moveUp(node.id)}
+        onMoveDown={() => ctx.moveDown(node.id)}
+        onAIRewrite={() =>
+  ctx.onAIAction?.(node.id, node.type)
+}
+      />
+
+      <DropZone onAdd={() => ctx.onAddChild?.(node.id)} />
+
+      {(node.children ?? []).map((child) =>
+        ctx.renderNode(child)
+      )}
+
+      <DropZone onAdd={() => ctx.onAddChild?.(node.id)} />
+    </div>
+  );
+}
+
+/* ============================================================
+   COLUMN
+============================================================ */
+
+function Column({
+  node,
+  ctx,
+}: {
+  node: BlueprintNode;
+  ctx: RenderContext;
+}) {
+  const sel = useStructureSelectable(
+    node.id,
+    ctx.selectedId,
+    ctx.onSelect
+  );
+
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [isOver, setIsOver] = useState(false);
+  const style = node.props?.style ?? {};
+
+  let backgroundImage = style.backgroundImage;
+
+  if (style.gradientFrom && style.gradientTo) {
+    const gradient = `linear-gradient(${
+      style.gradientAngle ?? 180
+    }deg, ${style.gradientFrom}, ${style.gradientTo})`;
+
+    backgroundImage = backgroundImage
+      ? `${gradient}, ${backgroundImage}`
+      : gradient;
+  }
+
+  useEffect(() => {
+    function onMove(e: MouseEvent) {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      setIsOver(
+        e.clientX >= rect.left &&
+          e.clientX <= rect.right &&
+          e.clientY >= rect.top &&
+          e.clientY <= rect.bottom
+      );
+    }
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
+
+  useEffect(() => {
+    function onMouseUp() {
+      if (!isOver) return;
+      window.dispatchEvent(
+        new CustomEvent("builder:drop-node", {
+          detail: { targetColumnId: node.id },
+        })
+      );
+    }
+    window.addEventListener("mouseup", onMouseUp);
+    return () => window.removeEventListener("mouseup", onMouseUp);
+  }, [isOver, node.id]);
+
+  return (
+    <div
+      ref={ref}
+      data-node-id={node.id}
+      {...sel.handlers}
+      style={applyInspectorStyles(
+        {
+          ...DEFAULT_COLUMN_STYLE,
+          position: style.position ?? "relative",
+          flex: node.props?.flex ?? 1,
+          minWidth: 0,
+            minHeight: node.children?.length ? undefined : 150,
+
+          outline: isOver
+            ? "2px solid rgba(59,130,246,0.9)"
+            : sel.style.outline,
+          outlineOffset: "0px",
+          cursor: "pointer",
+          backgroundImage,
+        },
+        node.props?.style
+      )}
+    >
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <SectionToolbar
+          id={node.id}
+          nodeType="column"
+          label="Column"
+          isSelected={sel.selected}
+          onAddInside={() => ctx.onAddChild?.(node.id)}
+          onDuplicate={() => ctx.onDuplicateNode?.(node.id)}
+          onDelete={() => ctx.onDeleteNode?.(node.id)}
+          onMoveUp={() => ctx.moveUp(node.id)}
+          onMoveDown={() => ctx.moveDown(node.id)}
+          onAIRewrite={() =>
+  ctx.onAIAction?.(node.id, node.type)
+}
+        />
+
+        <DropZone onAdd={() => ctx.onAddChild?.(node.id)} />
+
+        {(node.children ?? []).map((child) =>
+          ctx.renderNode(child)
+        )}
+
+        <DropZone onAdd={() => ctx.onAddChild?.(node.id)} />
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   HEADING (SAFE + CANONICAL)
+============================================================ */
+
+function Heading({
+  node,
+  ctx,
+}: {
+  node: BlueprintNode;
+  ctx: RenderContext;
+}) {
+  const sel = useSelectable(node.id, ctx.selectedId, ctx.onSelect);
+
+  /* ----------------------------------------------------------
+     ✅ SAFE LEVEL RESOLUTION
+     Accepts: 1 | 2 | "h2" | undefined
+  ---------------------------------------------------------- */
+  const rawLevel = node.props?.level;
+
+  const levelNumber =
+    typeof rawLevel === "number"
+      ? Math.min(Math.max(rawLevel, 1), 6)
+      : typeof rawLevel === "string" && rawLevel.startsWith("h")
+      ? parseInt(rawLevel.replace("h", ""), 10) || 2
+      : 2;
+
+  const level = `h${levelNumber}` as keyof JSX.IntrinsicElements;
+  const Tag = level;
+
+  /* ----------------------------------------------------------
+     CANONICAL HEADING SCALE (LOCKED)
+  ---------------------------------------------------------- */
+  const HEADING_SIZES: Record<string, number> = {
+    h1: 48,
+    h2: 40,
+    h3: 32,
+    h4: 24,
+    h5: 20,
+    h6: 18,
+  };
+
+  const style = node.props?.style ?? {};
+
+  /* ----------------------------------------------------------
+     FINAL RESOLVED TYPOGRAPHY
+     Inspector overrides → fallback to scale
+  ---------------------------------------------------------- */
+  const resolvedFontSize =
+    style.fontSize ??
+    HEADING_SIZES[level] ??
+    32;
+
+  const resolvedFontWeight =
+    style.fontWeight ?? 700;
+
+  const resolvedLineHeight =
+    style.lineHeight ?? 1.2;
+
+  return (
+    <div
+      data-node-id={node.id}
+      style={{ position: "relative" }}
+    >
+      {/* ================= BLOCK TOOLBAR ================= */}
+      <BlockToolbar
+        id={node.id}
+        label="Heading"
+        isSelected={sel.selected}
+        onDuplicate={() => ctx.onDuplicateNode?.(node.id)}
+        onDelete={() => ctx.onDeleteNode?.(node.id)}
+        onAI={() => ctx.onAIAction?.(node.id, node.type)}
+        onMoveUp={() => ctx.moveUp(node.id)}
+        onMoveDown={() => ctx.moveDown(node.id)}
+      />
+
+      {/* ================= HEADING ================= */}
+      <Tag
+        {...sel.handlers}
+        contentEditable
+        suppressContentEditableWarning
+        onBlur={(e) =>
+          ctx.onUpdateNode?.(node.id, {
+            props: {
+              ...node.props,
+              text: e.currentTarget.innerText,
+              level: levelNumber, // 🔒 normalize back to number
+            },
+          })
+        }
+        style={applyInspectorStyles(
+          {
+            fontSize: resolvedFontSize,
+            fontWeight: resolvedFontWeight,
+            lineHeight: resolvedLineHeight,
+            outline: sel.style.outline,
+            outlineOffset: sel.style.outlineOffset,
+            cursor: "pointer",
+          },
+          style
+        )}
+      >
+        {node.props?.text || "Heading"}
+      </Tag>
+    </div>
+  );
+}
+
+/* ============================================================
+   TEXT (SAFE + CANONICAL)
+============================================================ */
+
+function Text({
+  node,
+  ctx,
+}: {
+  node: BlueprintNode;
+  ctx: RenderContext;
+}) {
+  const sel = useSelectable(node.id, ctx.selectedId, ctx.onSelect);
+
+  const style = node.props?.style ?? {};
+
+  /* ----------------------------------------------------------
+     CANONICAL TEXT DEFAULTS
+  ---------------------------------------------------------- */
+  const resolvedFontSize = style.fontSize ?? 16;
+  const resolvedLineHeight = style.lineHeight ?? 1.6;
+  const resolvedFontWeight = style.fontWeight ?? 400;
+
+  // 🔒 Ensure HTML is always a string
+  const html =
+    typeof node.props?.html === "string"
+      ? node.props.html
+      : "Editable text";
+
+  return (
+    <div
+      data-node-id={node.id}
+      style={{ position: "relative" }}
+    >
+      {/* ================= BLOCK TOOLBAR ================= */}
+      <BlockToolbar
+        id={node.id}
+        label="Text"
+        isSelected={sel.selected}
+        onDuplicate={() => ctx.onDuplicateNode?.(node.id)}
+        onDelete={() => ctx.onDeleteNode?.(node.id)}
+        onAI={() => ctx.onAIAction?.(node.id, node.type)}
+        onMoveUp={() => ctx.moveUp(node.id)}
+        onMoveDown={() => ctx.moveDown(node.id)}
+      />
+
+      {/* ================= TEXT ================= */}
+      <p
+        {...sel.handlers}
+        contentEditable
+        suppressContentEditableWarning
+        onBlur={(e) =>
+          ctx.onUpdateNode?.(node.id, {
+            props: {
+              ...node.props,
+              html: e.currentTarget.innerHTML,
+            },
+          })
+        }
+        // 🔑 Only inject HTML once
+        dangerouslySetInnerHTML={{ __html: html }}
+        style={applyInspectorStyles(
+          {
+            fontSize: resolvedFontSize,
+            lineHeight: resolvedLineHeight,
+            fontWeight: resolvedFontWeight,
+            outline: sel.style.outline,
+            outlineOffset: sel.style.outlineOffset,
+            cursor: "pointer",
+          },
+          style
+        )}
+      />
+    </div>
+  );
+}
+
+/* ============================================================
+   IMAGE
+============================================================ */
+
+function Image({
+  node,
+  ctx,
+}: {
+  node: BlueprintNode;
+  ctx: RenderContext;
+}) {
+  const sel = useSelectable(node.id, ctx.selectedId, ctx.onSelect);
+
+  return (
+    <div data-node-id={node.id} style={{ position: "relative" }}>
+      <BlockToolbar
+        id={node.id}
+        label="Image"
+        isSelected={sel.selected}
+        onDuplicate={() => ctx.onDuplicateNode?.(node.id)}
+        onDelete={() => ctx.onDeleteNode?.(node.id)}
+        onSettings={() => ctx.onSelect?.(node.id)}
+        onAI={() =>
+  ctx.onAIAction?.(node.id, node.type)
+}        onMoveUp={() => ctx.moveUp(node.id)}
+        onMoveDown={() => ctx.moveDown(node.id)}
+      />
+
+      <img
+        src={node.props?.src || "/default_image.png"}
+        alt={node.props?.alt || ""}
+        style={applyInspectorStyles(
+          { width: "100%" },
+          node.props?.style
+        )}
+      />
+    </div>
+  );
+}
+
+/* ============================================================
+   BUTTON
+============================================================ */
+
+function Button({
+  node,
+  ctx,
+}: {
+  node: BlueprintNode;
+  ctx: RenderContext;
+}) {
+  const sel = useSelectable(node.id, ctx.selectedId, ctx.onSelect);
+
+  return (
+    <div data-node-id={node.id} style={{ position: "relative" }}>
+      <BlockToolbar
+        id={node.id}
+        label="Button"
+        isSelected={sel.selected}
+        onDuplicate={() => ctx.onDuplicateNode?.(node.id)}
+        onDelete={() => ctx.onDeleteNode?.(node.id)}
+        onSettings={() => ctx.onSelect?.(node.id)}
+        onAI={() =>
+  ctx.onAIAction?.(node.id, node.type)
+}        onMoveUp={() => ctx.moveUp(node.id)}
+        onMoveDown={() => ctx.moveDown(node.id)}
+      />
+
+      <button
+        {...sel.handlers}
+        style={{
+          padding: "12px 20px",
+          borderRadius: "8px",
+          background: "#6366f1",
+          color: "#fff",
+          border: "none",
+          fontWeight: 600,
+          ...node.props?.style,
+          ...sel.style,
+        }}
+      >
+        {node.props?.label || "Button"}
+      </button>
+    </div>
+  );
+}
+
+/* ============================================================
+   ICON
+============================================================ */
+
+function Icon({
+  node,
+  ctx,
+}: {
+  node: BlueprintNode;
+  ctx: RenderContext;
+}) {
+  const sel = useSelectable(node.id, ctx.selectedId, ctx.onSelect);
+
+  return (
+    <div data-node-id={node.id} style={{ position: "relative" }}>
+      <BlockToolbar
+        id={node.id}
+        label="Icon"
+        isSelected={sel.selected}
+        onDuplicate={() => ctx.onDuplicateNode?.(node.id)}
+        onDelete={() => ctx.onDeleteNode?.(node.id)}
+        onAI={() =>
+  ctx.onAIAction?.(node.id, node.type)
+}        onMoveUp={() => ctx.moveUp(node.id)}
+        onMoveDown={() => ctx.moveDown(node.id)}
+      />
+
+      <span
+        {...sel.handlers}
+        style={applyInspectorStyles(
+          {
+            fontSize: node.props?.size ?? 24,
+            cursor: "pointer",
+            outline: sel.style.outline,
+            outlineOffset: sel.style.outlineOffset,
+          },
+          node.props?.style
+        )}
+      >
+        {node.props?.icon || "★"}
+      </span>
+    </div>
+  );
+}
+
+/* ============================================================
+   VIDEO
+============================================================ */
+
+function Video({
+  node,
+  ctx,
+}: {
+  node: BlueprintNode;
+  ctx: RenderContext;
+}) {
+  const sel = useSelectable(node.id, ctx.selectedId, ctx.onSelect);
+
+  return (
+    <div data-node-id={node.id} style={{ position: "relative" }}>
+      <BlockToolbar
+        id={node.id}
+        label="Video"
+        isSelected={sel.selected}
+        onDuplicate={() => ctx.onDuplicateNode?.(node.id)}
+        onDelete={() => ctx.onDeleteNode?.(node.id)}
+        onAI={() =>
+  ctx.onAIAction?.(node.id, node.type)
+}        onMoveUp={() => ctx.moveUp(node.id)}
+        onMoveDown={() => ctx.moveDown(node.id)}
+      />
+
+      <video
+        {...sel.handlers}
+        src={node.props?.src}
+        controls
+        style={applyInspectorStyles(
+          { width: "100%" },
+          node.props?.style
+        )}
+      />
+    </div>
+  );
+}

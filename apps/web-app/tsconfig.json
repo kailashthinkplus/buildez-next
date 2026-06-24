@@ -1,0 +1,59 @@
+{
+  "extends": "../../tsconfig.base.json",
+
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "incremental": true,
+
+    "module": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+
+    "baseUrl": ".",
+
+    "paths": {
+      "@app/*": ["./app/*"],
+      "@lib/*": ["./lib/*"],
+
+      "@/*": ["./*"],
+      "@/lib/*": ["./lib/*"],
+
+      "@buildez/auth": ["../../packages/auth/index.ts"],
+      "@buildez/db": ["../../packages/db/index.ts"],
+
+      /* ------------------------------------------------------
+         ⭐ FINAL FIXED ALIAS FOR BUILD-EZ V3 RENDER ENGINE ⭐
+         Fully compatible with Next.js 15 + Turbopack.
+         Must point to EXACT folder — no globs.
+      ------------------------------------------------------ */
+      "@builder/render": ["./app/app/(builder)/render"],
+      "@builder/render/*": ["./app/app/(builder)/render/*"]
+      /* ------------------------------------------------------ */
+    },
+
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+
+  "exclude": ["node_modules"]
+}

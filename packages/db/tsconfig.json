@@ -1,0 +1,31 @@
+{
+  "extends": "../../tsconfig.base.json",
+
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "outDir": "dist",
+    "declaration": true,
+    "emitDeclarationOnly": false,
+
+    "types": ["node"]
+  },
+
+  "include": [
+    "index.ts",
+    "prisma/**/*.ts"
+  ],
+
+  "exclude": [
+    "dist",
+    "generated",
+    "node_modules"
+  ]
+}

@@ -1,0 +1,269 @@
+// /apps/web-app/app/api/ai/blueprint/route.ts
+
+// ============================================================================
+// AI BLUEPRINT ROUTE — AUTHORITATIVE (V5 BUILDER)
+// PAGE-SCOPED BLUEPRINT GENERATION
+// ============================================================================
+
+import { NextRequest, NextResponse } from "next/server";
+
+/* 🔒 AUTH (AUTHORITATIVE) */
+import { getAuthContext } from "@/lib/auth/getAuthContext";
+
+/* 🔒 EXECUTION CONTEXT */
+import {
+  resolveExecutionContext,
+  type ExecutionContext,
+} from "@/lib/context/resolveExecutionContext";
+
+/* 🤖 LLM */
+import { generateBlueprint } from "@/app/api/ai/_lib/llm";
+
+/* 🧱 TYPES */
+import type { BlueprintNode } from "@/modules/builder/renderer/PageRenderer";
+
+/* 🧱 HARD VALIDATOR (AUTHORITATIVE) */
+import { validateBlueprint } from "@/modules/builder/blueprint/validateBlueprint";
+
+/* 🗄️ DB */
+import { prisma } from "@buildez/db";
+
+/* 🎨 DEFAULT DESIGN TOKENS (SERVER-ONLY) */
+import { generateDefaultDesignTokens } from "@/app/api/ai/_lib/designTokens";
+
+/* ----------------------------------------------------------------------------
+   POST
+---------------------------------------------------------------------------- */
+export async function POST(req: NextRequest) {
+  console.log("[AI BLUEPRINT] → start", {
+    method: req.method,
+    url: req.nextUrl?.pathname,
+    hasCookie: !!req.headers.get("cookie"),
+  });
+
+  try {
+    /* ----------------------------------------------------------
+       🔒 AUTH
+    ---------------------------------------------------------- */
+    const auth = await getAuthContext();
+
+    if (!auth?.tenantId || !auth?.userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    /* ----------------------------------------------------------
+       BODY
+    ---------------------------------------------------------- */
+    const body = await req.json();
+    const { prompt, page, executionContext: clientCtx, context } = body ?? {};
+
+    if (!prompt || !page) {
+      return NextResponse.json(
+        { error: "Missing prompt or page blueprint" },
+        { status: 400 }
+      );
+    }
+
+    /* ----------------------------------------------------------
+       🔒 EXECUTION CONTEXT
+    ---------------------------------------------------------- */
+    const execCtx: ExecutionContext = await resolveExecutionContext({
+      req,
+      scope: "page",
+      source: "ai",
+      tenantId: auth.tenantId,
+      userId: auth.userId,
+      query: { pageId: clientCtx?.pageId },
+    });
+
+    if (!execCtx.pageId || !execCtx.siteId) {
+      return NextResponse.json(
+        { error: "Invalid page execution context" },
+        { status: 400 }
+      );
+    }
+
+    /* ----------------------------------------------------------
+       🧠 AI CONVERSATION (AUTHORITATIVE PHASE GATE)
+       🚨 THIS IS THE MISSING PIECE
+    ---------------------------------------------------------- */
+    const conversation = await prisma.aIConversation.upsert({
+      where: {
+        tenantId_siteId_pageId: {
+          tenantId: execCtx.tenantId,
+          siteId: execCtx.siteId,
+          pageId: execCtx.pageId,
+        },
+      },
+      update: {},
+      create: {
+        tenantId: execCtx.tenantId,
+        siteId: execCtx.siteId,
+        pageId: execCtx.pageId,
+        createdBy: auth.userId,
+        phase: "INTERVIEW", // default
+      },
+    });
+
+    /**
+     * 🚫 DO NOT GENERATE YET
+     * We are still collecting required inputs
+     */
+    if (conversation.phase !== "GENERATING") {
+      console.log("[AI BLUEPRINT] ⏸ interview mode");
+
+      return NextResponse.json({
+        mode: "questions",
+        phase: conversation.phase,
+        questions: [
+          {
+            key: "logo",
+            type: "logo",
+            label: "Do you want to upload a logo?",
+          },
+          {
+            key: "tone",
+            type: "select",
+            options: ["Professional", "Friendly", "Premium", "Bold"],
+          },
+          {
+            key: "goal",
+            type: "text",
+            label: "What is the primary goal of this page?",
+          },
+        ],
+      });
+    }
+
+    /* ----------------------------------------------------------
+       LOAD SITE DESIGN TOKENS
+    ---------------------------------------------------------- */
+    const site = await prisma.site.findUnique({
+      where: { id: execCtx.siteId },
+      select: { designTokens: true },
+    });
+
+    const resolvedDesignTokens =
+      site?.designTokens ?? generateDefaultDesignTokens();
+
+    /* ----------------------------------------------------------
+       🤖 CALL LLM (V5 — NOW ALLOWED)
+    ---------------------------------------------------------- */
+    const result = await generateBlueprint(prompt, {
+      page,
+      context,
+      executionContext: execCtx,
+      existingDesignTokens: resolvedDesignTokens,
+    });
+
+    /* ----------------------------------------------------------
+       🔓 AUTHORITATIVE V5 UNWRAP (NO GUESSING)
+    ---------------------------------------------------------- */
+    const raw = result?.blueprint;
+
+    const nextBlueprint: BlueprintNode | null =
+      raw?.type === "page"
+        ? raw
+        : raw?.blueprint?.type === "page"
+        ? raw.blueprint
+        : raw?.blueprint?.blueprint?.type === "page"
+        ? raw.blueprint.blueprint
+        : null;
+
+    const designTokensFromAI =
+      result?.designTokens ??
+      raw?.designTokens ??
+      raw?.blueprint?.designTokens ??
+      null;
+
+    const pages = result?.pages ?? [];
+    const usage = result?.usage;
+
+    /* ----------------------------------------------------------
+       HARD VALIDATION (NO AUTO-FIX)
+    ---------------------------------------------------------- */
+    if (!nextBlueprint) {
+      return NextResponse.json(
+        {
+          error: "AI returned invalid blueprint",
+          detail: "Missing or malformed page blueprint",
+        },
+        { status: 422 }
+      );
+    }
+
+    validateBlueprint(nextBlueprint);
+
+    /* ----------------------------------------------------------
+       💾 PERSIST DESIGN TOKENS (WRITE-ONCE)
+    ---------------------------------------------------------- */
+    if (!site?.designTokens) {
+      await prisma.site.update({
+        where: { id: execCtx.siteId },
+        data: {
+          designTokens:
+            designTokensFromAI ?? generateDefaultDesignTokens(),
+        },
+      });
+    }
+
+    /* ----------------------------------------------------------
+       📄 AUTO-CREATE PLANNED PAGES
+    ---------------------------------------------------------- */
+    if (Array.isArray(pages) && pages.length > 0) {
+      const normalize = (name: string) =>
+        name
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+
+      await prisma.page.createMany({
+        data: pages.map((title: string) => ({
+          siteId: execCtx.siteId,
+          title,
+          slug: normalize(title),
+          status: "DRAFT",
+        })),
+        skipDuplicates: true,
+      });
+    }
+
+    /* ----------------------------------------------------------
+       ✅ MARK CONVERSATION COMPLETE
+    ---------------------------------------------------------- */
+    await prisma.aIConversation.update({
+      where: {
+        tenantId_siteId_pageId: {
+          tenantId: execCtx.tenantId,
+          siteId: execCtx.siteId,
+          pageId: execCtx.pageId,
+        },
+      },
+      data: {
+        phase: "DONE",
+      },
+    });
+
+    /* ----------------------------------------------------------
+       SUCCESS
+    ---------------------------------------------------------- */
+    return NextResponse.json({
+      nextBlueprint,
+      pages,
+      usage,
+      executionContext: {
+        tenantId: execCtx.tenantId,
+        siteId: execCtx.siteId,
+        pageId: execCtx.pageId,
+      },
+    });
+  } catch (err: any) {
+    console.error("[AI BLUEPRINT] 💥 fatal", err);
+
+    return NextResponse.json(
+      { error: err?.message ?? "AI generation failed" },
+      { status: 500 }
+    );
+  }
+}

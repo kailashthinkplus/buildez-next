@@ -1,0 +1,399 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Globe,
+  Mic,
+  Search,
+  Zap,
+  Inbox,
+  Activity,
+  FileText,
+  Users,
+} from "lucide-react";
+
+import { useState, useEffect, useRef } from "react";
+
+export default function DashboardPage() {
+  /* ----------------------------------------- */
+  /* TYPEWRITER + CHIPS + TEXTAREA REF          */
+  /* ----------------------------------------- */
+
+  const textareaRef = useRef(null);
+
+  const [mounted, setMounted] = useState(false);
+  const [typedText, setTypedText] = useState("");
+  const [userTyped, setUserTyped] = useState(false);
+  const [loopIndex, setLoopIndex] = useState(0);
+
+  useEffect(() => setMounted(true), []);
+
+  /* ----------------------------------------- */
+  /* LOOPING TYPEWRITER PLACEHOLDER             */
+  /* ----------------------------------------- */
+
+  const placeholderTexts = [
+    "a modern company website with clean sections, SEO copy, and premium visuals…",
+    "an elegant landing page with storytelling, feature blocks, and a conversion-focused CTA…",
+    "a clean portfolio layout showcasing projects, testimonials, and a contact form…",
+    "a startup launch page with bold messaging, social proof, and early-access signup…",
+  ];
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (!textareaRef.current) return;
+    if (userTyped || textareaRef.current.value?.length > 0) return;
+
+    const text = placeholderTexts[loopIndex];
+    let i = 0;
+    setTypedText("");
+
+    const typeInterval = setInterval(() => {
+      setTypedText(text.slice(0, i));
+      i++;
+      if (i > text.length) {
+        clearInterval(typeInterval);
+
+        setTimeout(() => {
+          setLoopIndex((prev) => (prev + 1) % placeholderTexts.length);
+        }, 1200);
+      }
+    }, 40);
+
+    return () => clearInterval(typeInterval);
+  }, [mounted, loopIndex, userTyped]);
+
+  /* ----------------------------------------- */
+  /* CHIP PROMPTS                              */
+  /* ----------------------------------------- */
+
+  const chipPrompts = {
+    "Business website":
+      "a modern business website with clean sections, trust signals, SEO-optimized copy, and a clear call-to-action",
+    "Product landing page":
+      "a high-conversion product landing page with hero section, feature highlights, testimonials, pricing, and FAQ",
+    Portfolio:
+      "a professional portfolio site showcasing projects, case studies, testimonials, and contact section",
+    "Startup launch":
+      "a startup launch website with bold value proposition, early access signup, and FAQ",
+  };
+
+  function addChipText(prompt) {
+    if (!textareaRef.current) return;
+    textareaRef.current.value = prompt;
+    textareaRef.current.focus();
+    setUserTyped(true);
+  }
+
+  /* ----------------------------------------- */
+  /* UI START                                   */
+  /* ----------------------------------------- */
+
+  return (
+    <div
+      className="
+        flex flex-col flex-1 h-full
+        bg-gradient-to-b from-[#F8FAFF] to-[#EEF3FF]
+        dark:bg-gradient-to-b dark:from-[#0B0F1A]/0 dark:to-[#0E1320]/0
+      "
+    >
+      <div className="w-full overflow-y-auto pb-20">
+
+        {/* -------------------------------- */}
+        {/* AI PROMPT HEADER                 */}
+        {/* -------------------------------- */}
+        <section className="px-4 sm:px-6 md:px-10 pt-20 pb-20">
+          <div className="relative z-10 mx-auto max-w-5xl text-center">
+
+            <h2
+              className="
+                text-3xl sm:text-4xl md:text-4xl font-semibold tracking-tight
+                text-gray-900 dark:text-white
+              "
+            >
+              Build powerful{" "}
+              <span className="text-blue-600 dark:text-blue-400">websites</span>{" "}
+              with AI
+            </h2>
+
+            <p
+              className="
+                mt-4 text-xs sm:text-base
+                text-gray-600 dark:text-white/70
+              "
+            >
+              Describe what you want. BuildEZ generates the layout, content, and visuals - instantly.
+            </p>
+
+            {/* -------------------------------- */}
+            {/* AI PROMPT BOX                     */}
+            {/* -------------------------------- */}
+            <div
+              className="
+                group relative mx-auto mt-10 max-w-3xl
+                rounded-2xl backdrop-blur-2xl
+                bg-white/80 dark:bg-white/[0.06]
+                border border-gray-300 dark:border-white/20
+                shadow-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)]
+                transition hover:border-blue-400/60 hover:shadow-[0_0_40px_rgba(56,189,248,0.65)]
+              "
+            >
+              <div className="pointer-events-none absolute inset-[1px] rounded-[14px] border border-gray-200 dark:border-white/10" />
+
+              <div className="relative flex items-center gap-4 px-6 py-6">
+
+                {/* LEFT TYPE BADGE */}
+                <div className="flex flex-col items-center">
+                  <button
+                    className="
+                      flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs
+                      bg-gray-200 text-gray-900
+                      dark:bg-white dark:text-black
+                    "
+                  >
+                    <Globe className="h-3.5 w-3.5" />
+                    Web
+                  </button>
+                </div>
+
+                {/* TYPEWRITER PLACEHOLDER */}
+                {mounted && !userTyped && !textareaRef.current?.value && (
+                  <div
+                    className="
+                      absolute left-[7rem] top-[2.6rem]
+                      text-xs sm:text-sm
+                      text-gray-400 dark:text-white/50
+                      pointer-events-none
+                    "
+                  >
+                    {typedText}
+                    <span className="ml-1 animate-pulse">|</span>
+                  </div>
+                )}
+
+                {/* TEXTAREA */}
+                <textarea
+                  ref={textareaRef}
+                  onChange={(e) => setUserTyped(e.target.value.length > 0)}
+                  rows={3}
+                  className="
+                    w-full resize-none bg-transparent
+                    text-xs sm:text-sm
+                    text-gray-900 dark:text-white
+                    outline-none leading-relaxed
+                    pt-2
+                  "
+                />
+
+                {/* RIGHT ICONS */}
+                <div className="flex items-center gap-3">
+
+                  <button
+                    type="button"
+                    className="
+                      h-10 w-10 rounded-full
+                      flex items-center justify-center
+                      bg-gray-200 border border-gray-300
+                      dark:bg-white/10 dark:border-white/20
+                    "
+                  >
+                    <Mic className="h-4 w-4 text-gray-700 dark:text-white/80" />
+                  </button>
+
+                  <button
+                    type="button"
+                    className="
+                      h-10 w-10 rounded-full
+                      flex items-center justify-center
+                      bg-blue-600 hover:bg-blue-500
+                    "
+                  >
+                    <ArrowRight className="h-4 w-4 text-white" />
+                  </button>
+
+                </div>
+              </div>
+            </div>
+
+            {/* CHIP BUTTONS + PROMPT LIBRARY */}
+            <div className="mt-6 flex flex-col gap-4 items-center">
+
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 text-xs sm:text-sm">
+                {["Business website", "Product landing page", "Portfolio", "Startup launch"].map(
+                  (chip) => (
+                    <button
+                      key={chip}
+                      type="button"
+                      onClick={() => addChipText(chipPrompts[chip])}
+                      className="
+                        rounded-full px-3 sm:px-4 py-1.5 sm:py-2
+                        bg-gray-100 border border-gray-300 text-gray-700
+                        dark:bg-white/10 dark:border-white/15 dark:text-white/70
+                        transition hover:border-blue-400/60
+                      "
+                    >
+                      {chip}
+                    </button>
+                  )
+                )}
+              </div>
+
+              {/* PROMPT LIBRARY LINK */}
+              <Link
+                href="#"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              >              </Link>
+
+            </div>
+
+          </div>
+        </section>
+
+        {/* -------------------------------- */}
+        {/* BELOW THE FOLD – KPIs            */}
+        {/* -------------------------------- */}
+
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-4 px-6">
+
+          {/* PUBLISHED */}
+          <div className="relative rounded-2xl p-5 bg-gradient-to-br from-[#1E2C47] to-[#273948] border border-white/10 shadow-lg shadow-black/40 backdrop-blur-xl">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 border border-white/15">
+                <Globe className="h-5 w-5 text-white/80" />
+              </div>
+              <div>
+                <p className="text-sm text-white/60">Published Pages</p>
+                <h2 className="text-2xl font-semibold text-white">12</h2>
+              </div>
+            </div>
+          </div>
+
+          {/* VISITORS */}
+          <div className="relative rounded-2xl p-5 bg-gradient-to-br from-[#21384B] to-[#1D2C51] border border-white/10 shadow-lg shadow-black/40 backdrop-blur-xl">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 border border-white/15">
+                <Search className="h-5 w-5 text-white/80" />
+              </div>
+              <div>
+                <p className="text-sm text-white/60">Monthly Visitors</p>
+                <h2 className="text-2xl font-semibold text-white">4,320</h2>
+              </div>
+            </div>
+          </div>
+
+          {/* SUBMISSIONS */}
+          <div className="relative rounded-2xl p-5 bg-gradient-to-br from-[#433737] to-[#494547] border border-white/10 shadow-lg shadow-black/40 backdrop-blur-xl">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 border border-white/15">
+                <Inbox className="h-5 w-5 text-white/80" />
+              </div>
+              <div>
+                <p className="text-sm text-white/60">Form Submissions</p>
+                <h2 className="text-2xl font-semibold text-white">128</h2>
+              </div>
+            </div>
+          </div>
+
+          {/* AI GENERATIONS */}
+          <div className="relative rounded-2xl p-5 bg-gradient-to-br from-[#302560] to-[#2B376C] border border-white/10 shadow-lg shadow-black/40 backdrop-blur-xl">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 border border-white/15">
+                <Zap className="h-5 w-5 text-white/80" />
+              </div>
+              <div>
+                <p className="text-sm text-white/60">AI Generations</p>
+                <h2 className="text-2xl font-semibold text-white">86</h2>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        {/* -------------------------------- */}
+        {/* SHORTCUTS & TEMPLATES (UNCHANGED) */}
+        {/* -------------------------------- */}
+
+        {/* Shortcuts */}
+        <section className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 px-6">
+          {[
+            { title: "Start from Template", icon: Search },
+            { title: "Create Blank Page", icon: ArrowRight },
+            { title: "Connect Domain", icon: Globe },
+          ].map((item) => (
+            <div
+              key={item.title}
+              className="
+                rounded-2xl p-6
+                bg-white border border-gray-300
+                dark:bg-white/5 dark:border-white/10
+                backdrop-blur-xl
+                hover:bg-gray-100 dark:hover:bg-white/10
+                transition flex items-center justify-between
+              "
+            >
+              <span className="text-gray-800 dark:text-white/90 font-medium">
+                {item.title}
+              </span>
+              <item.icon className="h-5 w-5 text-gray-600 dark:text-white/70" />
+            </div>
+          ))}
+        </section>
+
+        {/* Template Grid */}
+        <section className="mt-14 px-6 pb-20">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Templates for you
+            </h2>
+            <Link
+              href="#"
+              className="
+                text-sm
+                text-gray-500 hover:text-gray-700
+                dark:text-white/50 dark:hover:text-white/80
+              "
+            >
+              Browse all →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((t) => (
+              <div
+                key={t}
+                className="
+                  rounded-2xl overflow-hidden
+                  border border-gray-300 dark:border-white/10
+                  bg-white dark:bg-white/5
+                  backdrop-blur-xl
+                  hover:bg-gray-100 dark:hover:bg-white/10
+                  transition group
+                "
+              >
+                <div className="relative h-48 w-full">
+                  <Image
+                    src={`/templates/template-${t}.jpg`}
+                    alt="Template"
+                    fill
+                    className="object-cover opacity-80 group-hover:opacity-100 transition"
+                  />
+                </div>
+                <div className="p-5">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+                    Template {t}
+                  </h3>
+                  <p className="text-gray-600 dark:text-white/50 text-sm">
+                    Click to preview and generate with AI.
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+      </div>
+    </div>
+  );
+}

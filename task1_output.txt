@@ -1,0 +1,17 @@
+./lib/blueprint/validate.old.ts
+./modules/_legacy/builder-v3/state/useNodePositionStore.old
+./modules/_legacy/builder-v3/blueprint/presets.old
+./modules/_legacy/builder-v2/renderer/PageRenderer.backup
+./modules/_legacy/builder-v2/renderer/PageRenderer copy 2.tsx
+./modules/_legacy/builder-v2/renderer/PageRenderer copy.tsx
+./modules/_legacy/builder-v2/theme.old
+./modules/_legacy/builder-v2/ai.v5/aiPrompt.ts.old
+./modules/_legacy/builder-v2/ai.old
+./modules/_legacy/modules.old
+./modules/builder/renderer/PageRenderer.backup
+./modules/builder/renderer/PageRenderer copy 2.tsx
+./modules/builder/renderer/PageRenderer copy.tsx
+./apps/web-app/app/globals.css.backup
+./apps/web-app/tailwind.config.ts.old
+./apps/web-app/lib/blueprint/validate.old.ts
+./apps/web-app/modules/_legacy/modules.old

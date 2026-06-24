@@ -1,0 +1,1225 @@
+// /Users/kailash/buildez/packages/db/prisma/schema.prisma
+
+// =======================================
+// PRISMA CONFIG (ROOT-LEVEL)
+// =======================================
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =======================================
+// ENUMS
+// =======================================
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  TENANT_ADMIN
+  USER
+}
+
+enum AuthProvider {
+  PASSWORD
+  GOOGLE
+  OTP
+}
+
+enum AIConversationPhase {
+  INTERVIEW // Asking questions, collecting inputs
+  READY // Questions done, waiting for user confirmation
+  GENERATING // Blueprint generation allowed
+  DONE // Generation finished
+}
+
+// ---------------------------------------
+// ONBOARDING ENUMS
+// ---------------------------------------
+
+enum AccountType {
+  personal
+  business
+  agency
+}
+
+enum CompanySize {
+  solo
+  small_2_10
+  medium_11_50
+  large_50_plus
+}
+
+enum PrimaryUseCase {
+  company_website
+  landing_pages
+  marketing
+  internal_tools
+  other
+}
+
+// ---------------------------------------
+// SITE / PAGE ENUMS
+// ---------------------------------------
+
+enum SiteStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+}
+
+// ✅ NEW: Render Mode
+enum RenderMode {
+  BLUEPRINT // Traditional block editor
+  REACT // Live React preview (Lovable style)
+}
+
+enum MediaSource {
+  UPLOAD
+  AI
+  STOCK
+  ICON
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  SVG
+  ICON
+  PDF
+  AUDIO
+}
+
+// =======================================
+// CORE USER
+// =======================================
+
+model User {
+  id String @id @default(cuid())
+
+  email     String? @unique
+  phone     String? @unique
+  name      String?
+  avatarUrl String?
+
+  passwordHash String?
+  googleId     String?  @unique
+  role         UserRole @default(USER)
+
+  isEmailVerified Boolean @default(false)
+  isPhoneVerified Boolean @default(false)
+  isActive        Boolean @default(true)
+
+  recoveryCodes String[] @default([])
+
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  totpSecret     String?
+  totpEnabled    Boolean   @default(false)
+  totpVerifiedAt DateTime?
+
+  // RELATIONS
+  sessions             Session[]
+  authLogs             AuthLog[]
+  onboarding           UserOnboarding?
+  teamMemberships      TeamMember[]
+  refreshTokens        RefreshToken[]
+  loginAttempts        LoginAttempt[]
+  verificationTokens   VerificationToken[]
+  workspaceMemberships WorkspaceMember[]
+  AiEvent              AiEvent[]
+  mediaAssets          MediaAsset[] // ✅ NEW
+
+  ownedTenants Tenant[]       @relation("TenantOwner")
+  tenantUsers  Tenant[]       @relation("TenantUsers")
+  Subscription Subscription[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([role])
+}
+
+// =======================================
+// USER ONBOARDING MODEL
+// =======================================
+
+model UserOnboarding {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  accountType    AccountType?
+  companySize    CompanySize?
+  primaryUseCase PrimaryUseCase?
+
+  firstName  String?
+  lastName   String?
+  city       String?
+  country    String?
+  profession String?
+  website    String?
+
+  businessName String?
+
+  planCode     String?
+  billingCycle String?
+  domain       String?
+
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("UserOnboarding")
+}
+
+// =======================================
+// SESSION / OTP / AUTH LOGS
+// =======================================
+
+model Session {
+  id String @id @default(cuid())
+
+  userId   String
+  provider AuthProvider
+
+  ipAddress String?
+  userAgent String?
+
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([revoked])
+}
+
+model Otp {
+  id String @id @default(cuid())
+
+  email String?
+  phone String?
+
+  codeHash  String
+  expiresAt DateTime
+
+  attempts Int     @default(0)
+  consumed Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([phone])
+  @@index([expiresAt])
+}
+
+model AuthLog {
+  id String @id @default(cuid())
+
+  userId   String?
+  provider AuthProvider
+  success  Boolean
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([provider])
+  @@index([createdAt])
+}
+
+// =======================================
+// AUTH TOKENS / SECURITY
+// =======================================
+
+model VerificationToken {
+  id        String   @id @default(cuid())
+  userId    String?
+  email     String?
+  token     String   @unique
+  type      String
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        String  @id @default(cuid())
+  userId    String
+  token     String  @unique
+  userAgent String?
+  ipAddress String?
+
+  revoked   Boolean  @default(false)
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([revoked])
+}
+
+model LoginAttempt {
+  id     String  @id @default(cuid())
+  email  String?
+  phone  String?
+  userId String?
+
+  ipAddress String?
+  userAgent String?
+  method    String
+  success   Boolean
+
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([phone])
+  @@index([userId])
+  @@index([method])
+}
+
+// =======================================
+// TENANT
+// =======================================
+
+model Tenant {
+  id       String  @id @default(cuid())
+  name     String
+  domain   String?
+  isActive Boolean @default(true)
+
+  ownerId String?
+  owner   User?   @relation("TenantOwner", fields: [ownerId], references: [id])
+
+  users User[] @relation("TenantUsers")
+
+  subscriptionId String?       @unique
+  subscription   Subscription? @relation("TenantActiveSubscription")
+
+  subscriptions Subscription[] @relation("TenantSubscriptionHistory")
+
+  teams             Team[]
+  themes            Theme[]
+  sites             Site[]
+  events            TenantEvent[]
+  complianceAudits  ComplianceAudit[]
+  siteSnapshots     SiteSnapshot[]
+  siteRenders       SiteRender[]
+  siteDomains       SiteDomain[]
+  siteSubscriptions SiteSubscription[]
+  blueprints        Blueprint[]
+  planUsages        PlanUsage[]
+  AiEvent           AiEvent[]
+  aiSnapshots       AIBlueprintSnapshot[]
+
+  aiSuspended Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TenantEvent {
+  id        String   @id @default(cuid())
+  tenantId  String
+  type      String
+  payload   Json?
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+}
+
+// =======================================
+// TEAMS
+// =======================================
+
+enum TeamRole {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+model Team {
+  id       String @id @default(cuid())
+  tenantId String
+  name     String
+  slug     String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant  Tenant       @relation(fields: [tenantId], references: [id])
+  members TeamMember[]
+  invites TeamInvite[]
+
+  @@index([tenantId])
+}
+
+model TeamMember {
+  id     String   @id @default(cuid())
+  teamId String
+  userId String
+  role   TeamRole @default(VIEWER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([teamId, userId])
+  @@index([userId])
+  @@index([teamId])
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+model TeamInvite {
+  id     String       @id @default(cuid())
+  teamId String
+  email  String
+  role   TeamRole
+  status InviteStatus @default(PENDING)
+
+  invitedBy String?
+  expiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@index([email])
+  @@index([teamId])
+}
+
+// =======================================
+// THEMES
+// =======================================
+
+enum ThemeVisibility {
+  PUBLIC
+  PRIVATE
+  SYSTEM
+}
+
+enum ThemeVersionStatus {
+  DRAFT
+  PUBLISHED
+  DEPRECATED
+}
+
+model Theme {
+  id         String          @id @default(cuid())
+  tenantId   String?
+  name       String
+  slug       String          @unique
+  visibility ThemeVisibility @default(PRIVATE)
+
+  description String?
+  thumbnail   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant   Tenant?        @relation(fields: [tenantId], references: [id])
+  versions ThemeVersion[]
+  assets   ThemeAsset[]
+
+  @@index([tenantId])
+}
+
+model ThemeVersion {
+  id      String             @id @default(cuid())
+  themeId String
+  version Int
+  status  ThemeVersionStatus @default(DRAFT)
+
+  blueprint Json?
+  tokens    Json?
+  settings  Json?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+
+  theme  Theme        @relation(fields: [themeId], references: [id])
+  assets ThemeAsset[]
+
+  @@unique([themeId, version])
+  @@index([themeId])
+}
+
+model ThemeAsset {
+  id        String  @id @default(cuid())
+  themeId   String
+  versionId String?
+
+  type String
+  name String
+  url  String?
+  meta Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  theme   Theme         @relation(fields: [themeId], references: [id])
+  version ThemeVersion? @relation(fields: [versionId], references: [id])
+
+  @@index([themeId])
+  @@index([versionId])
+}
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // File info
+  url      String
+  filename String
+  fileHash String @unique
+  fileSize Int
+
+  mediaType MediaType
+  mimeType  String
+
+  width  Int?
+  height Int?
+
+  alt   String?
+  title String?
+  tags  String[]
+
+  // Ownership
+  siteId String
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  uploadedById String
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id])
+
+  usageCount Int       @default(0)
+  lastUsedAt DateTime?
+
+  // ⭐ NEW
+
+  source MediaSource @default(UPLOAD)
+
+  provider String?
+
+  prompt String?
+
+  negativePrompt String?
+
+  model String?
+
+  seed Int?
+
+  aspectRatio String?
+
+  thumbnailUrl String?
+
+  blurhash String?
+
+  dominantColor String?
+
+  isFavorite Boolean @default(false)
+
+  folder String?
+
+  metadata Json?
+
+  @@index([siteId])
+  @@index([uploadedById])
+  @@index([mimeType])
+  @@index([source])
+  @@index([createdAt])
+}
+
+// =======================================
+// SITE / PAGE
+// =======================================
+
+model Site {
+  id       String     @id @default(cuid())
+  tenantId String
+  logoUrl  String? // ✅ Brand logo
+  name     String
+  slug     String
+  status   SiteStatus @default(DRAFT)
+
+  designTokens Json? // ✅ Stores brand colors extracted from logo
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  tenant           Tenant                @relation(fields: [tenantId], references: [id])
+  subscriptions    SiteSubscription[]
+  pages            Page[]
+  complianceAudits ComplianceAudit[]
+  snapshots        SiteSnapshot[]
+  renders          SiteRender[]
+  domains          SiteDomain[]
+  blueprints       Blueprint[]
+  legacyDomains    Domain[]
+  mediaAssets      MediaAsset[] // ✅ NEW: Media library per site
+  layout           SiteLayout?
+  aiSnapshots      AIBlueprintSnapshot[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+}
+
+model SiteLayout {
+  id     String @id @default(cuid())
+  siteId String @unique
+
+  header Json?
+  footer Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  site Site @relation(fields: [siteId], references: [id])
+}
+
+model Domain {
+  id       String @id @default(cuid())
+  hostname String @unique
+  siteId   String
+  site     Site   @relation(fields: [siteId], references: [id])
+}
+
+model Page {
+  id     String     @id @default(cuid())
+  siteId String
+  title  String
+  slug   String
+  status PageStatus @default(DRAFT)
+
+  // ✅ NEW: React code storage (Lovable style)
+  reactCode  String?    @db.Text // Generated React TSX code
+  renderMode RenderMode @default(BLUEPRINT) // Blueprint or React
+
+  publishedAt DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deleted       Boolean   @default(false)
+  deletedAt     DateTime?
+  deletedByUser String?
+
+  // ✅ NEW: Metadata for AI generation tracking
+  metadata Json? // { generatedAt, usedBrandColors, usedLogo, aiModel, tokensUsed, etc. }
+
+  site          Site                  @relation(fields: [siteId], references: [id])
+  blueprint     Blueprint?
+  previewTokens PreviewToken[]
+  aiSnapshots   AIBlueprintSnapshot[]
+
+  @@unique([siteId, slug])
+  @@index([siteId])
+  @@index([status])
+  @@index([renderMode]) // ✅ NEW: Query by render mode
+}
+
+model PreviewToken {
+  token     String   @id
+  pageId    String
+  expiresAt DateTime
+
+  page Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model AIBlueprintSnapshot {
+  id String @id @default(cuid())
+
+  pageId   String
+  siteId   String
+  tenantId String
+
+  blueprint Json
+
+  createdAt DateTime @default(now())
+
+  page   Page   @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  site   Site   @relation(fields: [siteId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([pageId])
+  @@index([siteId])
+  @@index([tenantId])
+}
+
+// =======================================
+// BLUEPRINT SYSTEM
+// =======================================
+
+model Blueprint {
+  id       String @id @default(cuid())
+  pageId   String @unique
+  siteId   String
+  tenantId String
+
+  data          Json
+  schemaVersion Int  @default(1)
+
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  page   Page   @relation(fields: [pageId], references: [id])
+  site   Site   @relation(fields: [siteId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  history BlueprintHistory[]
+
+  @@index([tenantId])
+  @@index([siteId])
+}
+
+model BlueprintHistory {
+  id          String @id @default(cuid())
+  blueprintId String
+  pageId      String
+  siteId      String
+  tenantId    String
+
+  data          Json
+  schemaVersion Int  @default(1)
+
+  createdAt DateTime @default(now())
+  createdBy String?
+
+  blueprint Blueprint @relation(fields: [blueprintId], references: [id])
+
+  @@index([blueprintId])
+  @@index([pageId])
+  @@index([tenantId])
+  @@index([siteId])
+}
+
+// =======================================
+// PLAN SYSTEM
+// =======================================
+
+model Plan {
+  id   String @id @default(cuid())
+  code String @unique
+  name String
+
+  maxSites    Int
+  maxPages    Int
+  aiCredits   Int
+  teamMembers Int
+
+  isPublic Boolean @default(true)
+
+  createdAt DateTime @default(now())
+
+  pricing           PlanPricing[]
+  subscriptions     Subscription[]
+  siteSubscriptions SiteSubscription[]
+  features          PlanFeature[]
+}
+
+model PlanPricing {
+  id           String  @id @default(cuid())
+  planCode     String
+  billingCycle String
+  currency     String
+  amount       Int
+  isActive     Boolean @default(true)
+
+  razorpayPlanId String?
+  stripePriceId  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  plan Plan @relation(fields: [planCode], references: [code])
+
+  @@unique([planCode, billingCycle])
+  @@index([planCode])
+}
+
+model PlanFeature {
+  id       String @id @default(cuid())
+  planCode String
+  key      String
+  value    String
+  type     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  plan Plan @relation(fields: [planCode], references: [code])
+
+  @@unique([planCode, key])
+  @@index([planCode])
+}
+
+model PlanUsage {
+  id           String  @id @default(cuid())
+  tenantId     String
+  key          String
+  used         Int
+  billingCycle String?
+
+  periodStart DateTime  @default(now())
+  periodEnd   DateTime?
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, key, periodStart])
+  @@index([tenantId])
+}
+
+// =======================================
+// SUBSCRIPTIONS
+// =======================================
+
+model Subscription {
+  id String @id @default(cuid())
+
+  tenantActiveId String? @unique
+  tenantActive   Tenant? @relation("TenantActiveSubscription", fields: [tenantActiveId], references: [id])
+
+  tenantHistoryId String?
+  tenantHistory   Tenant? @relation("TenantSubscriptionHistory", fields: [tenantHistoryId], references: [id])
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  planCode      String?
+  billingCycle  String?
+  status        String
+  paymentStatus String?
+
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+
+  amountPaid Int?
+  currency   String?
+  startedAt  DateTime?
+  paidAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Plan      Plan?    @relation(fields: [planId], references: [id])
+  planId    String?
+
+  @@index([tenantHistoryId])
+  @@index([userId])
+}
+
+model SiteSubscription {
+  id       String @id @default(cuid())
+  siteId   String
+  tenantId String
+  planCode String
+  status   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  site   Site   @relation(fields: [siteId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  plan   Plan   @relation(fields: [planCode], references: [code])
+
+  @@index([tenantId])
+  @@index([siteId])
+  @@index([planCode])
+}
+
+// =======================================
+// COMPLIANCE SYSTEM
+// =======================================
+
+enum ComplianceLevel {
+  PASS
+  WARN
+  BLOCK
+}
+
+model ComplianceAudit {
+  id       String  @id @default(cuid())
+  siteId   String
+  tenantId String
+  pageId   String?
+
+  level   ComplianceLevel
+  reasons String[]
+
+  createdAt DateTime @default(now())
+
+  site   Site   @relation(fields: [siteId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([siteId])
+  @@index([tenantId])
+  @@index([level])
+}
+
+// =======================================
+// SYSTEM NOTIFICATIONS
+// =======================================
+
+model SystemNotification {
+  id String @id @default(cuid())
+
+  type    String
+  title   String
+  message String
+
+  entityType String?
+  entityId   String?
+
+  isRead Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([isRead])
+}
+
+// =======================================
+// SNAPSHOTS
+// =======================================
+
+enum SnapshotStatus {
+  PUBLISHED
+  UNPUBLISHED
+  BLOCKED
+}
+
+model SiteSnapshot {
+  id       String @id @default(cuid())
+  siteId   String
+  tenantId String
+
+  status  SnapshotStatus
+  version Int
+
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  site    Site           @relation(fields: [siteId], references: [id])
+  tenant  Tenant         @relation(fields: [tenantId], references: [id])
+  pages   PageSnapshot[]
+  renders SiteRender[]
+
+  @@unique([siteId, version])
+  @@index([siteId])
+  @@index([tenantId])
+  @@index([status])
+}
+
+model PageSnapshot {
+  id             String @id @default(cuid())
+  siteSnapshotId String
+  pageId         String
+
+  title   String
+  slug    String
+  content Json
+
+  createdAt DateTime @default(now())
+
+  siteSnapshot SiteSnapshot @relation(fields: [siteSnapshotId], references: [id])
+
+  @@index([siteSnapshotId])
+  @@index([pageId])
+}
+
+// =======================================
+// RUNTIME RENDER ENGINE
+// =======================================
+
+model SiteRender {
+  id         String @id @default(cuid())
+  siteId     String
+  tenantId   String
+  snapshotId String
+
+  version Int
+  status  String
+
+  createdAt DateTime @default(now())
+
+  site     Site         @relation(fields: [siteId], references: [id])
+  tenant   Tenant       @relation(fields: [tenantId], references: [id])
+  snapshot SiteSnapshot @relation(fields: [snapshotId], references: [id])
+
+  pages RenderedPage[]
+
+  @@index([siteId])
+  @@index([tenantId])
+  @@index([snapshotId])
+}
+
+model RenderedPage {
+  id       String @id @default(cuid())
+  renderId String
+
+  slug String
+  html String  @db.Text // ✅ Changed to Text for large HTML
+  css  String? @db.Text
+  js   String? @db.Text
+
+  contentHash String
+  sizeBytes   Int
+
+  createdAt DateTime @default(now())
+
+  render SiteRender @relation(fields: [renderId], references: [id])
+
+  @@unique([renderId, slug])
+  @@index([renderId])
+}
+
+// =======================================
+// DOMAINS + SSL
+// =======================================
+
+enum DomainStatus {
+  PENDING
+  VERIFIED
+  FAILED
+}
+
+model SiteDomain {
+  id       String @id @default(cuid())
+  siteId   String
+  tenantId String
+
+  domain String       @unique
+  status DomainStatus @default(PENDING)
+
+  cnameTarget String
+  verifiedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  site   Site   @relation(fields: [siteId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([siteId])
+  @@index([tenantId])
+  @@index([domain])
+}
+
+model SslCertificate {
+  id       String @id @default(cuid())
+  domain   String
+  siteId   String
+  tenantId String
+
+  certPath String
+  keyPath  String
+
+  issuedAt  DateTime @default(now())
+  expiresAt DateTime
+
+  status String
+
+  createdAt DateTime @default(now())
+
+  @@index([domain])
+  @@index([siteId])
+  @@index([tenantId])
+}
+
+// =======================================
+// TRAFFIC ANALYTICS
+// =======================================
+
+model TrafficEvent {
+  id          String   @id @default(cuid())
+  tenantId    String
+  siteId      String
+  domain      String
+  path        String
+  method      String
+  status      Int
+  country     String?
+  referrer    String?
+  device      String
+  visitorHash String
+  bucket      DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([siteId, bucket])
+  @@index([tenantId, bucket])
+  @@index([bucket])
+}
+
+model TrafficRollupHourly {
+  id        String   @id @default(cuid())
+  siteId    String
+  hour      DateTime
+  pageViews Int
+  visitors  Int
+  bots      Int
+
+  @@unique([siteId, hour])
+  @@index([hour])
+}
+
+// =======================================
+// AI EVENTS / LOGS
+// =======================================
+
+model AiEvent {
+  id String @id @default(cuid())
+
+  tenantId String
+  userId   String?
+  siteId   String?
+  pageId   String?
+
+  action   String
+  prompt   String? @db.Text // ✅ Changed to Text for long prompts
+  response String? @db.Text // ✅ Changed to Text for long responses
+  model    String?
+
+  tokensIn  Int?
+  tokensOut Int?
+
+  status String
+  error  String? @db.Text
+
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User?  @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([siteId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// =======================================
+// RATE LIMIT KV STORE
+// =======================================
+
+model RateLimit {
+  key     String   @id
+  count   Int      @default(0)
+  resetAt DateTime
+}
+
+// =======================================
+// WORKSPACES
+// =======================================
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  ownerId   String
+  createdAt DateTime @default(now())
+
+  members WorkspaceMember[]
+
+  @@index([ownerId])
+}
+
+model WorkspaceMember {
+  id          String @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        String
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([workspaceId, userId])
+  @@index([workspaceId])
+  @@index([userId])
+}
+
+// =======================================
+// AI CONVERSATION SYSTEM
+// =======================================
+
+model AIMessage {
+  id             String @id @default(cuid())
+  conversationId String
+
+  role    String // "user" | "assistant" | "system"
+  content Json
+
+  createdBy String?
+  createdAt DateTime @default(now())
+
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}
+
+model AIConversation {
+  id String @id @default(cuid())
+
+  tenantId String
+  siteId   String
+  pageId   String
+
+  phase   AIConversationPhase @default(INTERVIEW)
+  context Json?
+
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages AIMessage[]
+
+  @@unique([tenantId, siteId, pageId])
+  @@index([tenantId])
+  @@index([siteId])
+  @@index([pageId])
+}

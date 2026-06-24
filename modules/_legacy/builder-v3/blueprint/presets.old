@@ -1,0 +1,2668 @@
+// -------------------------------------------------------------
+// BuildEZ BLUEPRINT PRESETS — FRAMER/SAAS STYLE
+// File: /apps/web-app/modules/builder/blueprint/presets.ts
+// -------------------------------------------------------------
+
+import { 
+  NodeType,
+  HeadingBlockNode,
+  ParagraphBlockNode,
+  ButtonBlockNode,
+  ImageBlockNode,
+  IconBlockNode,
+  TextBlockNode,
+  ListBlockNode,
+  SpacerBlockNode,
+  DividerBlockNode,
+  VideoBlockNode,
+  ContainerBlockNode,
+  GridBlockNode,
+  PrimitiveTextBlockNode,
+  PrimitiveImageBlockNode,
+  BlueprintPreset,
+} from "@/modules/builder/blueprint/types";
+
+// -------------------------------------------------------------
+// HELPER FOR SAFE DEFAULT SPACING
+// -------------------------------------------------------------
+const spacingZero = {
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+};
+
+// -------------------------------------------------------------
+// 🟦 HEADING (Bold, SaaS Hero Style)
+// -------------------------------------------------------------
+export const HeadingPreset: BlueprintPreset<HeadingBlockNode> = {
+  type: NodeType.Heading,
+  create: () => ({
+    id: "",
+    type: NodeType.Heading,
+    props: {
+      content: {
+        text: "Build Better. Faster.",
+      },
+      layout: {
+        display: "block",
+      },
+      spacing: {
+        margin: { ...spacingZero, bottom: 16 },
+        padding: { ...spacingZero },
+      },
+      style: {
+        textColor: "#0F172A",
+        backgroundColor: "transparent",
+        fontSize: 48,
+        fontWeight: 700,
+        lineHeight: 1.2,
+      },
+      effects: {
+        animation: { type: "fade", duration: 300, delay: 0 },
+      },
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 PARAGRAPH (Lead description)
+// -------------------------------------------------------------
+export const ParagraphPreset: BlueprintPreset<ParagraphBlockNode> = {
+  type: NodeType.Paragraph,
+  create: () => ({
+    id: "",
+    type: NodeType.Paragraph,
+    props: {
+      content: {
+        text: "A lightning-fast, AI-powered website builder designed for next-gen creators and growing SaaS teams.",
+      },
+      layout: { display: "block" },
+      spacing: {
+        margin: { ...spacingZero, bottom: 24 },
+        padding: { ...spacingZero },
+      },
+      style: {
+        textColor: "#334155",
+        fontSize: 18,
+        lineHeight: 1.6,
+        fontWeight: 400,
+      },
+      effects: {
+        animation: { type: "fade", duration: 400, delay: 50 },
+      },
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 BUTTON (Primary CTA)
+// -------------------------------------------------------------
+export const ButtonPreset: BlueprintPreset<ButtonBlockNode> = {
+  type: NodeType.Button,
+  create: () => ({
+    id: "",
+    type: NodeType.Button,
+    props: {
+      content: {
+        label: "Get Started",
+        href: "#",
+      },
+      layout: {
+        display: "block",
+      },
+      spacing: {
+        padding: {
+          top: 14,
+          right: 28,
+          bottom: 14,
+          left: 28,
+        },
+        margin: { ...spacingZero },
+      },
+      style: {
+        backgroundColor: "#4F46E5",
+        textColor: "#FFFFFF",
+        borderRadius: 8,
+        buttonStyle: "solid",
+      },
+      effects: {
+        animation: { type: "fade", duration: 350, delay: 80 },
+      },
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 IMAGE (Hero / Illustration)
+// -------------------------------------------------------------
+export const ImagePreset: BlueprintPreset<ImageBlockNode> = {
+  type: NodeType.Image,
+  create: () => ({
+    id: "",
+    type: NodeType.Image,
+    props: {
+      content: {
+        src: "https://dummyimage.com/800x600/4f46e5/ffffff&text=BuildEZ+Image",
+        alt: "Beautiful Illustration",
+      },
+      layout: {
+        width: "100%",
+        height: "auto",
+        objectFit: "cover",
+      },
+      spacing: { padding: { ...spacingZero }, margin: { ...spacingZero } },
+      style: {},
+      effects: {
+        animation: { type: "fade", duration: 400, delay: 100 },
+      },
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 ICON (SaaS Icon)
+// -------------------------------------------------------------
+export const IconPreset: BlueprintPreset<IconBlockNode> = {
+  type: NodeType.Icon,
+  create: () => ({
+    id: "",
+    type: NodeType.Icon,
+    props: {
+      content: {
+        icon: "🚀",
+      },
+      style: {
+        size: 24,
+        textColor: "#4F46E5",
+      },
+      spacing: {
+        margin: { ...spacingZero, bottom: 12 },
+        padding: { ...spacingZero },
+      },
+      layout: {},
+      effects: {},
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 TEXT (Inline)
+// -------------------------------------------------------------
+export const TextPreset: BlueprintPreset<TextBlockNode> = {
+  type: NodeType.Text,
+  create: () => ({
+    id: "",
+    type: NodeType.Text,
+    props: {
+      content: {
+        text: "Start building amazing web experiences.",
+      },
+      style: {
+        textColor: "#0F172A",
+      },
+      layout: {},
+      spacing: {},
+      effects: {},
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 LIST (Feature bullets)
+// -------------------------------------------------------------
+export const ListPreset: BlueprintPreset<ListBlockNode> = {
+  type: NodeType.List,
+  create: () => ({
+    id: "",
+    type: NodeType.List,
+    props: {
+      content: {
+        list: [
+          "AI-powered building",
+          "Pixel-perfect layouts",
+          "SaaS-ready defaults",
+        ],
+      },
+      style: {
+        itemSpacing: 8,
+        textColor: "#334155",
+      },
+      spacing: {
+        margin: { ...spacingZero },
+        padding: { ...spacingZero },
+      },
+      layout: {},
+      effects: {},
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 SPACER
+// -------------------------------------------------------------
+export const SpacerPreset: BlueprintPreset<SpacerBlockNode> = {
+  type: NodeType.Spacer,
+  create: () => ({
+    id: "",
+    type: NodeType.Spacer,
+    props: {
+      layout: { height: 40 },
+      spacing: {},
+      style: {},
+      effects: {},
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 DIVIDER
+// -------------------------------------------------------------
+export const DividerPreset: BlueprintPreset<DividerBlockNode> = {
+  type: NodeType.Divider,
+  create: () => ({
+    id: "",
+    type: NodeType.Divider,
+    props: {
+      style: {
+        thickness: 1,
+        color: "#E2E8F0",
+      },
+      layout: {},
+      spacing: {
+        margin: { ...spacingZero, top: 24, bottom: 24 },
+        padding: { ...spacingZero },
+      },
+      effects: {},
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 VIDEO
+// -------------------------------------------------------------
+export const VideoPreset: BlueprintPreset<VideoBlockNode> = {
+  type: NodeType.Video,
+  create: () => ({
+    id: "",
+    type: NodeType.Video,
+    props: {
+      content: {
+        src: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        autoplay: false,
+        controls: true,
+        loop: false,
+        muted: false,
+      },
+      layout: {
+        width: "100%",
+        height: "auto",
+      },
+      spacing: {},
+      style: {},
+      effects: {},
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 CONTAINER (Flexbox layout block)
+// -------------------------------------------------------------
+export const ContainerPreset: BlueprintPreset<ContainerBlockNode> = {
+  type: NodeType.Container,
+  create: () => ({
+    id: "",
+    type: NodeType.Container,
+    props: {
+      layout: {
+        display: "flex",
+        direction: "column",
+        align: "start",
+        justify: "start",
+        gap: 16,
+      },
+      spacing: {
+        padding: { ...spacingZero },
+        margin: { ...spacingZero },
+      },
+      style: {},
+      effects: {},
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 GRID (Two-column default)
+// -------------------------------------------------------------
+export const GridPreset: BlueprintPreset<GridBlockNode> = {
+  type: NodeType.Grid,
+  create: () => ({
+    id: "",
+    type: NodeType.Grid,
+    props: {
+      layout: {
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: 24,
+      },
+      spacing: {
+        padding: { ...spacingZero },
+        margin: { ...spacingZero },
+      },
+      style: {},
+      effects: {},
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 PRIMITIVE TEXT
+// -------------------------------------------------------------
+export const PrimitiveTextPreset: BlueprintPreset<PrimitiveTextBlockNode> = {
+  type: NodeType.PrimitiveText,
+  create: () => ({
+    id: "",
+    type: NodeType.PrimitiveText,
+    props: {
+      content: { text: "Text" },
+      style: { textColor: "#000000" },
+      layout: {},
+      spacing: {},
+      effects: {},
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟦 PRIMITIVE IMAGE
+// -------------------------------------------------------------
+export const PrimitiveImagePreset: BlueprintPreset<PrimitiveImageBlockNode> = {
+  type: NodeType.PrimitiveImage,
+  create: () => ({
+    id: "",
+    type: NodeType.PrimitiveImage,
+    props: {
+      content: {
+        src: "https://dummyimage.com/400x300/94a3b8/ffffff&text=Image",
+        alt: "Image",
+      },
+      style: {},
+      layout: {
+        width: "100%",
+        height: "auto",
+      },
+      spacing: {},
+      effects: {},
+      responsive: {},
+    },
+    children: [],
+  }),
+};
+// -------------------------------------------------------------
+// SECTION PRESETS — FRAMER/SAAS STYLE
+// PART 2 — HERO + FEATURES
+// -------------------------------------------------------------
+
+import {
+  NodeType,
+  HeroSectionNode,
+  FeaturesSectionNode,
+  BlueprintPreset,
+  ContainerBlockNode,
+  HeadingBlockNode,
+  ParagraphBlockNode,
+  ButtonBlockNode,
+  ImageBlockNode,
+} from "@/modules/builder/blueprint/types";
+
+import {
+  HeadingPreset,
+  ParagraphPreset,
+  ButtonPreset,
+  ImagePreset,
+  ContainerPreset,
+} from "./presets"; // self-import for children (resolved after file assembly)
+
+const spacingZero = { top: 0, right: 0, bottom: 0, left: 0 };
+
+// -------------------------------------------------------------
+// 🟣 HERO SECTION (Bold SaaS Hero)
+// -------------------------------------------------------------
+export const HeroSectionPreset: BlueprintPreset<HeroSectionNode> = {
+  type: NodeType.SectionHero,
+  create: () => ({
+    id: "",
+    type: NodeType.SectionHero,
+    props: {
+      containerWidth: "full",
+      style: {
+        backgroundColor: "#F1F5F9",
+        gradient: {
+          type: "linear",
+          angle: 135,
+          colors: [
+            { color: "#4F46E5", position: 0 },
+            { color: "#6366F1", position: 100 },
+          ],
+        },
+      },
+      spacing: {
+        padding: { top: 100, right: 24, bottom: 100, left: 24 },
+        margin: { ...spacingZero },
+      },
+      layout: {
+        display: "flex",
+        direction: "column",
+        align: "center",
+        justify: "center",
+        gap: 24,
+      },
+      effects: {},
+      responsive: {},
+    },
+
+    children: [
+      // Heading
+      {
+        ...HeadingPreset.create(),
+        id: "hero-heading",
+        props: {
+          ...HeadingPreset.create().props,
+          content: { text: "Launch Stunning Websites with AI" },
+          style: {
+            ...HeadingPreset.create().props.style,
+            textColor: "#FFFFFF",
+            fontSize: 64,
+            fontWeight: 800,
+            lineHeight: 1.1,
+          },
+        },
+      },
+
+      // Paragraph
+      {
+        ...ParagraphPreset.create(),
+        id: "hero-paragraph",
+        props: {
+          ...ParagraphPreset.create().props,
+          content: {
+            text:
+              "Design, build, and publish high-performance webpages in minutes — not months.",
+          },
+          style: {
+            ...ParagraphPreset.create().props.style,
+            textColor: "#E0E7FF",
+            fontSize: 20,
+            lineHeight: 1.5,
+          },
+        },
+      },
+
+      // Button Group (Container)
+      {
+        ...ContainerPreset.create(),
+        id: "hero-button-group",
+        props: {
+          ...ContainerPreset.create().props,
+          layout: {
+            display: "flex",
+            direction: "row",
+            align: "center",
+            justify: "center",
+            gap: 16,
+          },
+        },
+        children: [
+          {
+            ...ButtonPreset.create(),
+            id: "hero-cta-primary",
+            props: {
+              ...ButtonPreset.create().props,
+              content: { label: "Start Free Trial", href: "#" },
+              style: {
+                backgroundColor: "#FFFFFF",
+                textColor: "#4F46E5",
+                borderRadius: 8,
+              },
+            },
+          },
+          {
+            ...ButtonPreset.create(),
+            id: "hero-cta-secondary",
+            props: {
+              ...ButtonPreset.create().props,
+              content: { label: "Watch Demo", href: "#" },
+              style: {
+                backgroundColor: "transparent",
+                textColor: "#FFFFFF",
+                borderWidth: 2,
+                borderColor: "#FFFFFF",
+                borderRadius: 8,
+                buttonStyle: "outline",
+              },
+            },
+          },
+        ],
+      },
+
+      // Illustration
+      {
+        ...ImagePreset.create(),
+        id: "hero-image",
+        props: {
+          ...ImagePreset.create().props,
+          content: {
+            src:
+              "https://dummyimage.com/1200x600/ffffff/4f46e5&text=Your+SaaS+Dashboard",
+            alt: "Hero Illustration",
+          },
+          layout: {
+            width: "100%",
+            height: "auto",
+          },
+          spacing: {
+            padding: { ...spacingZero, top: 40 },
+            margin: { ...spacingZero },
+          },
+        },
+      },
+    ],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟣 FEATURES SECTION (Modern 3-column SaaS features)
+// -------------------------------------------------------------
+export const FeaturesSectionPreset: BlueprintPreset<FeaturesSectionNode> = {
+  type: NodeType.SectionFeatures,
+  create: () => ({
+    id: "",
+    type: NodeType.SectionFeatures,
+    props: {
+      containerWidth: "full",
+      spacing: {
+        padding: { top: 80, right: 24, bottom: 80, left: 24 },
+        margin: { ...spacingZero },
+      },
+      layout: {
+        display: "flex",
+        direction: "column",
+        align: "center",
+        justify: "center",
+        gap: 40,
+      },
+      style: { backgroundColor: "#FFFFFF" },
+      effects: {},
+      responsive: {},
+    },
+
+    children: [
+      // Section Heading
+      {
+        ...HeadingPreset.create(),
+        id: "features-heading",
+        props: {
+          ...HeadingPreset.create().props,
+          content: { text: "Powerful Features to Build Faster" },
+          style: {
+            ...HeadingPreset.create().props.style,
+            textColor: "#0F172A",
+            fontSize: 40,
+            fontWeight: 700,
+          },
+        },
+      },
+
+      // Description Paragraph
+      {
+        ...ParagraphPreset.create(),
+        id: "features-paragraph",
+        props: {
+          ...ParagraphPreset.create().props,
+          content: {
+            text:
+              "Everything you need to design, launch, and scale your website — powered by next-gen AI.",
+          },
+          style: {
+            ...ParagraphPreset.create().props.style,
+            textColor: "#475569",
+            fontSize: 18,
+          },
+        },
+      },
+
+      // Feature Cards (3 columns)
+      {
+        ...ContainerPreset.create(),
+        id: "features-grid",
+        props: {
+          ...ContainerPreset.create().props,
+          layout: {
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 32,
+          },
+        },
+
+        children: [
+          // Feature Card 1
+          {
+            ...ContainerPreset.create(),
+            id: "feature-1",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 32, right: 24, bottom: 32, left: 24 },
+                margin: { ...spacingZero },
+              },
+              style: {
+                backgroundColor: "#F8FAFC",
+                borderRadius: 16,
+              },
+            },
+            children: [
+              // Icon
+              {
+                ...IconPreset.create(),
+                id: "feature-1-icon",
+                props: {
+                  ...IconPreset.create().props,
+                  content: { icon: "⚡" },
+                  style: { size: 36, textColor: "#4F46E5" },
+                },
+              },
+              // Title
+              {
+                ...HeadingPreset.create(),
+                id: "feature-1-title",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "AI Builder" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 24,
+                    textColor: "#0F172A",
+                  },
+                },
+              },
+              // Description
+              {
+                ...ParagraphPreset.create(),
+                id: "feature-1-desc",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text: "Generate complete website sections instantly using AI.",
+                  },
+                },
+              },
+            ],
+          },
+
+          // Feature Card 2
+          {
+            ...ContainerPreset.create(),
+            id: "feature-2",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 32, right: 24, bottom: 32, left: 24 },
+                margin: { ...spacingZero },
+              },
+              style: {
+                backgroundColor: "#F8FAFC",
+                borderRadius: 16,
+              },
+            },
+            children: [
+              {
+                ...IconPreset.create(),
+                id: "feature-2-icon",
+                props: {
+                  ...IconPreset.create().props,
+                  content: { icon: "🎨" },
+                  style: { size: 36, textColor: "#4F46E5" },
+                },
+              },
+              {
+                ...HeadingPreset.create(),
+                id: "feature-2-title",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Pixel-Perfect Editor" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 24,
+                    textColor: "#0F172A",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "feature-2-desc",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text:
+                      "Drag-and-drop precision meets modern responsive layouts.",
+                  },
+                },
+              },
+            ],
+          },
+
+          // Feature Card 3
+          {
+            ...ContainerPreset.create(),
+            id: "feature-3",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 32, right: 24, bottom: 32, left: 24 },
+                margin: { ...spacingZero },
+              },
+              style: {
+                backgroundColor: "#F8FAFC",
+                borderRadius: 16,
+              },
+            },
+            children: [
+              {
+                ...IconPreset.create(),
+                id: "feature-3-icon",
+                props: {
+                  ...IconPreset.create().props,
+                  content: { icon: "🚀" },
+                  style: { size: 36, textColor: "#4F46E5" },
+                },
+              },
+              {
+                ...HeadingPreset.create(),
+                id: "feature-3-title",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "One-Click Publish" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 24,
+                    textColor: "#0F172A",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "feature-3-desc",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text:
+                      "Deploy instantly with global CDN, SEO-ready markup, and blazing performance.",
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }),
+};
+// -------------------------------------------------------------
+// PART 3 — GALLERY + TESTIMONIALS + STATS
+// -------------------------------------------------------------
+
+import {
+  NodeType,
+  GallerySectionNode,
+  TestimonialsSectionNode,
+  StatsSectionNode,
+  BlueprintPreset,
+} from "@/modules/builder/blueprint/types";
+
+import {
+  HeadingPreset,
+  ParagraphPreset,
+  ContainerPreset,
+  ImagePreset,
+} from "./presets";
+
+const spacingZero = { top: 0, right: 0, bottom: 0, left: 0 };
+
+// -------------------------------------------------------------
+// 🟣 GALLERY SECTION (Modern 3×2 image grid)
+// -------------------------------------------------------------
+export const GallerySectionPreset: BlueprintPreset<GallerySectionNode> = {
+  type: NodeType.SectionGallery,
+  create: () => ({
+    id: "",
+    type: NodeType.SectionGallery,
+    props: {
+      containerWidth: "full",
+      spacing: {
+        padding: { top: 80, right: 24, bottom: 80, left: 24 },
+        margin: { ...spacingZero },
+      },
+      layout: {
+        display: "flex",
+        direction: "column",
+        align: "center",
+        justify: "center",
+        gap: 40,
+      },
+      style: { backgroundColor: "#FFFFFF" },
+      effects: {},
+      responsive: {},
+    },
+
+    children: [
+      // Heading
+      {
+        ...HeadingPreset.create(),
+        id: "gallery-heading",
+        props: {
+          ...HeadingPreset.create().props,
+          content: { text: "Showcase Your Product" },
+          style: {
+            ...HeadingPreset.create().props.style,
+            fontSize: 40,
+            textColor: "#0F172A",
+          },
+        },
+      },
+
+      // Description
+      {
+        ...ParagraphPreset.create(),
+        id: "gallery-description",
+        props: {
+          ...ParagraphPreset.create().props,
+          content: {
+            text: "Highlight your best screens, UI shots, or product photos.",
+          },
+          style: {
+            ...ParagraphPreset.create().props.style,
+            textColor: "#475569",
+          },
+        },
+      },
+
+      // Grid Container (3×2)
+      {
+        ...ContainerPreset.create(),
+        id: "gallery-grid",
+        props: {
+          ...ContainerPreset.create().props,
+          layout: {
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 24,
+          },
+          spacing: { padding: { ...spacingZero }, margin: { ...spacingZero } },
+        },
+        children: [
+          // Generate 6 gallery items
+          ...Array.from({ length: 6 }).map((_, index) => ({
+            ...ImagePreset.create(),
+            id: `gallery-image-${index + 1}`,
+            props: {
+              ...ImagePreset.create().props,
+              content: {
+                src: `https://dummyimage.com/600x400/4f46e5/ffffff&text=Gallery+${
+                  index + 1
+                }`,
+                alt: `Gallery Image ${index + 1}`,
+              },
+              layout: {
+                width: "100%",
+                height: 240,
+                objectFit: "cover",
+              },
+              spacing: {},
+            },
+          })),
+        ],
+      },
+    ],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟣 TESTIMONIALS SECTION (3-card SaaS testimonials)
+// -------------------------------------------------------------
+export const TestimonialsSectionPreset: BlueprintPreset<TestimonialsSectionNode> =
+{
+  type: NodeType.SectionTestimonials,
+  create: () => ({
+    id: "",
+    type: NodeType.SectionTestimonials,
+    props: {
+      containerWidth: "full",
+      spacing: {
+        padding: { top: 80, right: 24, bottom: 80, left: 24 },
+        margin: { ...spacingZero },
+      },
+      layout: {
+        display: "flex",
+        direction: "column",
+        align: "center",
+        justify: "center",
+        gap: 40,
+      },
+      style: {
+        backgroundColor: "#F8FAFC",
+      },
+      effects: {},
+      responsive: {},
+    },
+
+    children: [
+      // Heading
+      {
+        ...HeadingPreset.create(),
+        id: "testimonials-heading",
+        props: {
+          ...HeadingPreset.create().props,
+          content: { text: "Loved by Creators and Teams" },
+          style: {
+            ...HeadingPreset.create().props.style,
+            fontSize: 40,
+            textColor: "#0F172A",
+          },
+        },
+      },
+
+      // Testimonials Grid
+      {
+        ...ContainerPreset.create(),
+        id: "testimonials-grid",
+        props: {
+          ...ContainerPreset.create().props,
+          layout: {
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 32,
+          },
+        },
+
+        children: [
+          // Testimonial Cards (3)
+          {
+            ...ContainerPreset.create(),
+            id: "testimonial-1",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 32, right: 24, bottom: 32, left: 24 },
+              },
+              style: {
+                backgroundColor: "#FFFFFF",
+                borderRadius: 16,
+                shadow: {
+                  x: 0,
+                  y: 4,
+                  blur: 20,
+                  spread: 0,
+                  color: "rgba(0,0,0,0.08)",
+                },
+              },
+            },
+            children: [
+              {
+                ...ParagraphPreset.create(),
+                id: "testimonial-1-text",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text:
+                      "“BuildEZ helped us launch our product pages 10x faster. The AI builder is incredible.”",
+                  },
+                  style: {
+                    ...ParagraphPreset.create().props.style,
+                    fontSize: 18,
+                    textColor: "#0F172A",
+                  },
+                },
+              },
+              {
+                ...HeadingPreset.create(),
+                id: "testimonial-1-author",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Aanya, Product Designer" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 20,
+                    fontWeight: 600,
+                  },
+                },
+              },
+            ],
+          },
+
+          {
+            ...ContainerPreset.create(),
+            id: "testimonial-2",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 32, right: 24, bottom: 32, left: 24 },
+              },
+              style: {
+                backgroundColor: "#FFFFFF",
+                borderRadius: 16,
+                shadow: {
+                  x: 0,
+                  y: 4,
+                  blur: 20,
+                  spread: 0,
+                  color: "rgba(0,0,0,0.08)",
+                },
+              },
+            },
+            children: [
+              {
+                ...ParagraphPreset.create(),
+                id: "testimonial-2-text",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text:
+                      "“We moved from Elementor to BuildEZ. Cleaner UI, faster builder, and better defaults!”",
+                  },
+                  style: {
+                    ...ParagraphPreset.create().props.style,
+                    fontSize: 18,
+                    textColor: "#0F172A",
+                  },
+                },
+              },
+              {
+                ...HeadingPreset.create(),
+                id: "testimonial-2-author",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Rahul, Agency Owner" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 20,
+                    fontWeight: 600,
+                  },
+                },
+              },
+            ],
+          },
+
+          {
+            ...ContainerPreset.create(),
+            id: "testimonial-3",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 32, right: 24, bottom: 32, left: 24 },
+              },
+              style: {
+                backgroundColor: "#FFFFFF",
+                borderRadius: 16,
+                shadow: {
+                  x: 0,
+                  y: 4,
+                  blur: 20,
+                  spread: 0,
+                  color: "rgba(0,0,0,0.08)",
+                },
+              },
+            },
+            children: [
+              {
+                ...ParagraphPreset.create(),
+                id: "testimonial-3-text",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text:
+                      "“The best website builder we've used. Scalable, fast, and extremely intuitive.”",
+                  },
+                  style: {
+                    ...ParagraphPreset.create().props.style,
+                    fontSize: 18,
+                    textColor: "#0F172A",
+                  },
+                },
+              },
+              {
+                ...HeadingPreset.create(),
+                id: "testimonial-3-author",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Meera, SaaS Founder" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 20,
+                    fontWeight: 600,
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟣 STATS SECTION (Metrics section — 4 bold metrics)
+// -------------------------------------------------------------
+export const StatsSectionPreset: BlueprintPreset<StatsSectionNode> = {
+  type: NodeType.SectionStats,
+  create: () => ({
+    id: "",
+    type: NodeType.SectionStats,
+    props: {
+      containerWidth: "full",
+      spacing: {
+        padding: { top: 80, right: 24, bottom: 80, left: 24 },
+        margin: { ...spacingZero },
+      },
+      layout: {
+        display: "flex",
+        direction: "column",
+        align: "center",
+        justify: "center",
+        gap: 40,
+      },
+      style: {
+        backgroundColor: "#FFFFFF",
+      },
+      effects: {},
+      responsive: {},
+    },
+
+    children: [
+      {
+        ...HeadingPreset.create(),
+        id: "stats-heading",
+        props: {
+          ...HeadingPreset.create().props,
+          content: { text: "Trusted by Growing Businesses" },
+          style: {
+            ...HeadingPreset.create().props.style,
+            fontSize: 40,
+            textColor: "#0F172A",
+          },
+        },
+      },
+
+      {
+        ...ContainerPreset.create(),
+        id: "stats-grid",
+        props: {
+          ...ContainerPreset.create().props,
+          layout: {
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: 32,
+          },
+        },
+
+        children: [
+          // 4 stats
+          {
+            ...ContainerPreset.create(),
+            id: "stat-1",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: { padding: { ...spacingZero } },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "stat-1-number",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "10K+" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 48,
+                    textColor: "#4F46E5",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "stat-1-label",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: { text: "Websites Built" },
+                },
+              },
+            ],
+          },
+
+          {
+            ...ContainerPreset.create(),
+            id: "stat-2",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: { padding: { ...spacingZero } },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "stat-2-number",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "99.99%" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 48,
+                    textColor: "#4F46E5",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "stat-2-label",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: { text: "Uptime" },
+                },
+              },
+            ],
+          },
+
+          {
+            ...ContainerPreset.create(),
+            id: "stat-3",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: { padding: { ...spacingZero } },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "stat-3-number",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "50ms" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 48,
+                    textColor: "#4F46E5",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "stat-3-label",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: { text: "Load Time" },
+                },
+              },
+            ],
+          },
+
+          {
+            ...ContainerPreset.create(),
+            id: "stat-4",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: { padding: { ...spacingZero } },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "stat-4-number",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "200+" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 48,
+                    textColor: "#4F46E5",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "stat-4-label",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: { text: "Templates & Blocks" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }),
+};
+// -------------------------------------------------------------
+// PART 4 — CTA + PRICING SECTIONS
+// -------------------------------------------------------------
+
+import {
+  NodeType,
+  CTASectionNode,
+  PricingSectionNode,
+  BlueprintPreset,
+} from "@/modules/builder/blueprint/types";
+
+import {
+  HeadingPreset,
+  ParagraphPreset,
+  ButtonPreset,
+  ContainerPreset,
+} from "./presets";
+
+const spacingZero = { top: 0, right: 0, bottom: 0, left: 0 };
+
+// -------------------------------------------------------------
+// 🟣 CTA SECTION (High-conversion SaaS CTA)
+// -------------------------------------------------------------
+export const CTASectionPreset: BlueprintPreset<CTASectionNode> = {
+  type: NodeType.SectionCTA,
+  create: () => ({
+    id: "",
+    type: NodeType.SectionCTA,
+    props: {
+      containerWidth: "full",
+      spacing: {
+        padding: { top: 100, right: 24, bottom: 100, left: 24 },
+        margin: { ...spacingZero },
+      },
+      layout: {
+        display: "flex",
+        direction: "column",
+        align: "center",
+        justify: "center",
+        gap: 24,
+      },
+      style: {
+        backgroundColor: "#4F46E5",
+        gradient: {
+          type: "linear",
+          angle: 90,
+          colors: [
+            { color: "#4F46E5", position: 0 },
+            { color: "#7C3AED", position: 100 },
+          ],
+        },
+        textColor: "#FFFFFF",
+      },
+      effects: {},
+      responsive: {},
+    },
+
+    children: [
+      // Heading
+      {
+        ...HeadingPreset.create(),
+        id: "cta-heading",
+        props: {
+          ...HeadingPreset.create().props,
+          content: { text: "Start Building Today" },
+          style: {
+            ...HeadingPreset.create().props.style,
+            textColor: "#FFFFFF",
+            fontSize: 48,
+            fontWeight: 800,
+          },
+        },
+      },
+
+      // Supporting Text
+      {
+        ...ParagraphPreset.create(),
+        id: "cta-desc",
+        props: {
+          ...ParagraphPreset.create().props,
+          content: {
+            text:
+              "Join thousands of creators and businesses using BuildEZ to power their online presence.",
+          },
+          style: {
+            ...ParagraphPreset.create().props.style,
+            textColor: "#E0E7FF",
+            fontSize: 20,
+          },
+        },
+      },
+
+      // CTA Buttons
+      {
+        ...ContainerPreset.create(),
+        id: "cta-button-group",
+        props: {
+          ...ContainerPreset.create().props,
+          layout: {
+            display: "flex",
+            direction: "row",
+            align: "center",
+            justify: "center",
+            gap: 16,
+          },
+        },
+        children: [
+          {
+            ...ButtonPreset.create(),
+            id: "cta-primary",
+            props: {
+              ...ButtonPreset.create().props,
+              content: { label: "Start Free Trial", href: "#" },
+              style: {
+                backgroundColor: "#FFFFFF",
+                textColor: "#4F46E5",
+                borderRadius: 8,
+              },
+            },
+          },
+          {
+            ...ButtonPreset.create(),
+            id: "cta-secondary",
+            props: {
+              ...ButtonPreset.create().props,
+              content: { label: "Book a Demo", href: "#" },
+              style: {
+                backgroundColor: "transparent",
+                textColor: "#FFFFFF",
+                borderWidth: 2,
+                borderColor: "#FFFFFF",
+                borderRadius: 8,
+                buttonStyle: "outline",
+              },
+            },
+          },
+        ],
+      },
+    ],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟣 PRICING SECTION (3-tier SaaS pricing)
+// -------------------------------------------------------------
+export const PricingSectionPreset: BlueprintPreset<PricingSectionNode> = {
+  type: NodeType.SectionPricing,
+  create: () => ({
+    id: "",
+    type: NodeType.SectionPricing,
+    props: {
+      containerWidth: "full",
+      spacing: {
+        padding: { top: 100, right: 24, bottom: 100, left: 24 },
+        margin: { ...spacingZero },
+      },
+      layout: {
+        display: "flex",
+        direction: "column",
+        align: "center",
+        justify: "center",
+        gap: 48,
+      },
+      style: {
+        backgroundColor: "#FFFFFF",
+      },
+      effects: {},
+      responsive: {},
+    },
+
+    children: [
+      // Pricing Header
+      {
+        ...HeadingPreset.create(),
+        id: "pricing-heading",
+        props: {
+          ...HeadingPreset.create().props,
+          content: { text: "Simple, Transparent Pricing" },
+          style: {
+            ...HeadingPreset.create().props.style,
+            textColor: "#0F172A",
+            fontSize: 40,
+          },
+        },
+      },
+
+      {
+        ...ParagraphPreset.create(),
+        id: "pricing-description",
+        props: {
+          ...ParagraphPreset.create().props,
+          content: {
+            text: "Choose the plan that fits your team and scale with confidence.",
+          },
+          style: {
+            ...ParagraphPreset.create().props.style,
+            textColor: "#475569",
+            fontSize: 18,
+          },
+        },
+      },
+
+      // Pricing Cards Container
+      {
+        ...ContainerPreset.create(),
+        id: "pricing-grid",
+        props: {
+          ...ContainerPreset.create().props,
+          layout: {
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 32,
+          },
+        },
+
+        children: [
+          // -----------------------------------------
+          // PLAN 1 — Starter
+          // -----------------------------------------
+          {
+            ...ContainerPreset.create(),
+            id: "pricing-starter",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 32, right: 24, bottom: 32, left: 24 },
+              },
+              style: {
+                backgroundColor: "#F8FAFC",
+                borderRadius: 16,
+              },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "starter-title",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Starter" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 24,
+                    textColor: "#0F172A",
+                  },
+                },
+              },
+              {
+                ...HeadingPreset.create(),
+                id: "starter-price",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "$15/mo" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 32,
+                    fontWeight: 700,
+                    textColor: "#4F46E5",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "starter-features",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text:
+                      "Perfect for individual creators who want to build beautiful personal websites.",
+                  },
+                },
+              },
+              {
+                ...ButtonPreset.create(),
+                id: "starter-cta",
+                props: {
+                  ...ButtonPreset.create().props,
+                  content: { label: "Start Free", href: "#" },
+                  style: {
+                    backgroundColor: "#4F46E5",
+                    textColor: "#FFFFFF",
+                  },
+                },
+              },
+            ],
+          },
+
+          // -----------------------------------------
+          // PLAN 2 — Pro (Highlighted)
+          // -----------------------------------------
+          {
+            ...ContainerPreset.create(),
+            id: "pricing-pro",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 40, right: 24, bottom: 40, left: 24 },
+              },
+              style: {
+                backgroundColor: "#4F46E5",
+                borderRadius: 16,
+                textColor: "#FFFFFF",
+              },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "pro-title",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Pro" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 24,
+                    textColor: "#FFFFFF",
+                  },
+                },
+              },
+              {
+                ...HeadingPreset.create(),
+                id: "pro-price",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "$39/mo" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 36,
+                    fontWeight: 800,
+                    textColor: "#FFFFFF",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "pro-features",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text:
+                      "For teams and growing businesses scaling multiple projects.",
+                  },
+                  style: {
+                    ...ParagraphPreset.create().props.style,
+                    textColor: "#E0E7FF",
+                  },
+                },
+              },
+              {
+                ...ButtonPreset.create(),
+                id: "pro-cta",
+                props: {
+                  ...ButtonPreset.create().props,
+                  content: { label: "Choose Pro", href: "#" },
+                  style: {
+                    backgroundColor: "#FFFFFF",
+                    textColor: "#4F46E5",
+                  },
+                },
+              },
+            ],
+          },
+
+          // -----------------------------------------
+          // PLAN 3 — Enterprise
+          // -----------------------------------------
+          {
+            ...ContainerPreset.create(),
+            id: "pricing-enterprise",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 32, right: 24, bottom: 32, left: 24 },
+              },
+              style: {
+                backgroundColor: "#F8FAFC",
+                borderRadius: 16,
+              },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "enterprise-title",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Enterprise" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 24,
+                  },
+                },
+              },
+              {
+                ...HeadingPreset.create(),
+                id: "enterprise-price",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Custom" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 32,
+                    fontWeight: 700,
+                    textColor: "#4F46E5",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "enterprise-features",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text:
+                      "Advanced security, SLA guarantees, dedicated support, and enterprise tooling.",
+                  },
+                },
+              },
+              {
+                ...ButtonPreset.create(),
+                id: "enterprise-cta",
+                props: {
+                  ...ButtonPreset.create().props,
+                  content: { label: "Contact Sales", href: "#" },
+                  style: {
+                    backgroundColor: "#4F46E5",
+                    textColor: "#FFFFFF",
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }),
+};
+// -------------------------------------------------------------
+// PART 5 — FAQ + TEAM SECTION PRESETS
+// -------------------------------------------------------------
+
+import {
+  NodeType,
+  FAQSectionNode,
+  TeamSectionNode,
+  BlueprintPreset,
+} from "@/modules/builder/blueprint/types";
+
+import {
+  HeadingPreset,
+  ParagraphPreset,
+  ContainerPreset,
+  ImagePreset,
+} from "./presets";
+
+const spacingZero = { top: 0, right: 0, bottom: 0, left: 0 };
+
+// -------------------------------------------------------------
+// 🟣 FAQ SECTION (Modern Q&A)
+// -------------------------------------------------------------
+export const FAQSectionPreset: BlueprintPreset<FAQSectionNode> = {
+  type: NodeType.SectionFAQ,
+  create: () => ({
+    id: "",
+    type: NodeType.SectionFAQ,
+    props: {
+      containerWidth: "full",
+      spacing: {
+        padding: { top: 80, right: 24, bottom: 80, left: 24 },
+        margin: { ...spacingZero },
+      },
+      layout: {
+        display: "flex",
+        direction: "column",
+        align: "center",
+        justify: "center",
+        gap: 40,
+      },
+      style: {
+        backgroundColor: "#FFFFFF",
+      },
+      effects: {},
+      responsive: {},
+    },
+
+    children: [
+      // Section Heading
+      {
+        ...HeadingPreset.create(),
+        id: "faq-heading",
+        props: {
+          ...HeadingPreset.create().props,
+          content: { text: "Frequently Asked Questions" },
+          style: {
+            ...HeadingPreset.create().props.style,
+            fontSize: 40,
+            textColor: "#0F172A",
+          },
+        },
+      },
+
+      // FAQ List Container
+      {
+        ...ContainerPreset.create(),
+        id: "faq-container",
+        props: {
+          ...ContainerPreset.create().props,
+          layout: {
+            display: "flex",
+            direction: "column",
+            align: "start",
+            justify: "start",
+            gap: 24,
+          },
+        },
+        children: [
+          // FAQ 1
+          {
+            ...ContainerPreset.create(),
+            id: "faq-1",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 16, right: 0, bottom: 16, left: 0 },
+              },
+              style: {
+                borderBottomWidth: 1,
+                borderColor: "#E2E8F0",
+              },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "faq-q1",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "How does the AI builder work?" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 20,
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "faq-a1",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text:
+                      "Our AI analyzes your content and generates complete responsive sections instantly.",
+                  },
+                },
+              },
+            ],
+          },
+
+          // FAQ 2
+          {
+            ...ContainerPreset.create(),
+            id: "faq-2",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 16, right: 0, bottom: 16, left: 0 },
+              },
+              style: {
+                borderBottomWidth: 1,
+                borderColor: "#E2E8F0",
+              },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "faq-q2",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Can I publish instantly?" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 20,
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "faq-a2",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text:
+                      "Yes — BuildEZ supports one-click publishing with lightning-fast global CDN.",
+                  },
+                },
+              },
+            ],
+          },
+
+          // FAQ 3
+          {
+            ...ContainerPreset.create(),
+            id: "faq-3",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 16, right: 0, bottom: 16, left: 0 },
+              },
+              style: {
+                borderBottomWidth: 1,
+                borderColor: "#E2E8F0",
+              },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "faq-q3",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Is BuildEZ good for agencies?" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 20,
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "faq-a3",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text:
+                      "Absolutely — create unlimited client projects, manage teams, and deliver faster than ever.",
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }),
+};
+
+// -------------------------------------------------------------
+// 🟣 TEAM SECTION (Team member cards)
+// -------------------------------------------------------------
+export const TeamSectionPreset: BlueprintPreset<TeamSectionNode> = {
+  type: NodeType.SectionTeam,
+  create: () => ({
+    id: "",
+    type: NodeType.SectionTeam,
+    props: {
+      containerWidth: "full",
+      spacing: {
+        padding: { top: 80, right: 24, bottom: 80, left: 24 },
+        margin: { ...spacingZero },
+      },
+      layout: {
+        display: "flex",
+        direction: "column",
+        align: "center",
+        justify: "center",
+        gap: 40,
+      },
+      style: {
+        backgroundColor: "#F8FAFC",
+      },
+      effects: {},
+      responsive: {},
+    },
+
+    children: [
+      // Section Title
+      {
+        ...HeadingPreset.create(),
+        id: "team-heading",
+        props: {
+          ...HeadingPreset.create().props,
+          content: { text: "Meet the Team" },
+          style: {
+            ...HeadingPreset.create().props.style,
+            fontSize: 40,
+            textColor: "#0F172A",
+          },
+        },
+      },
+
+      // Section Subtitle
+      {
+        ...ParagraphPreset.create(),
+        id: "team-subtitle",
+        props: {
+          ...ParagraphPreset.create().props,
+          content: {
+            text:
+              "A passionate, creative, and ambitious team building the future of website creation.",
+          },
+          style: {
+            ...ParagraphPreset.create().props.style,
+            textColor: "#475569",
+          },
+        },
+      },
+
+      // Grid of team cards (4 members)
+      {
+        ...ContainerPreset.create(),
+        id: "team-grid",
+        props: {
+          ...ContainerPreset.create().props,
+          layout: {
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: 32,
+          },
+        },
+        children: [
+          // Team 1
+          {
+            ...ContainerPreset.create(),
+            id: "team-1",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 24, right: 24, bottom: 24, left: 24 },
+              },
+              style: {
+                backgroundColor: "#FFFFFF",
+                borderRadius: 16,
+                shadow: {
+                  x: 0,
+                  y: 4,
+                  blur: 20,
+                  spread: 0,
+                  color: "rgba(0,0,0,0.08)",
+                },
+              },
+            },
+            children: [
+              {
+                ...ImagePreset.create(),
+                id: "team-1-photo",
+                props: {
+                  ...ImagePreset.create().props,
+                  content: {
+                    src:
+                      "https://dummyimage.com/300x300/4f46e5/ffffff&text=Member+1",
+                    alt: "Team Member",
+                  },
+                  layout: {
+                    width: "100%",
+                    height: 240,
+                    objectFit: "cover",
+                  },
+                },
+              },
+              {
+                ...HeadingPreset.create(),
+                id: "team-1-name",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Aanya Sharma" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 20,
+                    textColor: "#0F172A",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "team-1-role",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: { text: "Product Designer" },
+                },
+              },
+            ],
+          },
+
+          // Team 2
+          {
+            ...ContainerPreset.create(),
+            id: "team-2",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 24, right: 24, bottom: 24, left: 24 },
+              },
+              style: {
+                backgroundColor: "#FFFFFF",
+                borderRadius: 16,
+                shadow: {
+                  x: 0,
+                  y: 4,
+                  blur: 20,
+                  spread: 0,
+                  color: "rgba(0,0,0,0.08)",
+                },
+              },
+            },
+            children: [
+              {
+                ...ImagePreset.create(),
+                id: "team-2-photo",
+                props: {
+                  ...ImagePreset.create().props,
+                  content: {
+                    src:
+                      "https://dummyimage.com/300x300/6366f1/ffffff&text=Member+2",
+                    alt: "Team Member",
+                  },
+                  layout: {
+                    width: "100%",
+                    height: 240,
+                    objectFit: "cover",
+                  },
+                },
+              },
+              {
+                ...HeadingPreset.create(),
+                id: "team-2-name",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Rahul Mehta" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 20,
+                    textColor: "#0F172A",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "team-2-role",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: { text: "Engineering Lead" },
+                },
+              },
+            ],
+          },
+
+          // Team 3
+          {
+            ...ContainerPreset.create(),
+            id: "team-3",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 24, right: 24, bottom: 24, left: 24 },
+              },
+              style: {
+                backgroundColor: "#FFFFFF",
+                borderRadius: 16,
+                shadow: {
+                  x: 0,
+                  y: 4,
+                  blur: 20,
+                  spread: 0,
+                  color: "rgba(0,0,0,0.08)",
+                },
+              },
+            },
+            children: [
+              {
+                ...ImagePreset.create(),
+                id: "team-3-photo",
+                props: {
+                  ...ImagePreset.create().props,
+                  content: {
+                    src:
+                      "https://dummyimage.com/300x300/7c3aed/ffffff&text=Member+3",
+                    alt: "Team Member",
+                  },
+                  layout: {
+                    width: "100%",
+                    height: 240,
+                    objectFit: "cover",
+                  },
+                },
+              },
+              {
+                ...HeadingPreset.create(),
+                id: "team-3-name",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Meera Kapoor" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 20,
+                    textColor: "#0F172A",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "team-3-role",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: { text: "Marketing Lead" },
+                },
+              },
+            ],
+          },
+
+          // Team 4
+          {
+            ...ContainerPreset.create(),
+            id: "team-4",
+            props: {
+              ...ContainerPreset.create().props,
+              spacing: {
+                padding: { top: 24, right: 24, bottom: 24, left: 24 },
+              },
+              style: {
+                backgroundColor: "#FFFFFF",
+                borderRadius: 16,
+                shadow: {
+                  x: 0,
+                  y: 4,
+                  blur: 20,
+                  spread: 0,
+                  color: "rgba(0,0,0,0.08)",
+                },
+              },
+            },
+            children: [
+              {
+                ...ImagePreset.create(),
+                id: "team-4-photo",
+                props: {
+                  ...ImagePreset.create().props,
+                  content: {
+                    src:
+                      "https://dummyimage.com/300x300/4f46e5/ffffff&text=Member+4",
+                    alt: "Team Member",
+                  },
+                  layout: {
+                    width: "100%",
+                    height: 240,
+                    objectFit: "cover",
+                  },
+                },
+              },
+              {
+                ...HeadingPreset.create(),
+                id: "team-4-name",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Kailash Rao" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    fontSize: 20,
+                    textColor: "#0F172A",
+                  },
+                },
+              },
+              {
+                ...ParagraphPreset.create(),
+                id: "team-4-role",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: { text: "Founder & CEO" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }),
+};
+// -------------------------------------------------------------
+// PART 6 — FOOTER SECTION PRESET
+// -------------------------------------------------------------
+
+import {
+  NodeType,
+  FooterSectionNode,
+  BlueprintPreset,
+} from "@/modules/builder/blueprint/types";
+
+import {
+  HeadingPreset,
+  ParagraphPreset,
+  TextPreset,
+  ContainerPreset,
+} from "./presets";
+
+const spacingZero = { top: 0, right: 0, bottom: 0, left: 0 };
+
+// -------------------------------------------------------------
+// 🟣 FOOTER SECTION (SaaS multi-column footer)
+// -------------------------------------------------------------
+export const FooterSectionPreset: BlueprintPreset<FooterSectionNode> = {
+  type: NodeType.SectionFooter,
+  create: () => ({
+    id: "",
+    type: NodeType.SectionFooter,
+    props: {
+      containerWidth: "full",
+      spacing: {
+        padding: { top: 60, right: 24, bottom: 60, left: 24 },
+        margin: { ...spacingZero },
+      },
+      layout: {
+        display: "flex",
+        direction: "column",
+        align: "center",
+        justify: "start",
+        gap: 40,
+      },
+      style: {
+        backgroundColor: "#0F172A",
+      },
+      effects: {},
+      responsive: {},
+    },
+
+    children: [
+      // =========================================================
+      // TOP ROW (3 columns)
+      // =========================================================
+      {
+        ...ContainerPreset.create(),
+        id: "footer-grid",
+        props: {
+          ...ContainerPreset.create().props,
+          layout: {
+            display: "grid",
+            gridTemplateColumns: "2fr 1fr 1fr 1fr",
+            gap: 32,
+          },
+        },
+        children: [
+          // ---------------------------------------------
+          // COLUMN 1 — Brand Info
+          // ---------------------------------------------
+          {
+            ...ContainerPreset.create(),
+            id: "footer-col-brand",
+            props: {
+              ...ContainerPreset.create().props,
+              layout: {
+                display: "flex",
+                direction: "column",
+                align: "start",
+                justify: "start",
+                gap: 12,
+              },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "footer-brand-title",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "BuildEZ" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    textColor: "#FFFFFF",
+                    fontSize: 28,
+                    fontWeight: 800,
+                  },
+                },
+              },
+
+              {
+                ...ParagraphPreset.create(),
+                id: "footer-brand-desc",
+                props: {
+                  ...ParagraphPreset.create().props,
+                  content: {
+                    text:
+                      "The AI-powered website builder for creators, businesses, and ambitious teams.",
+                  },
+                  style: {
+                    ...ParagraphPreset.create().props.style,
+                    textColor: "#CBD5E1",
+                    fontSize: 16,
+                    lineHeight: 1.6,
+                  },
+                },
+              },
+            ],
+          },
+
+          // ---------------------------------------------
+          // COLUMN 2 — Product Links
+          // ---------------------------------------------
+          {
+            ...ContainerPreset.create(),
+            id: "footer-col-product",
+            props: {
+              ...ContainerPreset.create().props,
+              layout: {
+                display: "flex",
+                direction: "column",
+                align: "start",
+                justify: "start",
+                gap: 10,
+              },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "footer-product-title",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Product" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    textColor: "#FFFFFF",
+                    fontSize: 18,
+                  },
+                },
+              },
+
+              ...[
+                "AI Builder",
+                "Templates",
+                "Integrations",
+                "Hosting",
+              ].map((label, i) => ({
+                ...TextPreset.create(),
+                id: `footer-product-link-${i + 1}`,
+                props: {
+                  ...TextPreset.create().props,
+                  content: { text: label },
+                  style: { textColor: "#CBD5E1" },
+                },
+              })),
+            ],
+          },
+
+          // ---------------------------------------------
+          // COLUMN 3 — Company Links
+          // ---------------------------------------------
+          {
+            ...ContainerPreset.create(),
+            id: "footer-col-company",
+            props: {
+              ...ContainerPreset.create().props,
+              layout: {
+                display: "flex",
+                direction: "column",
+                align: "start",
+                justify: "start",
+                gap: 10,
+              },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "footer-company-title",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Company" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    textColor: "#FFFFFF",
+                    fontSize: 18,
+                  },
+                },
+              },
+
+              ...[
+                "About Us",
+                "Careers",
+                "Blog",
+                "Press",
+              ].map((label, i) => ({
+                ...TextPreset.create(),
+                id: `footer-company-link-${i + 1}`,
+                props: {
+                  ...TextPreset.create().props,
+                  content: { text: label },
+                  style: { textColor: "#CBD5E1" },
+                },
+              })),
+            ],
+          },
+
+          // ---------------------------------------------
+          // COLUMN 4 — Legal Links
+          // ---------------------------------------------
+          {
+            ...ContainerPreset.create(),
+            id: "footer-col-legal",
+            props: {
+              ...ContainerPreset.create().props,
+              layout: {
+                display: "flex",
+                direction: "column",
+                align: "start",
+                justify: "start",
+                gap: 10,
+              },
+            },
+            children: [
+              {
+                ...HeadingPreset.create(),
+                id: "footer-legal-title",
+                props: {
+                  ...HeadingPreset.create().props,
+                  content: { text: "Legal" },
+                  style: {
+                    ...HeadingPreset.create().props.style,
+                    textColor: "#FFFFFF",
+                    fontSize: 18,
+                  },
+                },
+              },
+
+              ...[
+                "Terms of Service",
+                "Privacy Policy",
+                "Cookie Policy",
+                "Licenses",
+              ].map((label, i) => ({
+                ...TextPreset.create(),
+                id: `footer-legal-link-${i + 1}`,
+                props: {
+                  ...TextPreset.create().props,
+                  content: { text: label },
+                  style: { textColor: "#CBD5E1" },
+                },
+              })),
+            ],
+          },
+        ],
+      },
+
+      // =========================================================
+      // BOTTOM COPYRIGHT ROW
+      // =========================================================
+      {
+        ...ContainerPreset.create(),
+        id: "footer-bottom",
+        props: {
+          ...ContainerPreset.create().props,
+          layout: {
+            display: "flex",
+            direction: "row",
+            align: "space-between",
+            justify: "space-between",
+            gap: 16,
+          },
+          spacing: {
+            padding: { top: 24, right: 0, bottom: 0, left: 0 },
+            margin: { ...spacingZero },
+          },
+          style: {
+            borderTopWidth: 1,
+            borderColor: "#1E293B",
+          },
+        },
+        children: [
+          {
+            ...TextPreset.create(),
+            id: "footer-copyright",
+            props: {
+              ...TextPreset.create().props,
+              content: {
+                text: "© 2026 BuildEZ. All rights reserved.",
+              },
+              style: {
+                textColor: "#64748B",
+              },
+            },
+          },
+          // Placeholder for social icons row
+          {
+            ...ContainerPreset.create(),
+            id: "footer-social",
+            props: {
+              ...ContainerPreset.create().props,
+              layout: {
+                display: "flex",
+                direction: "row",
+                align: "center",
+                justify: "end",
+                gap: 16,
+              },
+            },
+            children: [
+              ...["🐦", "📘", "💼"].map((icon, i) => ({
+                ...TextPreset.create(),
+                id: `footer-social-${i + 1}`,
+                props: {
+                  ...TextPreset.create().props,
+                  content: { text: icon },
+                  style: { textColor: "#CBD5E1", fontSize: 20 },
+                },
+              })),
+            ],
+          },
+        ],
+      },
+    ],
+  }),
+};

@@ -1,0 +1,52 @@
+modules/_legacy/modules.old/blueprint/registry.ts(26,10): error TS1005: '>' expected.
+modules/_legacy/modules.old/blueprint/registry.ts(26,19): error TS1005: ')' expected.
+modules/_legacy/modules.old/blueprint/registry.ts(27,15): error TS1005: ';' expected.
+modules/_legacy/modules.old/blueprint/registry.ts(27,44): error TS1161: Unterminated regular expression literal.
+modules/_legacy/modules.old/blueprint/registry.ts(28,6): error TS1161: Unterminated regular expression literal.
+modules/_legacy/modules.old/blueprint/registry.ts(29,3): error TS1128: Declaration or statement expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(21,13): error TS1110: Type expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(21,25): error TS1161: Unterminated regular expression literal.
+modules/_legacy/modules.old/blueprint/renderer.ts(24,12): error TS1005: '>' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(24,21): error TS1005: ')' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(25,16): error TS1005: ';' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(26,8): error TS1110: Type expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(27,5): error TS1128: Declaration or statement expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(38,17): error TS1005: '>' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(38,20): error TS1005: ')' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(38,29): error TS1005: ',' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(39,18): error TS1005: '>' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(39,37): error TS1005: ';' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(39,51): error TS1005: ',' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(39,59): error TS1005: ';' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(39,77): error TS1005: ',' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(39,83): error TS1109: Expression expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(40,6): error TS1110: Type expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(41,3): error TS1128: Declaration or statement expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(49,10): error TS1005: '>' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(49,19): error TS1005: ')' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(52,45): error TS1161: Unterminated regular expression literal.
+modules/_legacy/modules.old/blueprint/renderer.ts(56,9): error TS1005: '>' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(56,18): error TS1005: ';' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(57,16): error TS1136: Property assignment expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(58,7): error TS1109: Expression expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(59,14): error TS1005: ',' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(60,8): error TS1161: Unterminated regular expression literal.
+modules/_legacy/modules.old/blueprint/renderer.ts(63,45): error TS1161: Unterminated regular expression literal.
+modules/_legacy/modules.old/blueprint/renderer.ts(64,6): error TS1161: Unterminated regular expression literal.
+modules/_legacy/modules.old/blueprint/renderer.ts(65,3): error TS1128: Declaration or statement expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(66,1): error TS1128: Declaration or statement expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(76,12): error TS1005: '>' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(76,21): error TS1005: ')' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(77,14): error TS1005: ';' expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(77,16): error TS1434: Unexpected keyword or identifier.
+modules/_legacy/modules.old/blueprint/renderer.ts(77,26): error TS1434: Unexpected keyword or identifier.
+modules/_legacy/modules.old/blueprint/renderer.ts(77,35): error TS1434: Unexpected keyword or identifier.
+modules/_legacy/modules.old/blueprint/renderer.ts(78,7): error TS1003: Identifier expected.
+modules/_legacy/modules.old/blueprint/renderer.ts(78,8): error TS1161: Unterminated regular expression literal.
+modules/_legacy/modules.old/blueprint/renderer.ts(79,5): error TS1128: Declaration or statement expected.
+modules/builder/ai-v8/lib/reactGenerator.ts(877,7): error TS1005: ':' expected.
+modules/builder/ai-v8/lib/reactGenerator.ts(877,11): error TS1005: ',' expected.
+modules/builder/ai-v8/lib/reactGenerator.ts(877,18): error TS1005: ':' expected.
+modules/builder/ai-v8/lib/reactGenerator.ts(888,7): error TS1005: ':' expected.
+modules/builder/ai-v8/lib/reactGenerator.ts(888,11): error TS1005: ',' expected.
+modules/builder/ai-v8/lib/reactGenerator.ts(888,17): error TS1005: ':' expected.

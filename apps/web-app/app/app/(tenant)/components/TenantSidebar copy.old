@@ -1,0 +1,338 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import Image from "next/image";
+
+import {
+  LayoutDashboard,
+  FileText,
+  Brush,
+  Image as ImageIcon,
+  Puzzle,
+  Globe,
+  BarChart3,
+  Bot,
+  Users,
+  FolderTree,
+  CreditCard,
+  Settings,
+  Layers,
+  ChevronDown,
+  ChevronRight,
+  X,
+} from "lucide-react";
+
+import { useWorkspace } from "./WorkspaceContext";
+import { motion, AnimatePresence } from "framer-motion";
+
+interface Props {
+  mobileOpen: boolean;
+  setMobileOpen: (v: boolean) => void;
+  loading?: boolean;
+}
+
+export function TenantSidebar({ mobileOpen, setMobileOpen, loading = false }: Props) {
+  return (
+    <>
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.aside
+            initial={{ x: -260 }}
+            animate={{ x: 0 }}
+            exit={{ x: -260 }}
+            transition={{ duration: 0.25 }}
+            className="
+              fixed top-0 left-0 z-50 h-full w-[250px]
+              glass glass-flat border-r border-black/10 dark:border-white/10
+              !bg-[rgb(235,241,252)]
+              dark:!bg-[rgba(10,18,36,0.6)]
+            "
+          >
+            <SidebarContent setMobileOpen={setMobileOpen} loading={loading} />
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      <aside
+        className="
+          hidden lg:block w-[250px] h-full shrink-0
+          glass glass-flat border-r border-black/10 dark:border-white/10
+          !bg-[rgb(235,241,252)]
+          dark:!bg-[rgba(10,18,36,0.6)]
+        "
+      >
+        <SidebarContent setMobileOpen={setMobileOpen} loading={loading} />
+      </aside>
+    </>
+  );
+}
+
+function SidebarContent({
+  setMobileOpen,
+  loading = false,
+}: {
+  setMobileOpen: (v: boolean) => void;
+  loading?: boolean;
+}) {
+  const pathname = usePathname();
+  const { currentWebsite } = useWorkspace();
+
+  /* ------------------------------------------------------------
+     ⭐ REAL PAGE COUNT — FIXED (using /api/pages)
+  ------------------------------------------------------------ */
+  const [pageCount, setPageCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function loadCount() {
+      try {
+        const res = await fetch("/api/pages?take=1", {
+          credentials: "include",
+        });
+        const json = await res.json();
+        setPageCount(json?.data?.total ?? 0);
+      } catch (err) {
+        setPageCount(0);
+      }
+    }
+    loadCount();
+  }, []);
+
+  /* ------------------------------------------------------------
+     ⭐ Persist Accordion State (unchanged)
+  ------------------------------------------------------------ */
+  const [websiteOpen, setWebsiteOpen] = useState(true);
+  const [workspaceOpen, setWorkspaceOpen] = useState(true);
+  const [growthOpen, setGrowthOpen] = useState(true);
+  const [leadsOpen, setLeadsOpen] = useState(true);
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("buildez-sidebar-state") || "{}");
+
+    if (saved.websiteOpen !== undefined) setWebsiteOpen(saved.websiteOpen);
+    if (saved.workspaceOpen !== undefined) setWorkspaceOpen(saved.workspaceOpen);
+    if (saved.growthOpen !== undefined) setGrowthOpen(saved.growthOpen);
+    if (saved.leadsOpen !== undefined) setLeadsOpen(saved.leadsOpen);
+  }, []);
+
+  useEffect(() => {
+    const state = {
+      websiteOpen,
+      workspaceOpen,
+      growthOpen,
+      leadsOpen,
+    };
+    localStorage.setItem("buildez-sidebar-state", JSON.stringify(state));
+  }, [websiteOpen, workspaceOpen, growthOpen, leadsOpen]);
+
+  /* ------------------------------------------------------------
+     ⭐ Skeleton (unchanged)
+  ------------------------------------------------------------ */
+  if (loading) {
+    return (
+      <div className="h-full flex flex-col px-4 py-6 gap-8">
+        <div className="flex items-center justify-between">
+          <div className="h-6 w-32 bg-black/10 dark:bg:white/10 rounded-lg skeleton-shimmer" />
+          <div className="h-6 w-6 bg-black/10 dark:bg:white/10 rounded-lg skeleton-shimmer" />
+        </div>
+
+        <div className="flex flex-col gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex flex-col gap-3">
+              <div className="h-4 w-28 bg-black/10 dark:bg:white/10 rounded skeleton-shimmer" />
+              <div className="flex flex-col gap-2 pl-2">
+                <div className="h-8 w-full bg-black/10 dark:bg:white/10 rounded-xl skeleton-shimmer" />
+                <div className="h-8 w-full bg-black/10 dark:bg:white/10 rounded-xl skeleton-shimmer" />
+                <div className="h-8 w-full bg-black/10 dark:bg:white/10 rounded-xl skeleton-shimmer" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  /* ------------------------------------------------------------
+     ⭐ REAL SIDEBAR
+  ------------------------------------------------------------ */
+  return (
+    <div
+      className="
+        h-full flex flex-col px-4 py-6 gap-8
+        overflow-y-auto overscroll-none scrollbar-hide
+      "
+    >
+      {/* LOGO */}
+      <div className="flex items-center justify-between">
+        <Image
+          src="/buildez-logo-light.svg"
+          alt="BuildEZ"
+          width={120}
+          height={32}
+          className="block dark:hidden"
+        />
+        <Image
+          src="/buildez-logo-dark.svg"
+          alt="BuildEZ"
+          width={120}
+          height={32}
+          className="hidden dark:block"
+        />
+
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="lg:hidden p-2 rounded-xl bg-black/10 dark:bg:white/10"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* WEBSITE SECTION */}
+      <Section
+        title={`${currentWebsite?.domain || "Your Site"}`}
+        open={websiteOpen}
+        setOpen={setWebsiteOpen}
+        links={[
+          { name: "Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
+
+          // ⭐ Pages → real count
+          {
+            name: "Pages",
+            href: "/app/pages",
+            icon: FileText,
+            count: pageCount === null ? "…" : pageCount,
+          },
+
+          { name: "Media", href: "/app/media", icon: ImageIcon },
+          { name: "Themes", href: "/app/themes", icon: Brush },
+
+          // Plugins count static
+          { name: "Plugins", href: "/app/plugins", icon: Puzzle, count: 3 },
+
+          { name: "Domains", href: "/app/domains", icon: Globe },
+        ]}
+      />
+
+      {/* GROWTH */}
+      <Section
+        title="Growth"
+        open={growthOpen}
+        setOpen={setGrowthOpen}
+        links={[
+          { name: "Analytics", href: "/app/analytics", icon: BarChart3 },
+          { name: "AI Tools", href: "/app/ai", icon: Bot },
+        ]}
+      />
+
+      {/* LEADS */}
+      <Section
+        title="Leads"
+        open={leadsOpen}
+        setOpen={setLeadsOpen}
+        links={[{ name: "Forms", href: "/app/forms", icon: Layers }]}
+      />
+
+      {/* WORKSPACE */}
+      <Section
+        title="Workspace"
+        open={workspaceOpen}
+        setOpen={setWorkspaceOpen}
+        links={[
+          { name: "Overview", href: "/app/workspace", icon: LayoutDashboard },
+          { name: "Websites", href: "/app/workspace/websites", icon: FolderTree },
+          { name: "Team", href: "/app/workspace/team", icon: Users },
+          { name: "Billing", href: "/app/workspace/billing", icon: CreditCard },
+          { name: "Settings", href: "/app/workspace/settings", icon: Settings },
+        ]}
+      />
+    </div>
+  );
+}
+
+function Section({
+  title,
+  open,
+  setOpen,
+  links,
+}: {
+  title: string;
+  open: boolean;
+  setOpen: (v: boolean) => void;
+  links: { name: string; href: string; icon: any; count?: number | string }[];
+}) {
+  const pathname = usePathname();
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        className="
+          flex items-center justify-between w-full mb-2 text-xs font-semibold uppercase
+          text-white
+        "
+      >
+        {title}
+        {open ? (
+          <ChevronDown className="h-4 w-4 text-white/50" />
+        ) : (
+          <ChevronRight className="h-4 w-4 text-white/50" />
+        )}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="flex flex-col gap-1"
+          >
+            {links.map(({ name, href, icon: Icon, count }) => {
+              const active = pathname === href;
+
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`
+                    flex items-center justify-between px-4 py-3 text-sm transition rounded-[18px]
+                    ${
+                      active
+                        ? "bg-[rgba(47,125,246,0.25)] shadow-[inset_0_0_0_1px_rgba(47,125,246,0.45)]"
+                        : "hover:bg-black/5 dark:hover:bg:white/5"
+                    }
+                  `}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon size={18} />
+                    <span>{name}</span>
+                  </div>
+
+                  {count !== undefined && (
+                    <span
+                      className="
+                        text-xs px-2 py-0.5 rounded-full
+                        backdrop-blur-md bg-white/10
+                        border border-white/20 text-white
+                      "
+                    >
+                      {count}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

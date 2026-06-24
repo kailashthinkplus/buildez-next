@@ -1,0 +1,20 @@
+"use client";
+
+import { create } from "zustand";
+
+interface NodePositionState {
+  rectMap: Map<string, DOMRect>;
+  setRect: (id: string, rect: DOMRect) => void;
+  clear: () => void;
+}
+
+export const useNodePositionStore = create<NodePositionState>((set) => ({
+  rectMap: new Map(),
+
+  setRect: (id, rect) =>
+    set((state) => ({
+      rectMap: new Map(state.rectMap).set(id, rect),
+    })),
+
+  clear: () => set({ rectMap: new Map() }),
+}));

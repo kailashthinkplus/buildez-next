@@ -1,0 +1,3 @@
+{
+  "/(runtime)/[...slug]/page": "app/(runtime)/[...slug]/page.js"
+}

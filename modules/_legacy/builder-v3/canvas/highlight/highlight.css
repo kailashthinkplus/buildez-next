@@ -1,0 +1,32 @@
+/* ============================================================
+   Webflow-style Highlight System
+   Clean blue outlines, purple for drag-over
+   ============================================================ */
+
+.bz-highlight-overlay {
+  pointer-events: none;
+  position: absolute;
+  z-index: 9999;
+  transition: all 120ms ease;
+}
+
+/* HOVER — thin blue line */
+.bz-hover-outline {
+  border: 1px solid #3b82f6; /* blue-500 */
+}
+
+/* SELECTED — thicker blue line */
+.bz-selected-outline {
+  border: 2px solid #2563eb; /* blue-600 */
+}
+
+/* DRAG-OVER — purple glow */
+.bz-drag-outline {
+  border: 2px solid #a855f7; /* purple-500 */
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.4);
+}
+
+/* no highlight */
+.bz-no-outline {
+  border: none;
+}

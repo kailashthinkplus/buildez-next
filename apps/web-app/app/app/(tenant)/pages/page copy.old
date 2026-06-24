@@ -1,0 +1,240 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { Plus, CheckSquare, Square } from "lucide-react";
+
+import PageActionsMenu from "./components/PageActionsMenu";
+import CreatePageModal from "./components/CreatePageModal";
+import PageSettingsModal from "./components/PageSettingsModal";
+import DeletePageModal from "./components/DeletePageModal";
+import { usePages } from "./hooks/usePages";
+
+export default function PagesPage() {
+  /* ============================================================
+     ACTIVE SITE CONTEXT (OPTIONAL — AUTO RESOLVE)
+  ============================================================ */
+  const params = useParams();
+  const siteSlug = params?.siteSlug as string | undefined;
+
+  /* ============================================================
+     STATE
+  ============================================================ */
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("createdAt_desc");
+  const [filter, setFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const limit = 10;
+
+  const [createPageOpen, setCreatePageOpen] = useState(false);
+  const [sitePickerOpen, setSitePickerOpen] = useState(false);
+  const [settingsPage, setSettingsPage] = useState<any>(null);
+  const [deletePage, setDeletePage] = useState<any>(null);
+  const [selected, setSelected] = useState<string[]>([]);
+
+  /* ============================================================
+     FETCH PAGES (SITE OR TENANT SCOPE)
+  ============================================================ */
+  const { pages, total, isLoading, mutate } = usePages({
+    siteSlug, // undefined is valid (auto-resolve)
+    search,
+    sort,
+    filter,
+    page,
+    limit,
+  });
+
+  /* ============================================================
+     CLEAR SELECTION WHEN DATA CHANGES (STABLE)
+  ============================================================ */
+  useEffect(() => {
+    setSelected([]);
+  }, [pages.map((p) => p.id).join(",")]);
+
+  const toggleSelect = (id: string) => {
+    setSelected((prev) =>
+      prev.includes(id)
+        ? prev.filter((x) => x !== id)
+        : [...prev, id]
+    );
+  };
+
+  /* ============================================================
+     BULK ACTIONS
+  ============================================================ */
+  async function bulkPublish() {
+    for (const id of selected) {
+      await fetch(`/api/pages/${id}/publish`, {
+        method: "POST",
+        credentials: "include",
+      });
+    }
+    setSelected([]);
+    mutate();
+  }
+
+  async function bulkUnpublish() {
+    for (const id of selected) {
+      await fetch(`/api/pages/${id}/unpublish`, {
+        method: "POST",
+        credentials: "include",
+      });
+    }
+    setSelected([]);
+    mutate();
+  }
+
+  async function bulkDelete() {
+    for (const id of selected) {
+      await fetch(`/api/pages/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+    }
+    setSelected([]);
+    mutate();
+  }
+
+  /* ============================================================
+     RENDER
+  ============================================================ */
+  return (
+    <div className="p-6 md:p-8">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-2xl font-semibold dark:text-white">
+          Pages
+          {siteSlug && (
+            <span className="opacity-60"> — {siteSlug}</span>
+          )}
+        </h1>
+
+        <button
+          onClick={() => {
+            if (!siteSlug) {
+              setSitePickerOpen(true);
+            } else {
+              setCreatePageOpen(true);
+            }
+          }}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--brand)] text-white font-medium hover:brightness-110"
+        >
+          <Plus className="w-4 h-4" />
+          Add New Page
+        </button>
+      </div>
+
+      {!isLoading && pages.length === 0 && (
+        <div className="text-center py-12 opacity-60">
+          No pages found
+        </div>
+      )}
+
+      {!isLoading &&
+        pages.map((page) => {
+          const isChecked = selected.includes(page.id);
+
+          return (
+            <div
+              key={page.id}
+              className="relative p-5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/20 dark:border-white/10 backdrop-blur-xl mb-4"
+            >
+              <button
+                onClick={() => toggleSelect(page.id)}
+                className="absolute left-4 top-4"
+              >
+                {isChecked ? (
+                  <CheckSquare className="w-5 h-5" />
+                ) : (
+                  <Square className="w-5 h-5" />
+                )}
+              </button>
+
+              <div className="absolute right-3 top-3">
+                <PageActionsMenu
+                  page={page}
+                  onSettings={() => setSettingsPage(page)}
+                  onDelete={() => setDeletePage(page)}
+                />
+              </div>
+
+              {/* 🔒 BUILDER ROUTE — ALWAYS SITE-LOCKED */}
+              <h3
+                className="text-lg font-semibold text-[var(--brand)] cursor-pointer hover:underline"
+                onClick={() =>
+                  (window.location.href =
+                    `/app/${page.site.slug}/${page.slug}-${page.id}`)
+                }
+              >
+                {page.title}
+              </h3>
+
+              <p className="text-sm opacity-60">/{page.slug}</p>
+
+              <span
+                className={`inline-block mt-2 px-3 py-1 text-xs rounded-lg ${
+                  page.status === "PUBLISHED"
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-300 dark:bg-white/10 dark:text-white/70"
+                }`}
+              >
+                {page.status}
+              </span>
+            </div>
+          );
+        })}
+
+      {/* ===================================================== */}
+      {/* MODALS */}
+      {/* ===================================================== */}
+
+      {createPageOpen && siteSlug && (
+        <CreatePageModal
+          open
+          siteSlug={siteSlug}
+          onClose={() => {
+            setCreatePageOpen(false);
+            mutate();
+          }}
+        />
+      )}
+
+      {sitePickerOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 w-[360px] text-center">
+            <h3 className="text-lg font-semibold mb-2">
+              Select a site first
+            </h3>
+            <p className="text-sm opacity-70 mb-4">
+              Pages must belong to a site. Please open a site to create a page.
+            </p>
+            <button
+              onClick={() => setSitePickerOpen(false)}
+              className="px-4 py-2 rounded-xl bg-[var(--brand)] text-white"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+      {settingsPage && (
+        <PageSettingsModal
+          page={settingsPage}
+          open
+          onClose={() => setSettingsPage(null)}
+        />
+      )}
+
+      {deletePage && (
+        <DeletePageModal
+          page={deletePage}
+          open
+          onClose={() => {
+            setDeletePage(null);
+            mutate();
+          }}
+        />
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,71 @@
+"use client";
+
+import React, { useEffect, useRef } from "react";
+import { BlueprintNode } from "@/modules/builder/blueprint/types";
+import { useHighlightStore } from "@/modules/builder/state/useHighlightStore";
+
+/* ============================================================
+   CanvasNodeWrapper — V3 FINAL (MEASUREMENT ONLY)
+============================================================ */
+
+export default function CanvasNodeWrapper({
+  node,
+  children,
+}: {
+  node: BlueprintNode;
+  children: React.ReactNode;
+}) {
+  if (!node?.id) return null;
+
+  /* ---------------------------------------------------------
+     REF
+  --------------------------------------------------------- */
+  const ref = useRef<HTMLDivElement>(null);
+
+  /* ---------------------------------------------------------
+     HIGHLIGHT STORE
+  --------------------------------------------------------- */
+  const updateRect = useHighlightStore((s) => s.updateRect);
+  const clearRect = useHighlightStore((s) => s.clearRect);
+
+  /* ---------------------------------------------------------
+     RECT TRACKING (SCROLL + RESIZE SAFE)
+  --------------------------------------------------------- */
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const measure = () => {
+      const r = ref.current!.getBoundingClientRect();
+      updateRect(node.id, {
+        top: r.top + window.scrollY,
+        left: r.left + window.scrollX,
+        width: r.width,
+        height: r.height,
+      });
+    };
+
+    measure();
+
+    const ro = new ResizeObserver(measure);
+    ro.observe(ref.current);
+
+    window.addEventListener("scroll", measure);
+    window.addEventListener("resize", measure);
+
+    return () => {
+      ro.disconnect();
+      clearRect(node.id);
+      window.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+    };
+  }, [node.id, updateRect, clearRect]);
+
+  /* ---------------------------------------------------------
+     RENDER (NO LOGIC HERE)
+  --------------------------------------------------------- */
+  return (
+    <div ref={ref} data-node-id={node.id} className="relative w-full">
+      {children}
+    </div>
+  );
+}
