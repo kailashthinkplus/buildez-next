@@ -36,7 +36,9 @@ const HEADER_HEIGHT = 56;
    TYPES
 ============================================================ */
 
-interface BuilderShellProps {}
+interface BuilderShellProps {
+  pageId: string;
+}
 
 type DragGhostDetail = {
   id: string;
@@ -144,7 +146,7 @@ function CollapseButton({
 ============================================================ */
 
 export default function BuilderShell(
-  {}: BuilderShellProps
+  { pageId }: BuilderShellProps
 ) {
   /* Call all hooks at the top, before any conditionals */
   const [isInspectorCollapsed, setIsInspectorCollapsed] = useState(false);
@@ -165,17 +167,22 @@ export default function BuilderShell(
   const selectedId = useSelectionStore((s) => s.selectedNodeId);
   const select = useSelectionStore((s) => s.select);
 
+const [canUndo, setCanUndo] = useState(false);
+const [canRedo, setCanRedo] = useState(false);
+
 const onUndo = () => commandBus.undo();
 
 const onRedo = () => commandBus.redo();
 
-/*
-Temporary placeholders until we migrate
-each subsystem.
-*/
+/* Wire command bus state to local component state */
+useEffect(() => {
+  const unsubscribe = commandBus.subscribe(() => {
+    setCanUndo(commandBus.canUndo());
+    setCanRedo(commandBus.canRedo());
+  });
 
-const canUndo = true;
-const canRedo = true;
+  return () => unsubscribe();
+}, []);
 
 const onSave = () => {};
 
@@ -447,7 +454,7 @@ const onCanvasClick = () => {
         className="fixed top-0 left-0 right-0 z-[10000]"
         style={{ height: HEADER_HEIGHT }}
       >
-        <BuilderHeader />
+        <BuilderHeader pageId={pageId} />
       </div>
 
       {/* BODY */}
