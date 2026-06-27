@@ -8,7 +8,8 @@ import { MoreVertical } from "lucide-react";
 export default function PageActionsDropdown({ page }: any) {
   const [open, setOpen] = useState(false);
 
-  const { publish, unpublish, remove, duplicate } = usePageMutations();
+  const { publish, unpublish, remove, duplicate } = usePageMutations(page.site?.slug);
+  const isPublished = page.status === "PUBLISHED";
 
   return (
     <div className="relative inline-block text-left">
@@ -35,7 +36,7 @@ export default function PageActionsDropdown({ page }: any) {
         >
           {/* EDIT */}
           <Link
-            href={`/app/(tenant)/builder?pageId=${page.id}`}
+            href={`/app/${page.site?.slug}/${page.slug}-${page.id}`}
             className="
               block px-4 py-2 text-sm
               hover:bg-gray-100 dark:hover:bg-white/10
@@ -45,7 +46,7 @@ export default function PageActionsDropdown({ page }: any) {
           </Link>
 
           {/* PUBLISH */}
-          {page.published ? (
+          {isPublished ? (
             <button
               onClick={() => unpublish.mutate({ pageId: page.id })}
               className="

@@ -63,7 +63,7 @@ export default function WebsitesPage() {
 
   if (loading) {
     return (
-      <div className="p-8 text-white/60">
+      <div className="p-8 dashboard-muted">
         Loading websites…
       </div>
     );
@@ -85,7 +85,7 @@ export default function WebsitesPage() {
     <div className="p-8">
       {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold text-white">
+        <h1 className="text-xl font-semibold">
           Websites
         </h1>
 
@@ -105,7 +105,7 @@ export default function WebsitesPage() {
 
       {/* GRID */}
       {sites.length === 0 ? (
-        <div className="text-white/40 text-sm">
+        <div className="dashboard-faint text-sm">
           No websites yet
         </div>
       ) : (
@@ -115,16 +115,15 @@ export default function WebsitesPage() {
               key={site.id}
               className="
                 relative rounded-2xl p-4
-                bg-white/[0.06]
-                border border-white/10
+                dashboard-card
                 backdrop-blur-xl
-                hover:bg-white/[0.08]
+                dashboard-hover
                 transition
               "
             >
               {/* KEBAB MENU (UI ONLY FOR NOW) */}
               <button
-                className="absolute top-3 right-3 text-white/60 hover:text-white"
+                className="absolute top-3 right-3 dashboard-muted hover:text-[var(--dashboard-text)]"
                 onClick={(e) => e.stopPropagation()}
               >
                 <MoreVertical size={16} />
@@ -132,11 +131,11 @@ export default function WebsitesPage() {
 
               {/* CONTENT */}
               <div className="space-y-1">
-                <div className="text-white font-medium">
+                <div className="font-medium">
                   {site.name}
                 </div>
 
-                <div className="text-xs text-white/40">
+                <div className="text-xs dashboard-faint">
                   {site.slug}
                 </div>
 
@@ -158,8 +157,8 @@ export default function WebsitesPage() {
                 }
                 className="
                   mt-4 w-full py-2 rounded-xl
-                  bg-white/[0.08] hover:bg-white/[0.12]
-                  text-sm text-white
+                  dashboard-subtle dashboard-hover
+                  text-sm
                 "
               >
                 Visit Dashboard

@@ -25,10 +25,19 @@ export type NodeType =
   | "spacer"
   | "form"
   | "hero"
+  | "smartHeader"
+  | "leadForm"
+  | "cardGrid"
+  | "galleryLightbox"
   | "features"
   | "pricing"
   | "gallery"
   | "faq"
+  | "testimonials"
+  | "offerGrid"
+  | "floatingWhatsApp"
+  | "locationMap"
+  | "smartFooter"
   | "cta"
   | "footer"
   | "custom";
@@ -275,6 +284,12 @@ export interface BuilderMetadata {
   template?: string;
 
   industry?: string;
+
+  themeDemo?: {
+    presetId: string;
+    category: string;
+    seededAt: string;
+  };
 }
 
 /* ==========================================================

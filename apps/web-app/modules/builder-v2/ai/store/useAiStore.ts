@@ -31,6 +31,14 @@ export interface AiMessage {
   kind?: AiMessageKind;
 }
 
+export interface AiAgentActivity {
+  agent: string;
+  stage: string;
+  summary: string;
+  ok: boolean;
+  warnings?: string[];
+}
+
 /* ==========================================================
    STORE
 ========================================================== */
@@ -66,6 +74,8 @@ interface AiStore {
 
   hasGeneratedCode: boolean;
 
+  agents: AiAgentActivity[];
+
   /* ----------------------------------------
      Attachments
   ---------------------------------------- */
@@ -93,6 +103,8 @@ interface AiStore {
   setWaitingForLogo(value: boolean): void;
 
   setGeneratedCode(value: boolean): void;
+
+  setAgents(agents: AiAgentActivity[]): void;
 
   setAttachmentMenu(open: boolean): void;
 
@@ -124,6 +136,8 @@ export const useAiStore = create<AiStore>((set) => ({
   waitingForLogo: false,
 
   hasGeneratedCode: false,
+
+  agents: [],
 
   attachmentMenuOpen: false,
 
@@ -185,6 +199,10 @@ export const useAiStore = create<AiStore>((set) => ({
     set({ hasGeneratedCode });
   },
 
+  setAgents(agents) {
+    set({ agents });
+  },
+
   /* ----------------------------------------
      Attachments
   ---------------------------------------- */
@@ -221,6 +239,8 @@ export const useAiStore = create<AiStore>((set) => ({
       hasGeneratedCode: false,
 
       attachmentMenuOpen: false,
+
+      agents: [],
 
     });
   },

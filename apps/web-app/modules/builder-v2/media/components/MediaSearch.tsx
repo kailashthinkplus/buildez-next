@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 
 /* ==========================================================
@@ -19,12 +19,18 @@ export default function MediaSearch({
   onSearch,
 }: MediaSearchProps) {
   const [query, setQuery] = useState("");
+  const didMountRef = useRef(false);
 
   /* --------------------------------------------------------
      Debounced Search
   -------------------------------------------------------- */
 
   useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+
     const timer = setTimeout(() => {
       onSearch(query.trim());
     }, 300);

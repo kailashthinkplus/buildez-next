@@ -39,7 +39,7 @@ export function SidebarShell({ mobileOpen, setMobileOpen }: Props) {
             animate={{ x: 0 }}
             exit={{ x: -260 }}
             transition={{ duration: 0.25 }}
-            className="fixed top-0 left-0 z-50 h-full w-[250px] glass border-r"
+            className="fixed top-0 left-0 z-50 h-full w-[250px] shrink-0 dashboard-panel border-r dashboard-border"
           >
             <Sidebar setMobileOpen={setMobileOpen} />
           </motion.aside>
@@ -47,7 +47,7 @@ export function SidebarShell({ mobileOpen, setMobileOpen }: Props) {
       </AnimatePresence>
 
       {/* DESKTOP */}
-      <aside className="hidden lg:block w-[250px] h-full glass border-r">
+      <aside className="hidden lg:block h-full w-[250px] shrink-0 dashboard-panel border-r dashboard-border">
         <Sidebar setMobileOpen={setMobileOpen} />
       </aside>
     </>

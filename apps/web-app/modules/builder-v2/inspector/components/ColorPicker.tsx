@@ -91,6 +91,19 @@ export default function ColorPicker({
 
       {showPicker && (
         <div className="absolute top-full mt-2 left-0 z-50 bg-black/95 border border-white/10 rounded-lg p-3 shadow-2xl">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wide text-white/60">
+              Color
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowPicker(false)}
+              className="rounded px-2 py-1 text-xs text-white/60 transition hover:bg-white/10 hover:text-white"
+              aria-label="Close color picker"
+            >
+              Close
+            </button>
+          </div>
           <div className="grid grid-cols-8 gap-2 mb-3">
             {COLOR_PALETTE.map((color) => (
               <button

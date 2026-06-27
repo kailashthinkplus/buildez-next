@@ -13,10 +13,20 @@ const BuilderV2Root = dynamic(
   { ssr: false }
 );
 
-export default function Page() {
+interface BuilderRootProps {
+  pageId: string;
+  siteId: string;
+  pageStatus: "DRAFT" | "PUBLISHED";
+  pageTitle: string;
+  initialBlueprint: unknown;
+  initialDesignTokens?: Record<string, unknown> | null;
+  initialSiteLayout?: Record<string, unknown> | null;
+}
+
+export default function BuilderRoot(props: BuilderRootProps) {
   return (
     <Suspense>
-      <BuilderV2Root />
+      <BuilderV2Root {...props} />
     </Suspense>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Sparkles, User } from "lucide-react";
 
 import type { AiMessage } from "../types/conversation";
 
@@ -82,7 +83,7 @@ export default function ChatMessages({
               className="flex gap-3"
             >
               <div className="h-8 w-8 rounded-full bg-white/5 backdrop-blur-md border border-white/20 flex items-center justify-center flex-shrink-0 shadow-lg">
-                ✨
+                <Sparkles size={15} aria-hidden />
               </div>
 
               <div className="flex-1 space-y-3">
@@ -114,7 +115,7 @@ export default function ChatMessages({
               className="flex gap-3"
             >
               <div className="h-8 w-8 rounded-full bg-white/5 backdrop-blur-md border border-white/20 flex items-center justify-center flex-shrink-0 shadow-lg">
-                ✨
+                <Sparkles size={15} aria-hidden />
               </div>
 
               <div className="flex-1 space-y-3">
@@ -148,7 +149,7 @@ export default function ChatMessages({
           >
             {!isUser && (
               <div className="h-8 w-8 rounded-full bg-white/5 backdrop-blur-md border border-white/20 flex items-center justify-center flex-shrink-0 shadow-lg">
-                ✨
+                <Sparkles size={15} aria-hidden />
               </div>
             )}
 
@@ -164,7 +165,7 @@ export default function ChatMessages({
 
             {isUser && (
               <div className="h-8 w-8 rounded-full bg-white/5 backdrop-blur-md border border-white/20 flex items-center justify-center flex-shrink-0 shadow-lg">
-                👤
+                <User size={15} aria-hidden />
               </div>
             )}
           </div>

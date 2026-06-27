@@ -11,6 +11,7 @@ import {
   User,
   Paperclip,
   Upload,
+  Rocket,
 } from "lucide-react";
 
 import { AIAttachmentMenu } from "@/app/app/components/ai/AIAttachmentMenu";
@@ -208,7 +209,7 @@ export default function AiPanel({
     runningRef.current = true;
     setFlowStage("running");
 
-    // ✅ Enhanced prompt for AI-V8 HTML generation
+    // Enhanced prompt for AI-V8 HTML generation
     const finalPrompt = `Create a ${tone} website for: ${lastPromptRef.current}
 
 Style Requirements:
@@ -223,7 +224,7 @@ Style Requirements:
       ...m,
       {
         role: "assistant",
-        text: "🎨 Generating your website with AI...",
+        text: "Generating your website with AI...",
         ts: now(),
       },
     ]);
@@ -277,7 +278,7 @@ Style Requirements:
       ...m,
       {
         role: "assistant",
-        text: "⚠️ Generation cancelled.",
+        text: "Generation cancelled.",
         ts: now(),
       },
     ]);
@@ -311,9 +312,9 @@ Style Requirements:
 
   return (
     <div className="h-full flex flex-col px-2 py-2 text-white/90">
-      {/* ✅ AI-V8 Badge */}
-      <div className="mb-2 px-3 py-1.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 rounded-lg text-xs text-center">
-        🚀 Powered by AI-V8 (HTML Generation)
+      <div className="mb-2 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 rounded-lg text-xs text-center">
+        <Rocket size={13} aria-hidden />
+        Powered by AI-V8 (HTML Generation)
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-4">

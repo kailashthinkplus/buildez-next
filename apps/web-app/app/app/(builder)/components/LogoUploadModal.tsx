@@ -3,7 +3,7 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, X, Loader2, Sparkles, Palette } from "lucide-react";
+import { Upload, X, Loader2, Sparkles, Palette, Lightbulb } from "lucide-react";
 
 /* ============================================================
    TYPES
@@ -141,11 +141,11 @@ export function LogoUploadModal({
       reader.onload = (e) => setPreview(e.target?.result as string);
       reader.readAsDataURL(file);
 
-      /* 1️⃣ Convert */
+      /* Convert */
       setStatus("Optimizing logo…");
       const webp = await convertLogoToWebP(file);
 
-      /* 2️⃣ Init upload */
+      /* Init upload */
       setStatus("Uploading logo…");
 
       const payload = {
@@ -182,7 +182,7 @@ export function LogoUploadModal({
         throw new Error("Invalid upload init response");
       }
 
-      /* 3️⃣ PUT to storage */
+      /* Upload to storage */
       const putRes = await fetch(uploadUrl, {
         method: "PUT",
         headers: { "Content-Type": "image/webp" },
@@ -194,7 +194,7 @@ export function LogoUploadModal({
         throw new Error(`Upload failed (${putRes.status}): ${errText}`);
       }
 
-      /* 4️⃣ Extract palette */
+      /* Extract palette */
       setStatus("Extracting brand colors…");
 
       const paletteRes = await fetch("/api/branding/extract-palette", {
@@ -417,7 +417,10 @@ export function LogoUploadModal({
           {/* TIPS */}
           {!preview && !uploading && (
             <div className="space-y-2 text-xs text-white/50">
-              <p className="font-medium text-white/70">💡 Tips:</p>
+              <p className="flex items-center gap-1.5 font-medium text-white/70">
+                <Lightbulb size={14} aria-hidden />
+                Tips:
+              </p>
               <ul className="space-y-1 pl-4">
                 <li>• Use your brand logo for accurate color extraction</li>
                 <li>• Transparent backgrounds (PNG) work best</li>

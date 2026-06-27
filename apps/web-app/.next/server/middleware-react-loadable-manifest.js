@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{}"
+self.__REACT_LOADABLE_MANIFEST="{\"app/app/(builder)/[siteSlug]/[pageSlugWithId]/BuilderRoot.tsx -> @/modules/builder-v2/workspace/BuilderRoot\":{\"id\":\"app/app/(builder)/[siteSlug]/[pageSlugWithId]/BuilderRoot.tsx -> @/modules/builder-v2/workspace/BuilderRoot\",\"files\":[\"static/chunks/_app-pages-browser_modules_builder-v2_workspace_BuilderRoot_tsx.js\"]}}"

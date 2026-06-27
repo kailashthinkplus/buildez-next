@@ -1,21 +1,32 @@
 "use client";
 
 import { Globe, Undo2 } from "lucide-react";
-import { usePublishPage } from "../hooks/usePublishPage";
-import { useUnpublishPage } from "../hooks/useUnpublishPage";
+import { usePageMutations } from "../hooks/usePageMutations";
 
-export default function PublishButton({ page }) {
-  const { publish, loading: pubLoading } = usePublishPage();
-  const { unpublish, loading: unpubLoading } = useUnpublishPage();
+export default function PublishButton({ page, onClick, onChanged }) {
+  const siteSlug = page.site?.slug;
+  const { publish, unpublish } = usePageMutations(siteSlug);
+  const isPublished = page.status === "PUBLISHED";
 
-  if (page.published) {
+  async function handleUnpublish() {
+    onClick?.();
+    await unpublish.mutate({ pageId: page.id });
+    onChanged?.();
+  }
+
+  async function handlePublish() {
+    onClick?.();
+    await publish.mutate({ pageId: page.id });
+    onChanged?.();
+  }
+
+  if (isPublished) {
     return (
       <button
-        onClick={() => unpublish(page.id)}
-        disabled={unpubLoading}
+        onClick={() => void handleUnpublish()}
         className="
           px-3 py-1.5 rounded-lg text-xs
-          bg-gray-200 dark:bg-white/10
+          dashboard-subtle
           flex items-center gap-1
         "
       >
@@ -27,8 +38,7 @@ export default function PublishButton({ page }) {
 
   return (
     <button
-      onClick={() => publish(page.id)}
-      disabled={pubLoading}
+      onClick={() => void handlePublish()}
       className="
         px-3 py-1.5 rounded-lg text-xs
         bg-green-600 text-white hover:bg-green-500

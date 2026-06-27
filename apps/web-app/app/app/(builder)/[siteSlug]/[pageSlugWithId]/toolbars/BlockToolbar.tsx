@@ -32,12 +32,12 @@ interface BlockToolbarProps {
 }
 
 /* ============================================================
-   BLOCK TOOLBAR — CANONICAL (V4)
+   BLOCK TOOLBAR — CANONICAL (V5)
    ------------------------------------------------------------
-   • UI unchanged
-   • Drag emits builder:start-drag with correct payload
-   • No side-channel globals
-   • Deterministic command buttons
+   ✓ Functionality unchanged
+   ✓ Modern floating glass UI
+   ✓ Same drag behaviour
+   ✓ Same callbacks
 ============================================================ */
 
 export function BlockToolbar({
@@ -53,17 +53,27 @@ export function BlockToolbar({
 }: BlockToolbarProps) {
   if (!isSelected) return null;
 
+  const iconButton =
+    "flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-all duration-150 hover:bg-white/10 hover:text-white active:scale-95";
+
   return (
     <div
       className="
         absolute
-        left-1/2 -translate-x-1/2
-        -top-9
-        flex items-center gap-2
-        bg-neutral-900 text-white
-        px-3 py-1.5
-        rounded-full
-        shadow-xl
+        left-1/2
+        -top-12
+        -translate-x-1/2
+        inline-flex
+        items-center
+        gap-1
+        rounded-[22px]
+        border
+        border-white/10
+        bg-neutral-950/95
+        backdrop-blur-xl
+        px-2
+        py-1
+        shadow-[0_12px_40px_rgba(0,0,0,.45)]
         z-[1000]
         pointer-events-auto
         select-none
@@ -76,13 +86,13 @@ export function BlockToolbar({
     >
       {/* =====================================================
          DRAG HANDLE
-         (Starts global drag directly)
       ===================================================== */}
+
       <button
         type="button"
-        className="p-1 cursor-grab text-neutral-300 hover:text-white"
         title="Drag"
         aria-label="Drag"
+        className={`${iconButton} cursor-grab active:cursor-grabbing`}
         onMouseDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -90,8 +100,8 @@ export function BlockToolbar({
           window.dispatchEvent(
             new CustomEvent("builder:start-drag", {
               detail: {
-                id,              // ✅ CORRECT: blueprint node id
-                type: "block",   // structural type for DnD engine
+                id,
+                type: "block",
                 source: "canvas",
                 x: e.clientX,
                 y: e.clientY,
@@ -102,107 +112,121 @@ export function BlockToolbar({
           document.body.classList.add("builder-dragging");
         }}
       >
-        <GripVertical size={14} />
+        <GripVertical className="h-4 w-4" />
       </button>
 
       {/* =====================================================
          MOVE UP
       ===================================================== */}
+
       {onMoveUp && (
         <button
           type="button"
+          title="Move up"
+          aria-label="Move up"
+          className={iconButton}
           onClick={(e) => {
             e.stopPropagation();
             onMoveUp();
           }}
-          className="p-1 text-neutral-300 hover:text-white"
-          title="Move up"
-          aria-label="Move up"
         >
-          <ArrowUp size={14} />
+          <ArrowUp className="h-4 w-4" />
         </button>
       )}
 
       {/* =====================================================
          MOVE DOWN
       ===================================================== */}
+
       {onMoveDown && (
         <button
           type="button"
+          title="Move down"
+          aria-label="Move down"
+          className={iconButton}
           onClick={(e) => {
             e.stopPropagation();
             onMoveDown();
           }}
-          className="p-1 text-neutral-300 hover:text-white"
-          title="Move down"
-          aria-label="Move down"
         >
-          <ArrowDown size={14} />
+          <ArrowDown className="h-4 w-4" />
         </button>
       )}
 
+      {/* Divider */}
+
+      <div className="mx-1 h-5 w-px bg-white/10" />
+
       {/* =====================================================
-         SETTINGS (INSPECTOR)
+         SETTINGS
       ===================================================== */}
+
       <button
         type="button"
+        title="Settings"
+        aria-label="Settings"
+        className={iconButton}
         onClick={(e) => {
           e.stopPropagation();
           onSettings();
         }}
-        className="p-1 text-neutral-300 hover:text-white"
-        title="Settings"
-        aria-label="Settings"
       >
-        <Settings size={14} />
+        <Settings className="h-4 w-4" />
       </button>
 
       {/* =====================================================
          DUPLICATE
       ===================================================== */}
+
       <button
         type="button"
+        title={`Duplicate ${label}`}
+        aria-label={`Duplicate ${label}`}
+        className={iconButton}
         onClick={(e) => {
           e.stopPropagation();
           onDuplicate();
         }}
-        className="p-1 text-neutral-300 hover:text-white"
-        title={`Duplicate ${label}`}
-        aria-label={`Duplicate ${label}`}
       >
-        <Copy size={14} />
+        <Copy className="h-4 w-4" />
       </button>
+
+      {/* Divider */}
+
+      <div className="mx-1 h-5 w-px bg-white/10" />
 
       {/* =====================================================
          AI
       ===================================================== */}
+
       <button
         type="button"
+        title="AI"
+        aria-label="AI"
+        className={iconButton}
         onClick={(e) => {
           e.stopPropagation();
           onAI();
         }}
-        className="p-1 text-neutral-300 hover:text-white"
-        title="AI"
-        aria-label="AI"
       >
-        <Sparkles size={14} />
+        <Sparkles className="h-4 w-4" />
       </button>
 
       {/* =====================================================
          DELETE
       ===================================================== */}
+
       <button
         type="button"
+        title={`Delete ${label}`}
+        aria-label={`Delete ${label}`}
+        className={`${iconButton} hover:text-red-400`}
         onClick={(e) => {
           e.stopPropagation();
           onDelete();
         }}
-        className="p-1 text-neutral-300 hover:text-red-400"
-        title={`Delete ${label}`}
-        aria-label={`Delete ${label}`}
       >
-        <Trash size={14} />
+        <Trash className="h-4 w-4" />
       </button>
     </div>
   );

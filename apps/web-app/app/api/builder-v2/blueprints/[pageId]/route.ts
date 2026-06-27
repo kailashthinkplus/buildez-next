@@ -1,4 +1,4 @@
-import { prisma } from "@buildez/db";
+import { Prisma, prisma } from "@buildez/db";
 
 import { apiHandler } from "@/lib/api/apiHandler";
 
@@ -94,7 +94,7 @@ export const POST = apiHandler(
             id: page.id,
           },
           data: {
-            metadata: body.metadata,
+            metadata: body.metadata as Prisma.InputJsonValue,
           },
         });
       }
@@ -102,6 +102,7 @@ export const POST = apiHandler(
 
     return {
       pageId: page.id,
+      pageStatus: page.status,
       saved: true,
       updatedAt: new Date().toISOString(),
     };

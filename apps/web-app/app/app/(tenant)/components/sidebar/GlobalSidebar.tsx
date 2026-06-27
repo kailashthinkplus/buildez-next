@@ -59,16 +59,16 @@ export function GlobalSidebar({ setMobileOpen }: GlobalSidebarProps) {
         <Image
           src="/buildez-logo-light.svg"
           alt="BuildEZ"
-          width={120}
-          height={32}
-          className="block dark:hidden"
+          width={148}
+          height={72}
+          className="block h-11 w-[148px] object-contain object-left dark:hidden"
         />
         <Image
           src="/buildez-logo-dark.svg"
           alt="BuildEZ"
-          width={120}
-          height={32}
-          className="hidden dark:block"
+          width={148}
+          height={72}
+          className="hidden h-11 w-[148px] object-contain object-left dark:block"
         />
 
         <button
@@ -93,8 +93,8 @@ export function GlobalSidebar({ setMobileOpen }: GlobalSidebarProps) {
                 flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition
                 ${
                   active
-                    ? "bg-blue-500/20 border border-blue-500/40"
-                    : "hover:bg-black/5 dark:hover:bg-white/10"
+                    ? "dashboard-nav-active"
+                    : "dashboard-muted dashboard-hover"
                 }
               `}
             >

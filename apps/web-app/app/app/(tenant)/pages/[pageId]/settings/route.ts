@@ -1,32 +1,48 @@
 // /app/api/pages/[pageId]/settings/route.ts
 import { NextRequest } from "next/server";
-import { apiHandler, ApiError } from "@/lib/api/apiHandler";
+import { apiHandler } from "@/lib/api/apiHandler";
 import { prisma } from "@buildez/db";
-import { requirePermission } from "@/lib/auth/permissions";
 
-export const PUT = apiHandler(async (req: NextRequest, { params }) => {
-  const { pageId } = await ctx.params;
-  const body = await req.json();
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
 
-  await verifyPermission(req, "editPage");
+export const PUT = async (
+  req: NextRequest,
+  context: { params: Promise<{ pageId: string }> }
+) => {
+  return apiHandler(async ({ auth }) => {
+    const { pageId } = await context.params;
+    const body = await req.json();
 
-  const tenantId = req.headers.get("x-tenant-id");
+    const page = await prisma.page.findFirst({
+      where: {
+        id: pageId,
+        site: {
+          tenantId: auth.tenant.id,
+        },
+      },
+    });
 
-  const page = await prisma.page.findFirst({
-    where: { id: pageId, tenantId },
-  });
+    if (!page) throw new Error("Page not found");
 
-  if (!page) throw new ApiError("NOT_FOUND");
+    const metadata = asRecord(page.metadata);
 
-  const updated = await prisma.page.update({
-    where: { id: pageId },
-    data: {
-      title: body.title,
-      slug: body.slug,
-      seoTitle: body.seoTitle || null,
-      seoDescription: body.seoDescription || null,
-    },
-  });
+    const updated = await prisma.page.update({
+      where: { id: pageId },
+      data: {
+        title: body.title,
+        slug: body.slug,
+        metadata: {
+          ...metadata,
+          seoTitle: body.seoTitle || "",
+          seoDescription: body.seoDescription || "",
+        },
+      },
+    });
 
-  return { success: true, page: updated };
-});
+    return { success: true, page: updated };
+  })(req, context);
+};

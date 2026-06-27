@@ -42,18 +42,18 @@ export default function UploadMediaModal({ open, onClose }: any) {
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-lg">
-      <div className="relative w-full max-w-lg p-8 rounded-2xl bg-white/10 dark:bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/15 dark:border-white/20 shadow-[0_20px_70px_-10px_rgba(0,0,0,0.45)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.65)]">
+      <div className="relative w-full max-w-lg p-8 rounded-2xl dashboard-card-strong backdrop-blur-2xl backdrop-saturate-150 shadow-[0_20px_70px_-10px_rgba(0,0,0,0.25)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.65)]">
         
         {/* CLOSE ICON */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 p-2 rounded-full hover:bg-white/10 transition"
+          className="absolute right-4 top-4 p-2 rounded-full dashboard-hover transition"
         >
-          <X className="h-5 w-5 text-white/70" />
+          <X className="h-5 w-5 dashboard-muted" />
         </button>
 
         {/* HEADER */}
-        <h2 className="text-center text-xl font-semibold text-white mb-6 mt-2">Upload New Media</h2>
+        <h2 className="text-center text-xl font-semibold mb-6 mt-2">Upload New Media</h2>
 
         {/* IMAGE PREVIEW AND FILE DETAILS */}
         <div className="flex flex-col items-center">
@@ -63,10 +63,10 @@ export default function UploadMediaModal({ open, onClose }: any) {
               <img
                 src={previewUrl}
                 alt="Preview"
-                className="w-full h-64 object-contain rounded-xl border border-white/20"
+                className="w-full h-64 object-contain rounded-xl dashboard-card"
               />
             ) : (
-              <div className="w-full h-64 flex items-center justify-center border-dashed border-2 border-gray-400 rounded-xl text-white/60">
+              <div className="w-full h-64 flex items-center justify-center border-dashed border-2 dashboard-border rounded-xl dashboard-muted">
                 <span className="text-lg">No image selected</span>
               </div>
             )}
@@ -74,7 +74,7 @@ export default function UploadMediaModal({ open, onClose }: any) {
 
           {/* File Info */}
           {file && (
-            <div className="text-center text-white/80 text-sm mb-4">
+            <div className="text-center dashboard-muted text-sm mb-4">
               <p><strong>File Size:</strong> {(fileSize / (1024 * 1024)).toFixed(2)} MB</p>
               <p><strong>File Type:</strong> {file.type}</p>
             </div>
@@ -86,13 +86,13 @@ export default function UploadMediaModal({ open, onClose }: any) {
           <input
             type="file"
             onChange={handleFileChange}
-            className="w-full p-3 rounded-xl text-sm bg-white/20 dark:bg-white/5 border border-white/20 dark:border-white/10 text-white placeholder-white/50 backdrop-blur-xl focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+            className="w-full p-3 rounded-xl text-sm dashboard-input backdrop-blur-xl"
           />
 
           <div className="flex justify-between pt-1">
             <button
               onClick={onClose}
-              className="text-sm text-white/60 hover:text-white underline"
+              className="text-sm dashboard-muted hover:text-[var(--dashboard-text)] underline"
             >
               Close
             </button>

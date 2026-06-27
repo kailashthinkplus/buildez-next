@@ -3,13 +3,10 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
-import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 
-export const GET = apiHandler(async (req: NextRequest) => {
-  const tenant = await verifyTenantAccess(req);
-  if (!tenant) return { pages: [], total: 0 };
-
-  const { searchParams } = req.nextUrl;
+export const GET = apiHandler(async ({ req, auth }) => {
+  const request = req as NextRequest;
+  const { searchParams } = request.nextUrl;
 
   const search = searchParams.get("search") || "";
   const sort = searchParams.get("sort") || "createdAt_desc";
@@ -35,7 +32,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
      Get all site IDs under this tenant
   ----------------------------------------------------------- */
   const sites = await prisma.site.findMany({
-    where: { tenantId: tenant.id },
+    where: { tenantId: auth.tenant.id },
     select: { id: true },
   });
 
@@ -49,14 +46,15 @@ export const GET = apiHandler(async (req: NextRequest) => {
   ----------------------------------------------------------- */
   const where: any = {
     siteId: { in: siteIds },
+    deletedAt: { not: null },
     OR: [
       { title: { contains: search, mode: "insensitive" } },
       { slug: { contains: search, mode: "insensitive" } },
     ],
   };
 
-  if (filter === "published") where.published = true;
-  if (filter === "draft") where.published = false;
+  if (filter === "published") where.status = "PUBLISHED";
+  if (filter === "draft") where.status = "DRAFT";
 
   /* -----------------------------------------------------------
      Query DB

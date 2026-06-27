@@ -19,12 +19,20 @@ export function useDeletePage() {
         },
       });
 
-      if (!res.ok) throw new Error("Failed to delete");
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Failed to delete page");
+      }
 
-      mutate("/api/pages");
+      await mutate((key) => (
+        typeof key === "string" && key.startsWith("/api/pages")
+      ));
       return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err.message };
+    } catch (err: unknown) {
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : "Failed to delete page",
+      };
     } finally {
       setLoading(false);
     }

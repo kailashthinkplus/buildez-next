@@ -10,7 +10,12 @@ module.exports = {
     "!./modules/builder/ai-v8/**/*",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+      },
+    },
   },
   plugins: [],
 };

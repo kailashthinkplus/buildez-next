@@ -5,6 +5,30 @@ import { prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function asNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function asString(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+function countRecommendations(value: unknown): number {
+  if (Array.isArray(value)) return value.length;
+  return asNumber(value) ?? 0;
+}
+
 /* ============================================================
    GET — LIST PAGES
 ============================================================ */
@@ -79,6 +103,7 @@ export const GET = async (request: NextRequest) => {
     ------------------------------------------ */
     const where = {
       siteId: { in: siteIds },
+      deletedAt: null,
       ...(search
         ? {
             OR: [
@@ -106,9 +131,51 @@ export const GET = async (request: NextRequest) => {
 
     console.log("🟢 [PAGES][GET] Pages found:", pages.length, "Total:", total);
 
+    const normalizedPages = pages.map((page) => {
+      const metadata = asRecord(page.metadata);
+      const seoMetadata = asRecord(metadata.seo);
+      const seoTitle = asString(metadata.seoTitle);
+      const seoDescription = asString(metadata.seoDescription);
+      const requiredFields = [
+        page.title,
+        page.slug,
+        seoTitle,
+        seoDescription,
+      ];
+      const requiredFieldsCompleted = requiredFields.filter(Boolean).length;
+      const requiredFieldsTotal = requiredFields.length;
+      const fallbackSeoScore = Math.round(
+        (requiredFieldsCompleted / requiredFieldsTotal) * 100
+      );
+
+      return {
+        ...page,
+        seoTitle,
+        seoDescription,
+        screenshotUrl:
+          asString(metadata.screenshotUrl) ||
+          asString(metadata.thumbnailUrl) ||
+          asString(metadata.previewImageUrl) ||
+          asString(metadata.previewUrl) ||
+          asString(metadata.ogImage),
+        seoScore:
+          asNumber(metadata.seoScore) ??
+          asNumber(seoMetadata.score) ??
+          fallbackSeoScore,
+        aiRecommendationsTotal:
+          countRecommendations(metadata.aiRecommendations) ||
+          countRecommendations(metadata.recommendations) ||
+          countRecommendations(metadata.aiRecommendationCount),
+        requiredFieldsCompleted:
+          asNumber(metadata.requiredFieldsCompleted) ?? requiredFieldsCompleted,
+        requiredFieldsTotal:
+          asNumber(metadata.requiredFieldsTotal) ?? requiredFieldsTotal,
+      };
+    });
+
     return {
       data: {
-        pages,
+        pages: normalizedPages,
         total,
       },
     };

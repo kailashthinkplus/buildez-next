@@ -63,7 +63,7 @@ export const useCanvasStore = create<CanvasStore>((set) => ({
 
   zoom: 100,
 
-  isDarkMode: true,
+  isDarkMode: false,
 
   showGrid: false,
 

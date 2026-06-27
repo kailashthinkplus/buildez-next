@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 
+import MediaAssetDetailsModal from "./MediaAssetDetailsModal";
 import MediaGrid from "./MediaGrid";
 import MediaUpload from "./MediaUpload";
 import MediaAIGenerator from "./MediaAIGenerator";
@@ -54,13 +55,15 @@ export default function MediaLibraryModal({
 
     generating,
 
-    uploadImage,
+    uploadImages,
 
     generateImages,
 
     search,
 
     refresh,
+
+    deleteAsset,
 
   } = useMedia(siteId);
 
@@ -69,6 +72,17 @@ export default function MediaLibraryModal({
     "upload" |
     "ai"
   >("library");
+
+  const [detailsAsset, setDetailsAsset] =
+    useState<MediaAsset | null>(null);
+
+  async function handleDelete(asset: MediaAsset) {
+    if (!confirm(`Delete ${asset.filename}?`)) return;
+    await deleteAsset(asset.id);
+    if (detailsAsset?.id === asset.id) {
+      setDetailsAsset(null);
+    }
+  }
 
   if (!open) return null;
 
@@ -186,7 +200,9 @@ export default function MediaLibraryModal({
             <MediaGrid
               assets={assets}
               loading={loading}
-              onSelect={onSelect}
+              selectedAsset={detailsAsset}
+              onSelect={setDetailsAsset}
+              onDelete={handleDelete}
             />
 
           )}
@@ -195,9 +211,9 @@ export default function MediaLibraryModal({
 
             <MediaUpload
               uploading={uploading}
-              onUpload={async (file) => {
+              onUpload={async (files) => {
 
-                await uploadImage(file);
+                await uploadImages(files);
 
                 await refresh();
 
@@ -227,6 +243,16 @@ export default function MediaLibraryModal({
         </div>
 
       </div>
+
+      <MediaAssetDetailsModal
+        asset={detailsAsset}
+        onClose={() => setDetailsAsset(null)}
+        onDelete={handleDelete}
+        onUse={(asset) => {
+          onSelect(asset);
+          setDetailsAsset(null);
+        }}
+      />
 
     </div>
 

@@ -44,9 +44,9 @@ export function WebsiteSwitcher() {
           onClick={() => setOpen((v) => !v)}
           className="
             flex items-center gap-2 px-3 py-2 rounded-xl
-            bg-black/5 dark:bg-white/10
+            dashboard-subtle
             text-sm font-medium
-            hover:bg-black/10 dark:hover:bg-white/15
+            dashboard-hover
             max-w-[220px]
           "
         >
@@ -61,8 +61,7 @@ export function WebsiteSwitcher() {
           <div
             className="
               absolute left-0 mt-2 w-64 z-50
-              rounded-xl border border-black/10 dark:border-white/10
-              bg-white dark:bg-zinc-900
+              rounded-xl dashboard-card-strong
               shadow-xl overflow-hidden
             "
           >
@@ -81,11 +80,11 @@ export function WebsiteSwitcher() {
                     className={`
                       w-full flex items-center justify-between
                       px-3 py-2 text-sm
-                      hover:bg-black/5 dark:hover:bg-white/10
+                      dashboard-hover
                       ${
                         active
                           ? "font-semibold text-indigo-600 dark:text-indigo-400"
-                          : "text-black/80 dark:text-white/80"
+                          : "dashboard-muted"
                       }
                     `}
                   >
@@ -97,7 +96,7 @@ export function WebsiteSwitcher() {
             </div>
 
             {/* Divider */}
-            <div className="border-t border-black/10 dark:border-white/10" />
+            <div className="border-t dashboard-border" />
 
             {/* Create new site */}
             <button
@@ -108,7 +107,7 @@ export function WebsiteSwitcher() {
               className="
                 w-full flex items-center gap-2
                 px-3 py-2 text-sm font-medium
-                hover:bg-black/5 dark:hover:bg-white/10
+                dashboard-hover
               "
             >
               <Plus size={14} />

@@ -36,6 +36,14 @@ function styleObjectToCss(style?: Record<string, unknown>): string {
     "opacity", "zIndex", "fontWeight", "lineHeight", 
     "flex", "flexGrow", "flexShrink", "order"
   ]);
+  const LENGTH_PROPS = new Set([
+    "width", "height", "minWidth", "minHeight", "maxWidth", "maxHeight",
+    "top", "right", "bottom", "left", "gap", "rowGap", "columnGap",
+    "padding", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
+    "margin", "marginTop", "marginRight", "marginBottom", "marginLeft",
+    "borderRadius", "borderWidth", "borderTopWidth", "borderRightWidth",
+    "borderBottomWidth", "borderLeftWidth", "fontSize", "letterSpacing",
+  ]);
 
   return Object.entries(style)
     .filter(([, value]) => value !== undefined && value !== null && value !== "")
@@ -47,6 +55,14 @@ function styleObjectToCss(style?: Record<string, unknown>): string {
       }
 
       if (typeof value === "number") {
+        return `${cssKey}:${value}px`;
+      }
+
+      if (
+        LENGTH_PROPS.has(key) &&
+        typeof value === "string" &&
+        /^-?\d+(\.\d+)?$/.test(value)
+      ) {
         return `${cssKey}:${value}px`;
       }
 
@@ -113,6 +129,7 @@ ${(node.children ?? []).map(child => renderNode(child, page)).join("")}
 
     case "container": {
       const layout = node.props?.layout;
+      const direction = node.props?.direction;
       const visual = node.props?.visual;
       const className = node.props?.className ? ` ${node.props.className}` : "";
       
@@ -121,6 +138,7 @@ ${(node.children ?? []).map(child => renderNode(child, page)).join("")}
   class="be-container${className}" 
   data-id="${node.id}"
   ${layout ? `data-layout="${layout}"` : ""}
+  ${direction ? `data-direction="${direction}"` : ""}
   ${visual ? `data-visual="${visual}"` : ""}
   style="${styleStr}"
 >
@@ -198,7 +216,8 @@ ${escapeHtml(node.props?.text || "")}
 
     case "button": {
       const variant = node.props?.variant || "primary";
-      const href = node.props?.href || "#";
+      const href = node.props?.href || node.props?.url || "#";
+      const label = node.props?.label || node.props?.text || "Button";
       
       return `
 <a 
@@ -208,24 +227,28 @@ ${escapeHtml(node.props?.text || "")}
   href="${href}"
   style="${styleStr}"
 >
-${escapeHtml(node.props?.text || "Button")}
+${escapeHtml(label)}
 </a>`;
     }
 
     case "spacer": {
-      const height = Number(node.props?.height) || 32;
+      const spacerStyle = styleStr || styleObjectToCss({
+        width: node.style?.width ?? "100%",
+        height: node.style?.height ?? node.props?.height ?? 32,
+        minHeight: node.style?.minHeight ?? node.style?.height ?? node.props?.height ?? 32,
+      });
       
       return `
 <div 
   class="be-spacer" 
   data-id="${node.id}"
-  style="height:${height}px"
+  style="${spacerStyle}"
 ></div>`;
     }
 
     case "icon": {
       const variant = node.props?.variant || "default";
-      const name = node.props?.name || "star";
+      const name = node.props?.name || node.props?.iconName || node.props?.glyph || "star";
       
       return `
 <span 
@@ -234,7 +257,25 @@ ${escapeHtml(node.props?.text || "Button")}
   data-variant="${variant}"
   data-icon="${name}"
   style="${styleStr}"
-></span>`;
+>${escapeHtml(String(node.props?.glyph ?? ""))}</span>`;
+    }
+
+    case "video": {
+      if (!node.props?.src) return "";
+
+      return `
+<video
+  class="be-video${node.props?.className ? ` ${node.props.className}` : ""}"
+  data-id="${node.id}"
+  src="${node.props.src}"
+  ${node.props?.poster ? `poster="${node.props.poster}"` : ""}
+  ${node.props?.controls === false ? "" : "controls"}
+  ${node.props?.autoplay ? "autoplay" : ""}
+  ${node.props?.muted ? "muted" : ""}
+  ${node.props?.loop ? "loop" : ""}
+  ${node.props?.playsInline === false ? "" : "playsinline"}
+  style="${styleStr}"
+></video>`;
     }
 
     case "divider":
@@ -280,10 +321,5 @@ export function generateRuntimeHTML(input: GenerateRuntimeHTMLInput | BlueprintN
   // Generate HTML
   const html = renderNode(page, page);
 
-  return `
-${tokenCSS}
-<div id="buildez-preview-root" class="buildez-page">
-${html}
-</div>
-`.trim();
+  return `${tokenCSS}\n${html}`.trim();
 }

@@ -10,19 +10,18 @@ export function useUpdatePage() {
   async function updatePage(pageId: string, data: any) {
     setLoading(true);
     try {
-      const res = await fetch(`/api/pages/${pageId}/settings`, {
-        method: "PUT",
+      const res = await fetch(`/api/pages/${pageId}`, {
+        method: "PATCH",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          "x-tenant-id": localStorage.getItem("tenantId") || "",
         },
         body: JSON.stringify(data),
       });
 
       if (!res.ok) throw new Error("Failed to update");
 
-      mutate("/api/pages");
+      mutate((key) => typeof key === "string" && key.startsWith("/api/pages"));
       return { success: true };
     } catch (err: any) {
       return { success: false, error: err.message };

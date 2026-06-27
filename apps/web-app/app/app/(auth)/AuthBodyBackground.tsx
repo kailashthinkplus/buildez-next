@@ -9,7 +9,7 @@ export default function AuthBodyBackground({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen w-full bg-background text-foreground">
+    <div className="auth-blue-bg min-h-screen w-full">
       <div className="fixed top-6 right-6 z-50">
         <ThemeToggle />
       </div>
@@ -19,7 +19,7 @@ export default function AuthBodyBackground({
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <Image
-              src="/buildez-logo-dark.svg"
+              src="/buildez-logo-light.svg"
               alt="BuildEZ"
               width={150}
               height={42}
@@ -27,7 +27,7 @@ export default function AuthBodyBackground({
               className="dark:hidden"
             />
             <Image
-              src="/buildez-logo-light.svg"
+              src="/buildez-logo-dark.svg"
               alt="BuildEZ"
               width={150}
               height={42}

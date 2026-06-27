@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "incremental": false
+  },
+  "include": [
+    "next-env.d.ts",
+    "app/app/(builder)/[siteSlug]/[pageSlugWithId]/page.tsx",
+    "app/app/(builder)/[siteSlug]/[pageSlugWithId]/BuilderRoot.tsx",
+    "app/api/builder-v2/blueprints/[pageId]/route.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "modules/_legacy",
+    "modules/builder/ai-v8"
+  ]
+}

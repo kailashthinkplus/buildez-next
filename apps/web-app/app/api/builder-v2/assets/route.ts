@@ -1,12 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { getCurrentUser } from "@/lib/auth/session";
+import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
+import { createHash } from "node:crypto";
 
 /* ============================================================
    GET MEDIA LIBRARY
 ============================================================ */
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     const user = await getCurrentUser(req);
 
@@ -14,6 +16,14 @@ export async function GET(req: Request) {
       return NextResponse.json(
         { ok: false, error: "Unauthorized" },
         { status: 401 }
+      );
+    }
+
+    const tenant = await verifyTenantAccess(req);
+    if (!tenant) {
+      return NextResponse.json(
+        { ok: false, error: "Unauthorized tenant access" },
+        { status: 403 }
       );
     }
 
@@ -25,6 +35,21 @@ export async function GET(req: Request) {
       return NextResponse.json(
         { ok: false, error: "siteId required" },
         { status: 400 }
+      );
+    }
+
+    const site = await prisma.site.findFirst({
+      where: {
+        id: siteId,
+        tenantId: tenant.id,
+      },
+      select: { id: true },
+    });
+
+    if (!site) {
+      return NextResponse.json(
+        { ok: false, error: "Site not found for this tenant" },
+        { status: 404 }
       );
     }
 
@@ -70,7 +95,7 @@ export async function GET(req: Request) {
    CREATE MEDIA ASSET
 ============================================================ */
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser(req);
 
@@ -78,6 +103,14 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { ok: false, error: "Unauthorized" },
         { status: 401 }
+      );
+    }
+
+    const tenant = await verifyTenantAccess(req);
+    if (!tenant) {
+      return NextResponse.json(
+        { ok: false, error: "Unauthorized tenant access" },
+        { status: 403 }
       );
     }
 
@@ -103,9 +136,30 @@ export async function POST(req: Request) {
       tags = [],
     } = body;
 
+    const site = await prisma.site.findFirst({
+      where: {
+        id: siteId,
+        tenantId: tenant.id,
+      },
+      select: { id: true },
+    });
+
+    if (!site) {
+      return NextResponse.json(
+        { ok: false, error: "Site not found for this tenant" },
+        { status: 404 }
+      );
+    }
+
+    const scopedFileHash = createHash("sha256")
+      .update(siteId)
+      .update(":")
+      .update(String(fileHash || url || filename))
+      .digest("hex");
+
     const existing = await prisma.mediaAsset.findUnique({
       where: {
-        fileHash,
+        fileHash: scopedFileHash,
       },
     });
 
@@ -123,7 +177,7 @@ export async function POST(req: Request) {
         uploadedById: user.id,
         url,
         filename,
-        fileHash,
+        fileHash: scopedFileHash,
         fileSize,
         mimeType,
         mediaType,

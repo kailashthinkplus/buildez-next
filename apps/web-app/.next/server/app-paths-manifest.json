@@ -1,3 +1,7 @@
 {
-  "/(runtime)/[...slug]/page": "app/(runtime)/[...slug]/page.js"
+  "/api/tenant/me/route": "app/api/tenant/me/route.js",
+  "/api/onboarding/status/route": "app/api/onboarding/status/route.js",
+  "/app/(builder)/[siteSlug]/[pageSlugWithId]/page": "app/app/(builder)/[siteSlug]/[pageSlugWithId]/page.js",
+  "/app/(tenant)/[siteSlug]/dashboard/page": "app/app/(tenant)/[siteSlug]/dashboard/page.js",
+  "/app/(tenant)/[siteSlug]/pages/page": "app/app/(tenant)/[siteSlug]/pages/page.js"
 }

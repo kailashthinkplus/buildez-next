@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, Image as ImageIcon, X, Check, Loader2 } from "lucide-react";
+import { Upload, Image as ImageIcon, X, Check, Loader2, Lightbulb } from "lucide-react";
 
 /* ============================================================
    TYPES
@@ -136,11 +136,11 @@ export function ImageUploadModal({
         throw new Error("Image must be smaller than 10MB");
       }
 
-      /* 1️⃣ Convert image */
+      /* Convert image */
       setStatus("Optimizing image…");
       const webpFile = await convertToWebP(file);
 
-      /* 2️⃣ Init upload */
+      /* Init upload */
       setStatus("Requesting upload URL…");
 
       const res = await fetch("/api/uploads/image/init", {
@@ -166,7 +166,7 @@ export function ImageUploadModal({
         throw new Error("Invalid upload init response");
       }
 
-      /* 3️⃣ Upload to storage */
+      /* Upload to storage */
       setStatus("Uploading to storage…");
 
       const uploadRes = await fetch(uploadUrl, {
@@ -180,7 +180,7 @@ export function ImageUploadModal({
         throw new Error(`Upload failed (${uploadRes.status}): ${errText}`);
       }
 
-      /* 4️⃣ Done */
+      /* Done */
       setStatus("Upload complete!");
       setTimeout(() => {
         onSelect(publicUrl);
@@ -354,7 +354,10 @@ export function ImageUploadModal({
 
               {/* TIPS */}
               <div className="space-y-2 text-xs text-white/50">
-                <p className="font-medium text-white/70">💡 Tips:</p>
+                <p className="flex items-center gap-1.5 font-medium text-white/70">
+                  <Lightbulb size={14} aria-hidden />
+                  Tips:
+                </p>
                 <ul className="space-y-1 pl-4">
                   <li>• Use high-resolution images for best quality</li>
                   <li>• Images are automatically optimized for web</li>

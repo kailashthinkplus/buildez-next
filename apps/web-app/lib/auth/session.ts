@@ -1,7 +1,6 @@
 // /apps/web-app/lib/auth/session.ts
 import { cookies } from "next/headers";
-import { prisma } from "@buildez/db";
-import { AuthProvider } from "@prisma/client";
+import { AuthProvider, prisma } from "@buildez/db";
 
 const isProd = process.env.NODE_ENV === "production";
 export const SESSION_COOKIE = isProd ? "__Secure-session" : "session";

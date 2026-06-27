@@ -2,7 +2,8 @@
 
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
-const FALLBACK_IMAGE = "https://placehold.co/800x450/e2e8f0/64748b?text=Image";
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1600&h=900&fit=crop&auto=format";
 
 // ✅ R2 Client - Fixed environment variable names
 const r2 = new S3Client({

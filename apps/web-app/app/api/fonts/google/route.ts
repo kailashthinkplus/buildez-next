@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { FALLBACK_GOOGLE_FONTS } from "@/lib/googleFonts";
 
 const GOOGLE_FONTS_API =
   "https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=" +
@@ -21,10 +22,10 @@ export async function GET() {
     if (!process.env.GOOGLE_FONTS_API_KEY) {
       console.error("[GOOGLE FONTS] Missing API key");
 
-      return NextResponse.json(
-        { error: "Google Fonts API key missing" },
-        { status: 500 }
-      );
+      return NextResponse.json({
+        fonts: FALLBACK_GOOGLE_FONTS,
+        source: "fallback",
+      });
     }
 
     /* --------------------------------------------
@@ -57,13 +58,13 @@ export async function GET() {
       category: f.category ?? "sans-serif",
     }));
 
-    return NextResponse.json({ fonts: cache });
+    return NextResponse.json({ fonts: cache, source: "google" });
   } catch (err) {
     console.error("[GOOGLE FONTS] Fetch failed:", err);
 
-    return NextResponse.json(
-      { error: "Failed to fetch Google Fonts" },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      fonts: FALLBACK_GOOGLE_FONTS,
+      source: "fallback",
+    });
   }
 }

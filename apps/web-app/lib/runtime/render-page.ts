@@ -1,6 +1,8 @@
 import { prisma } from "@buildez/db";
 import { generateRuntimeHTML } from "@/modules/builder/runtime/generateRuntimeHTML";
 import { generateRuntimeCSS } from "@/modules/builder/runtime/generateRuntimeCSS";
+import { resolveBlueprintTree } from "@/modules/builder/runtime/resolveBlueprintTree";
+import { isBuilderV2Blueprint } from "@/modules/builder-v2/runtime/isBuilderV2Blueprint";
 
 export async function renderPage({
   siteSlug,
@@ -49,7 +51,11 @@ export async function renderPage({
     },
     include: {
       blueprint: true,
-      site: true,
+      site: {
+        include: {
+          layout: true,
+        },
+      },
     },
   });
 
@@ -81,23 +87,74 @@ export async function renderPage({
     return null;
   }
 
+  const blueprintData = page.blueprint.data;
+  const designTokens =
+    page.site.designTokens &&
+    typeof page.site.designTokens === "object" &&
+    !Array.isArray(page.site.designTokens)
+      ? (page.site.designTokens as Record<string, unknown>)
+      : null;
+  const siteLayout = page.site.layout
+    ? {
+        header: page.site.layout.header,
+        footer: page.site.layout.footer,
+      }
+    : null;
+
+  if (isBuilderV2Blueprint(blueprintData)) {
+    console.log("⚛️ BUILDER V2 BLUEPRINT DETECTED");
+    console.log("✅ RENDER PAGE COMPLETE");
+    const blueprint =
+      designTokens
+        ? {
+            ...blueprintData,
+            theme: {
+              ...blueprintData.theme,
+              id:
+                typeof designTokens.themePresetId === "string"
+                  ? designTokens.themePresetId
+                  : blueprintData.theme?.id,
+              name:
+                typeof designTokens.themeName === "string"
+                  ? designTokens.themeName
+                  : blueprintData.theme?.name,
+              preset:
+                typeof designTokens.themePresetId === "string"
+                  ? designTokens.themePresetId
+                  : blueprintData.theme?.preset,
+              tokens: designTokens,
+            },
+          }
+        : blueprintData;
+
+    return {
+      mode: "builder-v2" as const,
+      blueprint,
+      siteLayout,
+      page,
+    };
+  }
+
   /* ----------------------------------------------------------
-     4️⃣ RENDER
+     4️⃣ RENDER LEGACY BLUEPRINT
   ---------------------------------------------------------- */
-  const blueprintTree = page.blueprint.data;
+  const blueprintTree = resolveBlueprintTree(blueprintData as any);
 
   console.log("🌳 BLUEPRINT ROOT KEYS:", Object.keys(blueprintTree));
 
   const html = generateRuntimeHTML(blueprintTree);
-  const css = generateRuntimeCSS();
+  const css = generateRuntimeCSS(blueprintTree);
 
   console.log("🧾 HTML LENGTH:", html?.length || 0);
   console.log("🎨 CSS LENGTH:", css?.length || 0);
   console.log("✅ RENDER PAGE COMPLETE");
 
   return {
+    mode: "legacy" as const,
     html,
     css,
+    siteLayout,
+    designTokens,
     page,
   };
 }

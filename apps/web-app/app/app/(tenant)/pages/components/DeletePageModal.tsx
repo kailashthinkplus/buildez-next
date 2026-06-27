@@ -1,15 +1,37 @@
 "use client";
 
+import { useState } from "react";
 import { X, Trash2 } from "lucide-react";
 import { useDeletePage } from "../hooks/useDeletePage";
 
-export default function DeletePageModal({ page, open, onClose }) {
+type DeletePageModalProps = {
+  page: {
+    id: string;
+    title?: string;
+  };
+  open: boolean;
+  onClose: () => void;
+};
+
+export default function DeletePageModal({
+  page,
+  open,
+  onClose,
+}: DeletePageModalProps) {
   const { deletePage, loading } = useDeletePage();
+  const [error, setError] = useState("");
 
   if (!open) return null;
 
   async function confirm() {
-    await deletePage(page.id);
+    setError("");
+    const result = await deletePage(page.id);
+
+    if (!result.success) {
+      setError(result.error || "Failed to delete page");
+      return;
+    }
+
     onClose();
   }
 
@@ -18,14 +40,13 @@ export default function DeletePageModal({ page, open, onClose }) {
       <div
         className="
           w-full max-w-sm rounded-2xl p-6
-          glass bg-white/40 dark:bg-white/[0.08]
-          border border-white/30 dark:border-white/10
+          dashboard-card-strong
           shadow-2xl backdrop-blur-2xl relative
         "
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-600 dark:text-white/70"
+          className="absolute top-4 right-4 dashboard-muted"
         >
           <X className="h-5 w-5" />
         </button>
@@ -33,18 +54,23 @@ export default function DeletePageModal({ page, open, onClose }) {
         <div className="text-center">
           <Trash2 className="h-10 w-10 mx-auto text-red-500 mb-3" />
 
-          <h2 className="text-lg font-semibold dark:text-white">
+          <h2 className="text-lg font-semibold">
             Delete Page?
           </h2>
-          <p className="text-sm mt-1 opacity-70 dark:text-white/70">
+          <p className="text-sm mt-1 dashboard-muted">
             This action cannot be undone.
           </p>
+          {error && (
+            <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+              {error}
+            </p>
+          )}
         </div>
 
         <div className="mt-6 flex justify-center gap-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-gray-200 dark:bg-white/10"
+            className="px-4 py-2 rounded-xl dashboard-subtle dashboard-hover"
           >
             Cancel
           </button>

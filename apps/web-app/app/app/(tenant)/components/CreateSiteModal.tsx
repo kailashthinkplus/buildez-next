@@ -104,12 +104,10 @@ export default function CreateSiteModal({ open, onClose }: Props) {
           className="
             w-full max-w-md
             rounded-2xl
-            bg-white/10 dark:bg-white/5
+            dashboard-card-strong
             backdrop-blur-xl
-            border border-white/10
             shadow-2xl
             p-6
-            text-white
           "
         >
           {/* HEADER */}
@@ -117,22 +115,22 @@ export default function CreateSiteModal({ open, onClose }: Props) {
             <h2 className="text-lg font-semibold">Create new website</h2>
             <button
               onClick={onClose}
-              className="p-1 rounded-lg hover:bg-white/10"
+              className="p-1 rounded-lg dashboard-hover"
             >
               <X size={18} />
             </button>
           </div>
 
           {/* PLAN INFO */}
-          <div className="mb-4 p-3 rounded-xl bg-white/5 border border-white/10 text-sm">
+          <div className="mb-4 p-3 rounded-xl dashboard-card text-sm">
             <div className="flex justify-between">
-              <span className="opacity-70">Plan</span>
+              <span className="dashboard-muted">Plan</span>
               <span className="font-medium">
                 {plan?.plan?.name ?? plan?.planCode ?? "Trial"}
               </span>
             </div>
             <div className="flex justify-between mt-1">
-              <span className="opacity-70">Websites</span>
+              <span className="dashboard-muted">Websites</span>
               <span>
                 {usedSites}/{siteLimit} used
               </span>
@@ -153,7 +151,7 @@ export default function CreateSiteModal({ open, onClose }: Props) {
           {/* FORM */}
           <div className="space-y-4">
             <div>
-              <label className="text-xs opacity-70">Website name</label>
+              <label className="text-xs dashboard-muted">Website name</label>
               <input
                 value={name}
                 onChange={(e) => {
@@ -163,23 +161,20 @@ export default function CreateSiteModal({ open, onClose }: Props) {
                 placeholder="My Startup"
                 className="
                   mt-1 w-full px-3 py-2 rounded-xl
-                  bg-white/5 border border-white/10
-                  outline-none
-                  focus:ring-2 focus:ring-indigo-500/40
+                  dashboard-input
                 "
               />
             </div>
 
             <div>
-              <label className="text-xs opacity-70">Site slug</label>
+              <label className="text-xs dashboard-muted">Site slug</label>
               <input
                 value={slug}
                 onChange={(e) => setSlug(autoSlug(e.target.value))}
                 placeholder="my-startup"
                 className="
                   mt-1 w-full px-3 py-2 rounded-xl
-                  bg-white/5 border border-white/10
-                  outline-none
+                  dashboard-input
                 "
               />
             </div>
@@ -200,7 +195,7 @@ export default function CreateSiteModal({ open, onClose }: Props) {
           <div className="mt-6 flex justify-end gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-sm bg-white/10 hover:bg-white/20"
+              className="px-4 py-2 rounded-xl text-sm dashboard-subtle dashboard-hover"
             >
               Cancel
             </button>

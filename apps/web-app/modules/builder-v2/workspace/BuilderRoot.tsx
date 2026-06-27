@@ -9,6 +9,12 @@ import { LogoUploadModal } from "@/app/app/(builder)/components/LogoUploadModal"
 import { useCanvasStore } from "@/modules/builder/state/useCanvasStore";
 
 import type { BuilderBlueprint } from "../types/blueprint";
+import { defaultThemeTokens } from "../theme/defaultTheme";
+import {
+  createDefaultSiteThemeLayout,
+  normalizeSiteThemeLayout,
+} from "../theme/siteLayout";
+import type { BuilderThemeTokens } from "../theme/theme.types";
 
 function uid() {
   return Math.random().toString(36).slice(2, 10);
@@ -97,15 +103,21 @@ function isV2Blueprint(value: any): value is BuilderBlueprint {
 interface BuilderRootProps {
   pageId: string;
   siteId: string;
+  pageStatus: "DRAFT" | "PUBLISHED";
   pageTitle: string;
   initialBlueprint: unknown;
+  initialDesignTokens?: Record<string, unknown> | null;
+  initialSiteLayout?: Record<string, unknown> | null;
 }
 
 export default function BuilderRoot({
   pageId,
   siteId,
+  pageStatus,
   pageTitle,
   initialBlueprint,
+  initialDesignTokens,
+  initialSiteLayout,
 }: BuilderRootProps) {
 
   const setDesignTokens = useCanvasStore((s) => s.setDesignTokens);
@@ -113,39 +125,82 @@ export default function BuilderRoot({
   const [logoUploadOpen, setLogoUploadOpen] = useState(false);
 
   const v2Blueprint = useMemo(() => {
+    let blueprint: BuilderBlueprint;
+
     if (isV2Blueprint(initialBlueprint)) {
-      return initialBlueprint;
-    }
-
-    const rawBlueprint = initialBlueprint as any;
-    let normalized: any;
-
-    if (
-      rawBlueprint?.type === "page" &&
-      Array.isArray(rawBlueprint.children)
-    ) {
-      normalized = rawBlueprint;
-    } else if (
-      rawBlueprint?.page &&
-      Array.isArray(rawBlueprint.page.children)
-    ) {
-      normalized = {
-        id: rawBlueprint.page.id || pageId,
-        type: "page",
-        props: rawBlueprint.page.props ?? {},
-        children: rawBlueprint.page.children ?? [],
-      };
+      blueprint = initialBlueprint;
     } else {
-      normalized = {
-        id: pageId,
-        type: "page",
-        props: {},
-        children: [],
-      };
+      const rawBlueprint = initialBlueprint as any;
+      let normalized: any;
+
+      if (
+        rawBlueprint?.type === "page" &&
+        Array.isArray(rawBlueprint.children)
+      ) {
+        normalized = rawBlueprint;
+      } else if (
+        rawBlueprint?.page &&
+        Array.isArray(rawBlueprint.page.children)
+      ) {
+        normalized = {
+          id: rawBlueprint.page.id || pageId,
+          type: "page",
+          props: rawBlueprint.page.props ?? {},
+          children: rawBlueprint.page.children ?? [],
+        };
+      } else {
+        normalized = {
+          id: pageId,
+          type: "page",
+          props: {},
+          children: [],
+        };
+      }
+
+      blueprint = convertToV2Blueprint(normalized, pageTitle || "Untitled");
     }
 
-    return convertToV2Blueprint(normalized, pageTitle || "Untitled");
-  }, [initialBlueprint, pageId, pageTitle]);
+    if (!initialDesignTokens) {
+      return blueprint;
+    }
+
+    return {
+      ...blueprint,
+      theme: {
+        ...blueprint.theme,
+        id:
+          typeof initialDesignTokens.themePresetId === "string"
+            ? initialDesignTokens.themePresetId
+            : blueprint.theme.id,
+        name:
+          typeof initialDesignTokens.themeName === "string"
+            ? initialDesignTokens.themeName
+            : blueprint.theme.name,
+        preset:
+          typeof initialDesignTokens.themePresetId === "string"
+            ? initialDesignTokens.themePresetId
+            : blueprint.theme.preset,
+        tokens: initialDesignTokens,
+      },
+    };
+  }, [initialBlueprint, initialDesignTokens, pageId, pageTitle]);
+  const siteLayout = useMemo(() => {
+    const tokens =
+      v2Blueprint.theme?.tokens &&
+      typeof v2Blueprint.theme.tokens === "object" &&
+      !Array.isArray(v2Blueprint.theme.tokens)
+        ? (v2Blueprint.theme.tokens as unknown as BuilderThemeTokens)
+        : defaultThemeTokens;
+
+    return normalizeSiteThemeLayout(
+      initialSiteLayout,
+      createDefaultSiteThemeLayout({
+        siteName: pageTitle || "BuildEZ Site",
+        tokens,
+        presetId: v2Blueprint.theme?.preset ?? "buildez-default",
+      })
+    );
+  }, [initialSiteLayout, pageTitle, v2Blueprint]);
 
   useEffect(() => {
     const root = v2Blueprint.nodes[v2Blueprint.root];
@@ -171,7 +226,13 @@ export default function BuilderRoot({
   return (
     <>
       <BuilderProvider blueprint={v2Blueprint}>
-        <BuilderShell pageId={pageId} />
+        <BuilderShell
+          pageId={pageId}
+          pageStatus={pageStatus}
+          pageTitle={pageTitle}
+          siteId={siteId}
+          siteLayout={siteLayout}
+        />
       </BuilderProvider>
 
       <ColumnStructurePicker

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
+import CopilotPromptCard from "../../components/CopilotPromptCard";
 
 /* ============================================================
    SITE DASHBOARD
@@ -73,8 +74,7 @@ export default function SiteDashboardPage() {
     <div
       className="
         flex flex-col flex-1 h-full
-        bg-gradient-to-b from-[#F8FAFF] to-[#EEF3FF]
-        dark:bg-gradient-to-b dark:from-[#0B0F1A]/0 dark:to-[#0E1320]/0
+        bg-transparent
       "
     >
       <div className="w-full overflow-y-auto pb-24">
@@ -86,11 +86,11 @@ export default function SiteDashboardPage() {
         <section className="px-4 sm:px-6 md:px-10 pt-16 pb-20">
           <div className="mx-auto max-w-5xl text-center">
 
-            <p className="mb-3 text-xs uppercase tracking-wide opacity-60">
+            <p className="mb-3 text-xs uppercase tracking-wide dashboard-muted font-semibold">
               Site dashboard · {siteSlug}
             </p>
 
-            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">
+            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
               Build & grow your{" "}
               <span className="text-blue-600 dark:text-blue-400">
                 website
@@ -98,38 +98,14 @@ export default function SiteDashboardPage() {
               with AI
             </h1>
 
-            <p className="mt-4 text-sm sm:text-base text-gray-600 dark:text-white/70">
+            <p className="mt-4 text-sm sm:text-base dashboard-muted">
               Generate pages, sections, and content tailored to this site.
             </p>
 
-            {/* AI PROMPT BOX */}
-            <div className="relative mx-auto mt-10 max-w-3xl rounded-2xl bg-white/80 dark:bg-white/[0.06] border border-gray-300 dark:border-white/20 shadow-xl">
-              <div className="relative flex items-center gap-4 px-6 py-6">
-
-                <span className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs bg-gray-200 dark:bg-white text-black">
-                  <Globe className="h-3.5 w-3.5" />
-                  Web
-                </span>
-
-                {mounted && !userTyped && !textareaRef.current?.value && (
-                  <div className="absolute left-[7rem] top-[2.6rem] text-xs sm:text-sm text-gray-400 dark:text-white/50 pointer-events-none">
-                    {typedText}
-                    <span className="ml-1 animate-pulse">|</span>
-                  </div>
-                )}
-
-                <textarea
-                  ref={textareaRef}
-                  onChange={(e) => setUserTyped(e.target.value.length > 0)}
-                  rows={3}
-                  className="w-full resize-none bg-transparent text-sm text-gray-900 dark:text-white outline-none pt-2"
-                />
-
-                <button className="h-10 w-10 rounded-full flex items-center justify-center bg-blue-600 hover:bg-blue-500">
-                  <ArrowRight className="h-4 w-4 text-white" />
-                </button>
-              </div>
-            </div>
+            <CopilotPromptCard
+              contextLabel={`${siteSlug} site`}
+              subtitle="Ask for pages, sections, content, visuals, or polish. Agents coordinate the no-code workflow."
+            />
           </div>
         </section>
 
@@ -209,14 +185,14 @@ function KpiCard({
   value: string;
 }) {
   return (
-    <div className="relative rounded-2xl p-5 bg-gradient-to-br from-[#1E2C47] to-[#273948] border border-white/10 shadow-lg shadow-black/40 backdrop-blur-xl">
+    <div className="site-kpi-card relative rounded-2xl p-5">
       <div className="flex items-center gap-4">
-        <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 border border-white/15">
-          <Icon className="h-5 w-5 text-white/80" />
+        <div className="site-kpi-icon h-10 w-10 flex items-center justify-center rounded-xl">
+          <Icon className="h-5 w-5" />
         </div>
         <div>
-          <p className="text-sm text-white/60">{label}</p>
-          <h2 className="text-2xl font-semibold text-white">{value}</h2>
+          <p className="text-sm dashboard-muted">{label}</p>
+          <h2 className="text-2xl font-semibold">{value}</h2>
         </div>
       </div>
     </div>
@@ -237,14 +213,13 @@ function QuickAction({
       href={href}
       className="
         rounded-2xl p-6
-        bg-white border border-gray-300
-        dark:bg-white/5 dark:border-white/10
+        dashboard-card
         backdrop-blur-xl
-        hover:bg-gray-100 dark:hover:bg-white/10
+        dashboard-hover
         transition flex items-center justify-between
       "
     >
-      <span className="font-medium text-gray-800 dark:text-white/90">
+      <span className="font-medium">
         {title}
       </span>
       <Icon className="h-5 w-5 opacity-70" />

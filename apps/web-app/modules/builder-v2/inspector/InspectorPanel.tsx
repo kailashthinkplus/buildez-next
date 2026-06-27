@@ -15,6 +15,8 @@ interface InspectorPanelProps {
   selectedId: string | null;
   blueprint: BuilderBlueprint;
   onUpdateNode(id: string, patch: Partial<BuilderNode>): void;
+  onApplyColumnStructure(id: string, widths: number[]): void;
+  siteId: string;
 }
 
 /* ============================================================
@@ -25,9 +27,11 @@ export default function InspectorPanel({
   selectedId,
   blueprint,
   onUpdateNode,
+  onApplyColumnStructure,
+  siteId,
 }: InspectorPanelProps) {
   const [activeTab, setActiveTab] = useState<
-    "content" | "design" | "advanced"
+    "content" | "style" | "advanced"
   >("content");
 
   const node = useMemo(() => {
@@ -37,23 +41,33 @@ export default function InspectorPanel({
 
   if (!node) {
     return (
-      <div className="h-full flex items-center justify-center text-sm text-white/40">
+      <div className="builder-chrome h-full flex items-center justify-center text-sm text-white/40">
         Select an element to edit
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col text-white">
+    <div className="builder-chrome h-full flex flex-col">
       {/* =====================================================
          HEADER
       ===================================================== */}
-      <div className="px-4 py-3 border-b border-white/10">
-        <div className="text-sm font-medium capitalize">
-          {node.type} settings
+      <div className="border-b border-white/10 bg-[#0B0D12] px-4 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="text-sm font-semibold capitalize text-white">
+              {node.type}
+            </div>
+            <div className="mt-0.5 text-[11px] text-white/40">
+              Inspector
+            </div>
+          </div>
+          <div className="rounded-md border border-white/10 bg-white/[0.04] px-2 py-1 text-[10px] uppercase tracking-wide text-white/45">
+            {node.id.slice(0, 8)}
+          </div>
         </div>
 
-        <div className="mt-2 flex gap-2">
+        <div className="mt-3 grid grid-cols-3 rounded-lg border border-white/10 bg-black/25 p-1">
           <TabButton
             active={activeTab === "content"}
             onClick={() => setActiveTab("content")}
@@ -62,10 +76,10 @@ export default function InspectorPanel({
           </TabButton>
 
           <TabButton
-            active={activeTab === "design"}
-            onClick={() => setActiveTab("design")}
+            active={activeTab === "style"}
+            onClick={() => setActiveTab("style")}
           >
-            Design
+            Style
           </TabButton>
 
           <TabButton
@@ -80,18 +94,20 @@ export default function InspectorPanel({
       {/* =====================================================
          BODY
       ===================================================== */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-3">
         {activeTab === "content" && (
           <ContentTab
             node={node}
             onUpdateNode={onUpdateNode}
+            siteId={siteId}
           />
         )}
 
-        {activeTab === "design" && (
+        {activeTab === "style" && (
           <DesignTab
             node={node}
             onUpdateNode={onUpdateNode}
+            onApplyColumnStructure={onApplyColumnStructure}
           />
         )}
 
@@ -127,7 +143,7 @@ function TabButton({
         transition
         ${
           active
-            ? "bg-white/15 text-white"
+            ? "bg-blue-500 text-white shadow"
             : "text-white/50 hover:text-white"
         }
       `}

@@ -1,40 +1,56 @@
-import { apiHandler, ApiError } from "@/lib/api/apiHandler";
+import { apiHandler } from "@/lib/api/apiHandler";
 import { prisma } from "@buildez/db";
-import { requirePermission } from "@/lib/auth/permissions";
-import { NextRequest } from "next/server";
 import { nanoid } from "nanoid";
 
-export const POST = apiHandler(async (req: NextRequest) => {
-  const tenantId = req.headers.get("x-tenant-id");
-  await verifyPermission(req, "createPage");
-
+export const POST = apiHandler(async ({ req, auth }) => {
   const body = await req.json();
   const { pageId } = body;
 
   const page = await prisma.page.findFirst({
-    where: { id: pageId, tenantId },
+    where: {
+      id: pageId,
+      site: {
+        tenantId: auth.tenant.id,
+      },
+    },
   });
-  if (!page) throw new ApiError("NOT_FOUND");
+  if (!page) throw new Error("Page not found");
 
   const blueprint = await prisma.blueprint.findFirst({
-    where: { pageId, tenantId },
+    where: {
+      pageId,
+      tenantId: auth.tenant.id,
+    },
   });
 
-  const slug = `${page.slug}-copy-${nanoid(4)}`;
+  const baseSlug = `${page.slug}-copy`;
+  let slug = `${baseSlug}-${nanoid(4)}`;
+
+  while (
+    await prisma.page.findFirst({
+      where: {
+        siteId: page.siteId,
+        slug,
+      },
+      select: { id: true },
+    })
+  ) {
+    slug = `${baseSlug}-${nanoid(4)}`;
+  }
 
   const newPage = await prisma.page.create({
     data: {
       title: page.title + " Copy",
       slug,
-      tenantId,
       siteId: page.siteId,
+      status: "DRAFT",
     },
   });
 
   await prisma.blueprint.create({
     data: {
       pageId: newPage.id,
-      tenantId,
+      tenantId: auth.tenant.id,
       siteId: page.siteId,
       data: blueprint?.data ?? {},
     },

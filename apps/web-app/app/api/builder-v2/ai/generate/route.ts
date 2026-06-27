@@ -15,14 +15,20 @@ export async function POST(req: NextRequest) {
     });
 
     if (!page?.siteId) {
-      return NextResponse.json({ error: "Page not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: `Page not found for AI generation: ${pageId}` },
+        { status: 404 }
+      );
     }
 
     const origin = new URL(req.url).origin;
 
     const forwardRes = await fetch(`${origin}/api/ai-v8/generate-react`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        cookie: req.headers.get("cookie") || "",
+      },
       body: JSON.stringify({ userPrompt: prompt, siteId: page.siteId, pageId }),
       cache: "no-store",
     });

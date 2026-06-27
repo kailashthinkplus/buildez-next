@@ -49,15 +49,16 @@ async function call(
 /* ============================================================
    PAGE MUTATIONS — SITE LOCKED (FINAL)
 ============================================================ */
-export function usePageMutations(siteSlug: string) {
+export function usePageMutations(siteSlug?: string) {
   const { mutate } = useSWRConfig();
 
   console.log("🧩 usePageMutations INIT → siteSlug:", siteSlug);
 
-  if (!siteSlug) {
-    console.error("🟥 usePageMutations called WITHOUT siteSlug");
-    throw new Error("usePageMutations requires siteSlug");
-  }
+  const assertSiteSlug = () => {
+    if (!siteSlug) {
+      throw new Error("Site slug is required");
+    }
+  };
 
   /* ============================================================
      🔄 Revalidate ALL page lists for this site
@@ -93,6 +94,8 @@ export function usePageMutations(siteSlug: string) {
     ------------------------------------------- */
     create: {
       mutate: async ({ title }: { title: string }) => {
+        assertSiteSlug();
+
         if (!title?.trim()) {
           console.warn("🟨 CREATE blocked — empty title");
           throw new Error("Title is required");
@@ -118,6 +121,8 @@ export function usePageMutations(siteSlug: string) {
     ------------------------------------------- */
     publish: {
       mutate: async ({ pageId }: { pageId: string }) => {
+        assertSiteSlug();
+
         console.log("🟦 PUBLISH PAGE MUTATION →", {
           pageId,
           siteSlug,
@@ -133,6 +138,8 @@ export function usePageMutations(siteSlug: string) {
     ------------------------------------------- */
     unpublish: {
       mutate: async ({ pageId }: { pageId: string }) => {
+        assertSiteSlug();
+
         console.log("🟨 UNPUBLISH PAGE MUTATION →", {
           pageId,
           siteSlug,
@@ -148,12 +155,31 @@ export function usePageMutations(siteSlug: string) {
     ------------------------------------------- */
     remove: {
       mutate: async ({ pageId }: { pageId: string }) => {
+        assertSiteSlug();
+
         console.log("🟥 DELETE PAGE MUTATION →", {
           pageId,
           siteSlug,
         });
 
         await call(`/api/pages/${pageId}`, undefined, "DELETE");
+        await refreshPages();
+      },
+    },
+
+    /* -------------------------------------------
+       DUPLICATE
+    ------------------------------------------- */
+    duplicate: {
+      mutate: async ({ pageId }: { pageId: string }) => {
+        assertSiteSlug();
+
+        console.log("🟪 DUPLICATE PAGE MUTATION →", {
+          pageId,
+          siteSlug,
+        });
+
+        await call("/api/pages/duplicate", { pageId });
         await refreshPages();
       },
     },

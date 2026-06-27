@@ -24,7 +24,7 @@ export default function BillingPage() {
 
   if (loading || !tenantData) {
     return (
-      <div className="flex items-center justify-center h-40 text-white/60">
+      <div className="flex items-center justify-center h-40 dashboard-muted">
         Loading…
       </div>
     );
@@ -41,13 +41,13 @@ export default function BillingPage() {
         onUpgraded={load}
       />
 
-      <div className="max-w-5xl mx-auto space-y-10 text-white">
+      <div className="max-w-5xl mx-auto space-y-10">
 
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold">Billing & Subscription</h1>
-            <p className="text-white/60 text-sm">
+            <p className="dashboard-muted text-sm">
               View your plan, subscription, and payment details.
             </p>
           </div>

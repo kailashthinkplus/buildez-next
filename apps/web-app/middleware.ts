@@ -99,14 +99,8 @@ const isRuntime =
 console.log("🔎 isRuntime?", isRuntime);
 
 if (isRuntime) {
-  const url = req.nextUrl.clone();
-  url.pathname = `/api/render/${parts.join("/")}`;
-
-  console.log("🚀 RUNTIME RESOLVE");
-  console.log("➡️ FROM:", pathname);
-  console.log("➡️ TO:", url.pathname);
-
-  return NextResponse.rewrite(url);
+  console.log("🚀 RUNTIME PAGE → ALLOW APP ROUTER");
+  return NextResponse.next();
 }
 
   /* ---------------------------------------------------------

@@ -40,7 +40,7 @@ export function apiHandler(
 ) {
   return async function (
     req: NextRequest | Request,
-    context?: { params?: Record<string, string> }
+    context?: { params?: Promise<Record<string, string>> | Record<string, string> }
   ) {
     const requestId = uuidv4();
 
@@ -71,10 +71,13 @@ export function apiHandler(
       /* -------------------------------------------------------
          BUILD CONTEXT (AUTH PRESERVED)
       -------------------------------------------------------- */
+      const params = context?.params
+        ? await Promise.resolve(context.params)
+        : {};
       const ctx: ApiContext = {
         req,
         auth,
-        params: context?.params ?? {},
+        params,
         requestId,
       };
 

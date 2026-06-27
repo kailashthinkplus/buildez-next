@@ -42,7 +42,7 @@ export function generateRuntimeOutput(
   const html = renderNodeToHtml(blueprint, device, designTokens);
 
   // Generate CSS (base styles + design tokens)
-  const baseCSS = generateRuntimeCSS();
+  const baseCSS = generateRuntimeCSS(blueprint as any);
   const tokenCSS = designTokens 
     ? bindDesignTokensToCSS(designTokens)
     : "";

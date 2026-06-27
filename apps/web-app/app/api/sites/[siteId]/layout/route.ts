@@ -8,7 +8,7 @@ import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { siteId: string } }
+  { params }: { params: Promise<{ siteId: string }> }
 ) {
   const tenant = await verifyTenantAccess(req);
   if (!tenant) {
@@ -18,7 +18,7 @@ export async function GET(
     );
   }
 
-  const siteId = params.siteId;
+  const { siteId } = await params;
 
   // Verify site belongs to tenant
   const site = await prisma.site.findFirst({
@@ -59,7 +59,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { siteId: string } }
+  { params }: { params: Promise<{ siteId: string }> }
 ) {
   const tenant = await verifyTenantAccess(req);
   if (!tenant) {
@@ -69,7 +69,7 @@ export async function PUT(
     );
   }
 
-  const siteId = params.siteId;
+  const { siteId } = await params;
 
   // Verify site ownership
   const site = await prisma.site.findFirst({

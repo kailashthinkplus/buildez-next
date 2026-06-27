@@ -76,16 +76,16 @@ console.log("🟩 [CreatePageModal] CREATE SUCCESS");
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-lg">
-      <div className="relative w-full max-w-xl p-8 rounded-2xl bg-white/10 backdrop-blur-2xl border border-white/15 shadow-xl">
+      <div className="relative w-full max-w-xl p-8 rounded-2xl dashboard-card-strong backdrop-blur-2xl shadow-xl">
         {/* CLOSE */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 p-2 rounded-full hover:bg-white/10"
+          className="absolute right-4 top-4 p-2 rounded-full dashboard-hover"
         >
-          <X className="h-5 w-5 text-white/70" />
+          <X className="h-5 w-5 dashboard-muted" />
         </button>
 
-        <h2 className="text-center text-xl font-semibold text-white mb-6 mt-2">
+        <h2 className="text-center text-xl font-semibold mb-6 mt-2">
           Create New Page
         </h2>
 
@@ -130,13 +130,13 @@ console.log("🟩 [CreatePageModal] CREATE SUCCESS");
               placeholder="Page title…"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-3 rounded-xl text-sm bg-white/20 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+              className="w-full p-3 rounded-xl text-sm dashboard-input"
             />
 
             <div className="flex justify-between pt-1">
               <button
                 onClick={() => setStep("choose")}
-                className="text-sm text-white/60 hover:text-white underline"
+                className="text-sm dashboard-muted hover:text-[var(--dashboard-text)] underline"
               >
                 ← Back
               </button>
@@ -170,14 +170,14 @@ function OptionButton({
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition"
+      className="w-full flex items-center gap-4 p-4 rounded-xl dashboard-card dashboard-hover transition"
     >
       {icon}
       <div className="flex-1 text-left">
-        <p className="text-white font-medium">{title}</p>
-        <p className="text-white/60 text-sm">{desc}</p>
+        <p className="font-medium">{title}</p>
+        <p className="dashboard-muted text-sm">{desc}</p>
       </div>
-      <ArrowRight className="h-4 w-4 text-white/50" />
+      <ArrowRight className="h-4 w-4 dashboard-faint" />
     </button>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 
 type ContextMenuPosition = {
   x: number;
@@ -9,7 +10,7 @@ type ContextMenuPosition = {
 
 type ContextMenuAction = {
   label: string;
-  icon?: string;
+  icon?: ReactNode;
   action: () => void;
   isDanger?: boolean;
   disabled?: boolean;

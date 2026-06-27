@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Plus,
   CheckSquare,
   Square,
   ChevronUp,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Search,
+  ImageIcon,
 } from "lucide-react";
 
 import PageActionsMenu from "../pages/components/PageActionsMenu";
@@ -16,17 +19,56 @@ import PageSettingsModal from "../pages/components/PageSettingsModal";
 import DeletePageModal from "../pages/components/DeletePageModal";
 
 import { usePages } from "../pages/hooks/usePages";
-import { usePageMutations } from "../pages/hooks/usePageMutations";
 
 /* ============================================================
    TYPES
 ============================================================ */
 type Props = {
-  siteSlug: string;
+  siteSlug?: string;
 };
 
-type SortKey = "title" | "status" | "updatedAt";
+type SortKey =
+  | "title"
+  | "status"
+  | "updatedAt"
+  | "seoScore";
 type SortDir = "asc" | "desc";
+
+type PageRow = {
+  id: string;
+  title: string;
+  slug: string;
+  status: string;
+  updatedAt: string;
+  site?: { slug?: string };
+  siteSlug?: string;
+  screenshotUrl?: string;
+  seoScore?: number;
+};
+
+function getPageSiteSlug(page: PageRow, fallbackSiteSlug?: string) {
+  return page.site?.slug || page.siteSlug || fallbackSiteSlug || "";
+}
+
+function getEditUrl(page: PageRow, fallbackSiteSlug?: string) {
+  const resolvedSiteSlug = getPageSiteSlug(page, fallbackSiteSlug);
+  return resolvedSiteSlug
+    ? `/app/${resolvedSiteSlug}/${page.slug}-${page.id}`
+    : `/app/pages/${page.id}`;
+}
+
+function getPreviewUrl(page: PageRow, fallbackSiteSlug?: string) {
+  const resolvedSiteSlug = getPageSiteSlug(page, fallbackSiteSlug);
+  return resolvedSiteSlug
+    ? `/preview/${resolvedSiteSlug}/${page.slug}-${page.id}`
+    : "";
+}
+
+function getScoreTone(score: number) {
+  if (score >= 80) return "bg-green-600 text-white";
+  if (score >= 50) return "bg-amber-500 text-white";
+  return "bg-red-500 text-white";
+}
 
 /* ============================================================
    PAGES VIEW — TABLE
@@ -43,8 +85,8 @@ export default function PagesView({ siteSlug }: Props) {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   const [createPageOpen, setCreatePageOpen] = useState(false);
-  const [settingsPage, setSettingsPage] = useState<any>(null);
-  const [deletePage, setDeletePage] = useState<any>(null);
+  const [settingsPage, setSettingsPage] = useState<PageRow | null>(null);
+  const [deletePage, setDeletePage] = useState<PageRow | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
 
   /* ============================================================
@@ -62,15 +104,17 @@ export default function PagesView({ siteSlug }: Props) {
     limit,
   });
 
-  const pageMutations = usePageMutations(siteSlug);
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const pageStart = total === 0 ? 0 : (page - 1) * limit + 1;
+  const pageEnd = Math.min(page * limit, total);
 
   /* ============================================================
      SORTING (CLIENT-SIDE, SAFE)
   ============================================================ */
   const sortedPages = useMemo(() => {
-    const copy = [...pages];
+    const copy = [...pages] as PageRow[];
 
-    copy.sort((a: any, b: any) => {
+    copy.sort((a, b) => {
       const aVal = a[sortKey];
       const bVal = b[sortKey];
 
@@ -84,13 +128,6 @@ export default function PagesView({ siteSlug }: Props) {
     return copy;
   }, [pages, sortKey, sortDir]);
 
-  /* ============================================================
-     SELECTION
-  ============================================================ */
-  useEffect(() => {
-    setSelected([]);
-  }, [pages.map((p) => p.id).join(",")]);
-
   const toggleSelect = (id: string) => {
     setSelected((prev) =>
       prev.includes(id)
@@ -103,7 +140,7 @@ export default function PagesView({ siteSlug }: Props) {
     if (selected.length === pages.length) {
       setSelected([]);
     } else {
-      setSelected(pages.map((p) => p.id));
+      setSelected(pages.map((p: PageRow) => p.id));
     }
   };
 
@@ -116,6 +153,23 @@ export default function PagesView({ siteSlug }: Props) {
     }
   };
 
+  const duplicatePage = async (pageId: string) => {
+    const res = await fetch("/api/pages/duplicate", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ pageId }),
+    });
+
+    if (!res.ok) {
+      throw new Error((await res.text()) || "Failed to duplicate page");
+    }
+
+    await mutatePages();
+  };
+
   /* ============================================================
      RENDER
   ============================================================ */
@@ -124,8 +178,9 @@ export default function PagesView({ siteSlug }: Props) {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* HEADER */}
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold dark:text-white">
-            Pages <span className="opacity-60">— {siteSlug}</span>
+          <h1 className="text-2xl font-semibold">
+            Pages{" "}
+            {siteSlug && <span className="opacity-60">- {siteSlug}</span>}
           </h1>
 
           <button
@@ -147,9 +202,21 @@ export default function PagesView({ siteSlug }: Props) {
               setPage(1);
             }}
             placeholder="Search pages…"
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/60 dark:bg-white/5 border border-white/20 dark:border-white/10 backdrop-blur-xl text-sm"
+            className="w-full pl-9 pr-3 py-2 rounded-xl dashboard-input backdrop-blur-xl text-sm"
           />
         </div>
+
+        {/* LOADING */}
+        {isLoading && (
+          <div className="overflow-hidden rounded-2xl dashboard-card backdrop-blur-xl">
+            {[...Array(5)].map((_, index) => (
+              <div
+                key={index}
+                className="h-20 animate-pulse border-t border-white/10 first:border-t-0 bg-black/[0.03] dark:bg-white/[0.03]"
+              />
+            ))}
+          </div>
+        )}
 
         {/* EMPTY */}
         {!isLoading && sortedPages.length === 0 && (
@@ -160,9 +227,9 @@ export default function PagesView({ siteSlug }: Props) {
 
         {/* TABLE */}
         {!isLoading && sortedPages.length > 0 && (
-          <div className="overflow-hidden rounded-2xl border border-white/20 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl">
-            <table className="w-full text-sm">
-              <thead className="border-b border-white/20 dark:border-white/10">
+          <div className="overflow-x-auto rounded-2xl dashboard-card backdrop-blur-xl">
+            <table className="w-full min-w-[900px] text-sm">
+              <thead className="border-b dashboard-border">
                 <tr className="text-left">
                   <th className="p-3 w-10">
                     <button onClick={toggleSelectAll}>
@@ -173,6 +240,8 @@ export default function PagesView({ siteSlug }: Props) {
                       )}
                     </button>
                   </th>
+
+                  <th className="p-3 w-32">Preview</th>
 
                   <SortableTh
                     label="Title"
@@ -191,6 +260,13 @@ export default function PagesView({ siteSlug }: Props) {
                   />
 
                   <SortableTh
+                    label="SEO Score"
+                    active={sortKey === "seoScore"}
+                    dir={sortDir}
+                    onClick={() => toggleSort("seoScore")}
+                  />
+
+                  <SortableTh
                     label="Updated"
                     active={sortKey === "updatedAt"}
                     dir={sortDir}
@@ -204,11 +280,14 @@ export default function PagesView({ siteSlug }: Props) {
               <tbody>
                 {sortedPages.map((page) => {
                   const isChecked = selected.includes(page.id);
+                  const editUrl = getEditUrl(page, siteSlug);
+                  const previewUrl = getPreviewUrl(page, siteSlug);
+                  const seoScore = page.seoScore ?? 0;
 
                   return (
                     <tr
                       key={page.id}
-                      className="border-t border-white/10 hover:bg-black/5 dark:hover:bg-white/5"
+                      className="border-t dashboard-border dashboard-hover"
                     >
                       <td className="p-3">
                         <button onClick={() => toggleSelect(page.id)}>
@@ -220,39 +299,92 @@ export default function PagesView({ siteSlug }: Props) {
                         </button>
                       </td>
 
+                      <td className="p-3">
+                        <button
+                          onClick={() => {
+                            if (previewUrl) {
+                              window.open(
+                                previewUrl,
+                                "_blank",
+                                "noopener,noreferrer"
+                              );
+                            }
+                          }}
+                          disabled={!previewUrl}
+                          className="group block h-16 w-28 overflow-hidden rounded-lg border border-white/20 bg-white/70 text-left shadow-sm disabled:cursor-default dark:border-white/10 dark:bg-white/5"
+                        >
+                          {page.screenshotUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={page.screenshotUrl}
+                              alt={`${page.title} screenshot preview`}
+                              className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-gradient-to-br from-white to-gray-100 dashboard-faint dark:from-white/10 dark:to-white/5">
+                              <ImageIcon className="h-5 w-5" />
+                              <span className="text-[10px] font-medium">
+                                No preview
+                              </span>
+                            </div>
+                          )}
+                        </button>
+                      </td>
+
                       <td
                         className="p-3 font-medium text-[var(--brand)] cursor-pointer hover:underline"
-                        onClick={() =>
-                          (window.location.href =
-                            `/app/${page.site.slug}/${page.slug}-${page.id}`)
-                        }
+                        onClick={() => (window.location.href = editUrl)}
                       >
                         {page.title}
                       </td>
 
-                      <td className="p-3 opacity-70">/{page.slug}</td>
+                      <td className="p-3 dashboard-muted">/{page.slug}</td>
 
                       <td className="p-3">
                         <span
                           className={`px-2 py-1 text-xs rounded-lg ${
                             page.status === "PUBLISHED"
                               ? "bg-green-600 text-white"
-                              : "bg-gray-300 dark:bg-white/10 dark:text-white/70"
+                              : "bg-gray-300 text-gray-800 dark:bg-white/10 dark:text-white/70"
                           }`}
                         >
                           {page.status}
                         </span>
                       </td>
 
-                      <td className="p-3 opacity-70">
+                      <td className="p-3">
+                        <span
+                          className={`inline-flex min-w-12 justify-center rounded-lg px-2 py-1 text-xs font-semibold ${getScoreTone(seoScore)}`}
+                        >
+                          {seoScore}
+                        </span>
+                      </td>
+
+                      <td className="p-3 dashboard-muted">
                         {new Date(page.updatedAt).toLocaleDateString()}
                       </td>
 
                       <td className="p-2 text-right">
                         <PageActionsMenu
                           page={page}
+                          onEdit={() => {
+                            window.location.href = editUrl;
+                          }}
                           onSettings={() => setSettingsPage(page)}
                           onDelete={() => setDeletePage(page)}
+                          onChanged={() => mutatePages()}
+                          onPreview={() => {
+                            if (previewUrl) {
+                              window.open(
+                                previewUrl,
+                                "_blank",
+                                "noopener,noreferrer"
+                              );
+                            }
+                          }}
+                          onDuplicate={async () => {
+                            await duplicatePage(page.id);
+                          }}
                         />
                       </td>
                     </tr>
@@ -260,6 +392,40 @@ export default function PagesView({ siteSlug }: Props) {
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {!isLoading && total > 0 && (
+          <div className="flex flex-wrap items-center justify-between gap-3 text-sm opacity-80">
+            <span>
+              Showing {pageStart}-{pageEnd} of {total} pages
+            </span>
+
+            <div className="flex items-center gap-2">
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage((current) => Math.max(1, current - 1))}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg dashboard-card disabled:opacity-40"
+                aria-label="Previous page"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+
+              <span className="min-w-20 text-center">
+                Page {page} of {totalPages}
+              </span>
+
+              <button
+                disabled={page >= totalPages}
+                onClick={() =>
+                  setPage((current) => Math.min(totalPages, current + 1))
+                }
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg dashboard-card disabled:opacity-40"
+                aria-label="Next page"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         )}
 
@@ -279,6 +445,7 @@ export default function PagesView({ siteSlug }: Props) {
           <PageSettingsModal
             page={settingsPage}
             open
+            onSaved={() => mutatePages()}
             onClose={() => setSettingsPage(null)}
           />
         )}

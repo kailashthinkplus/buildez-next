@@ -72,7 +72,7 @@ export async function POST(
     ---------------------------------------------------------- */
     const tree = resolveBlueprintTree(page.blueprint.data);
     const html = generateRuntimeHTML(tree);
-    const css = generateRuntimeCSS();
+    const css = generateRuntimeCSS(tree as any);
 
     /* ----------------------------------------------------------
        TRANSACTION (NO SILENT FAILURE)

@@ -9,14 +9,16 @@ import type {
    TYPES
 ========================================================== */
 
-interface UploadInitResponse {
-  uploadUrl: string;
-  publicUrl: string;
-}
-
 interface MediaListResponse {
   ok: boolean;
   assets?: MediaAsset[];
+}
+
+interface MediaUploadResponse {
+  ok: boolean;
+  asset?: MediaAsset;
+  duplicate?: boolean;
+  error?: string;
 }
 
 /* ==========================================================
@@ -44,49 +46,34 @@ class MediaService {
      INITIALIZE R2 UPLOAD
   ======================================================== */
 
-  async initializeUpload(
-    file: File,
-    siteId: string
-  ): Promise<UploadInitResponse> {
-    const response = await fetch("/api/uploads/image/init", {
+  async uploadImage(file: File, siteId: string): Promise<MediaAsset> {
+    const formData = new FormData();
+    formData.append("siteId", siteId);
+    formData.append("file", file);
+
+    const response = await fetch("/api/builder-v2/assets/upload", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        siteId,
-        fileName: file.name,
-        fileType: file.type,
-      }),
+      credentials: "include",
+      body: formData,
     });
 
-    if (!response.ok) {
-      throw new Error("Unable to initialize upload.");
+    const json = (await response.json().catch(() => ({}))) as MediaUploadResponse;
+
+    if (!response.ok || !json.asset) {
+      throw new Error(json.error || "Image upload failed.");
     }
 
-    return response.json();
+    return json.asset;
   }
 
-  /* ========================================================
-     UPLOAD TO R2
-  ======================================================== */
+  async uploadImages(files: File[], siteId: string): Promise<MediaAsset[]> {
+    const assets: MediaAsset[] = [];
 
-  async uploadImage(file: File, siteId: string): Promise<string> {
-    const { uploadUrl, publicUrl } = await this.initializeUpload(file, siteId);
-
-    const upload = await fetch(uploadUrl, {
-      method: "PUT",
-      headers: {
-        "Content-Type": file.type,
-      },
-      body: file,
-    });
-
-    if (!upload.ok) {
-      throw new Error("Image upload failed.");
+    for (const file of files) {
+      assets.push(await this.uploadImage(file, siteId));
     }
 
-    return publicUrl;
+    return assets;
   }
 
   /* ========================================================

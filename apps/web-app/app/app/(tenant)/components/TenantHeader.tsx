@@ -8,16 +8,13 @@ import {
   MoreVertical,
   Bell,
   Search,
-  Moon,
-  SunMedium,
   LayoutGrid,
-  ArrowLeft,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "next-themes";
 import { WebsiteSwitcher } from "./WebsiteSwitcher";
 import { useWorkspace } from "./WorkspaceContext";
 import { usePathname } from "next/navigation";
+import ThemeToggle from "../../components/ThemeToggle";
 
 type User = {
   name?: string;
@@ -31,7 +28,6 @@ export function TenantHeader({
   setMobileSidebarOpen: (v: boolean) => void;
   user?: User;
 }) {
-  const { theme, setTheme } = useTheme();
   const pathname = usePathname();
 
   const [profileOpen, setProfileOpen] = useState(false);
@@ -74,9 +70,9 @@ export function TenantHeader({
         h-16 flex items-center justify-between
         px-4 md:px-8
         text-[14px]
-        border-b border-black/10 dark:border-white/10
+        dashboard-panel border-b
         backdrop-blur-xl
-        bg-[rgba(255,255,255,0.6)] dark:bg-white/5
+        text-[var(--dashboard-text)]
       "
     >
       {/* LEFT */}
@@ -84,7 +80,7 @@ export function TenantHeader({
         {/* MOBILE MENU */}
         <div className="flex items-center gap-3 md:hidden">
           <button
-            className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition"
+            className="p-2 rounded-lg dashboard-hover transition"
             onClick={() => setMobileSidebarOpen(true)}
           >
             <Menu size={20} />
@@ -99,9 +95,9 @@ export function TenantHeader({
             className="
               hidden md:flex items-center justify-center
               w-9 h-9 rounded-xl
-              bg-black/5 dark:bg-white/10
-              border border-black/10 dark:border-white/10
-              hover:bg-black/10 dark:hover:bg-white/20
+              dashboard-subtle
+              border dashboard-border
+              dashboard-hover
             "
           >
             <div className="relative">
@@ -147,24 +143,23 @@ export function TenantHeader({
 
       {/* SEARCH */}
       <div className="hidden md:flex relative w-72 items-center">
-        <Search className="absolute left-3 top-2.5 h-4 w-4 text-black/40 dark:text-white/40" />
+        <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-600 dark:text-slate-300" />
         <input
           placeholder="Search…"
           className="
             pl-10 pr-4 py-2 w-full rounded-xl
-            bg-black/5 dark:bg-white/5
-            border border-black/10 dark:border-white/10
+            dashboard-input
             text-[14px]
-            focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20
-            outline-none
           "
         />
       </div>
 
       {/* RIGHT */}
       <div className="flex items-center gap-5">
+        <ThemeToggle />
+
         <div className="hidden sm:flex items-center gap-4">
-          <Bell className="h-5 w-5 text-black/70 dark:text-white/70" />
+          <Bell className="h-5 w-5 dashboard-muted" />
 
           {/* USER */}
           <button
@@ -172,7 +167,7 @@ export function TenantHeader({
             className="
               flex items-center gap-2 px-2 py-1 
               rounded-lg overflow-hidden
-              hover:bg-black/5 dark:hover:bg-white/10
+              dashboard-hover
             "
           >
             <Image
@@ -196,20 +191,20 @@ export function TenantHeader({
                 exit={{ opacity: 0, y: -6 }}
                 className="
                   absolute right-4 top-16 w-48
-                  rounded-xl glass p-2 shadow-xl
+                  rounded-xl dashboard-card-strong p-2 shadow-xl
                   backdrop-blur-xl z-50
                 "
               >
                 <Link
                   href="/app/profile"
-                  className="block px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10"
+                  className="block px-3 py-2 rounded-lg dashboard-hover"
                 >
                   Profile
                 </Link>
 
                 <button
                   onClick={logout}
-                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-red-500"
+                  className="w-full text-left px-3 py-2 rounded-lg dashboard-hover text-red-500"
                 >
                   Logout
                 </button>
@@ -222,8 +217,8 @@ export function TenantHeader({
         <button
           className="
             sm:hidden p-2 rounded-xl
-            bg-black/5 dark:bg-white/5
-            border border-black/10 dark:border-white/10
+            dashboard-subtle
+            border dashboard-border
           "
           onClick={() => setMobileMenuOpen((p) => !p)}
         >

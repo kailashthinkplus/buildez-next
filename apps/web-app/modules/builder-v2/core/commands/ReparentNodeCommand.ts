@@ -16,6 +16,17 @@ export class ReparentNodeCommand implements BuilderCommand {
     const parent = blueprint.nodes[this.newParentId];
 
     if (!node || !parent) return false;
+    if (this.nodeId === this.newParentId) return false;
+
+    // Prevent cyclical parenting (cannot move a node into its own descendant).
+    let cursor: string | null = this.newParentId;
+    while (cursor) {
+      if (cursor === this.nodeId) {
+        return false;
+      }
+      const current = blueprint.nodes[cursor];
+      cursor = current?.parentId ?? null;
+    }
 
     const canHaveChildren = [
       "page",
@@ -45,6 +56,19 @@ export class ReparentNodeCommand implements BuilderCommand {
       return blueprint;
     }
 
+    if (this.nodeId === this.newParentId) {
+      return blueprint;
+    }
+
+    let cursor: string | null = this.newParentId;
+    while (cursor) {
+      if (cursor === this.nodeId) {
+        return blueprint;
+      }
+      const current = blueprint.nodes[cursor];
+      cursor = current?.parentId ?? null;
+    }
+
     const nodes = { ...blueprint.nodes };
 
     // Remove from old parent
@@ -56,12 +80,17 @@ export class ReparentNodeCommand implements BuilderCommand {
     }
 
     // Add to new parent
+    const normalizedTargetChildren =
+      oldParent?.id === newParent.id
+        ? newParent.children.filter((id) => id !== this.nodeId)
+        : [...newParent.children];
+
     const insertIdx =
       this.insertIndex === undefined
-        ? newParent.children.length
-        : Math.max(0, Math.min(this.insertIndex, newParent.children.length));
+        ? normalizedTargetChildren.length
+        : Math.max(0, Math.min(this.insertIndex, normalizedTargetChildren.length));
 
-    const newChildren = [...newParent.children];
+    const newChildren = [...normalizedTargetChildren];
     newChildren.splice(insertIdx, 0, this.nodeId);
 
     nodes[newParent.id] = {

@@ -60,15 +60,14 @@ function LoginForm() {
   }
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
-      {/* ⭐ LIGHT MODE BLUE GLOW (OFF in Dark Mode) */}
+    <div className="auth-blue-bg relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+      {/* Blue ambient glow in both modes */}
       <div
         className="
           absolute inset-0
-          bg-[radial-gradient(circle_at_30%_20%,rgba(56,149,255,0.35),transparent_65%)]
+          bg-[radial-gradient(circle_at_30%_20%,rgba(56,149,255,0.3),transparent_65%)]
           opacity-80
           blur-2xl
-          dark:hidden
           pointer-events-none
         "
       />
@@ -78,7 +77,10 @@ function LoginForm() {
         className="
           relative w-full max-w-md
           glass glass-hover p-8 rounded-2xl
-          dark:bg-white/5 dark:backdrop-blur-xl dark:border dark:border-white/10
+          bg-white/50 border border-white/40 backdrop-blur-2xl
+          dark:bg-white/5 dark:border-white/10
+          shadow-[0_28px_80px_rgba(37,99,235,0.18)]
+          dark:shadow-[0_32px_90px_rgba(0,0,0,0.5)]
         "
       >
         {/* Logo */}

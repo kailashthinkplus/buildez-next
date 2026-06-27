@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { generateRuntimeCSS } from "@/modules/builder/runtime/generateRuntimeCSS";
+import { resolveBlueprintTree } from "@/modules/builder/runtime/resolveBlueprintTree";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +37,8 @@ export async function GET(
     });
   }
 
-  const css = generateRuntimeCSS(page.blueprint);
+  const tree = resolveBlueprintTree(page.blueprint.data as any);
+  const css = generateRuntimeCSS(tree as any);
 
   return new NextResponse(css, {
     headers: {

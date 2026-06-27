@@ -1,5 +1,141 @@
 // /Users/kailash/buildez/apps/web-app/modules/builder/runtime/generateRuntimeCSS.ts
 
+import { resolveNodeStyle } from "../renderer/resolveNodeStyle";
+
+type RuntimeDevice = "desktop" | "tablet" | "mobile";
+
+interface RuntimeNode {
+  id: string;
+  type: string;
+  props?: Record<string, any>;
+  children?: RuntimeNode[];
+}
+
+const UNITLESS = new Set([
+  "opacity",
+  "zIndex",
+  "fontWeight",
+  "lineHeight",
+  "flex",
+  "flexGrow",
+  "flexShrink",
+  "order",
+]);
+
+const LENGTH_PROPS = new Set([
+  "width",
+  "height",
+  "minWidth",
+  "minHeight",
+  "maxWidth",
+  "maxHeight",
+  "top",
+  "right",
+  "bottom",
+  "left",
+  "gap",
+  "rowGap",
+  "columnGap",
+  "padding",
+  "paddingTop",
+  "paddingRight",
+  "paddingBottom",
+  "paddingLeft",
+  "margin",
+  "marginTop",
+  "marginRight",
+  "marginBottom",
+  "marginLeft",
+  "borderRadius",
+  "borderWidth",
+  "borderTopWidth",
+  "borderRightWidth",
+  "borderBottomWidth",
+  "borderLeftWidth",
+  "fontSize",
+  "letterSpacing",
+]);
+
+function toCssKey(key: string) {
+  return key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+}
+
+function toCssValue(key: string, value: unknown) {
+  if (typeof value === "number" && !UNITLESS.has(key)) {
+    return `${value}px`;
+  }
+
+  if (
+    LENGTH_PROPS.has(key) &&
+    typeof value === "string" &&
+    /^-?\d+(\.\d+)?$/.test(value)
+  ) {
+    return `${value}px`;
+  }
+
+  return String(value);
+}
+
+function styleToImportantCss(style: Record<string, unknown>) {
+  return Object.entries(style)
+    .filter(([, value]) => value !== undefined && value !== null && value !== "")
+    .map(([key, value]) => `${toCssKey(key)}:${toCssValue(key, value)} !important;`)
+    .join("");
+}
+
+function walkNodes(node: RuntimeNode | undefined, callback: (node: RuntimeNode) => void) {
+  if (!node) return;
+  callback(node);
+  (node.children ?? []).forEach((child) => walkNodes(child, callback));
+}
+
+function responsiveVisibilityRule(node: RuntimeNode, device: RuntimeDevice) {
+  const visibility = node.props?.__responsiveVisibility;
+  if (!visibility || typeof visibility !== "object") return "";
+  return visibility[device] === false ? "display:none !important;" : "";
+}
+
+function generateDeviceCss(page: RuntimeNode | undefined, device: RuntimeDevice) {
+  const rules: string[] = [];
+
+  walkNodes(page, (node) => {
+    const style = resolveNodeStyle(node as any, device);
+    const declarations = `${styleToImportantCss(style as Record<string, unknown>)}${responsiveVisibilityRule(node, device)}`;
+
+    if (declarations) {
+      rules.push(`[data-id="${node.id}"]{${declarations}}`);
+    }
+  });
+
+  return rules.join("\n");
+}
+
+function generateResponsiveCss(page?: RuntimeNode) {
+  if (!page) return "";
+
+  const desktopVisibility = generateDeviceCss(page, "desktop")
+    .split("\n")
+    .filter((rule) => rule.includes("display:none"))
+    .join("\n");
+  const tabletCss = generateDeviceCss(page, "tablet");
+  const mobileCss = generateDeviceCss(page, "mobile");
+
+  return `
+/* ============================================================
+   BUILDEZ RESPONSIVE NODE STYLES
+============================================================ */
+${desktopVisibility}
+
+@media (max-width: 1024px) {
+${tabletCss}
+}
+
+@media (max-width: 768px) {
+${mobileCss}
+}
+`.trim();
+}
+
 /**
  * BUILDEZ RUNTIME CSS (BASE STYLES)
  * 
@@ -12,8 +148,8 @@
  * 
  * @returns CSS string for injection into <style> tag or .css file
  */
-export function generateRuntimeCSS(): string {
-  return `
+export function generateRuntimeCSS(page?: RuntimeNode): string {
+  const baseCss = `
 /* ============================================================
    BUILDEZ RUNTIME CSS — TOKEN DRIVEN
    Version: 7.0 (Backward Compatible)
@@ -135,20 +271,14 @@ export function generateRuntimeCSS(): string {
 
 .be-container {
   width: 100%;
-  max-width: 1280px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: none;
   box-sizing: border-box;
-  
-  padding-left: var(--spacing-6, var(--be-container-x, 24px));
-  padding-right: var(--spacing-6, var(--be-container-x, 24px));
 }
 
 /* Block layout (default) */
 .be-container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-6, var(--be-block-gap, 24px));
 }
 
 /* Columns layout */
@@ -406,8 +536,7 @@ export function generateRuntimeCSS(): string {
   }
   
   .be-container {
-    padding-left: var(--spacing-5, 20px);
-    padding-right: var(--spacing-5, 20px);
+    max-width: 100%;
   }
 }
 
@@ -422,12 +551,12 @@ export function generateRuntimeCSS(): string {
   }
   
   .be-container {
-    padding-left: var(--spacing-4, 16px);
-    padding-right: var(--spacing-4, 16px);
+    max-width: 100%;
   }
   
   /* Force columns to stack */
-  .be-container[data-layout="columns"] {
+  .be-container[data-layout="columns"],
+  .be-container[data-direction="row"] {
     flex-direction: column !important;
   }
   
@@ -481,7 +610,11 @@ body {
   margin: 0;
   padding: 0;
 }
-`;
+`.trim();
+
+  const responsiveCss = generateResponsiveCss(page);
+
+  return responsiveCss ? `${baseCss}\n\n${responsiveCss}` : baseCss;
 }
 
 /**

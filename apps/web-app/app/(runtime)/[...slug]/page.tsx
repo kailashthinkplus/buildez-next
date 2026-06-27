@@ -1,6 +1,16 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@buildez/db";
 
+import { renderPage } from "@/lib/runtime/render-page";
+import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
+import { defaultThemeTokens } from "@/modules/builder-v2/theme/defaultTheme";
+import { SiteThemeFrame } from "@/modules/builder-v2/theme/SiteThemeFrame";
+import {
+  createDefaultSiteThemeLayout,
+  normalizeSiteThemeLayout,
+} from "@/modules/builder-v2/theme/siteLayout";
+import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
+
 export const dynamic = "force-dynamic";
 
 export default async function PublicRuntimePage(props: {
@@ -9,95 +19,72 @@ export default async function PublicRuntimePage(props: {
   const resolvedParams = await props.params;
   const parts = resolvedParams.slug ?? [];
 
-  let siteSlug: string;
-  let pageSlug: string;
+  const siteSlug = parts[0] ?? (await resolveDefaultSiteSlug());
+  const pageSlug = parts[1] ?? "home";
 
-  /* -------------------------------------------
-     Resolve site + page slugs
-  ------------------------------------------- */
-  if (parts.length === 0) {
-    siteSlug = await resolveDefaultSiteSlug();
-    pageSlug = "home";
-  } else if (parts.length === 1) {
-    siteSlug = parts[0];
-    pageSlug = "home";
-  } else {
-    siteSlug = parts[0];
-    pageSlug = parts[1];
-  }
+  const result = await renderPage({ siteSlug, pageSlug });
 
-  /* -------------------------------------------
-     Resolve PUBLISHED SITE only
-  ------------------------------------------- */
-  const site = await prisma.site.findFirst({
-    where: {
-      slug: siteSlug,
-      status: "PUBLISHED",
-    },
-    select: { id: true },
-  });
-
-  if (!site) {
-    console.log("❌ SITE NOT FOUND OR NOT PUBLISHED:", siteSlug);
+  if (!result) {
     notFound();
   }
 
-  /* -------------------------------------------
-     🔑 SLUG-ONLY PAGE RESOLUTION (Option B)
-     → Latest published page wins
-  ------------------------------------------- */
-  const page = await prisma.page.findFirst({
-    where: {
-      siteId: site.id,
-      slug: pageSlug,
-      status: "PUBLISHED",
-      deletedAt: null,
-    },
-    orderBy: {
-      updatedAt: "desc", // ✅ critical fix
-    },
-    select: { id: true },
-  });
+  if (result.mode === "builder-v2") {
+    const tokens =
+      result.blueprint.theme?.tokens &&
+      typeof result.blueprint.theme.tokens === "object" &&
+      !Array.isArray(result.blueprint.theme.tokens)
+        ? (result.blueprint.theme.tokens as unknown as BuilderThemeTokens)
+        : defaultThemeTokens;
+    const siteLayout = normalizeSiteThemeLayout(
+      result.siteLayout,
+      createDefaultSiteThemeLayout({
+        siteName: result.page.site.name,
+        tokens,
+        presetId: result.blueprint.theme?.preset ?? "buildez-default",
+      })
+    );
 
-  if (!page) {
-    console.log("❌ PAGE NOT FOUND FOR SLUG:", pageSlug);
-    notFound();
+    return (
+      <PublishedPageRenderer
+        blueprint={result.blueprint}
+        siteLayout={siteLayout}
+      />
+    );
   }
 
-  /* -------------------------------------------
-     Load latest PUBLISHED snapshot
-  ------------------------------------------- */
-  const snapshot = await prisma.snapshot.findFirst({
-    where: {
-      pageId: page.id,
-      type: "PUBLISHED",
-    },
-    orderBy: { createdAt: "desc" },
-    select: { html: true, css: true },
-  });
+  const legacyDesignTokens =
+    result.designTokens &&
+    typeof result.designTokens === "object" &&
+    !Array.isArray(result.designTokens)
+      ? (result.designTokens as Record<string, unknown>)
+      : null;
+  const legacyTokens =
+    legacyDesignTokens
+      ? (legacyDesignTokens as unknown as BuilderThemeTokens)
+      : defaultThemeTokens;
+  const legacySiteLayout = normalizeSiteThemeLayout(
+    result.siteLayout,
+    createDefaultSiteThemeLayout({
+      siteName: result.page.site.name,
+      tokens: legacyTokens,
+      presetId:
+        typeof legacyDesignTokens?.themePresetId === "string"
+          ? legacyDesignTokens.themePresetId
+          : "buildez-default",
+    })
+  );
 
-  if (!snapshot) {
-    console.log("❌ SNAPSHOT NOT FOUND FOR PAGE:", page.id);
-    notFound();
-  }
-
-  /* -------------------------------------------
-     Render static snapshot
-  ------------------------------------------- */
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: snapshot.css }} />
+    <SiteThemeFrame layout={legacySiteLayout} tokens={legacyTokens}>
+      <style dangerouslySetInnerHTML={{ __html: result.css }} />
       <div
         id="buildez-preview-root"
-        dangerouslySetInnerHTML={{ __html: snapshot.html }}
+        dangerouslySetInnerHTML={{ __html: result.html }}
       />
-    </>
+    </SiteThemeFrame>
   );
 }
 
-/* ============================================================
-   DEFAULT SITE RESOLUTION (unchanged)
-============================================================ */
 async function resolveDefaultSiteSlug(): Promise<string> {
   const site = await prisma.site.findFirst({
     where: {
@@ -107,6 +94,9 @@ async function resolveDefaultSiteSlug(): Promise<string> {
     select: { slug: true },
   });
 
-  if (!site) notFound();
+  if (!site) {
+    notFound();
+  }
+
   return site.slug;
 }

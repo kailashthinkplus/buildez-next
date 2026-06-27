@@ -96,14 +96,13 @@ export default function UpgradePlanModal({
         animate={{ opacity: 1, scale: 1 }}
         className="
           relative w-full max-w-5xl rounded-2xl p-8 shadow-xl
-          bg-[radial-gradient(circle_at_top,rgba(30,58,138,0.55),rgba(2,6,23,1))]
-          border border-white/10
+          dashboard-card-strong
         "
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-white/70 hover:text-white"
+          className="absolute top-5 right-5 dashboard-muted hover:text-[var(--dashboard-text)]"
         >
           <X size={20} />
         </button>
@@ -111,12 +110,12 @@ export default function UpgradePlanModal({
         {/* Header */}
         <div className="flex items-center gap-2 mb-6">
           <CreditCard className="h-5 w-5 text-blue-400" />
-          <h2 className="text-xl font-semibold text-white">
+          <h2 className="text-xl font-semibold">
             Upgrade Your Plan
           </h2>
         </div>
 
-        <p className="text-white/60 text-sm mb-8">
+        <p className="dashboard-muted text-sm mb-8">
           Select a plan to upgrade. You can change or cancel anytime.
         </p>
 
@@ -127,7 +126,7 @@ export default function UpgradePlanModal({
             className={`text-sm ${
               billing === "monthly"
                 ? "text-blue-400"
-                : "text-white/60 hover:text-white/80"
+                : "dashboard-muted hover:text-[var(--dashboard-text)]"
             }`}
           >
             Monthly
@@ -137,7 +136,7 @@ export default function UpgradePlanModal({
             onClick={() =>
               setBilling(billing === "monthly" ? "yearly" : "monthly")
             }
-            className="w-14 h-7 rounded-full glass bg-white/10 cursor-pointer flex items-center px-1"
+            className="w-14 h-7 rounded-full dashboard-subtle cursor-pointer flex items-center px-1"
           >
             <motion.div
               layout
@@ -154,7 +153,7 @@ export default function UpgradePlanModal({
             className={`text-sm ${
               billing === "yearly"
                 ? "text-blue-400"
-                : "text-white/60 hover:text-white/80"
+                : "dashboard-muted hover:text-[var(--dashboard-text)]"
             }`}
           >
             Yearly
@@ -182,8 +181,8 @@ export default function UpgradePlanModal({
                   p-5 rounded-2xl border glass transition-all cursor-pointer
                   ${
                     isActive
-                      ? "border-blue-500 bg-white/[0.08] shadow-[0_0_20px_rgba(59,130,246,0.3)]"
-                      : "border-white/10 hover:border-blue-400/40 bg-white/[0.03]"
+                      ? "border-blue-500 bg-blue-500/10 shadow-[0_0_20px_rgba(59,130,246,0.18)]"
+                      : "dashboard-border dashboard-hover"
                   }
                 `}
                 onClick={() => setSelected(plan.code)}
@@ -194,21 +193,21 @@ export default function UpgradePlanModal({
                   </div>
                 )}
 
-                <h3 className="text-lg font-medium text-white mb-1">
+                <h3 className="text-lg font-medium mb-1">
                   {plan.name}
                 </h3>
-                <p className="text-sm text-white/60 mb-3">
+                <p className="text-sm dashboard-muted mb-3">
                   {plan.description}
                 </p>
 
                 <div className="text-2xl font-semibold mb-4">
                   ₹{price.toLocaleString()}
-                  <span className="text-sm text-white/50 ml-1">
+                  <span className="text-sm dashboard-faint ml-1">
                     / {billing === "monthly" ? "month" : "year"}
                   </span>
                 </div>
 
-                <ul className="space-y-1.5 text-sm text-white/70 mb-6">
+                <ul className="space-y-1.5 text-sm dashboard-muted mb-6">
                   {plan.features.map((f: string) => (
                     <li key={f} className="flex gap-2">
                       <Check className="h-4 w-4 text-blue-400 mt-[2px]" />
@@ -224,7 +223,7 @@ export default function UpgradePlanModal({
                     ${
                       isActive
                         ? "bg-blue-600 text-white hover:bg-blue-500"
-                        : "bg-white/10 text-white hover:bg-white/20"
+                        : "dashboard-subtle dashboard-hover"
                     }
                   `}
                 >

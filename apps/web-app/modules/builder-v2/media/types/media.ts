@@ -89,3 +89,13 @@ export interface MediaAsset {
 
   metadata?: Record<string, unknown>;
 }
+
+export interface GenerateImageRequest {
+  siteId?: string;
+  prompt: string;
+  negativePrompt?: string;
+  style?: string;
+  size?: "square" | "portrait" | "landscape";
+  industry?: string;
+  numberOfImages?: number;
+}

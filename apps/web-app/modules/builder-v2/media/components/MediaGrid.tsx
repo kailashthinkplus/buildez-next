@@ -1,6 +1,7 @@
 "use client";
 
 import type { MediaAsset } from "../types";
+import { Image as ImageIcon } from "lucide-react";
 
 import MediaCard from "./MediaCard";
 
@@ -16,6 +17,8 @@ interface MediaGridProps {
   selectedAsset?: MediaAsset | null;
 
   onSelect(asset: MediaAsset): void;
+
+  onDelete?(asset: MediaAsset): void;
 }
 
 /* ==========================================================
@@ -27,6 +30,7 @@ export default function MediaGrid({
   loading = false,
   selectedAsset = null,
   onSelect,
+  onDelete,
 }: MediaGridProps) {
   /* --------------------------------------------------------
      Loading
@@ -38,7 +42,9 @@ export default function MediaGrid({
         className="
           p-6
           grid
-          grid-cols-5
+          grid-cols-2
+          sm:grid-cols-3
+          lg:grid-cols-5
           gap-4
           overflow-y-auto
           h-full
@@ -92,7 +98,7 @@ export default function MediaGrid({
             text-4xl
           "
         >
-          🖼️
+          <ImageIcon size={36} aria-hidden />
         </div>
 
         <h3
@@ -136,7 +142,9 @@ export default function MediaGrid({
       <div
         className="
           grid
-          grid-cols-5
+          grid-cols-2
+          sm:grid-cols-3
+          lg:grid-cols-5
           gap-4
         "
       >
@@ -148,6 +156,7 @@ export default function MediaGrid({
               selectedAsset?.id === asset.id
             }
             onClick={onSelect}
+            onDelete={onDelete}
           />
         ))}
       </div>

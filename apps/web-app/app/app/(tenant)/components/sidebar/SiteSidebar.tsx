@@ -61,8 +61,21 @@ export function SiteSidebar({
       {/* LOGO + SITE NAME */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col">
-          <Image src="/buildez-logo-light.svg" alt="BuildEZ" width={120} height={32} />
-          <span className="text-xs opacity-60 mt-1">
+          <Image
+            src="/buildez-logo-light.svg"
+            alt="BuildEZ"
+            width={148}
+            height={72}
+            className="block h-11 w-[148px] object-contain object-left dark:hidden"
+          />
+          <Image
+            src="/buildez-logo-dark.svg"
+            alt="BuildEZ"
+            width={148}
+            height={72}
+            className="hidden h-11 w-[148px] object-contain object-left dark:block"
+          />
+          <span className="text-xs dashboard-muted mt-1">
             {currentWebsite.name}
           </span>
         </div>
@@ -77,7 +90,7 @@ export function SiteSidebar({
       {/* SECTIONS */}
       {sections.map((section) => (
         <div key={section.title}>
-          <div className="text-xs uppercase font-semibold opacity-60 mb-2">
+          <div className="text-xs uppercase font-semibold dashboard-faint mb-2">
             {section.title}
           </div>
 
@@ -90,8 +103,8 @@ export function SiteSidebar({
                   href={href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition ${
                     active
-                      ? "bg-blue-500/20 border border-blue-500/40"
-                      : "hover:bg-black/5"
+                      ? "dashboard-nav-active"
+                      : "dashboard-muted dashboard-hover"
                   }`}
                 >
                   <Icon size={18} />

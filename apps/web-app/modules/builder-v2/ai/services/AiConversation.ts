@@ -31,6 +31,7 @@ export class AiConversation {
     try {
       store.setStatus("running");
       store.setElapsed(0);
+      store.setAgents([]);
 
       const finalPrompt = tone
         ? `${prompt}
@@ -46,6 +47,7 @@ Instructions:
 
       const res = await fetch("/api/builder-v2/ai/generate", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -56,10 +58,29 @@ Instructions:
       });
 
       if (!res.ok) {
-        throw new Error("AI request failed");
+        let message = "AI request failed";
+
+        try {
+          const payload = await res.json();
+          message = payload?.error || payload?.message || message;
+        } catch {
+          try {
+            message = (await res.text()) || message;
+          } catch {
+            // Keep generic fallback.
+          }
+        }
+
+        throw new Error(message);
       }
 
       const result = await res.json();
+
+      const agents = Array.isArray(result?.metadata?.agents)
+        ? result.metadata.agents
+        : [];
+
+      store.setAgents(agents);
 
       store.setStatus("success");
 

@@ -16,6 +16,7 @@ import { VideoDefinition } from "../../widgets/video";
 import { IconDefinition } from "../../widgets/icon";
 import { DividerDefinition } from "../../widgets/divider";
 import { SpacerDefinition } from "../../widgets/spacer";
+import { PremiumWidgetDefinitions } from "../../widgets/premium";
 
 /* ==========================================================
    REGISTER ALL WIDGETS
@@ -34,6 +35,7 @@ const widgets = [
   IconDefinition,
   DividerDefinition,
   SpacerDefinition,
+  ...PremiumWidgetDefinitions,
 ] as const;
 
 let registered = false;

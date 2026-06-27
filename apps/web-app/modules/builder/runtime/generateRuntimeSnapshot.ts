@@ -75,7 +75,7 @@ export function generateRuntimeSnapshot(
   const html = renderNodeToHtml(resolvedTree, device, designTokens);
 
   // 3️⃣ Generate CSS
-  const baseCSS = generateRuntimeCSS();
+  const baseCSS = generateRuntimeCSS(resolvedTree as any);
   const tokenCSS = designTokens
     ? bindDesignTokensToCSS(designTokens)
     : "";

@@ -6,6 +6,14 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 
+const ALLOWED_TYPES = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+]);
+
 /* ==========================================================
    TYPES
 ========================================================== */
@@ -14,7 +22,7 @@ interface MediaUploadProps {
 
   uploading: boolean;
 
-  onUpload(file: File): Promise<void>;
+  onUpload(files: File[]): Promise<void>;
 
 }
 
@@ -50,13 +58,12 @@ export default function MediaUpload({
      PROCESS FILE
   -------------------------------------------------------- */
 
-  async function processFile(
-    file?: File
-  ) {
+  async function processFiles(files?: FileList | File[]) {
+    const imageFiles = Array.from(files ?? []).filter((file) =>
+      ALLOWED_TYPES.has(file.type)
+    );
 
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
+    if (imageFiles.length === 0) {
 
       alert("Only image files are supported.");
 
@@ -64,7 +71,7 @@ export default function MediaUpload({
 
     }
 
-    await onUpload(file);
+    await onUpload(imageFiles);
 
   }
 
@@ -80,10 +87,7 @@ export default function MediaUpload({
 
     setDragging(false);
 
-    const file =
-      e.dataTransfer.files?.[0];
-
-    await processFile(file);
+    await processFiles(e.dataTransfer.files);
 
   }
 
@@ -187,7 +191,7 @@ export default function MediaUpload({
               text-white/35
             "
           >
-            JPG • PNG • WebP • SVG
+            JPG, PNG, WebP and AVIF are converted to optimized WebP.
           </p>
 
         </div>
@@ -208,7 +212,7 @@ export default function MediaUpload({
               size={18}
             />
 
-            Uploading...
+            Uploading and converting...
 
           </div>
 
@@ -225,12 +229,11 @@ export default function MediaUpload({
         type="file"
 
         accept="image/*"
+        multiple
 
         onChange={(e) =>
 
-          processFile(
-            e.target.files?.[0]
-          )
+          processFiles(e.target.files ?? undefined)
 
         }
 

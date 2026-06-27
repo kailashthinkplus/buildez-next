@@ -13,6 +13,7 @@ import {
 } from "@/lib/context/resolveExecutionContext";
 
 import { resolveBlueprintTree } from "@/modules/builder/runtime/resolveBlueprintTree";
+import { isBuilderV2Blueprint } from "@/modules/builder-v2/runtime/isBuilderV2Blueprint";
 
 export async function POST(
   req: Request,
@@ -68,9 +69,10 @@ export async function POST(
       );
     }
 
-    const resolvedContent = resolveBlueprintTree(
-      page.blueprint.data
-    );
+    const blueprintData = page.blueprint.data;
+    const snapshotContent = isBuilderV2Blueprint(blueprintData)
+      ? blueprintData
+      : resolveBlueprintTree(blueprintData);
 
     /* ----------------------------------------------------------
        TRANSACTION
@@ -101,7 +103,7 @@ export async function POST(
           pageId: page.id,
           title: page.title,
           slug: page.slug,
-          content: resolvedContent,
+          content: snapshotContent,
         },
       });
 

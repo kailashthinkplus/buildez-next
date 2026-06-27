@@ -5,6 +5,7 @@ import type {
 } from "../../types/blueprint";
 
 import { WidgetRegistry } from "../registry/WidgetRegistry";
+import { createBuilderTheme } from "../../theme/defaultTheme";
 
 /* ==========================================================
    Blueprint Factory
@@ -27,10 +28,7 @@ export class BlueprintFactory {
       },
 
       theme: {
-        id: "default",
-        name: "Default",
-        preset: "default",
-        tokens: {},
+        ...createBuilderTheme(),
       },
 
       root: page.id,

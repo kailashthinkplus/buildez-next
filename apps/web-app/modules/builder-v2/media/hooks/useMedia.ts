@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { mediaService } from "../services/media.service";
 import type {
@@ -26,6 +26,8 @@ export function useMedia(
 
   const [error, setError] = useState<string | null>(null);
 
+  const hasLoadedRef = useRef(false);
+
   /* ========================================================
      LOAD LIBRARY
   ======================================================== */
@@ -36,7 +38,9 @@ export function useMedia(
 
     try {
 
-      setLoading(true);
+      if (!hasLoadedRef.current) {
+        setLoading(true);
+      }
 
       setError(null);
 
@@ -44,6 +48,7 @@ export function useMedia(
         await mediaService.getAssets(siteId);
 
       setAssets(items);
+      hasLoadedRef.current = true;
 
     } catch (err: any) {
 
@@ -65,32 +70,26 @@ export function useMedia(
   ======================================================== */
 
   useEffect(() => {
-
+    hasLoadedRef.current = false;
+    setAssets([]);
     refresh();
-
-  }, [refresh]);
+  }, [refresh, siteId]);
 
   /* ========================================================
      UPLOAD IMAGE
   ======================================================== */
 
-  async function uploadImage(
-    file: File
-  ) {
+  const uploadImage = useCallback(async (file: File) => {
 
     try {
 
       setUploading(true);
 
-      const url =
-        await mediaService.uploadImage(
-          file,
-          siteId
-        );
+      const asset = await mediaService.uploadImage(file, siteId);
 
       await refresh();
 
-      return url;
+      return asset;
 
     } finally {
 
@@ -98,15 +97,29 @@ export function useMedia(
 
     }
 
-  }
+  }, [refresh, siteId]);
+
+  const uploadImages = useCallback(async (files: File[]) => {
+    try {
+      setUploading(true);
+
+      const uploaded = await mediaService.uploadImages(files, siteId);
+
+      await refresh();
+
+      return uploaded;
+    } finally {
+      setUploading(false);
+    }
+  }, [refresh, siteId]);
 
   /* ========================================================
      GENERATE AI
   ======================================================== */
 
-  async function generateImages(
+  const generateImages = useCallback(async (
     request: GenerateImageRequest
-  ) {
+  ) => {
 
     try {
 
@@ -123,15 +136,15 @@ export function useMedia(
 
     }
 
-  }
+  }, [siteId]);
 
   /* ========================================================
      DELETE
   ======================================================== */
 
-  async function deleteAsset(
+  const deleteAsset = useCallback(async (
     assetId: string
-  ) {
+  ) => {
 
     await mediaService.deleteAsset(
       assetId
@@ -139,15 +152,15 @@ export function useMedia(
 
     await refresh();
 
-  }
+  }, [refresh]);
 
   /* ========================================================
      SEARCH
   ======================================================== */
 
-  async function search(
+  const search = useCallback(async (
     query: string
-  ) {
+  ) => {
 
     if (!query.trim()) {
 
@@ -165,7 +178,7 @@ export function useMedia(
 
     setAssets(results);
 
-  }
+  }, [refresh, siteId]);
 
   /* ========================================================
      RETURN
@@ -188,6 +201,8 @@ export function useMedia(
     search,
 
     uploadImage,
+
+    uploadImages,
 
     generateImages,
 

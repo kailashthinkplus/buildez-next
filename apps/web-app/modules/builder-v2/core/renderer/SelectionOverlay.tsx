@@ -12,26 +12,6 @@ export default function SelectionOverlay() {
 
   return (
     <>
-      {/* Selection Border */}
-
-      <div
-        className="
-          pointer-events-none
-          fixed
-          z-[9998]
-          rounded-lg
-          border-2
-          border-blue-500
-          shadow-[0_0_0_1px_rgba(59,130,246,0.25)]
-        "
-        style={{
-          left: rect.left,
-          top: rect.top,
-          width: rect.width,
-          height: rect.height,
-        }}
-      />
-
       {/* Floating Toolbar */}
 
       <div

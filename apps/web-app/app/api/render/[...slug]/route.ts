@@ -12,7 +12,7 @@ import { renderPage } from "@/lib/runtime/render-page";
  */
 
 export async function GET(
-  _req: Request,
+  req: Request,
   context: { params: Promise<{ slug?: string[] }> }
 ) {
   console.log("\n==============================");
@@ -50,12 +50,19 @@ export async function GET(
     return new NextResponse("Not Found", { status: 404 });
   }
 
-  const { html, page } = result;
+  const { page } = result;
 
   /* ----------------------------------------------------------
      RESPONSE
   ---------------------------------------------------------- */
   const cssHref = `/api/runtime/css/${siteSlug}/${pageSlug}`;
+
+  if (result.mode === "builder-v2") {
+    console.log("⚛️ BUILDER V2 PAGE → REDIRECT APP ROUTER");
+    return NextResponse.redirect(new URL(`/${siteSlug}/${pageSlug}`, req.url));
+  }
+
+  const { html } = result;
 
   console.log("🔗 CSS LINK:", cssHref);
   console.log("🧾 HTML SIZE:", html.length);
@@ -66,7 +73,7 @@ export async function GET(
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${page.title}</title>
+  <title>${escapeHtml(page.title)}</title>
   <link rel="stylesheet" href="${cssHref}" />
 </head>
 <body>
@@ -81,4 +88,12 @@ ${html}
       },
     }
   );
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }

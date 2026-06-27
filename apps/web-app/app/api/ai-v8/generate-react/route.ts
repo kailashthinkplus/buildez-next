@@ -7,9 +7,13 @@ import {
 import {
   buildDesignInstructionBlock,
   getRequiredSectionIds,
-  resolveDesignPlan,
   type ResolvedDesignPlan,
 } from "@/modules/builder/ai-v8/lib/designPlan";
+import {
+  buildExperienceInstructionBlock,
+  type ExperienceStrategy,
+} from "@/modules/builder/ai-v8/lib/experienceIntelligence";
+import { runWebsiteGenerationOrchestrator } from "@/modules/builder/ai-v8/orchestrator/runWebsiteGenerationOrchestrator";
 import { parseReactToBlueprint } from "@/modules/builder/ai-v8/lib/reactToBlueprint";
 import type { AIV8BrandContext } from "@/modules/builder/ai-v8/types";
 
@@ -18,7 +22,7 @@ import type { AIV8BrandContext } from "@/modules/builder/ai-v8/types";
 ============================================================ */
 
 const AI_CONFIG = {
-  model: "gpt-4o",
+  model: process.env.OPENAI_WEBSITE_MODEL || "gpt-4o",
   maxCompletionTokens: 16384,
   temperature: 0.45,
   repairTemperature: 0.2,
@@ -76,9 +80,11 @@ async function getCompleteBrandContext(siteId: string) {
 function buildEnhancedPrompt(
   userPrompt: string,
   plan: ResolvedDesignPlan,
-  brandContext: (AIV8BrandContext & { siteName?: string | null }) | null
+  brandContext: (AIV8BrandContext & { siteName?: string | null }) | null,
+  strategy: ExperienceStrategy
 ) {
   const designPlanBlock = buildDesignInstructionBlock(plan, brandContext);
+  const experienceBlock = buildExperienceInstructionBlock(strategy);
   const colors = brandContext?.designTokens?.colors;
   const sectionIds = getRequiredSectionIds(plan);
   const siteName = brandContext?.siteName?.trim() || "the business";
@@ -92,6 +98,8 @@ ${siteName}
 
 PREDEFINED DESIGN PLAN:
 ${designPlanBlock}
+
+${experienceBlock}
 
 MANDATORY OUTPUT CONTRACT:
 1. Start with "use client";
@@ -107,6 +115,9 @@ MANDATORY OUTPUT CONTRACT:
 11. Use meaningful links (do not use href="#")
 12. Avoid generic sections. Use visual hierarchy with mixed layout patterns (split hero, card grids, asymmetric rows, stats band, CTA contrast block)
 13. Avoid boilerplate/template wording. Use specific company/domain language from the prompt.
+14. Use no more than one decorative gradient. Prioritize real content hierarchy, spacing, typography, imagery, and proof.
+15. Include real, plausible copy details: numbers, labels, process steps, service names, menu/product/program names, or package details that fit the prompt.
+16. The page must feel like a senior designer and conversion strategist worked together, not a default AI landing page.
 
 IMAGE RULES:
 - Use data-ai-bg for hero/background sections and data-ai-image for content images
@@ -149,6 +160,7 @@ HARD RULES:
 - Must include a mobile-friendly nav.
 - Must avoid placeholder values and invalid JSX.
 - Must not output a generic wireframe-like design.
+- Must pass a professional website review for specificity, visual rhythm, conversion clarity, accessibility, and responsive behavior.
 `;
 }
 
@@ -179,29 +191,6 @@ function validateAndCleanCode(raw: string) {
   return code;
 }
 
-function findMissingSectionIds(code: string, requiredSectionIds: string[]) {
-  const present = new Set<string>();
-  const regex = /id=["']([^"']+)["']/g;
-  let match: RegExpExecArray | null;
-
-  while ((match = regex.exec(code)) !== null) {
-    present.add(match[1]);
-  }
-
-  return requiredSectionIds.filter((id) => !present.has(id));
-}
-
-function hasForbiddenPatterns(code: string) {
-  const forbidden = [
-    /bg-\[url\(/i,
-    /PLACEHOLDER/gi,
-    /TODO/gi,
-    /lorem ipsum/gi,
-  ];
-
-  return forbidden.some((pattern) => pattern.test(code));
-}
-
 function extractImagePrompts(code: string): Array<{
   type: "bg" | "img";
   prompt: string;
@@ -227,8 +216,6 @@ async function hydrateImagePromptsInCode(
   contextPrompt: string
 ): Promise<string> {
   const prompts = extractImagePrompts(code);
-  if (!prompts.length) return code;
-
   let nextCode = code;
 
   const escapeRegExp = (value: string) =>
@@ -258,13 +245,73 @@ async function hydrateImagePromptsInCode(
     }
   }
 
-  // Replace any leftover placeholder sources with context-driven generated images
-  const placeholderMatches = nextCode.match(/src=["']PLACEHOLDER["']/gi) || [];
-  for (let i = 0; i < placeholderMatches.length; i++) {
-    const fallbackPrompt = `${contextPrompt}, professional photography, high detail, natural lighting`;
-    const fallbackUrl = await generateImageFromFreepik(fallbackPrompt);
-    nextCode = nextCode.replace(/src=["']PLACEHOLDER["']/i, `src="${fallbackUrl}"`);
+  return sanitizeResidualPlaceholders(nextCode, contextPrompt);
+}
+
+async function sanitizeResidualPlaceholders(
+  code: string,
+  contextPrompt: string
+): Promise<string> {
+  let nextCode = code;
+  const fallbackPrompt = `${contextPrompt}, professional website photography, high detail, natural lighting`;
+  let fallbackUrl: string | null = null;
+
+  async function getFallbackUrl() {
+    if (!fallbackUrl) {
+      fallbackUrl = await generateImageFromFreepik(fallbackPrompt);
+    }
+    return fallbackUrl;
   }
+
+  const placeholderSrcPatterns = [
+    /src\s*=\s*["'](?:PLACEHOLDER|placeholder|\/placeholder[^"']*|https?:\/\/(?:[^"']*\.)?(?:placeholder|placehold)[^"']*)["']/gi,
+    /src\s*=\s*\{\s*["'](?:PLACEHOLDER|placeholder|\/placeholder[^"']*|https?:\/\/(?:[^"']*\.)?(?:placeholder|placehold)[^"']*)["']\s*\}/gi,
+    /src\s*=\s*\{\s*`[^`]*(?:PLACEHOLDER|placeholder|placehold)[^`]*`\s*\}/gi,
+    /src\s*=\s*\{\s*PLACEHOLDER\s*\}/gi,
+  ];
+
+  for (const pattern of placeholderSrcPatterns) {
+    const matches = nextCode.match(pattern) || [];
+    for (let i = 0; i < matches.length; i++) {
+      const url = await getFallbackUrl();
+      nextCode = nextCode.replace(pattern, `src="${url}"`);
+    }
+  }
+
+  const placeholderBackgroundPatterns = [
+    /url\((?:["']?)(?:PLACEHOLDER|placeholder|\/placeholder[^"')]*|https?:\/\/(?:[^"')]*\.)?(?:placeholder|placehold)[^"')]*)(?:["']?)\)/gi,
+    /backgroundImage\s*:\s*["'`][^"'`]*(?:PLACEHOLDER|placeholder|placehold)[^"'`]*["'`]/gi,
+  ];
+
+  for (const pattern of placeholderBackgroundPatterns) {
+    const matches = nextCode.match(pattern) || [];
+    for (let i = 0; i < matches.length; i++) {
+      const url = await getFallbackUrl();
+      const replacement = matches[i].startsWith("backgroundImage")
+        ? `backgroundImage: "url('${url}')"`
+        : `url('${url}')`;
+      nextCode = nextCode.replace(pattern, replacement);
+    }
+  }
+
+  const barePlaceholderUrls =
+    nextCode.match(
+      /https?:\/\/[^\s"'`)}]*(?:placeholder|placehold)[^\s"'`)}]*/gi
+    ) || [];
+
+  for (let i = 0; i < barePlaceholderUrls.length; i++) {
+    const url = await getFallbackUrl();
+    nextCode = nextCode.replace(
+      /https?:\/\/[^\s"'`)}]*(?:placeholder|placehold)[^\s"'`)}]*/i,
+      url
+    );
+  }
+
+  nextCode = nextCode
+    .replace(/\bplaceholder image\b/gi, "featured website visual")
+    .replace(/\bplaceholder text\b/gi, "polished website copy")
+    .replace(/\bplaceholder copy\b/gi, "polished website copy")
+    .replace(/\bPLACEHOLDER\b/gi, "featured website visual");
 
   return nextCode;
 }
@@ -394,12 +441,16 @@ async function repairCodeAgainstPlan({
   missingSectionIds,
   userPrompt,
   plan,
+  strategy,
+  qualityWarnings,
 }: {
   currentCode: string;
   requiredSectionIds: string[];
   missingSectionIds: string[];
   userPrompt: string;
   plan: ResolvedDesignPlan;
+  strategy: ExperienceStrategy;
+  qualityWarnings: string[];
 }) {
   const repairPrompt = `
 You must repair this TSX so it strictly follows the BuildEZ design plan.
@@ -410,8 +461,14 @@ ${userPrompt}
 Required section ids:
 ${requiredSectionIds.join(", ")}
 
+Professional experience strategy:
+${buildExperienceInstructionBlock(strategy)}
+
 Missing section ids found by validator:
 ${missingSectionIds.length ? missingSectionIds.join(", ") : "none"}
+
+Quality warnings found by validator:
+${qualityWarnings.length ? qualityWarnings.join("\n") : "none"}
 
 Current code:
 \`\`\`tsx
@@ -423,7 +480,8 @@ Repair requirements:
 2. Add/fix missing section ids and section blocks.
 3. Preserve "use client"; and default export.
 4. Remove forbidden patterns such as PLACEHOLDER, TODO, and bg-[url(...)].
-5. Return full corrected TSX only.
+5. Raise the page quality by adding specificity, proof, responsive classes, semantic structure, meaningful CTAs, and image coverage.
+6. Return full corrected TSX only.
 `;
 
   const completion = await callOpenAIChatCompletion({
@@ -448,7 +506,17 @@ Repair requirements:
    SAVE
 ============================================================ */
 
-async function saveReactCode(pageId: string, code: string, industry: string) {
+async function saveReactCode({
+  pageId,
+  code,
+  industry,
+  generationMetadata,
+}: {
+  pageId: string;
+  code: string;
+  industry: string;
+  generationMetadata: Record<string, unknown>;
+}) {
   const page = await prisma.page.findUnique({
     where: { id: pageId },
     include: {
@@ -509,6 +577,7 @@ async function saveReactCode(pageId: string, code: string, industry: string) {
           generatedAt: new Date().toISOString(),
           aiMode: "react-to-blueprint",
           parsedNodeCount: parsedNodes.length,
+          ...generationMetadata,
         },
       },
     });
@@ -543,7 +612,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
-    const plan = resolveDesignPlan(userPrompt);
     const dbBrandContext = await getCompleteBrandContext(siteId);
     const brandContext =
       incomingBrand && typeof incomingBrand === "object"
@@ -557,65 +625,99 @@ export async function POST(req: NextRequest) {
           }
         : dbBrandContext;
 
-    const systemPrompt = generateSystemPrompt(plan);
-    const userEnhancedPrompt = buildEnhancedPrompt(
-      userPrompt,
-      plan,
-      brandContext
-    );
-
-    const completion = await callOpenAIChatCompletion({
-      model: AI_CONFIG.model,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userEnhancedPrompt },
-      ],
-      temperature: AI_CONFIG.temperature,
-      maxCompletionTokens: AI_CONFIG.maxCompletionTokens,
-    });
-
-    const raw = extractAssistantText(completion);
-    if (!raw) throw new Error("Empty AI response");
-
-    let code = validateAndCleanCode(raw);
-    const requiredSectionIds = getRequiredSectionIds(plan);
-    let missingSectionIds = findMissingSectionIds(code, requiredSectionIds);
-
-    if (missingSectionIds.length || hasForbiddenPatterns(code)) {
-      code = await repairCodeAgainstPlan({
-        currentCode: code,
-        requiredSectionIds,
-        missingSectionIds,
+    const result = await runWebsiteGenerationOrchestrator(
+      {
         userPrompt,
-        plan,
-      });
-      missingSectionIds = findMissingSectionIds(code, requiredSectionIds);
-    }
+        siteId,
+        pageId,
+        brandContext,
+      },
+      {
+        async generateInitialCode({ workflow }) {
+          const intent = workflow.intent!;
+          const systemPrompt = generateSystemPrompt(intent.plan);
+          const userEnhancedPrompt = buildEnhancedPrompt(
+            workflow.userPrompt,
+            intent.plan,
+            workflow.brandContext,
+            intent.strategy
+          );
 
-    if (missingSectionIds.length) {
-      throw new Error(
-        `Generated code missing required sections: ${missingSectionIds.join(", ")}`
-      );
-    }
+          const completion = await callOpenAIChatCompletion({
+            model: AI_CONFIG.model,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userEnhancedPrompt },
+            ],
+            temperature: AI_CONFIG.temperature,
+            maxCompletionTokens: AI_CONFIG.maxCompletionTokens,
+          });
 
-    code = await hydrateImagePromptsInCode(
-      code,
-      `${userPrompt}, ${plan.recipe.label}, ${plan.useCase}`
+          const raw = extractAssistantText(completion);
+          if (!raw) throw new Error("Empty AI response");
+
+          return validateAndCleanCode(raw);
+        },
+
+        async repairCode({ workflow, currentCode }) {
+          const intent = workflow.intent!;
+          const sectionRecipes = workflow.sectionRecipes!;
+          const validation = workflow.validation;
+          const qa = workflow.qa;
+
+          return repairCodeAgainstPlan({
+            currentCode,
+            requiredSectionIds: sectionRecipes.requiredSectionIds,
+            missingSectionIds: validation?.missingSectionIds || [],
+            userPrompt: workflow.userPrompt,
+            plan: intent.plan,
+            strategy: intent.strategy,
+            qualityWarnings: [
+              ...(qa?.warnings || []),
+              ...(validation?.forbiddenWarnings || []),
+            ],
+          });
+        },
+
+        async hydrateImages({ code, workflow }) {
+          return hydrateImagePromptsInCode(
+            code,
+            workflow.assets?.contextPrompt ||
+              `${workflow.userPrompt}, ${workflow.intent!.plan.recipe.label}, ${workflow.intent!.plan.useCase}`
+          );
+        },
+
+        async saveOutput({ code, workflow }) {
+          if (!workflow.pageId) return;
+
+          const intent = workflow.intent!;
+
+          await saveReactCode({
+            pageId: workflow.pageId,
+            code,
+            industry: intent.plan.recipe.key,
+            generationMetadata: {
+              aiModel: AI_CONFIG.model,
+              aiStrategy: {
+                businessName: intent.strategy.brief.businessName,
+                audience: intent.strategy.brief.audience,
+                conversionGoal: intent.strategy.brief.conversionGoal,
+                visualDirection: intent.strategy.brief.visualDirection,
+                competitorGapsToBeat:
+                  intent.strategy.brief.competitorGapsToBeat,
+              },
+              quality: workflow.qa,
+              agents: workflow.logs,
+            },
+          });
+        },
+      }
     );
-
-    if (pageId) {
-      await saveReactCode(pageId, code, plan.recipe.key);
-    }
 
     return NextResponse.json({
       success: true,
-      code,
-      metadata: {
-        category: plan.recipe.key,
-        useCase: plan.useCase,
-        matchedKeywords: plan.matchedKeywords,
-        confidence: plan.confidence,
-      },
+      code: result.code,
+      metadata: result.metadata,
     });
   } catch (err: unknown) {
     const message =

@@ -8,7 +8,8 @@ interface BlueprintNode {
 }
 
 interface BlueprintData {
-  page: BlueprintNode;
+  page?: BlueprintNode;
+  root?: string;
   nodes?: Record<string, BlueprintNode>;
 }
 
@@ -34,7 +35,10 @@ interface BlueprintData {
 export function resolveBlueprintTree(
   data: BlueprintData
 ): BlueprintNode {
-  if (!data?.page) {
+  const nodes = data?.nodes ?? {};
+  const page = data?.page ?? (data?.root ? nodes[data.root] : undefined);
+
+  if (!page) {
     console.warn("[resolveBlueprintTree] No page node provided");
     return {
       id: "empty-page",
@@ -44,7 +48,6 @@ export function resolveBlueprintTree(
     };
   }
 
-  const nodes = data.nodes ?? {};
   const visited = new Set<string>();
 
   function resolve(node: BlueprintNode): BlueprintNode {
@@ -100,12 +103,12 @@ export function resolveBlueprintTree(
   }
 
   // Start resolution from page node
-  const resolvedTree = resolve(data.page);
+  const resolvedTree = resolve(page);
 
   // ✅ ENHANCEMENT: Ensure design tokens are at root level
   // This handles cases where tokens might be in data.designTokens
-  if (!resolvedTree.props.designTokens && data.page?.props?.designTokens) {
-    resolvedTree.props.designTokens = data.page.props.designTokens;
+  if (!resolvedTree.props.designTokens && page.props?.designTokens) {
+    resolvedTree.props.designTokens = page.props.designTokens;
   }
 
   return resolvedTree;
@@ -118,10 +121,14 @@ export function isValidBlueprintData(data: any): data is BlueprintData {
   return !!(
     data &&
     typeof data === "object" &&
-    data.page &&
-    typeof data.page === "object" &&
-    data.page.id &&
-    data.page.type
+    ((data.page &&
+      typeof data.page === "object" &&
+      data.page.id &&
+      data.page.type) ||
+      (typeof data.root === "string" &&
+        data.nodes &&
+        typeof data.nodes === "object" &&
+        data.nodes[data.root]))
   );
 }
 

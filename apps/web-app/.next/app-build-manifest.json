@@ -1,20 +1,71 @@
 {
   "pages": {
+    "/api/onboarding/status/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/onboarding/status/route.js"
+    ],
+    "/api/tenant/me/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/tenant/me/route.js"
+    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/(runtime)/layout": [
+    "/app/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(runtime)/layout.js"
+      "static/chunks/app/app/layout.js"
     ],
-    "/(runtime)/[...slug]/page": [
+    "/app/(builder)/[siteSlug]/[pageSlugWithId]/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(runtime)/[...slug]/page.js"
+      "static/css/app/app/(builder)/[siteSlug]/[pageSlugWithId]/layout.css",
+      "static/chunks/app/app/(builder)/[siteSlug]/[pageSlugWithId]/layout.js"
+    ],
+    "/app/(builder)/[siteSlug]/[pageSlugWithId]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/app/(builder)/[siteSlug]/[pageSlugWithId]/page.js"
+    ],
+    "/api/pages/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/pages/route.js"
+    ],
+    "/api/builder-v2/blueprints/[pageId]/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/builder-v2/blueprints/[pageId]/route.js"
+    ],
+    "/api/builder-v2/ai/generate/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/builder-v2/ai/generate/route.js"
+    ],
+    "/api/ai-v8/generate-react/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/ai-v8/generate-react/route.js"
+    ],
+    "/app/(tenant)/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/app/(tenant)/layout.js"
+    ],
+    "/app/(tenant)/[siteSlug]/pages/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/app/(tenant)/[siteSlug]/pages/page.js"
+    ],
+    "/app/(tenant)/[siteSlug]/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/app/(tenant)/[siteSlug]/dashboard/page.js"
     ]
   }
 }

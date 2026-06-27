@@ -42,7 +42,7 @@ interface IntegratedLeftSidebarProps {
   onSelect(id: string | null): void;
   onUpdateNode(id: string, patch: Partial<BlueprintNode>): void;
 
-  /* 🔑 Builder mutation entry point */
+  /* Builder mutation entry point */
   onAddBlock(type: V4BlockType): void;
 
   onRunAI(prompt: string): void;

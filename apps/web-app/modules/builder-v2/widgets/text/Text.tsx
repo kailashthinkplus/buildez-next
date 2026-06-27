@@ -2,9 +2,10 @@
 
 import WidgetFrame from "../sdk/WidgetFrame";
 import { useWidget } from "../sdk/useWidget";
+import type { BuilderNode } from "../../types/blueprint";
 
 interface Props {
-  node: any;
+  node: BuilderNode;
 }
 
 export default function Text({ node }: Props) {
@@ -15,11 +16,15 @@ export default function Text({ node }: Props) {
       <p
         style={{
           color: style.color,
+          fontFamily: style.fontFamily,
           fontSize: style.fontSize,
           fontWeight: style.fontWeight,
           lineHeight: style.lineHeight,
           textAlign: style.textAlign,
+          maxWidth: style.maxWidth,
           marginBottom: style.marginBottom,
+          textTransform: style.textTransform,
+          letterSpacing: style.letterSpacing,
         }}
       >
         {String(props.text ?? "")}

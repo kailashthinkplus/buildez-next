@@ -19,14 +19,14 @@ export default function TenantLayout({
   return (
     <TenantBootstrap>
       <WorkspaceProvider>
-        <div className="flex h-screen w-full bg-background text-foreground overflow-hidden">
+        <div className="dashboard-shell flex h-screen w-full overflow-hidden">
           
           <SidebarShell
             mobileOpen={mobileSidebarOpen}
             setMobileOpen={setMobileSidebarOpen}
           />
 
-          <div className="flex flex-col flex-1 h-full">
+          <div className="flex min-w-0 flex-1 flex-col h-full">
             
             <TenantHeader
               setMobileSidebarOpen={setMobileSidebarOpen}

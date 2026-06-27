@@ -12,6 +12,7 @@ import { VideoDefinition } from "./video/Video.definition";
 import { IconDefinition } from "./icon/Icon.definition";
 import { DividerDefinition } from "./divider/Divider.definition";
 import { SpacerDefinition } from "./spacer/Spacer.definition";
+import { PremiumWidgetDefinitions } from "./premium";
 
 let registered = false;
 
@@ -38,4 +39,8 @@ export function registerWidgets() {
   WidgetRegistry.register(IconDefinition);
   WidgetRegistry.register(DividerDefinition);
   WidgetRegistry.register(SpacerDefinition);
+
+  for (const widget of PremiumWidgetDefinitions) {
+    WidgetRegistry.register(widget);
+  }
 }

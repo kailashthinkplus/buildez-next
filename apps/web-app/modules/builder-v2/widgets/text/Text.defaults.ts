@@ -2,7 +2,7 @@ import type { BuilderStyle } from "../../types/blueprint";
 
 const TextDefaults = {
   props: {
-    text: "Lorem ipsum dolor sit amet.",
+    text: "Add clear supporting copy that explains the value of this section.",
   },
 
   style: {

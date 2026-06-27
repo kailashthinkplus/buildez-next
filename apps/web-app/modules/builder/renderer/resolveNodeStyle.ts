@@ -252,6 +252,38 @@ const TEXT_ROLES: Record<string, CSSProperties> = {
   },
 };
 
+function resolveResponsiveValue(value: unknown, device: Device): unknown {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return value;
+  }
+
+  const responsive = value as Record<string, unknown>;
+  return (
+    responsive[device] ??
+    responsive.desktop ??
+    responsive.laptop ??
+    responsive.tablet ??
+    responsive.mobile
+  );
+}
+
+function resolveInlineStyle(style: unknown, device: Device): CSSProperties {
+  if (!style || typeof style !== "object" || Array.isArray(style)) {
+    return {};
+  }
+
+  return Object.entries(style as Record<string, unknown>).reduce<CSSProperties>(
+    (acc, [key, value]) => {
+      const resolved = resolveResponsiveValue(value, device);
+      if (resolved !== undefined && resolved !== null && resolved !== "") {
+        (acc as Record<string, unknown>)[key] = resolved;
+      }
+      return acc;
+    },
+    {}
+  );
+}
+
 /* ============================================================
    MAIN RESOLVER
 ============================================================ */
@@ -316,17 +348,19 @@ export function resolveNodeStyle(
       const layout = node.props?.layout;
       const isColumns = layout === "columns";
       const isGrid = layout === "grid";
-      const isMobile = device === "mobile";
+      const isNarrow = device === "mobile" || device === "tablet";
+      const direction = node.props?.direction ?? (isColumns ? "row" : "column");
 
       if (isGrid) {
         style.display = "grid";
-        style.gridTemplateColumns = isMobile 
+        style.gridTemplateColumns = isNarrow
           ? "1fr" 
           : `repeat(${node.props?.columns ?? 3}, 1fr)`;
         delete style.flexDirection;
       } else {
         style.display = "flex";
-        style.flexDirection = (isColumns && !isMobile) ? "row" : "column";
+        style.flexDirection =
+          direction === "row" && !isNarrow ? "row" : "column";
       }
 
       if (node.props?.gap != null) {
@@ -711,6 +745,7 @@ export function resolveNodeStyle(
   ---------------------------------------------------------- */
 
   Object.assign(style, inspectorStyle);
+  Object.assign(style, resolveInlineStyle((node as any).style, device));
 
   return style;
 }

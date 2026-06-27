@@ -30,10 +30,9 @@ export default async function BuilderPage({
   /* -------------------------------------------------------------
      EXTRACT PAGE ID (SUFFIX)
   ------------------------------------------------------------- */
-  const parts = pageSlugWithId.split("-");
-  const shortId = parts.at(-1);
+  const pageId = pageSlugWithId.match(/([a-z0-9]{20,})$/i)?.[1];
 
-  if (!shortId || shortId.length < 4) {
+  if (!pageId) {
     return notFound();
   }
 
@@ -81,6 +80,13 @@ export default async function BuilderPage({
     select: {
       id: true,
       slug: true,
+      designTokens: true,
+      layout: {
+        select: {
+          header: true,
+          footer: true,
+        },
+      },
     },
   });
 
@@ -91,7 +97,7 @@ export default async function BuilderPage({
   ------------------------------------------------------------- */
   const page = await prisma.page.findFirst({
     where: {
-      id: { startsWith: shortId },
+      id: pageId,
       siteId: site.id,
     },
     include: {
@@ -135,7 +141,23 @@ export default async function BuilderPage({
     <BuilderRoot
       pageId={page.id}
       siteId={site.id}
+      pageStatus={page.status}
+      pageTitle={page.title}
       initialBlueprint={blueprintData}
+      initialDesignTokens={
+        site.designTokens &&
+        typeof site.designTokens === "object" &&
+        !Array.isArray(site.designTokens)
+          ? (site.designTokens as Record<string, unknown>)
+          : null
+      }
+      initialSiteLayout={
+        site.layout &&
+        typeof site.layout === "object" &&
+        !Array.isArray(site.layout)
+          ? (site.layout as Record<string, unknown>)
+          : null
+      }
     />
   );
 }

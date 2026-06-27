@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useUpdatePage } from "../hooks/useUpdatePage";
 
-export default function PageSettingsModal({ page, open, onClose }) {
+export default function PageSettingsModal({ page, open, onClose, onSaved }) {
   const { updatePage, loading } = useUpdatePage();
+  const [error, setError] = useState<string | null>(null);
 
   const [title, setTitle] = useState(page?.title || "");
   const [slug, setSlug] = useState(page?.slug || "");
@@ -26,12 +27,20 @@ export default function PageSettingsModal({ page, open, onClose }) {
   if (!open) return null;
 
   async function save() {
-    await updatePage(page.id, {
+    setError(null);
+    const result = await updatePage(page.id, {
       title,
       slug,
       seoTitle,
       seoDescription,
     });
+
+    if (!result.success) {
+      setError(result.error || "Failed to update page");
+      return;
+    }
+
+    onSaved?.();
     onClose();
   }
 
@@ -45,8 +54,7 @@ export default function PageSettingsModal({ page, open, onClose }) {
       <div
         className="
           w-full max-w-lg rounded-2xl p-6
-          glass bg-white/40 dark:bg-white/[0.08]
-          border border-white/40 dark:border-white/10
+          dashboard-card-strong
           shadow-2xl backdrop-blur-2xl
           relative animate-[fadeIn_0.15s_ease-out]
         "
@@ -56,67 +64,66 @@ export default function PageSettingsModal({ page, open, onClose }) {
           onClick={onClose}
           className="
             absolute right-4 top-4
-            text-gray-700 dark:text-white/70
+            dashboard-muted
             hover:opacity-70
           "
         >
           <X className="h-5 w-5" />
         </button>
 
-        <h2 className="text-xl font-semibold mb-4 dark:text-white">
+        <h2 className="text-xl font-semibold mb-4">
           Page Settings
         </h2>
 
         <div className="flex flex-col gap-4">
+          {error && (
+            <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+              {error}
+            </p>
+          )}
 
           {/* Title */}
           <div>
-            <label className="text-sm dark:text-white/70">Title</label>
+            <label className="text-sm dashboard-muted">Title</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="
                 w-full mt-1 px-3 py-2 rounded-xl
-                bg-white text-black
-                border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-[var(--brand)]
+                dashboard-input
               "
             />
           </div>
 
           {/* Slug */}
           <div>
-            <label className="text-sm dark:text-white/70">Slug</label>
+            <label className="text-sm dashboard-muted">Slug</label>
             <input
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               className="
                 w-full mt-1 px-3 py-2 rounded-xl
-                bg-white text-black
-                border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-[var(--brand)]
+                dashboard-input
               "
             />
           </div>
 
           {/* SEO Title */}
           <div>
-            <label className="text-sm dark:text-white/70">SEO Title</label>
+            <label className="text-sm dashboard-muted">SEO Title</label>
             <input
               value={seoTitle}
               onChange={(e) => setSeoTitle(e.target.value)}
               className="
                 w-full mt-1 px-3 py-2 rounded-xl
-                bg-white text-black
-                border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-[var(--brand)]
+                dashboard-input
               "
             />
           </div>
 
           {/* SEO Description */}
           <div>
-            <label className="text-sm dark:text-white/70">
+            <label className="text-sm dashboard-muted">
               SEO Description
             </label>
             <textarea
@@ -125,9 +132,7 @@ export default function PageSettingsModal({ page, open, onClose }) {
               onChange={(e) => setSeoDescription(e.target.value)}
               className="
                 w-full mt-1 px-3 py-2 rounded-xl resize-none
-                bg-white text-black
-                border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-[var(--brand)]
+                dashboard-input
               "
             />
           </div>
@@ -136,7 +141,7 @@ export default function PageSettingsModal({ page, open, onClose }) {
         <div className="mt-6 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 font-medium rounded-xl bg-gray-200 dark:bg-white/10"
+            className="px-4 py-2 font-medium rounded-xl dashboard-subtle dashboard-hover"
           >
             Cancel
           </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Image as ImageIcon, Sparkles } from "lucide-react";
+import { Check, Image as ImageIcon, Sparkles, Trash2 } from "lucide-react";
 
 import type { MediaAsset } from "../types";
 
@@ -12,6 +12,7 @@ interface MediaCardProps {
   asset: MediaAsset;
   selected?: boolean;
   onClick(asset: MediaAsset): void;
+  onDelete?(asset: MediaAsset): void;
 }
 
 /* ==========================================================
@@ -22,11 +23,19 @@ export default function MediaCard({
   asset,
   selected = false,
   onClick,
+  onDelete,
 }: MediaCardProps) {
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={() => onClick(asset)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onClick(asset);
+        }
+      }}
       className={`
         relative
         overflow-hidden
@@ -44,10 +53,10 @@ export default function MediaCard({
     >
       {/* Thumbnail */}
 
-      {asset.thumbnail || asset.url ? (
+      {asset.thumbnailUrl || asset.url ? (
         <img
-          src={asset.thumbnail ?? asset.url}
-          alt={asset.fileName}
+          src={asset.thumbnailUrl ?? asset.url}
+          alt={asset.alt || asset.title || asset.filename}
           className="
             absolute
             inset-0
@@ -107,7 +116,7 @@ export default function MediaCard({
             text-white
           "
         >
-          {asset.fileName}
+          {asset.title || asset.filename}
         </div>
 
         {asset.width && asset.height && (
@@ -125,7 +134,7 @@ export default function MediaCard({
 
       {/* AI Badge */}
 
-      {asset.aiGenerated && (
+      {asset.source === "AI" && (
         <div
           className="
             absolute
@@ -182,6 +191,43 @@ export default function MediaCard({
           />
         </div>
       )}
-    </button>
+
+      {onDelete && (
+        <button
+          type="button"
+          aria-label={`Delete ${asset.filename}`}
+          onClick={(event) => {
+            event.stopPropagation();
+            onDelete(asset);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              event.stopPropagation();
+              onDelete(asset);
+            }
+          }}
+          className="
+            absolute
+            top-2
+            right-2
+            hidden
+            h-8
+            w-8
+            items-center
+            justify-center
+            rounded-lg
+            bg-black/70
+            text-white
+            backdrop-blur
+            transition
+            hover:bg-red-600
+            group-hover:flex
+          "
+        >
+          <Trash2 size={14} aria-hidden />
+        </button>
+      )}
+    </div>
   );
 }

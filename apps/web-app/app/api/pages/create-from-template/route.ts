@@ -1,27 +1,29 @@
-import { apiHandler, ApiError } from "@/lib/api/apiHandler";
+import { apiHandler } from "@/lib/api/apiHandler";
 import { prisma } from "@buildez/db";
-import { requirePermission } from "@/lib/auth/permissions";
-import { NextRequest } from "next/server";
 import { nanoid } from "nanoid";
 
-export const POST = apiHandler(async (req: NextRequest) => {
-  const tenantId = req.headers.get("x-tenant-id");
-  if (!tenantId) throw new ApiError("UNAUTHORIZED");
-
-  await verifyPermission(req, "createPage");
-
+export const POST = apiHandler(async ({ req, auth }) => {
   const body = await req.json();
   const { templateId, siteId } = body;
 
-  const template = await prisma.pageTemplate.findFirst({
-    where: { id: templateId, tenantId },
+  const site = await prisma.site.findFirst({
+    where: {
+      id: siteId,
+      tenantId: auth.tenant.id,
+    },
+    select: { id: true },
   });
 
-  if (!template) throw new ApiError("NOT_FOUND");
+  if (!site) throw new Error("Site not found");
+
+  const template = await prisma.pageTemplate.findFirst({
+    where: { id: templateId, tenantId: auth.tenant.id },
+  });
+
+  if (!template) throw new Error("Template not found");
 
   const page = await prisma.page.create({
     data: {
-      tenantId,
       siteId,
       title: template.title + " Copy",
       slug: template.slug + "-" + nanoid(4),
@@ -31,7 +33,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
   await prisma.blueprint.create({
     data: {
       pageId: page.id,
-      tenantId,
+      tenantId: auth.tenant.id,
       siteId,
       data: template.data,
     },

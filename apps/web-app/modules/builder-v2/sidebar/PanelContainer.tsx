@@ -5,94 +5,15 @@ import {
   Wand2,
   Blocks,
   Layers,
+  Image as ImageIcon,
   Droplet,
   Settings,
-  Plus,
 } from "lucide-react";
 
 import type { BuilderBlueprint, BuilderNode } from "../types/blueprint";
-import { WidgetRegistry } from "../core/registry/WidgetRegistry";
-
-// AI Panel
-const AiPanel = ({ pageId, onRunAI, onAbortAI, aiChatRuntime, onRequestLogoUpload, onRefine, hasGeneratedCode }: any) => {
-  const [prompt, setPrompt] = useState("");
-
-  const handleSubmit = () => {
-    if (prompt.trim()) {
-      onRunAI(prompt);
-    }
-  };
-
-  return (
-    <div className="p-4 space-y-4 h-full flex flex-col">
-      <textarea
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        className="w-full flex-1 p-2 border border-gray-300 rounded resize-none text-sm"
-        placeholder="Describe your design request..."
-      />
-      <button
-        onClick={handleSubmit}
-        disabled={aiChatRuntime.status === "running" || !prompt.trim()}
-        className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 text-sm font-medium"
-      >
-        {aiChatRuntime.status === "running" ? "Generating..." : "Generate"}
-      </button>
-      {aiChatRuntime.message && (
-        <div className="p-2 bg-blue-50 text-blue-900 text-sm rounded border border-blue-200">
-          {aiChatRuntime.message}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Block Menu - proper implementation
-const BlockMenu = ({ onAddBlock, onOpenColumnPicker }: any) => {
-  const widgets = WidgetRegistry.getAll();
-  
-  // Group widgets by category
-  const grouped: Record<string, any[]> = {};
-  widgets.forEach((w) => {
-    const cat = w.category || "Other";
-    if (!grouped[cat]) grouped[cat] = [];
-    grouped[cat].push(w);
-  });
-
-  const categoryOrder = ["basic", "layout", "media", "forms", "ecommerce", "dynamic"];
-  const sortedCategories = categoryOrder.filter((cat) => grouped[cat]).concat(
-    Object.keys(grouped).filter((cat) => !categoryOrder.includes(cat))
-  );
-
-  return (
-    <div className="p-4 space-y-6 overflow-y-auto h-full">
-      {sortedCategories.map((category) => (
-        <div key={category}>
-          <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3 tracking-wide">
-            {category}
-          </h3>
-          <div className="space-y-2">
-            {grouped[category].map((widget) => (
-              <button
-                key={widget.type}
-                onClick={() => onAddBlock(widget.type)}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-900 text-sm font-medium text-left transition"
-                draggable
-                onDragStart={(e) => {
-                  e.dataTransfer.effectAllowed = "copy";
-                  e.dataTransfer.setData("widget-type", widget.type);
-                }}
-              >
-                <Plus size={14} />
-                <span>{widget.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
+import AiPanel from "../ai/components/AiPanel";
+import BlockMenu from "./panels/BlockMenu";
+import MediaLibrary from "../media/components/MediaLibrary";
 
 // Layers Panel
 const LayersPanel = ({ blueprint, selectedId, onSelect }: any) => {
@@ -148,6 +69,7 @@ const PANELS = [
   { id: "ai", icon: Wand2, label: "AI" },
   { id: "blocks", icon: Blocks, label: "Blocks" },
   { id: "layers", icon: Layers, label: "Layers" },
+  { id: "media", icon: ImageIcon, label: "Media" },
   { id: "colors", icon: Droplet, label: "Colors" },
   { id: "settings", icon: Settings, label: "Settings" },
 ] as const;
@@ -164,12 +86,13 @@ interface IntegratedLeftSidebarProps {
   onSelect(id: string | null): void;
   onUpdateNode(id: string, patch: Partial<BuilderNode>): void;
 
-  /* 🔑 Builder mutation entry point */
+  /* Builder mutation entry point */
   onAddBlock(type: string): void;
 
   onRunAI(prompt: string): void;
   onAbortAI(): void;
   pageId: string;
+  siteId: string;
 
   aiChatRuntime: {
     status: "idle" | "running" | "success" | "error";
@@ -195,6 +118,7 @@ export default function IntegratedLeftSidebar({
   onRunAI,
   onAbortAI,
   pageId,
+  siteId,
   aiChatRuntime,
   onRequestLogoUpload,
   onCapturePrompt,
@@ -224,14 +148,30 @@ export default function IntegratedLeftSidebar({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [activePanel]);
 
+  useEffect(() => {
+    const openPanelFromEvent = (event: Event) => {
+      const detail = (event as CustomEvent<{ panel?: PanelId }>).detail;
+      const panel = detail?.panel;
+      if (!panel) return;
+
+      const exists = PANELS.some((entry) => entry.id === panel);
+      if (!exists) return;
+
+      setActivePanel(panel);
+    };
+
+    window.addEventListener("builder:open-panel", openPanelFromEvent);
+    return () => window.removeEventListener("builder:open-panel", openPanelFromEvent);
+  }, []);
+
   return (
-    <div className="flex relative z-[9999]">
+    <div className="relative z-[9999] flex h-full min-h-0">
       {/* ============================================================
            ICON BAR (ALWAYS VISIBLE)
       ============================================================ */}
       <div
         className="
-          w-[60px] pt-5
+          h-full w-[60px] pt-5
           bg-white/10 dark:bg-white/5
           backdrop-blur-xl
           border-r border-white/20
@@ -279,7 +219,8 @@ export default function IntegratedLeftSidebar({
       ============================================================ */}
       <div
         className={`
-          bg-black/40 dark:bg-black/50
+          builder-chrome
+          flex h-full min-h-0 flex-col
           backdrop-blur-2xl
           border-r border-white/10
           shadow-xl shadow-black/50
@@ -291,7 +232,7 @@ export default function IntegratedLeftSidebar({
         {activePanel && (
           <>
             {/* PANEL HEADER */}
-            <div className="h-12 px-4 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-xl text-white">
+            <div className="builder-chrome h-12 px-4 flex items-center justify-between border-b backdrop-blur-xl">
               <span className="capitalize text-sm font-medium">
                 {PANELS.find((p) => p.id === activePanel)?.label}
               </span>
@@ -306,7 +247,7 @@ export default function IntegratedLeftSidebar({
             </div>
 
             {/* PANEL CONTENT (SCROLLABLE) */}
-            <div className="h-[calc(100vh-48px)] overflow-y-auto">
+            <div className="min-h-0 flex-1 overflow-hidden">
               {activePanel === "ai" && (
                 <AiPanel
                   pageId={pageId}
@@ -320,10 +261,12 @@ export default function IntegratedLeftSidebar({
               )}
 
               {activePanel === "blocks" && (
-                <BlockMenu
-                  onAddBlock={onAddBlock}
-                  onOpenColumnPicker={() => setShowColumnPicker(true)}
-                />
+                <div className="h-full overflow-y-auto">
+                  <BlockMenu
+                    onAddBlock={onAddBlock}
+                    onOpenColumnPicker={() => setShowColumnPicker(true)}
+                  />
+                </div>
               )}
 
               {activePanel === "layers" && (
@@ -332,6 +275,17 @@ export default function IntegratedLeftSidebar({
                   selectedId={selectedId}
                   onSelect={onSelect}
                 />
+              )}
+
+              {activePanel === "media" && (
+                <div className="h-full overflow-y-auto p-4">
+                  <MediaLibrary
+                    siteId={siteId}
+                    title="Media"
+                    description="Upload and manage this site's assets."
+                    pickerMode
+                  />
+                </div>
               )}
 
               {activePanel === "colors" && <ColorsPanel />}

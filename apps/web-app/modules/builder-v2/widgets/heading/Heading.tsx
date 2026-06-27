@@ -25,10 +25,12 @@ export default function Heading({
       <Tag
         style={{
           color: style.color,
+          fontFamily: style.fontFamily,
           fontSize: style.fontSize,
           fontWeight: style.fontWeight,
           lineHeight: style.lineHeight,
           textAlign: style.textAlign,
+          maxWidth: style.maxWidth,
           marginBottom: style.marginBottom,
         }}
       >

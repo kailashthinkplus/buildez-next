@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Copy, Package, Trash2 } from "lucide-react";
 
 type MiniHandlePosition = {
   x: number;
@@ -68,7 +69,7 @@ export default function MiniHandles({ onDuplicate, onDelete, onWrap }: MiniHandl
         className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-xs text-white/60 hover:text-white transition"
         title="Duplicate"
       >
-        📋
+        <Copy size={13} aria-hidden />
       </button>
       <button
         type="button"
@@ -76,7 +77,7 @@ export default function MiniHandles({ onDuplicate, onDelete, onWrap }: MiniHandl
         className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-xs text-white/60 hover:text-white transition"
         title="Wrap"
       >
-        📦
+        <Package size={13} aria-hidden />
       </button>
       <button
         type="button"
@@ -84,7 +85,7 @@ export default function MiniHandles({ onDuplicate, onDelete, onWrap }: MiniHandl
         className="w-6 h-6 rounded bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 flex items-center justify-center text-xs text-red-200 hover:text-red-100 transition"
         title="Delete"
       >
-        🗑️
+        <Trash2 size={13} aria-hidden />
       </button>
     </div>
   );
