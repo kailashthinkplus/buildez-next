@@ -104,32 +104,9 @@ export async function renderPage({
   if (isBuilderV2Blueprint(blueprintData)) {
     console.log("⚛️ BUILDER V2 BLUEPRINT DETECTED");
     console.log("✅ RENDER PAGE COMPLETE");
-    const blueprint =
-      designTokens
-        ? {
-            ...blueprintData,
-            theme: {
-              ...blueprintData.theme,
-              id:
-                typeof designTokens.themePresetId === "string"
-                  ? designTokens.themePresetId
-                  : blueprintData.theme?.id,
-              name:
-                typeof designTokens.themeName === "string"
-                  ? designTokens.themeName
-                  : blueprintData.theme?.name,
-              preset:
-                typeof designTokens.themePresetId === "string"
-                  ? designTokens.themePresetId
-                  : blueprintData.theme?.preset,
-              tokens: designTokens,
-            },
-          }
-        : blueprintData;
-
     return {
       mode: "builder-v2" as const,
-      blueprint,
+      blueprint: blueprintData,
       siteLayout,
       page,
     };

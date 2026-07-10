@@ -20,18 +20,11 @@ import DeletePageModal from "../pages/components/DeletePageModal";
 
 import { usePages } from "../pages/hooks/usePages";
 
-/* ============================================================
-   TYPES
-============================================================ */
 type Props = {
   siteSlug?: string;
 };
 
-type SortKey =
-  | "title"
-  | "status"
-  | "updatedAt"
-  | "seoScore";
+type SortKey = "title" | "status" | "updatedAt" | "seoScore";
 type SortDir = "asc" | "desc";
 
 type PageRow = {
@@ -40,6 +33,7 @@ type PageRow = {
   slug: string;
   status: string;
   updatedAt: string;
+  deletedAt?: string | null;
   site?: { slug?: string };
   siteSlug?: string;
   screenshotUrl?: string;
@@ -70,13 +64,7 @@ function getScoreTone(score: number) {
   return "bg-red-500 text-white";
 }
 
-/* ============================================================
-   PAGES VIEW — TABLE
-============================================================ */
 export default function PagesView({ siteSlug }: Props) {
-  /* ============================================================
-     STATE
-  ============================================================ */
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const limit = 10;
@@ -88,10 +76,8 @@ export default function PagesView({ siteSlug }: Props) {
   const [settingsPage, setSettingsPage] = useState<PageRow | null>(null);
   const [deletePage, setDeletePage] = useState<PageRow | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
+  const [showTrash, setShowTrash] = useState(false);
 
-  /* ============================================================
-     DATA
-  ============================================================ */
   const {
     pages,
     total,
@@ -102,15 +88,13 @@ export default function PagesView({ siteSlug }: Props) {
     search,
     page,
     limit,
+    trash: showTrash,
   });
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const pageStart = total === 0 ? 0 : (page - 1) * limit + 1;
   const pageEnd = Math.min(page * limit, total);
 
-  /* ============================================================
-     SORTING (CLIENT-SIDE, SAFE)
-  ============================================================ */
   const sortedPages = useMemo(() => {
     const copy = [...pages] as PageRow[];
 
@@ -130,9 +114,7 @@ export default function PagesView({ siteSlug }: Props) {
 
   const toggleSelect = (id: string) => {
     setSelected((prev) =>
-      prev.includes(id)
-        ? prev.filter((x) => x !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
 
@@ -157,9 +139,7 @@ export default function PagesView({ siteSlug }: Props) {
     const res = await fetch("/api/pages/duplicate", {
       method: "POST",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pageId }),
     });
 
@@ -170,29 +150,38 @@ export default function PagesView({ siteSlug }: Props) {
     await mutatePages();
   };
 
-  /* ============================================================
-     RENDER
-  ============================================================ */
+  const restorePage = async (pageId: string) => {
+    const res = await fetch(`/api/pages/${pageId}/restore`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error((await res.text()) || "Failed to restore page");
+    }
+
+    await mutatePages();
+  };
+
   return (
     <div className="p-6 md:p-8">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* HEADER */}
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">
-            Pages{" "}
-            {siteSlug && <span className="opacity-60">- {siteSlug}</span>}
+            Pages {siteSlug && <span className="opacity-60">- {siteSlug}</span>}
           </h1>
 
-          <button
-            onClick={() => setCreatePageOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--brand)] text-white font-medium hover:brightness-110"
-          >
-            <Plus className="w-4 h-4" />
-            Add Page
-          </button>
+          {!showTrash && (
+            <button
+              onClick={() => setCreatePageOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--brand)] text-white font-medium hover:brightness-110"
+            >
+              <Plus className="w-4 h-4" />
+              Add Page
+            </button>
+          )}
         </div>
 
-        {/* SEARCH */}
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-50" />
           <input
@@ -201,12 +190,43 @@ export default function PagesView({ siteSlug }: Props) {
               setSearch(e.target.value);
               setPage(1);
             }}
-            placeholder="Search pages…"
+            placeholder={showTrash ? "Search trash…" : "Search pages…"}
             className="w-full pl-9 pr-3 py-2 rounded-xl dashboard-input backdrop-blur-xl text-sm"
           />
         </div>
 
-        {/* LOADING */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              setShowTrash(false);
+              setPage(1);
+              setSelected([]);
+            }}
+            className={`rounded-xl px-4 py-2 text-sm font-medium ${
+              !showTrash
+                ? "bg-[var(--brand)] text-white"
+                : "dashboard-card dashboard-muted"
+            }`}
+          >
+            Pages
+          </button>
+
+          <button
+            onClick={() => {
+              setShowTrash(true);
+              setPage(1);
+              setSelected([]);
+            }}
+            className={`rounded-xl px-4 py-2 text-sm font-medium ${
+              showTrash
+                ? "bg-red-600 text-white"
+                : "dashboard-card dashboard-muted"
+            }`}
+          >
+            Trash
+          </button>
+        </div>
+
         {isLoading && (
           <div className="overflow-hidden rounded-2xl dashboard-card backdrop-blur-xl">
             {[...Array(5)].map((_, index) => (
@@ -218,79 +238,115 @@ export default function PagesView({ siteSlug }: Props) {
           </div>
         )}
 
-        {/* EMPTY */}
         {!isLoading && sortedPages.length === 0 && (
           <div className="text-center py-12 opacity-60">
-            No pages found
+            {showTrash ? "No trashed pages found" : "No pages found"}
           </div>
         )}
 
-        {/* TABLE */}
         {!isLoading && sortedPages.length > 0 && (
           <div className="overflow-x-auto rounded-2xl dashboard-card backdrop-blur-xl">
             <table className="w-full min-w-[900px] text-sm">
               <thead className="border-b dashboard-border">
-                <tr className="text-left">
-                  <th className="p-3 w-10">
-                    <button onClick={toggleSelectAll}>
-                      {selected.length === pages.length ? (
-                        <CheckSquare className="w-4 h-4" />
-                      ) : (
-                        <Square className="w-4 h-4" />
-                      )}
-                    </button>
-                  </th>
+                {showTrash ? (
+                  <tr className="text-left">
+                    <th className="p-3">Title</th>
+                    <th className="p-3">Slug</th>
+                    <th className="p-3">Deleted</th>
+                    <th className="p-3 w-12" />
+                  </tr>
+                ) : (
+                  <tr className="text-left">
+                    <th className="p-3 w-10">
+                      <button onClick={toggleSelectAll}>
+                        {selected.length === pages.length ? (
+                          <CheckSquare className="w-4 h-4" />
+                        ) : (
+                          <Square className="w-4 h-4" />
+                        )}
+                      </button>
+                    </th>
 
-                  <th className="p-3 w-32">Preview</th>
+                    <th className="p-3 w-32">Preview</th>
 
-                  <SortableTh
-                    label="Title"
-                    active={sortKey === "title"}
-                    dir={sortDir}
-                    onClick={() => toggleSort("title")}
-                  />
+                    <SortableTh
+                      label="Title"
+                      active={sortKey === "title"}
+                      dir={sortDir}
+                      onClick={() => toggleSort("title")}
+                    />
 
-                  <th className="p-3">Slug</th>
+                    <th className="p-3">Slug</th>
 
-                  <SortableTh
-                    label="Status"
-                    active={sortKey === "status"}
-                    dir={sortDir}
-                    onClick={() => toggleSort("status")}
-                  />
+                    <SortableTh
+                      label="Status"
+                      active={sortKey === "status"}
+                      dir={sortDir}
+                      onClick={() => toggleSort("status")}
+                    />
 
-                  <SortableTh
-                    label="SEO Score"
-                    active={sortKey === "seoScore"}
-                    dir={sortDir}
-                    onClick={() => toggleSort("seoScore")}
-                  />
+                    <SortableTh
+                      label="SEO Score"
+                      active={sortKey === "seoScore"}
+                      dir={sortDir}
+                      onClick={() => toggleSort("seoScore")}
+                    />
 
-                  <SortableTh
-                    label="Updated"
-                    active={sortKey === "updatedAt"}
-                    dir={sortDir}
-                    onClick={() => toggleSort("updatedAt")}
-                  />
+                    <SortableTh
+                      label="Updated"
+                      active={sortKey === "updatedAt"}
+                      dir={sortDir}
+                      onClick={() => toggleSort("updatedAt")}
+                    />
 
-                  <th className="p-3 w-12" />
-                </tr>
+                    <th className="p-3 w-12" />
+                  </tr>
+                )}
               </thead>
 
               <tbody>
-                {sortedPages.map((page) => {
-                  const isChecked = selected.includes(page.id);
-                  const editUrl = getEditUrl(page, siteSlug);
-                  const previewUrl = getPreviewUrl(page, siteSlug);
-                  const seoScore = page.seoScore ?? 0;
+                {sortedPages.map((pageRow) => {
+                  if (showTrash) {
+                    return (
+                      <tr
+                        key={pageRow.id}
+                        className="border-t dashboard-border dashboard-hover"
+                      >
+                        <td className="p-3 font-medium">{pageRow.title}</td>
+
+                        <td className="p-3 dashboard-muted">
+                          /{pageRow.slug}
+                        </td>
+
+                        <td className="p-3 dashboard-muted">
+                          {pageRow.deletedAt
+                            ? new Date(pageRow.deletedAt).toLocaleDateString()
+                            : "-"}
+                        </td>
+
+                        <td className="p-2 text-right">
+                          <PageActionsMenu
+                            page={pageRow}
+                            isTrash
+                            onRestore={async () => restorePage(pageRow.id)}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  }
+
+                  const isChecked = selected.includes(pageRow.id);
+                  const editUrl = getEditUrl(pageRow, siteSlug);
+                  const previewUrl = getPreviewUrl(pageRow, siteSlug);
+                  const seoScore = pageRow.seoScore ?? 0;
 
                   return (
                     <tr
-                      key={page.id}
+                      key={pageRow.id}
                       className="border-t dashboard-border dashboard-hover"
                     >
                       <td className="p-3">
-                        <button onClick={() => toggleSelect(page.id)}>
+                        <button onClick={() => toggleSelect(pageRow.id)}>
                           {isChecked ? (
                             <CheckSquare className="w-4 h-4" />
                           ) : (
@@ -313,11 +369,11 @@ export default function PagesView({ siteSlug }: Props) {
                           disabled={!previewUrl}
                           className="group block h-16 w-28 overflow-hidden rounded-lg border border-white/20 bg-white/70 text-left shadow-sm disabled:cursor-default dark:border-white/10 dark:bg-white/5"
                         >
-                          {page.screenshotUrl ? (
+                          {pageRow.screenshotUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
-                              src={page.screenshotUrl}
-                              alt={`${page.title} screenshot preview`}
+                              src={pageRow.screenshotUrl}
+                              alt={`${pageRow.title} screenshot preview`}
                               className="h-full w-full object-cover transition-transform group-hover:scale-105"
                             />
                           ) : (
@@ -335,20 +391,20 @@ export default function PagesView({ siteSlug }: Props) {
                         className="p-3 font-medium text-[var(--brand)] cursor-pointer hover:underline"
                         onClick={() => (window.location.href = editUrl)}
                       >
-                        {page.title}
+                        {pageRow.title}
                       </td>
 
-                      <td className="p-3 dashboard-muted">/{page.slug}</td>
+                      <td className="p-3 dashboard-muted">/{pageRow.slug}</td>
 
                       <td className="p-3">
                         <span
                           className={`px-2 py-1 text-xs rounded-lg ${
-                            page.status === "PUBLISHED"
+                            pageRow.status === "PUBLISHED"
                               ? "bg-green-600 text-white"
                               : "bg-gray-300 text-gray-800 dark:bg-white/10 dark:text-white/70"
                           }`}
                         >
-                          {page.status}
+                          {pageRow.status}
                         </span>
                       </td>
 
@@ -361,17 +417,17 @@ export default function PagesView({ siteSlug }: Props) {
                       </td>
 
                       <td className="p-3 dashboard-muted">
-                        {new Date(page.updatedAt).toLocaleDateString()}
+                        {new Date(pageRow.updatedAt).toLocaleDateString()}
                       </td>
 
                       <td className="p-2 text-right">
                         <PageActionsMenu
-                          page={page}
+                          page={pageRow}
                           onEdit={() => {
                             window.location.href = editUrl;
                           }}
-                          onSettings={() => setSettingsPage(page)}
-                          onDelete={() => setDeletePage(page)}
+                          onSettings={() => setSettingsPage(pageRow)}
+                          onDelete={() => setDeletePage(pageRow)}
                           onChanged={() => mutatePages()}
                           onPreview={() => {
                             if (previewUrl) {
@@ -383,7 +439,7 @@ export default function PagesView({ siteSlug }: Props) {
                             }
                           }}
                           onDuplicate={async () => {
-                            await duplicatePage(page.id);
+                            await duplicatePage(pageRow.id);
                           }}
                         />
                       </td>
@@ -429,7 +485,6 @@ export default function PagesView({ siteSlug }: Props) {
           </div>
         )}
 
-        {/* MODALS */}
         {createPageOpen && (
           <CreatePageModal
             open
@@ -465,9 +520,6 @@ export default function PagesView({ siteSlug }: Props) {
   );
 }
 
-/* ============================================================
-   SORTABLE HEADER CELL
-============================================================ */
 function SortableTh({
   label,
   active,
@@ -480,10 +532,7 @@ function SortableTh({
   onClick: () => void;
 }) {
   return (
-    <th
-      onClick={onClick}
-      className="p-3 cursor-pointer select-none"
-    >
+    <th onClick={onClick} className="p-3 cursor-pointer select-none">
       <div className="flex items-center gap-1">
         {label}
         {active &&

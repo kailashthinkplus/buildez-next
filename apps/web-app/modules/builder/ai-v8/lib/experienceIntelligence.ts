@@ -30,11 +30,21 @@ const GENERIC_PHRASES = [
   "transform your business",
   "unlock your potential",
   "innovative solutions",
+  "modern solutions",
   "seamless experience",
   "cutting-edge",
+  "cutting edge",
+  "cutting-edge services",
   "next level",
   "best in class",
   "we help businesses",
+  "empowering your business",
+  "elevate your business",
+  "elevate your business operations",
+  "tailored solutions",
+  "comprehensive solutions",
+  "grow your business",
+  "streamline your operations",
 ];
 
 function pickBusinessName(userPrompt: string, brandContext: BrandContextWithName | null) {
@@ -262,7 +272,7 @@ export function scoreGeneratedExperience(
   const genericHits = GENERIC_PHRASES.filter((phrase) => lower.includes(phrase));
   if (genericHits.length) {
     warnings.push(`Generic copy detected: ${genericHits.join(", ")}.`);
-    score -= genericHits.length * 4;
+    score -= genericHits.length * 14;
   }
 
   return {

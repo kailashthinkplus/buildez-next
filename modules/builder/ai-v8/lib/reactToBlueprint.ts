@@ -558,8 +558,7 @@ function convertJSXToHTML(jsx: string): string {
   // Convert {variable} to empty (can't resolve without execution)
   html = html.replace(/\{[^}]*\}/g, "");
 
-  // Add Tailwind CDN
-  return `<script src="https://cdn.tailwindcss.com"></script>\n${html}`;
+  return html;
 }
 
 /* ============================================================

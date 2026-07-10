@@ -1,4 +1,5 @@
 import type { BuilderBlueprint } from "../../types/blueprint";
+import { isAllowedChildRelationship } from "../validation/blueprintSchema";
 import type { BuilderCommand } from "./BuilderCommand";
 
 export class MoveNodeCommand implements BuilderCommand {
@@ -31,6 +32,10 @@ export class MoveNodeCommand implements BuilderCommand {
     const newParent = blueprint.nodes[this.newParentId];
 
     if (!oldParent || !newParent) {
+      return blueprint;
+    }
+
+    if (!isAllowedChildRelationship(newParent.type, node.type)) {
       return blueprint;
     }
 

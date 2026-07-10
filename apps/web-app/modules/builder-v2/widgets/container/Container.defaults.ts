@@ -1,15 +1,15 @@
 const ContainerDefaults = {
   props: {
+  container: "full",
   layout: "flex",
   direction: "row",
   justify: "flex-start",
-  align: "stretch",
+  align: "flex-start",
   wrap: false,
 },
 
   style: {
     width: "100%",
-    maxWidth: "1280px",
     gap: 24,
     padding: 0,
     margin: 0,

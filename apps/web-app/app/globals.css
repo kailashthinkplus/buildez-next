@@ -60,21 +60,27 @@
   }
 
   body {
-    min-height: 100vh;
-    background:
-      radial-gradient(900px circle at 15% 10%, rgba(47,125,246,0.18), transparent 60%),
-      radial-gradient(800px circle at 85% 85%, rgba(99,102,241,0.12), transparent 60%),
-      var(--background);
-    color: var(--foreground);
-    font-family: ui-sans-serif, system-ui, sans-serif;
-  }
+  min-height: 100vh;
+  margin: 0;
+  color: var(--foreground);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
 
-  html.dark body {
-    background:
-      radial-gradient(900px circle at 15% 10%, rgba(47,125,246,0.35), transparent 60%),
-      radial-gradient(800px circle at 85% 85%, rgba(99,102,241,0.25), transparent 60%),
-      var(--background);
-  }
+.app-shell,
+.dashboard-shell {
+  background:
+    radial-gradient(900px circle at 15% 10%, rgba(47,125,246,0.18), transparent 60%),
+    radial-gradient(800px circle at 85% 85%, rgba(99,102,241,0.12), transparent 60%),
+    var(--background);
+}
+
+html.dark .app-shell,
+html.dark .dashboard-shell {
+  background:
+    radial-gradient(900px circle at 15% 10%, rgba(47,125,246,0.35), transparent 60%),
+    radial-gradient(800px circle at 85% 85%, rgba(99,102,241,0.25), transparent 60%),
+    var(--background);
+}
 }
 
 /* =========================

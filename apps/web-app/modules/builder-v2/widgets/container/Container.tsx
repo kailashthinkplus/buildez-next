@@ -41,7 +41,7 @@ export default function Container({
         display: props.layout === "grid" ? "grid" : "flex",
         flexDirection: props.direction ?? "row",
         justifyContent: props.justify ?? "flex-start",
-        alignItems: props.align ?? "stretch",
+        alignItems: props.align ?? "flex-start",
         flexWrap: props.wrap ? "wrap" : "nowrap",
         flex: style.flex,
         width: style.width ?? "100%",

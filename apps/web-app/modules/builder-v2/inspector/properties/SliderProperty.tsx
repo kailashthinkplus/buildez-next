@@ -1,10 +1,11 @@
 "use client";
 
-import * as Slider from "@radix-ui/react-slider";
 import { useEffect, useState } from "react";
 
 import type { BuilderNode } from "../../types/blueprint";
-import { useNodeUpdater } from "../tabs/hooks/useNodeUpdater";
+import { useNodeUpdater } from "../hooks/useNodeUpdater";
+import { SliderWithInput, UnitInput } from "../tabs/InspectorControls";
+import { parseUnitValue, type InspectorUnit } from "../utils/unitValue";
 
 /* ==========================================================
    TYPES
@@ -26,6 +27,8 @@ interface SliderPropertyProps {
   step?: number;
 
   unit?: string;
+
+  units?: readonly InspectorUnit[];
 }
 
 /* ==========================================================
@@ -41,29 +44,27 @@ export default function SliderProperty({
   max,
   step = 1,
   unit = "",
+  units,
 }: SliderPropertyProps) {
 
-  const updateNode = useNodeUpdater();
+  const { updateNode } = useNodeUpdater();
 
-  const [value, setValue] = useState<number>(
-    Number(
-      target === "props"
-        ? node.props?.[property] ?? min
-        : node.style?.[property] ?? min
-    )
-  );
+  const currentRaw =
+    target === "props"
+      ? node.props?.[property] ?? min
+      : node.style?.[property] ?? min;
+
+  const [value, setValue] = useState<unknown>(currentRaw);
 
   useEffect(() => {
     setValue(
-      Number(
-        target === "props"
-          ? node.props?.[property] ?? min
-          : node.style?.[property] ?? min
-      )
+      target === "props"
+        ? node.props?.[property] ?? min
+        : node.style?.[property] ?? min
     );
   }, [node.id, node.props, node.style, property, min, target]);
 
-  function update(next: number) {
+  function update(next: number | string) {
 
     setValue(next);
 
@@ -97,70 +98,43 @@ export default function SliderProperty({
         </label>
 
         <span className="text-xs text-white/50">
-          {value}
-          {unit}
+          {formatDisplayValue(value, unit)}
         </span>
 
       </div>
 
-      <Slider.Root
-        value={[value]}
-        min={min}
-        max={max}
-        step={step}
-        onValueChange={([next]) => update(next)}
-        className="
-          relative
-          flex
-          items-center
-          w-full
-          h-5
-        "
-      >
-
-        <Slider.Track
-          className="
-            relative
-            grow
-            h-1.5
-            rounded-full
-            bg-white/10
-          "
-        >
-
-          <Slider.Range
-            className="
-              absolute
-              h-full
-              rounded-full
-              bg-blue-600
-            "
-          />
-
-        </Slider.Track>
-
-        <Slider.Thumb
-          className="
-            block
-            h-4
-            w-4
-            rounded-full
-            border
-            border-blue-500
-            bg-white
-            shadow-lg
-            outline-none
-            transition-transform
-            hover:scale-110
-            focus:ring-2
-            focus:ring-blue-500/40
-          "
+      {target === "style" && (unit || units) ? (
+        <UnitInput
+          value={value}
+          onChange={update}
+          min={min}
+          max={max}
+          step={step}
+          units={units}
+          fallbackUnit={(unit || "px") as InspectorUnit}
         />
-
-      </Slider.Root>
+      ) : (
+        <SliderWithInput
+          value={Number(value ?? min)}
+          onChange={update}
+          min={min}
+          max={max}
+          step={step}
+          unit={unit}
+        />
+      )}
 
     </div>
 
   );
 
+}
+
+function formatDisplayValue(value: unknown, unit: string) {
+  if (typeof value === "string") return value;
+  if (unit) {
+    const parsed = parseUnitValue(value, unit as InspectorUnit);
+    return `${parsed.value}${parsed.unit}`;
+  }
+  return String(value ?? "");
 }

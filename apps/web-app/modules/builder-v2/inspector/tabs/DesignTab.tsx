@@ -1,44 +1,96 @@
 "use client";
 
-import { useState } from "react";
-import type { BuilderNode } from "../../types/blueprint";
+import { useEffect, useState } from "react";
+import { Columns3, Sparkles, Upload } from "lucide-react";
+import type {
+  BuilderBlueprint,
+  BuilderNode,
+} from "../../types/blueprint";
 import ColorPicker from "../components/ColorPicker";
 import GoogleFontsPicker from "../components/GoogleFontsPicker";
 import ColumnStructurePicker from "../../layout/ColumnStructurePicker";
+import MediaPicker from "../../media/components/MediaPicker";
+import {
+  getContainerWidthModeProps,
+  getEffectiveContainerMaxWidth,
+} from "../utils/containerWidth";
+import {
+  resetResponsiveOverride,
+  isResponsiveValue,
+  setResponsiveOverride,
+} from "../../core/responsive";
+import { useCanvasStore } from "../../store/useCanvasStore";
 import {
   DeviceSwitcher,
   Field,
   Section,
+  AlignmentInput,
   SegmentedInput,
   SelectInput,
   SliderWithInput,
   TextInput,
+  UnitInput,
   getResponsiveValue,
+  getResponsiveResolution,
   setResponsiveStyleValue,
   setStyleValue,
-  setPropValue,
   type InspectorDevice,
 } from "./InspectorControls";
 
 interface DesignTabProps {
   node: BuilderNode;
+  blueprint: BuilderBlueprint;
   onUpdateNode(id: string, patch: Partial<BuilderNode>): void;
   onApplyColumnStructure(id: string, widths: number[]): void;
+  siteId: string;
 }
 
 const TEXT_TYPES = new Set(["heading", "text", "button"]);
 const LAYOUT_TYPES = new Set(["page", "section", "container", "column", "grid", "footer"]);
 const PARENT_CONTAINER_TYPES = new Set(["page", "section", "container"]);
 const MEDIA_TYPES = new Set(["image", "video"]);
+const SIZE_UNITS = [
+  "px",
+  "%",
+  "rem",
+  "em",
+  "vw",
+  "vh",
+  "auto",
+  "fit-content",
+  "min-content",
+  "max-content",
+] as const;
 
 export default function DesignTab({
   node,
+  blueprint,
   onUpdateNode,
   onApplyColumnStructure,
+  siteId,
 }: DesignTabProps) {
-  const [device, setDevice] = useState<InspectorDevice>("desktop");
+  const device = useCanvasStore((state) => state.device);
+  const setDevice = useCanvasStore((state) => state.setDevice);
   const [structurePickerOpen, setStructurePickerOpen] = useState(false);
+  const [backgroundPrompt, setBackgroundPrompt] = useState("");
+  const [backgroundBusy, setBackgroundBusy] = useState(false);
+  const [backgroundError, setBackgroundError] = useState("");
   const style = node.style ?? {};
+  const parentNode = node.parentId
+  ? blueprint.nodes[node.parentId]
+  : undefined;
+
+const siblingColumnCount =
+  parentNode?.type === "container"
+    ? Math.max(
+        1,
+        (parentNode.children ?? []).filter(
+          (childId) => blueprint.nodes[childId]?.type === "column"
+        ).length
+      )
+    : 1;
+
+const defaultColumnWidth = `${100 / siblingColumnCount}%`;
   const isText = TEXT_TYPES.has(node.type);
   const isLayout = LAYOUT_TYPES.has(node.type);
   const isParentContainer = PARENT_CONTAINER_TYPES.has(node.type);
@@ -60,33 +112,122 @@ export default function DesignTab({
   const responsive = (key: string, fallback: unknown = "") =>
     getResponsiveValue(style[key], device, fallback);
 
+  const responsiveResolution = (key: string, fallback: unknown = "") =>
+    getResponsiveResolution(style[key], device, fallback);
+
   const setResponsive = (key: string, value: unknown) =>
     setResponsiveStyleValue(node, key, value, device, onUpdateNode);
+
+  const setResponsiveValues = (values: Record<string, unknown>) => {
+    const nextStyle: Record<string, unknown> = { ...node.style };
+    for (const [key, value] of Object.entries(values)) {
+      nextStyle[key] = setResponsiveOverride(node.style?.[key], device, value);
+    }
+    onUpdateNode(node.id, { style: nextStyle });
+  };
+
+  const resetCurrentDeviceOverrides = () => {
+    const nextStyle: Record<string, unknown> = { ...node.style };
+
+    for (const [key, value] of Object.entries(node.style ?? {})) {
+      if (isResponsiveValue(value) && Object.prototype.hasOwnProperty.call(value, device)) {
+        nextStyle[key] = resetResponsiveOverride(value, device);
+      }
+    }
+
+    onUpdateNode(node.id, {
+      style: nextStyle,
+    });
+  };
 
   const setGlobal = (key: string, value: unknown) =>
     setStyleValue(node, key, value, onUpdateNode);
 
+  const setBackgroundUrl = (url: string) =>
+    setGlobal("backgroundImage", url ? `url("${url}")` : "");
+
+  const uploadBackground = async (file: File) => {
+    if (!file.type.startsWith("image/")) return;
+    setBackgroundBusy(true);
+    setBackgroundError("");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("siteId", siteId);
+      const response = await fetch("/api/builder-v2/assets/upload", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok || !body?.asset?.url) throw new Error(body?.error || "Upload failed");
+      setBackgroundUrl(String(body.asset.url));
+    } catch (error) {
+      setBackgroundError(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setBackgroundBusy(false);
+    }
+  };
+
+  const generateBackground = async () => {
+    const prompt = backgroundPrompt.trim();
+    if (!prompt) {
+      setBackgroundError("Add a background image prompt first.");
+      return;
+    }
+    setBackgroundBusy(true);
+    setBackgroundError("");
+    try {
+      const response = await fetch("/api/ai-v8/generate-images", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompts: [prompt], industry: "GENERIC", size: "landscape", siteId }),
+      });
+      const body = await response.json().catch(() => ({}));
+      const url = body?.images?.find?.((image: any) => image?.url)?.url || body?.url || body?.image?.url;
+      if (!response.ok || !url) throw new Error(body?.error || "Image generation failed");
+      setBackgroundUrl(String(url));
+    } catch (error) {
+      setBackgroundError(error instanceof Error ? error.message : "Image generation failed");
+    } finally {
+      setBackgroundBusy(false);
+    }
+  };
+
   const setLayoutValues = (values: Record<string, unknown>) => {
+    const nextProps = {
+      ...node.props,
+    };
+    const nextStyle: Record<string, unknown> = {
+      ...node.style,
+      display: setResponsiveOverride(node.style?.display, device, "flex"),
+    };
+
+    if (values.alignItems !== undefined) {
+      nextProps.align = values.alignItems;
+    }
+
+    if (values.justifyContent !== undefined) {
+      nextProps.justify = values.justifyContent;
+    }
+
+    for (const [key, value] of Object.entries(values)) {
+      nextStyle[key] = setResponsiveOverride(node.style?.[key], device, value);
+    }
+
     onUpdateNode(node.id, {
-      props: {
-        ...node.props,
-        align: values.alignItems ?? node.props?.align,
-        justify: values.justifyContent ?? node.props?.justify,
-      },
-      style: {
-        ...node.style,
-        display: "flex",
-        ...values,
-      },
+      props: nextProps,
+      style: nextStyle,
     });
   };
 
   const horizontalAlign = isRowDirection
-    ? String(style.justifyContent ?? "flex-start")
-    : String(style.alignItems ?? "stretch");
+    ? String(responsive("justifyContent", "flex-start"))
+    : String(responsive("alignItems", "flex-start"));
   const verticalAlign = isRowDirection
-    ? String(style.alignItems ?? "stretch")
-    : String(style.justifyContent ?? "flex-start");
+    ? String(responsive("alignItems", "flex-start"))
+    : String(responsive("justifyContent", "flex-start"));
 
   const setHorizontalAlign = (value: string) => {
     setLayoutValues(
@@ -106,22 +247,20 @@ export default function DesignTab({
 
   const setWidthPercent = (value: number) => {
     const width = `${value}%`;
+    const values: Record<string, unknown> = { width };
+    if (node.type === "container") {
+      values.maxWidth = width;
+    }
+    if (node.type === "column") {
+      values.flex = `0 0 ${width}`;
+      values.maxWidth = width;
+    }
+    setResponsiveValues(values);
+  };
+
+  const setWidthMode = (value: string) => {
     onUpdateNode(node.id, {
-      style: {
-        ...node.style,
-        width,
-        ...(node.type === "container"
-          ? {
-              maxWidth: width,
-            }
-          : {}),
-        ...(node.type === "column"
-          ? {
-              flex: `0 0 ${width}`,
-              maxWidth: width,
-            }
-          : {}),
-      },
+      props: getContainerWidthModeProps(node, value === "full" ? "full" : "boxed"),
     });
   };
 
@@ -134,15 +273,7 @@ export default function DesignTab({
               <Field label="Container width">
                 <SegmentedInput
                   value={containerWidthMode}
-                  onChange={(value) => {
-                    onUpdateNode(node.id, {
-                      props: {
-                        ...node.props,
-                        container: value,
-                        widthMode: value,
-                      },
-                    });
-                  }}
+                  onChange={setWidthMode}
                   options={[
                     { value: "full", label: "Full width" },
                     { value: "boxed", label: "Boxed" },
@@ -151,14 +282,28 @@ export default function DesignTab({
               </Field>
 
               {containerWidthMode === "boxed" && (
-                <Field label="Boxed max width">
-                  <TextInput
-                    value={node.props?.maxWidth ?? responsive("maxWidth", "1280px")}
+                <Field
+                  label="Boxed max width"
+                  hint={node.props?.maxWidth === undefined && node.style?.maxWidth === undefined
+                    ? "Site default"
+                    : device}
+                >
+                  <UnitInput
+                    value={getEffectiveContainerMaxWidth(node, blueprint, device)}
                     onChange={(value) => {
-                      setPropValue(node, "maxWidth", value, onUpdateNode);
-                      setResponsive("maxWidth", value);
+                      onUpdateNode(node.id, {
+                        props: {
+                          ...node.props,
+                          maxWidth: setResponsiveOverride(
+                            node.props?.maxWidth ?? node.style?.maxWidth,
+                            device,
+                            value
+                          ),
+                        },
+                      });
                     }}
-                    placeholder="1280px"
+                    min={320}
+                    max={4000}
                   />
                 </Field>
               )}
@@ -166,36 +311,34 @@ export default function DesignTab({
           )}
 
           {hasDimensionControls && (
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Width" hint="%">
-                <SliderWithInput
-                  value={percentValue(responsive("width", node.type === "column" ? "100%" : "100%"))}
-                  onChange={setWidthPercent}
-                  min={1}
-                  max={100}
-                  unit="%"
-                />
-              </Field>
-              <Field label="Min height" hint={device}>
-                <SliderWithInput
-                  value={responsive("minHeight", node.type === "column" ? 80 : 0)}
-                  onChange={(value) => setResponsive("minHeight", value)}
-                  min={0}
-                  max={1200}
-                />
-              </Field>
-            </div>
-          )}
+  <div className="space-y-4">
+    <Field label="Width" hint="%">
+      <SliderWithInput
+        value={percentValue(
+  responsive(
+    "width",
+    node.type === "column"
+      ? defaultColumnWidth
+      : "100%"
+  )
+)}
+        onChange={setWidthPercent}
+        min={1}
+        max={100}
+        unit="%"
+      />
+    </Field>
 
-          {isColumnStructureTarget && (
-            <button
-              type="button"
-              onClick={() => setStructurePickerOpen(true)}
-              className="flex w-full items-center justify-center rounded-md border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-white/75 transition hover:bg-white/[0.08] hover:text-white"
-            >
-              Choose column structure
-            </button>
-          )}
+    <Field label="Min height" hint={device}>
+      <SliderWithInput
+        value={responsive("minHeight", node.type === "column" ? 80 : 0)}
+        onChange={(value) => setResponsive("minHeight", value)}
+        min={0}
+        max={1200}
+      />
+    </Field>
+  </div>
+)}
 
           <Field label="Display">
             <SegmentedInput
@@ -210,8 +353,9 @@ export default function DesignTab({
             />
           </Field>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Direction">
+          <div className="grid grid-cols-1 gap-3">
+            {!isParentContainer && node.type !== "column" && (
+              <Field label="Direction">
               <SelectInput
                 value={responsive("flexDirection", style.flexDirection ?? "column")}
                 onChange={(value) => setResponsive("flexDirection", value)}
@@ -222,7 +366,8 @@ export default function DesignTab({
                   { value: "column-reverse", label: "Column reverse" },
                 ]}
               />
-            </Field>
+              </Field>
+            )}
 
             <Field label="Wrap">
               <SelectInput
@@ -238,78 +383,131 @@ export default function DesignTab({
           </div>
 
           <Field label="Horizontal align">
-            <SegmentedInput
+            <AlignmentInput
               value={horizontalAlign}
               onChange={setHorizontalAlign}
-              options={[
-                { value: "flex-start", label: "Left" },
-                { value: "center", label: "Center" },
-                { value: "flex-end", label: "Right" },
-                { value: "stretch", label: "Stretch" },
-              ]}
+              kind="horizontal"
             />
           </Field>
 
           <Field label="Vertical align">
-            <SegmentedInput
+            <AlignmentInput
               value={verticalAlign}
               onChange={setVerticalAlign}
-              options={[
-                { value: "flex-start", label: "Top" },
-                { value: "center", label: "Center" },
-                { value: "flex-end", label: "Bottom" },
-                { value: "stretch", label: "Stretch" },
-              ]}
+              kind="vertical"
             />
           </Field>
 
-          <Field label="Gap" hint={device}>
-            <SliderWithInput
-              value={responsive("gap", 16)}
-              onChange={(value) => setResponsive("gap", value)}
-              min={0}
-              max={120}
-            />
-          </Field>
+          {node.type !== "section" && (
+  <Field label="Gap" hint={device}>
+    <SliderWithInput
+      value={responsive("gap", 16)}
+      onChange={(value) => setResponsive("gap", value)}
+      min={0}
+      max={120}
+    />
+  </Field>
+)}
 
           <div className="grid grid-cols-2 gap-3">
             <Field label="Align">
-              <SelectInput
+              <AlignmentInput
                 value={responsive("alignItems", style.alignItems ?? "stretch")}
                 onChange={(value) => setResponsive("alignItems", value)}
-                options={[
-                  { value: "stretch", label: "Stretch" },
-                  { value: "flex-start", label: "Start" },
-                  { value: "center", label: "Center" },
-                  { value: "flex-end", label: "End" },
-                  { value: "baseline", label: "Baseline" },
-                ]}
+                kind="vertical"
               />
             </Field>
 
             <Field label="Justify">
-              <SelectInput
+              <AlignmentInput
                 value={responsive("justifyContent", style.justifyContent ?? "flex-start")}
                 onChange={(value) => setResponsive("justifyContent", value)}
-                options={[
-                  { value: "flex-start", label: "Start" },
-                  { value: "center", label: "Center" },
-                  { value: "flex-end", label: "End" },
-                  { value: "space-between", label: "Between" },
-                  { value: "space-around", label: "Around" },
-                  { value: "space-evenly", label: "Evenly" },
-                ]}
+                kind="horizontal"
               />
             </Field>
           </div>
 
           <Field label="Grid columns">
-            <TextInput
-              value={responsive("gridTemplateColumns", style.gridTemplateColumns ?? "")}
-              onChange={(value) => setResponsive("gridTemplateColumns", value)}
-              placeholder="repeat(3, 1fr)"
-            />
-          </Field>
+  <SelectInput
+    value={responsive("gridTemplateColumns", style.gridTemplateColumns ?? "repeat(3, minmax(0, 1fr))")}
+    onChange={(value) => setResponsive("gridTemplateColumns", value)}
+    options={[
+      { value: "repeat(1, minmax(0, 1fr))", label: "1 column" },
+      { value: "repeat(2, minmax(0, 1fr))", label: "2 columns" },
+      { value: "repeat(3, minmax(0, 1fr))", label: "3 columns" },
+      { value: "repeat(4, minmax(0, 1fr))", label: "4 columns" },
+      { value: "repeat(5, minmax(0, 1fr))", label: "5 columns" },
+      { value: "repeat(6, minmax(0, 1fr))", label: "6 columns" },
+      { value: "1fr 2fr", label: "1 / 2 split" },
+      { value: "2fr 1fr", label: "2 / 1 split" },
+      { value: "1fr 1fr 2fr", label: "1 / 1 / 2 split" },
+      { value: "2fr 1fr 1fr", label: "2 / 1 / 1 split" },
+    ]}
+  />
+</Field>
+          {isColumnStructureTarget && (
+            <button
+              type="button"
+              onClick={() => setStructurePickerOpen(true)}
+              className="flex w-full items-center justify-center gap-2 rounded-md border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-white/75 transition hover:bg-white/[0.08] hover:text-white"
+            >
+              <Columns3 size={16} aria-hidden />
+              Choose column structure
+            </button>
+          )}
+
+          {isParentContainer && (
+            <Field label="Columns direction">
+              <SegmentedInput
+                value={String(
+                  responsive("flexDirection", node.props?.direction ?? "row")
+                )}
+                onChange={(value) =>
+                  onUpdateNode(node.id, {
+                    props: {
+                      ...node.props,
+                      direction: value,
+                    },
+                    style: {
+                      ...node.style,
+                      display: "flex",
+                      flexDirection: setResponsiveOverride(
+                        node.style?.flexDirection,
+                        device,
+                        value
+                      ) as any,
+                    },
+                  })
+                }
+                options={[
+                  { value: "row", label: "Horizontal" },
+                  { value: "column", label: "Vertical" },
+                ]}
+              />
+            </Field>
+          )}
+
+          {node.type === "column" && (
+            <Field label="Column content direction">
+              <SegmentedInput
+                value={String(node.props?.layout ?? "vertical")}
+                onChange={(value) =>
+                  onUpdateNode(node.id, {
+                    props: { ...node.props, layout: value },
+                    style: {
+                      ...node.style,
+                      display: "flex",
+                      flexDirection: value === "horizontal" ? "row" : "column",
+                    },
+                  })
+                }
+                options={[
+                  { value: "vertical", label: "Vertical" },
+                  { value: "horizontal", label: "Horizontal" },
+                ]}
+              />
+            </Field>
+          )}
         </Section>
       )}
 
@@ -348,6 +546,14 @@ export default function DesignTab({
             />
           </Field>
 
+          <Field label="Text color">
+  <ColorPicker
+    value={String(responsive("color", style.color ?? "#0f172a"))}
+    onChange={(color) => setResponsive("color", color)}
+    onClear={() => setResponsive("color", undefined)}
+  />
+</Field>
+
           <Field label="Font size" hint={device}>
             <SliderWithInput
               value={responsive("fontSize", node.type === "heading" ? 40 : 16)}
@@ -385,15 +591,10 @@ export default function DesignTab({
           </div>
 
           <Field label="Alignment">
-            <SegmentedInput
-              value={style.textAlign ?? "left"}
-              onChange={(value) => setGlobal("textAlign", value)}
-              options={[
-                { value: "left", label: "Left" },
-                { value: "center", label: "Center" },
-                { value: "right", label: "Right" },
-                { value: "justify", label: "Justify" },
-              ]}
+            <AlignmentInput
+              value={responsive("textAlign", style.textAlign ?? "left")}
+              onChange={(value) => setResponsive("textAlign", value)}
+              kind="text"
             />
           </Field>
 
@@ -449,10 +650,9 @@ export default function DesignTab({
             <Field label="Box size" hint={device}>
               <SliderWithInput
                 value={responsive("width", 48)}
-                onChange={(value) => {
-                  setResponsive("width", value);
-                  setResponsive("height", value);
-                }}
+                onChange={(value) =>
+                  setResponsiveValues({ width: value, height: value })
+                }
                 min={16}
                 max={180}
               />
@@ -480,14 +680,16 @@ export default function DesignTab({
 
           <Field label="Icon color">
             <ColorPicker
-              value={String(style.color ?? "#0f172a")}
-              onChange={(color) => setGlobal("color", color)}
+              value={String(responsive("color", style.color ?? "#0f172a"))}
+              onChange={(color) => setResponsive("color", color)}
+              onClear={() => setResponsive("color", undefined)}
             />
           </Field>
           <Field label="Background">
             <ColorPicker
-              value={String(style.backgroundColor ?? "transparent")}
-              onChange={(color) => setGlobal("backgroundColor", color)}
+              value={String(responsive("backgroundColor", style.backgroundColor ?? "transparent"))}
+              onChange={(color) => setResponsive("backgroundColor", color)}
+              onClear={() => setResponsive("backgroundColor", undefined)}
             />
           </Field>
         </Section>
@@ -541,10 +743,11 @@ export default function DesignTab({
         <Section title="Spacer" description="Responsive width and height" defaultOpen>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Width" hint={device}>
-              <TextInput
+              <UnitInput
                 value={responsive("width", "100%")}
                 onChange={(value) => setResponsive("width", value)}
-                placeholder="100%"
+                min={0}
+                max={4000}
               />
             </Field>
             <Field label="Height" hint={device}>
@@ -563,19 +766,19 @@ export default function DesignTab({
         <Section title="Divider" description="Line width, style and color" defaultOpen>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Line width" hint={device}>
-              <TextInput
+              <UnitInput
                 value={responsive("width", "100%")}
                 onChange={(value) => setResponsive("width", value)}
-                placeholder="100%"
+                min={0}
+                max={4000}
               />
             </Field>
             <Field label="Thickness" hint={device}>
               <SliderWithInput
                 value={responsive("borderTopWidth", responsive("height", 1))}
-                onChange={(value) => {
-                  setResponsive("borderTopWidth", value);
-                  setResponsive("height", value);
-                }}
+                onChange={(value) =>
+                  setResponsiveValues({ borderTopWidth: value, height: value })
+                }
                 min={1}
                 max={24}
               />
@@ -596,40 +799,86 @@ export default function DesignTab({
           <Field label="Line color">
             <ColorPicker
               value={String(style.borderTopColor ?? style.color ?? "#cbd5e1")}
-              onChange={(color) => {
-                setGlobal("borderTopColor", color);
-                setGlobal("color", color);
-              }}
+              onChange={(color) =>
+                onUpdateNode(node.id, {
+                  style: {
+                    ...node.style,
+                    borderTopColor: color,
+                    color,
+                  },
+                })
+              }
             />
           </Field>
         </Section>
       )}
 
       <Section title="Size" description="Width, height and overflow" defaultOpen={!hasPrimaryStyleSection}>
-        <div className="grid grid-cols-2 gap-3">
-          {["width", "height", "minWidth", "minHeight", "maxWidth", "maxHeight"].map((key) => (
-            <Field key={key} label={labelize(key)} hint={device}>
-              <TextInput
-                value={responsive(key, "")}
-                onChange={(value) => setResponsive(key, value)}
-                placeholder={key.includes("Width") || key === "width" ? "100%" : "auto"}
-              />
-            </Field>
-          ))}
-        </div>
-        <Field label="Overflow">
-          <SegmentedInput
-            value={responsive("overflow", style.overflow ?? "visible")}
-            onChange={(value) => setResponsive("overflow", value)}
-            options={[
-              { value: "visible", label: "Visible" },
-              { value: "hidden", label: "Hidden" },
-              { value: "auto", label: "Auto" },
-              { value: "scroll", label: "Scroll" },
-            ]}
-          />
-        </Field>
-      </Section>
+  <div className="space-y-4">
+    <SizeSliderControl
+      label="Width"
+      value={responsive("width", 0)}
+      onChange={(value) => setResponsive("width", value)}
+      device={device}
+      max={4000}
+    />
+
+    <SizeSliderControl
+      label="Height"
+      value={responsive("height", 0)}
+      onChange={(value) => setResponsive("height", value)}
+      device={device}
+      max={2400}
+    />
+
+    <SizeSliderControl
+      label="Min width"
+      value={responsive("minWidth", 0)}
+      onChange={(value) => setResponsive("minWidth", value)}
+      device={device}
+      max={4000}
+    />
+
+    <SizeSliderControl
+      label="Min height"
+      value={responsive("minHeight", 0)}
+      onChange={(value) => setResponsive("minHeight", value)}
+      device={device}
+      max={2400}
+    />
+
+    {!isParentContainer && (
+      <SizeSliderControl
+        label="Max width"
+        value={responsive("maxWidth", 0)}
+        onChange={(value) => setResponsive("maxWidth", value)}
+        device={device}
+        max={4000}
+      />
+    )}
+
+    <SizeSliderControl
+      label="Max height"
+      value={responsive("maxHeight", 0)}
+      onChange={(value) => setResponsive("maxHeight", value)}
+      device={device}
+      max={2400}
+    />
+  </div>
+
+  <Field label="Overflow">
+    <SegmentedInput
+      value={responsive("overflow", style.overflow ?? "visible")}
+      onChange={(value) => setResponsive("overflow", value)}
+      options={[
+        { value: "visible", label: "Visible" },
+        { value: "hidden", label: "Hidden" },
+        { value: "auto", label: "Auto" },
+        { value: "scroll", label: "Scroll" },
+      ]}
+    />
+  </Field>
+</Section>
 
       <Section title="Spacing" description="Padding and margin">
         <BoxControls
@@ -651,14 +900,9 @@ export default function DesignTab({
       <Section title="Background">
         <Field label="Background color">
           <ColorPicker
-            value={String(style.backgroundColor ?? "transparent")}
-            onChange={(color) => setGlobal("backgroundColor", color)}
-          />
-        </Field>
-        <Field label="Text color">
-          <ColorPicker
-            value={String(style.color ?? "#0f172a")}
-            onChange={(color) => setGlobal("color", color)}
+            value={String(responsive("backgroundColor", style.backgroundColor ?? "transparent"))}
+            onChange={(color) => setResponsive("backgroundColor", color)}
+            onClear={() => setResponsive("backgroundColor", undefined)}
           />
         </Field>
         <Field label="Background image">
@@ -668,11 +912,48 @@ export default function DesignTab({
             placeholder="https://..."
           />
         </Field>
+        <MediaPicker
+          siteId={siteId}
+          label="Background media"
+          value={backgroundImageUrl(style.backgroundImage)}
+          onChange={(asset) => setBackgroundUrl(asset.url)}
+        />
+        <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-white/70 transition hover:bg-white/[0.1] hover:text-white">
+          <Upload size={15} aria-hidden />
+          {backgroundBusy ? "Working..." : "Upload background image"}
+          <input
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            disabled={backgroundBusy}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) void uploadBackground(file);
+            }}
+          />
+        </label>
+        <Field label="AI background prompt">
+          <TextInput
+            value={backgroundPrompt}
+            onChange={setBackgroundPrompt}
+            placeholder="Cinematic architectural background..."
+          />
+        </Field>
+        <button
+          type="button"
+          disabled={backgroundBusy}
+          onClick={() => void generateBackground()}
+          className="flex w-full items-center justify-center gap-2 rounded-md border border-blue-400/30 bg-blue-500/10 px-3 py-2 text-sm font-medium text-blue-100 transition hover:bg-blue-500/20 disabled:opacity-50"
+        >
+          <Sparkles size={16} aria-hidden />
+          {backgroundBusy ? "Generating..." : "Generate background with AI"}
+        </button>
+        {backgroundError && <p className="text-xs text-red-300">{backgroundError}</p>}
         <div className="grid grid-cols-2 gap-3">
           <Field label="Size">
             <SelectInput
-              value={style.backgroundSize ?? "cover"}
-              onChange={(value) => setGlobal("backgroundSize", value)}
+              value={responsive("backgroundSize", "cover")}
+              onChange={(value) => setResponsive("backgroundSize", value)}
               options={[
                 { value: "cover", label: "Cover" },
                 { value: "contain", label: "Contain" },
@@ -683,8 +964,8 @@ export default function DesignTab({
           </Field>
           <Field label="Repeat">
             <SelectInput
-              value={style.backgroundRepeat ?? "no-repeat"}
-              onChange={(value) => setGlobal("backgroundRepeat", value)}
+              value={responsive("backgroundRepeat", "no-repeat")}
+              onChange={(value) => setResponsive("backgroundRepeat", value)}
               options={[
                 { value: "no-repeat", label: "No repeat" },
                 { value: "repeat", label: "Repeat" },
@@ -697,8 +978,8 @@ export default function DesignTab({
         <div className="grid grid-cols-2 gap-3">
           <Field label="Position">
             <SelectInput
-              value={style.backgroundPosition ?? "center center"}
-              onChange={(value) => setGlobal("backgroundPosition", value)}
+              value={responsive("backgroundPosition", "center center")}
+              onChange={(value) => setResponsive("backgroundPosition", value)}
               options={[
                 { value: "center center", label: "Center" },
                 { value: "top center", label: "Top" },
@@ -710,8 +991,8 @@ export default function DesignTab({
           </Field>
           <Field label="Attachment">
             <SelectInput
-              value={style.backgroundAttachment ?? "scroll"}
-              onChange={(value) => setGlobal("backgroundAttachment", value)}
+              value={responsive("backgroundAttachment", "scroll")}
+              onChange={(value) => setResponsive("backgroundAttachment", value)}
               options={[
                 { value: "scroll", label: "Scroll" },
                 { value: "fixed", label: "Fixed" },
@@ -728,6 +1009,46 @@ export default function DesignTab({
             value={style.border ?? ""}
             onChange={(value) => setGlobal("border", value)}
             placeholder="1px solid #e5e7eb"
+          />
+        </Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Border style">
+            <SelectInput
+              value={borderParts(style.border).style}
+              onChange={(value) => {
+                const current = borderParts(style.border);
+                setGlobal("border", value === "none" ? "none" : `${current.width} ${value} ${current.color}`);
+              }}
+              options={[
+                { value: "none", label: "None" },
+                { value: "solid", label: "Solid" },
+                { value: "dashed", label: "Dashed" },
+                { value: "dotted", label: "Dotted" },
+                { value: "double", label: "Double" },
+                { value: "groove", label: "Groove" },
+              ]}
+            />
+          </Field>
+          <Field label="Border width">
+            <UnitInput
+              value={borderParts(style.border).width}
+              onChange={(value) => {
+                const current = borderParts(style.border);
+                setGlobal("border", `${value} ${current.style === "none" ? "solid" : current.style} ${current.color}`);
+              }}
+              min={0}
+              max={40}
+              units={["px", "rem", "em"]}
+            />
+          </Field>
+        </div>
+        <Field label="Border color">
+          <ColorPicker
+            value={borderParts(style.border).color}
+            onChange={(color) => {
+              const current = borderParts(style.border);
+              setGlobal("border", `${current.width} ${current.style === "none" ? "solid" : current.style} ${color}`);
+            }}
           />
         </Field>
         <Field label="Radius" hint={device}>
@@ -748,6 +1069,13 @@ export default function DesignTab({
               { value: "0 12px 30px rgba(15, 23, 42, 0.16)", label: "Soft" },
               { value: "0 24px 60px rgba(15, 23, 42, 0.22)", label: "Elevated" },
             ]}
+          />
+        </Field>
+        <Field label="Custom shadow">
+          <TextInput
+            value={style.boxShadow ?? ""}
+            onChange={(value) => setGlobal("boxShadow", value || "none")}
+            placeholder="0 12px 30px rgba(0, 0, 0, .18)"
           />
         </Field>
       </Section>
@@ -805,10 +1133,11 @@ export default function DesignTab({
         <div className="grid grid-cols-2 gap-3">
           {["top", "right", "bottom", "left"].map((key) => (
             <Field key={key} label={labelize(key)} hint={device}>
-              <TextInput
+              <UnitInput
                 value={responsive(key, "")}
                 onChange={(value) => setResponsive(key, value)}
-                placeholder="auto"
+                min={-2400}
+                max={2400}
               />
             </Field>
           ))}
@@ -816,7 +1145,12 @@ export default function DesignTab({
       </Section>
 
       <Section title="Device" description="Choose the breakpoint to edit">
-        <DeviceSwitcher value={device} onChange={setDevice} />
+        <DeviceSwitcher
+          value={device}
+          onChange={setDevice}
+          inheritedLabel={buildDeviceHint(device, responsiveResolution("width", "auto"))}
+          onReset={device === "desktop" ? undefined : resetCurrentDeviceOverrides}
+        />
       </Section>
 
       <ColumnStructurePicker
@@ -838,11 +1172,121 @@ function responsiveStyleValue(value: unknown, device: InspectorDevice, fallback:
   return getResponsiveValue(value, device, fallback);
 }
 
+function buildDeviceHint(
+  device: InspectorDevice,
+  resolution: ReturnType<typeof getResponsiveResolution>
+) {
+  if (resolution.hasOverride) return `${device} override active`;
+  if (resolution.inheritedFrom) return `${device} inherits from ${resolution.inheritedFrom}`;
+  return `${device} uses base value`;
+}
+
 function percentValue(value: unknown) {
   if (typeof value === "number") return Math.max(1, Math.min(100, value));
   if (typeof value !== "string") return 100;
   const match = value.match(/^(\d+(?:\.\d+)?)%$/);
   return match ? Number(match[1]) : 100;
+}
+function SizeSliderControl({
+  label,
+  value,
+  onChange,
+  device,
+  max,
+}: {
+  label: string;
+  value: unknown;
+  onChange(value: string | number): void;
+  device: InspectorDevice;
+  max: number;
+}) {
+  const parsed = parseCssUnit(value);
+  const [draftValue, setDraftValue] = useState(parsed.value);
+  const [unit, setUnit] = useState(parsed.unit);
+
+  useEffect(() => {
+    const next = parseCssUnit(value);
+    setDraftValue(next.value);
+    setUnit(next.unit);
+  }, [value]);
+
+  const isKeyword = ["auto", "fit-content", "min-content", "max-content"].includes(unit);
+  const unitMax = getSizeUnitMax(unit, max);
+  const step = unit === "rem" || unit === "em" ? 0.1 : 1;
+
+  const commit = (nextValue = draftValue, nextUnit = unit) => {
+    if (["auto", "fit-content", "min-content", "max-content"].includes(nextUnit)) {
+      onChange(nextUnit);
+      return;
+    }
+
+    const numeric = Number(String(nextValue).trim());
+
+    if (!Number.isFinite(numeric)) {
+      setDraftValue("0");
+      onChange(nextUnit === "px" ? 0 : `0${nextUnit}`);
+      return;
+    }
+
+    const clamped = Math.max(0, Math.min(numeric, getSizeUnitMax(nextUnit, max)));
+    const formatted = formatNumber(clamped);
+
+    setDraftValue(formatted);
+    onChange(nextUnit === "px" ? clamped : `${formatted}${nextUnit}`);
+  };
+
+  return (
+    <Field label={label} hint={device}>
+      <div className="space-y-2">
+        <input
+          type="range"
+          min={0}
+          max={unitMax}
+          step={step}
+          value={Number(draftValue) || 0}
+          onChange={(event) => setDraftValue(event.target.value)}
+          onMouseUp={() => commit()}
+          onTouchEnd={() => commit()}
+          className="w-full accent-blue-500"
+          disabled={isKeyword}
+        />
+
+        <div className="flex h-10 overflow-hidden rounded-lg border border-white/10 bg-white/[0.06]">
+          <input
+            type="number"
+            min={0}
+            max={unitMax}
+            step={step}
+            value={isKeyword ? "" : draftValue}
+            onChange={(event) => setDraftValue(event.target.value)}
+            onBlur={() => commit()}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") event.currentTarget.blur();
+            }}
+            placeholder={isKeyword ? unit : "0"}
+            disabled={isKeyword}
+            className="min-w-0 flex-1 bg-transparent px-3 text-sm text-white outline-none disabled:text-white/35"
+          />
+
+          <select
+            value={unit}
+            onChange={(event) => {
+              const nextUnit = event.target.value;
+              setUnit(nextUnit);
+              commit(draftValue, nextUnit);
+            }}
+            className="w-24 border-l border-white/10 bg-[#11131A] px-2 text-xs text-white outline-none"
+          >
+            {SIZE_UNITS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </Field>
+  );
 }
 
 function BoxControls({
@@ -858,23 +1302,146 @@ function BoxControls({
   setResponsive(key: string, value: unknown): void;
   device: InspectorDevice;
 }) {
-  return (
-    <div className="space-y-2">
-      <div className="text-xs font-medium text-white/65">
-        {title} <span className="font-normal text-white/35">({device})</span>
+  const [linked, setLinked] = useState(true);
+  const shorthandKey = keys[0].startsWith("padding") ? "padding" : "margin";
+const shorthandValue = responsive(shorthandKey, "0");
+
+const [draft, setDraft] = useState({
+  top: String(responsive(keys[0], shorthandValue) ?? "0"),
+  right: String(responsive(keys[1], shorthandValue) ?? "0"),
+  bottom: String(responsive(keys[2], shorthandValue) ?? "0"),
+  left: String(responsive(keys[3], shorthandValue) ?? "0"),
+});
+
+  const updateDraft = (side: keyof typeof draft, value: string) => {
+    if (linked) {
+      setDraft({ top: value, right: value, bottom: value, left: value });
+      return;
+    }
+
+    setDraft((current) => ({ ...current, [side]: value }));
+  };
+
+  const commit = (side: keyof typeof draft, key: string, value: string) => {
+    if (linked) {
+      keys.forEach((sideKey) => setResponsive(sideKey, value));
+      return;
+    }
+
+    setResponsive(key, value);
+  };
+
+  const renderUnitBox = (
+    label: string,
+    side: keyof typeof draft,
+    keyName: string
+  ) => (
+    <label key={side} className="space-y-1">
+      <span className="text-[10px] font-medium uppercase tracking-wide text-white/35">
+        {label}
+      </span>
+      <div className="flex h-9 overflow-hidden rounded-lg border border-white/10 bg-white/[0.06]">
+        <input
+          value={draft[side]}
+          onChange={(event) => updateDraft(side, event.target.value)}
+          onBlur={(event) => commit(side, keyName, event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.currentTarget.blur();
+            }
+          }}
+          className="min-w-0 flex-1 bg-transparent px-2 text-sm text-white outline-none"
+          placeholder="0"
+        />
+        <span className="flex w-9 items-center justify-center border-l border-white/10 text-xs text-white/35">
+          px
+        </span>
       </div>
-      <div className="grid grid-cols-4 gap-2">
-        {keys.map((key, index) => (
-          <TextInput
-            key={key}
-            value={responsive(key, "")}
-            onChange={(value) => setResponsive(key, value)}
-            placeholder={["T", "R", "B", "L"][index]}
-          />
-        ))}
+    </label>
+  );
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/[0.025] p-3">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="text-xs font-semibold text-white/75">
+          {title} <span className="font-normal text-white/35">({device})</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setLinked((value) => !value)}
+          className={`flex h-8 w-8 items-center justify-center rounded-lg border transition ${
+            linked
+              ? "border-blue-400/60 bg-blue-500/15 text-blue-300"
+              : "border-white/10 bg-white/[0.05] text-white/45"
+          }`}
+          title={linked ? "Unlink values" : "Link values"}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.5 4.43" />
+            <path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07l1.33-1.33" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        {renderUnitBox("Top", "top", keys[0])}
+        {renderUnitBox("Right", "right", keys[1])}
+        {renderUnitBox("Bottom", "bottom", keys[2])}
+        {renderUnitBox("Left", "left", keys[3])}
       </div>
     </div>
   );
+}
+
+function borderParts(value: unknown) {
+  const border = typeof value === "string" ? value.trim() : "";
+  if (!border || border === "none") {
+    return { width: "1px", style: "none", color: "#e5e7eb" };
+  }
+  const width = border.match(/(?:^|\s)(\d+(?:\.\d+)?(?:px|rem|em))/i)?.[1] ?? "1px";
+  const style = border.match(/(?:^|\s)(solid|dashed|dotted|double|groove|ridge|inset|outset)(?:\s|$)/i)?.[1] ?? "solid";
+  const color = border.match(/(#[0-9a-f]{3,8}|rgba?\([^)]*\)|hsla?\([^)]*\)|[a-z]+)$/i)?.[1] ?? "#e5e7eb";
+  return { width, style, color };
+}
+
+function parseCssUnit(value: unknown): { value: string; unit: string } {
+  if (typeof value === "number") {
+    return { value: formatNumber(value), unit: "px" };
+  }
+
+  if (typeof value !== "string" || !value.trim()) {
+    return { value: "0", unit: "px" };
+  }
+
+  const raw = value.trim();
+
+  if (["auto", "fit-content", "min-content", "max-content"].includes(raw)) {
+    return { value: "0", unit: raw };
+  }
+
+  const match = raw.match(/^(-?\d+(?:\.\d+)?)(px|%|rem|em|vw|vh)$/);
+
+  if (match) {
+    return {
+      value: formatNumber(Number(match[1])),
+      unit: match[2],
+    };
+  }
+
+  return { value: "0", unit: "px" };
+}
+
+function getSizeUnitMax(unit: string, fallbackMax: number) {
+  if (unit === "%") return 100;
+  if (unit === "vw" || unit === "vh") return 100;
+  if (unit === "rem" || unit === "em") return 100;
+  return fallbackMax;
+}
+
+function formatNumber(value: number) {
+  if (!Number.isFinite(value)) return "0";
+  return String(Math.round(value * 100) / 100);
 }
 
 function labelize(value: string) {

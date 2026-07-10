@@ -1,7 +1,6 @@
 const SectionDefaults = {
   props: {
     container: "boxed",
-    maxWidth: 1280,
   },
 
   style: {

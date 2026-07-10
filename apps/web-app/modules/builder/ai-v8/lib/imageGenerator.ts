@@ -59,7 +59,12 @@ async function callFreepikAPI(prompt: string): Promise<string> {
   console.log("[Freepik] Calling API with prompt:", prompt.substring(0, 60));
 
   // Enhanced photorealistic prompt
-  const enhancedPrompt = `Professional photography, photorealistic, high quality, sharp focus, natural lighting, ${prompt}`;
+  const enhancedPrompt = [
+    "Photorealistic commercial photography",
+    "realistic environment, natural color grading, sharp focus, premium website visual",
+    prompt,
+    "no text, no watermark, avoid vector art, avoid clipart, avoid heavy yellow or orange color cast",
+  ].join(", ");
 
   const res = await fetch("https://api.freepik.com/v1/ai/text-to-image", {
     method: "POST",
@@ -69,8 +74,8 @@ async function callFreepikAPI(prompt: string): Promise<string> {
     },
     body: JSON.stringify({
       prompt: enhancedPrompt,
-      negative_prompt: "illustration, drawing, painting, sketch, cartoon, anime, 3d render, digital art, abstract, artistic, stylized, unrealistic, blurry, low quality, watermark, text, logo",
-      guidance_scale: 8.5,
+      negative_prompt: "illustration, vector art, flat vector, drawing, painting, sketch, cartoon, anime, 3d render, digital art, abstract, artistic, stylized, unrealistic, blurry, low quality, watermark, text, logo, yellow tint, orange tint, mustard background, oversaturated yellow",
+      guidance_scale: 6.5,
       seed: Math.floor(Math.random() * 1000000),
       num_images: 1,
       image: {

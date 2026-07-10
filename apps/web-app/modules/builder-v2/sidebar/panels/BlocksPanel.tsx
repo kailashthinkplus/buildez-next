@@ -13,6 +13,7 @@ import {
 
 import { BlueprintFactory } from "../../core/engine/BlueprintFactory";
 import { InsertNodeCommand } from "../../core/commands/InsertNodeCommand";
+import { buildNativeInsertionPlan } from "../../core/commands/nativeHierarchyInsertion";
 import { commandBus } from "../../core/commands/CommandBus";
 import { WidgetRegistry } from "../../core/registry/WidgetRegistry";
 import { useBuilderStore } from "../../store/useBuilderStore";
@@ -21,6 +22,7 @@ import { useSelectionStore } from "../../store/useSelectionStore";
 export default function BlocksPanel() {
   const blueprint = useBuilderStore((s) => s.blueprint);
   const selectedNodeId = useSelectionStore((s) => s.selectedNodeId);
+const select = useSelectionStore((s) => s.select);
 
   if (!blueprint) return null;
 
@@ -37,13 +39,35 @@ export default function BlocksPanel() {
   };
 
   function handleInsert(type: any) {
-    const parentId = selectedNodeId ?? blueprint.root;
+  const insertionParentId =
+    selectedNodeId && blueprint.nodes[selectedNodeId]
+      ? selectedNodeId
+      : blueprint.root;
 
-    const node = BlueprintFactory.createNode(type, parentId);
+  const plan = buildNativeInsertionPlan(
+    blueprint,
+    type,
+    insertionParentId,
+    (nodeType, parentId) => BlueprintFactory.createNode(nodeType, parentId)
+  );
 
-    commandBus.execute(
-      new InsertNodeCommand(parentId, node)
-    );
+  if (!plan) return;
+
+  if (plan.steps.length === 1) {
+    const step = plan.steps[0];
+    commandBus.execute(new InsertNodeCommand(step.parentId, step.node, step.index));
+    select(plan.selectNodeId);
+    return;
+  }
+
+  commandBus.transaction("BlocksPanel -> InsertNodeCommand", () => {
+    for (const step of plan.steps) {
+      commandBus.execute(new InsertNodeCommand(step.parentId, step.node, step.index));
+    }
+  });
+
+  select(plan.selectNodeId);
+}
   }
 
   const categoryIcons = {

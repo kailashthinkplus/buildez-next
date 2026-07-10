@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 
 import type { BuilderNode } from "../../types/blueprint";
-import { useNodeUpdater } from "../tabs/hooks/useNodeUpdater";
+import ColorPicker from "../components/ColorPicker";
+import { useNodeUpdater } from "../hooks/useNodeUpdater";
 
 /* ==========================================================
    TYPES
@@ -42,9 +43,9 @@ export default function ColorProperty({
     );
   }, [node.id, node.style, property]);
 
-  function update(next: string) {
+  function update(next: string | undefined) {
 
-    setValue(next);
+    setValue(next ?? "");
 
     updateStyle(
       node.id,
@@ -62,54 +63,12 @@ export default function ColorProperty({
         {label}
       </label>
 
-      <div
-        className="
-          flex
-          items-center
-          gap-3
-        "
-      >
-
-        {/* Color Preview */}
-
-        <div
-          className="
-            h-10
-            w-10
-            rounded-lg
-            border
-            border-white/10
-            shrink-0
-          "
-          style={{
-            background: value || "#ffffff",
-          }}
-        />
-
-        {/* Hex Input */}
-
-        <input
-          value={value}
-          placeholder={placeholder}
-          onChange={(e) =>
-            update(e.target.value)
-          }
-          className="
-            flex-1
-            h-10
-            rounded-lg
-            border
-            border-white/10
-            bg-[#111827]
-            px-3
-            text-sm
-            text-white
-            outline-none
-            focus:border-blue-500
-          "
-        />
-
-      </div>
+      <ColorPicker
+        value={value || placeholder}
+        onChange={update}
+        onClear={() => update(undefined)}
+        themeTokenReady
+      />
 
     </div>
 

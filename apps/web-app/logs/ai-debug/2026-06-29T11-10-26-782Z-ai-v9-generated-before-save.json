@@ -1,0 +1,1737 @@
+{
+  "timestamp": "2026-06-29T11:10:26.782Z",
+  "label": "ai-v9:generated-before-save",
+  "summary": {
+    "present": true,
+    "root": "cmqnppf5t000mvcj7lguqs75s-v9-page",
+    "metadata": {
+      "version": 2,
+      "title": "Home",
+      "createdAt": "2026-06-29T11:10:20.075Z",
+      "updatedAt": "2026-06-29T11:10:20.075Z",
+      "aiGenerated": true,
+      "template": "ai-v9-native-fallback",
+      "industry": "Real Estate"
+    },
+    "theme": {
+      "id": "buildez-default",
+      "name": "BuildEZ Default",
+      "preset": "buildez-default",
+      "tokenKeys": [
+        "colors",
+        "typography",
+        "spacing",
+        "radius",
+        "shadow",
+        "buttons"
+      ]
+    },
+    "nodeCount": 77,
+    "sectionCount": 6,
+    "imageCount": 1,
+    "backgroundPromptCount": 2,
+    "headings": [
+      "A sharper online experience for name",
+      "01",
+      "03",
+      "Now",
+      "Brand context",
+      "Offer clarity",
+      "Trust signals",
+      "Publish aligned",
+      "A modern Real Estate site structure shaped around what visitors need to decide",
+      "Positioning that lands"
+    ],
+    "textSamples": [
+      "Real Estate / name",
+      "Built around a credible company website, this page gives buyers comparing properties and booking site visits a fast way to understand value, trust the brand, and take the next step.",
+      "Plan the next step",
+      "Clear first impression",
+      "Proof-led decision points",
+      "Direct action path",
+      "name is positioned for buyers comparing properties and booking site visits.",
+      "The page keeps a credible company website visible throughout the journey.",
+      "Proof, process, and next steps are introduced before the final CTA.",
+      "The same native blueprint powers builder and live page.",
+      "name gets a direct promise, clear audience fit, and a confident first screen.",
+      "Benefits are written around a credible company website, not generic service-card filler.",
+      "CTA placement follows visitor intent from hero proof to final enquiry.",
+      "HOW THE PAGE WORKS"
+    ],
+    "colors": [
+      "#0f172a",
+      "#f8fafc",
+      "#ffffff",
+      "#f97316",
+      "rgba(255,255,255,0.82)",
+      "rgba(255,255,255,0.08)",
+      "rgba(255,255,255,0.72)",
+      "#475569",
+      "rgba(255,255,255,0.76)",
+      "rgba(255,255,255,0.7)",
+      "#eef2f7",
+      "#2563eb"
+    ],
+    "images": [
+      {
+        "id": "section_8feba3ef24f1",
+        "type": "section",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "linear-gradient(135deg, rgba(15,23,42,0.96), rgba(37,99,235,0.76)), url('https://assets.getbuildez.com/ai-v9/cmqnpp4my000kvcj7w8mira4q/1782731421829-78f5ab59-bf6b-4498-9f0e-f9d56c9...",
+        "aiImagePrompt": "",
+        "backgroundPrompt": "name, Real Estate, architectural photography, premium interiors, golden hour exterior, spacious modern property, website hero image, brand atmosphere, no text, no watermark"
+      },
+      {
+        "id": "section_965117c569ba",
+        "type": "section",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "linear-gradient(135deg, rgba(15,23,42,0.98), rgba(37,99,235,0.62)), url('https://assets.getbuildez.com/ai-v9/cmqnpp4my000kvcj7w8mira4q/1782731423991-dd4a2058-4022-42d5-96a8-d5ee98d...",
+        "aiImagePrompt": "",
+        "backgroundPrompt": "name, Real Estate, a credible company website, professional team and customer experience, premium editorial photography, no text, no watermark"
+      },
+      {
+        "id": "column_e431065ff593",
+        "type": "column",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "linear-gradient(135deg, rgba(37,99,235,0.3), rgba(249,115,22,0.42))",
+        "aiImagePrompt": "",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "image_33547dcbd306",
+        "type": "image",
+        "hidden": false,
+        "src": "https://assets.getbuildez.com/ai-v9/cmqnpp4my000kvcj7w8mira4q/1782731425939-d49b3ed5-4bf3-4011-b776-ac216574fd30.jpg",
+        "backgroundImage": "",
+        "aiImagePrompt": "name, Real Estate, architectural photography, premium interiors, golden hour exterior, spacious modern property, website hero image, brand atmosphere, no text, no watermark",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "section_c1c036eda11a",
+        "type": "section",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "linear-gradient(135deg, rgba(255,255,255,1), rgba(219,234,254,0.72))",
+        "aiImagePrompt": "",
+        "backgroundPrompt": ""
+      }
+    ],
+    "forbiddenHits": [],
+    "layoutFingerprint": [
+      {
+        "id": "section_8feba3ef24f1",
+        "type": "section",
+        "children": 1,
+        "display": "flex",
+        "backgroundColor": "#0f172a",
+        "backgroundImage": "linear-gradient(135deg, rgba(15,23,42,0.96), rgba(37,99,235,0.76)), url('https://assets.getbuildez.com/ai-v9/cmqnpp4my00..."
+      },
+      {
+        "id": "section_ed411e972905",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#ffffff"
+      },
+      {
+        "id": "section_90517b531e10",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#f8fafc"
+      },
+      {
+        "id": "section_965117c569ba",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#0f172a",
+        "backgroundImage": "linear-gradient(135deg, rgba(15,23,42,0.98), rgba(37,99,235,0.62)), url('https://assets.getbuildez.com/ai-v9/cmqnpp4my00..."
+      },
+      {
+        "id": "section_cc076d0e88ed",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#eef2f7"
+      },
+      {
+        "id": "section_c1c036eda11a",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#ffffff",
+        "backgroundImage": "linear-gradient(135deg, rgba(255,255,255,1), rgba(219,234,254,0.72))"
+      }
+    ]
+  },
+  "blueprint": {
+    "metadata": {
+      "version": 2,
+      "title": "Home",
+      "createdAt": "2026-06-29T11:10:20.075Z",
+      "updatedAt": "2026-06-29T11:10:20.075Z",
+      "aiGenerated": true,
+      "template": "ai-v9-native-fallback",
+      "industry": "Real Estate"
+    },
+    "theme": {
+      "id": "buildez-default",
+      "name": "BuildEZ Default",
+      "preset": "buildez-default",
+      "tokens": {
+        "colors": {
+          "background": "#f8fafc",
+          "surface": "#ffffff",
+          "surfaceAlt": "#eef2f7",
+          "textPrimary": "#0f172a",
+          "textSecondary": "#475569",
+          "primary": "#2563eb",
+          "primaryContrast": "#ffffff",
+          "accent": "#f97316",
+          "border": "#dbe3ef"
+        },
+        "typography": {
+          "headingFont": "Inter",
+          "bodyFont": "Inter",
+          "baseSize": 16,
+          "scale": {
+            "h1": 56,
+            "h2": 40,
+            "h3": 28,
+            "body": 16,
+            "small": 14
+          }
+        },
+        "spacing": {
+          "sectionY": 88,
+          "containerX": 24,
+          "contentGap": 28,
+          "cardGap": 20
+        },
+        "radius": {
+          "button": 10,
+          "card": 12,
+          "media": 14
+        },
+        "shadow": {
+          "card": "0 16px 42px rgba(15, 23, 42, 0.08)",
+          "media": "0 24px 70px rgba(15, 23, 42, 0.16)"
+        },
+        "buttons": {
+          "primary": {
+            "backgroundColor": "#2563eb",
+            "color": "#ffffff",
+            "borderRadius": 10
+          },
+          "secondary": {
+            "backgroundColor": "transparent",
+            "color": "#0f172a",
+            "borderColor": "#cbd5e1",
+            "borderRadius": 10
+          }
+        }
+      }
+    },
+    "root": "cmqnppf5t000mvcj7lguqs75s-v9-page",
+    "nodes": {
+      "cmqnppf5t000mvcj7lguqs75s-v9-page": {
+        "id": "cmqnppf5t000mvcj7lguqs75s-v9-page",
+        "type": "page",
+        "parentId": null,
+        "children": [
+          "section_8feba3ef24f1",
+          "section_ed411e972905",
+          "section_90517b531e10",
+          "section_965117c569ba",
+          "section_cc076d0e88ed",
+          "section_c1c036eda11a"
+        ],
+        "props": {},
+        "style": {
+          "minHeight": "100vh",
+          "backgroundColor": "#f8fafc",
+          "color": "#0f172a",
+          "fontFamily": "Inter, system-ui, sans-serif"
+        }
+      },
+      "section_8feba3ef24f1": {
+        "id": "section_8feba3ef24f1",
+        "type": "section",
+        "name": "Hero",
+        "parentId": "cmqnppf5t000mvcj7lguqs75s-v9-page",
+        "children": [
+          "container_64921bfacac4"
+        ],
+        "props": {
+          "backgroundPrompt": "name, Real Estate, architectural photography, premium interiors, golden hour exterior, spacious modern property, website hero image, brand atmosphere, no text, no watermark"
+        },
+        "style": {
+          "width": "100%",
+          "paddingTop": {
+            "desktop": 96,
+            "tablet": 72,
+            "mobile": 56
+          },
+          "paddingBottom": {
+            "desktop": 96,
+            "tablet": 72,
+            "mobile": 56
+          },
+          "paddingLeft": {
+            "desktop": 32,
+            "mobile": 18
+          },
+          "paddingRight": {
+            "desktop": 32,
+            "mobile": 18
+          },
+          "minHeight": {
+            "desktop": 640,
+            "mobile": 560
+          },
+          "backgroundColor": "#0f172a",
+          "color": "#ffffff",
+          "backgroundImage": "linear-gradient(135deg, rgba(15,23,42,0.96), rgba(37,99,235,0.76)), url('https://assets.getbuildez.com/ai-v9/cmqnpp4my000kvcj7w8mira4q/1782731421829-78f5ab59-bf6b-4498-9f0e-f9d56c92a72c.jpg')",
+          "backgroundSize": "cover",
+          "backgroundPosition": "center",
+          "display": "flex",
+          "alignItems": "center",
+          "backgroundRepeat": "no-repeat"
+        }
+      },
+      "container_64921bfacac4": {
+        "id": "container_64921bfacac4",
+        "type": "container",
+        "parentId": "section_8feba3ef24f1",
+        "children": [
+          "text_1207f2b9d6e1",
+          "heading_02a2f78eaa93",
+          "text_e303bce59567",
+          "button_9b0297a11994",
+          "container_37ac5d6e8db5"
+        ],
+        "props": {
+          "layout": "flex",
+          "direction": "column",
+          "widthMode": "boxed",
+          "maxWidth": 1180
+        },
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 24,
+          "width": "100%",
+          "maxWidth": 960,
+          "marginLeft": 0,
+          "marginRight": "auto"
+        }
+      },
+      "text_1207f2b9d6e1": {
+        "id": "text_1207f2b9d6e1",
+        "type": "text",
+        "parentId": "container_64921bfacac4",
+        "children": [],
+        "props": {
+          "text": "Real Estate / name"
+        },
+        "style": {
+          "color": "#f97316",
+          "fontSize": 13,
+          "fontWeight": 800,
+          "letterSpacing": 0,
+          "textTransform": "uppercase"
+        }
+      },
+      "heading_02a2f78eaa93": {
+        "id": "heading_02a2f78eaa93",
+        "type": "heading",
+        "parentId": "container_64921bfacac4",
+        "children": [],
+        "props": {
+          "level": "h1",
+          "text": "A sharper online experience for name"
+        },
+        "style": {
+          "color": "#ffffff",
+          "fontSize": {
+            "desktop": 64,
+            "tablet": 52,
+            "mobile": 40
+          },
+          "fontWeight": 900,
+          "lineHeight": 1.02,
+          "maxWidth": 900
+        }
+      },
+      "text_e303bce59567": {
+        "id": "text_e303bce59567",
+        "type": "text",
+        "parentId": "container_64921bfacac4",
+        "children": [],
+        "props": {
+          "text": "Built around a credible company website, this page gives buyers comparing properties and booking site visits a fast way to understand value, trust the brand, and take the next step."
+        },
+        "style": {
+          "color": "rgba(255,255,255,0.82)",
+          "fontSize": {
+            "desktop": 20,
+            "mobile": 17
+          },
+          "lineHeight": 1.7,
+          "maxWidth": 720
+        }
+      },
+      "button_9b0297a11994": {
+        "id": "button_9b0297a11994",
+        "type": "button",
+        "parentId": "container_64921bfacac4",
+        "children": [],
+        "props": {
+          "label": "Plan the next step",
+          "href": "#contact"
+        },
+        "style": {
+          "width": "fit-content",
+          "backgroundColor": "#f97316",
+          "color": "#ffffff",
+          "paddingTop": 15,
+          "paddingBottom": 15,
+          "paddingLeft": 24,
+          "paddingRight": 24,
+          "borderRadius": 999,
+          "fontWeight": 800,
+          "boxShadow": "0 18px 38px rgba(249,115,22,0.28)"
+        }
+      },
+      "container_37ac5d6e8db5": {
+        "id": "container_37ac5d6e8db5",
+        "type": "container",
+        "parentId": "container_64921bfacac4",
+        "children": [
+          "column_ce80da9db4a5",
+          "column_21a1d4240bd7",
+          "column_07aba8227b8f"
+        ],
+        "props": {
+          "layout": "grid",
+          "columns": 3,
+          "widthMode": "boxed",
+          "maxWidth": 760
+        },
+        "style": {
+          "display": "grid",
+          "gridTemplateColumns": {
+            "desktop": "repeat(3, minmax(0, 1fr))",
+            "tablet": "repeat(3, minmax(0, 1fr))",
+            "mobile": "1fr"
+          },
+          "gap": 14,
+          "width": "100%",
+          "marginTop": 20
+        }
+      },
+      "column_ce80da9db4a5": {
+        "id": "column_ce80da9db4a5",
+        "type": "column",
+        "parentId": "container_37ac5d6e8db5",
+        "children": [
+          "heading_a445aa6a2355",
+          "text_04782826509f"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 4,
+          "border": "1px solid rgba(255,255,255,0.16)",
+          "borderRadius": 18,
+          "padding": 18,
+          "backgroundColor": "rgba(255,255,255,0.08)",
+          "boxShadow": "0 18px 40px rgba(0,0,0,0.18)"
+        }
+      },
+      "heading_a445aa6a2355": {
+        "id": "heading_a445aa6a2355",
+        "type": "heading",
+        "parentId": "column_ce80da9db4a5",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "01"
+        },
+        "style": {
+          "color": "#ffffff",
+          "fontSize": 28,
+          "fontWeight": 900,
+          "lineHeight": 1
+        }
+      },
+      "text_04782826509f": {
+        "id": "text_04782826509f",
+        "type": "text",
+        "parentId": "column_ce80da9db4a5",
+        "children": [],
+        "props": {
+          "text": "Clear first impression"
+        },
+        "style": {
+          "color": "rgba(255,255,255,0.72)",
+          "fontSize": 13,
+          "lineHeight": 1.45
+        }
+      },
+      "column_21a1d4240bd7": {
+        "id": "column_21a1d4240bd7",
+        "type": "column",
+        "parentId": "container_37ac5d6e8db5",
+        "children": [
+          "heading_f50608fe48b9",
+          "text_a5ac968ac849"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 4,
+          "border": "1px solid rgba(255,255,255,0.16)",
+          "borderRadius": 18,
+          "padding": 18,
+          "backgroundColor": "rgba(255,255,255,0.08)",
+          "boxShadow": "0 18px 40px rgba(0,0,0,0.18)"
+        }
+      },
+      "heading_f50608fe48b9": {
+        "id": "heading_f50608fe48b9",
+        "type": "heading",
+        "parentId": "column_21a1d4240bd7",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "03"
+        },
+        "style": {
+          "color": "#ffffff",
+          "fontSize": 28,
+          "fontWeight": 900,
+          "lineHeight": 1
+        }
+      },
+      "text_a5ac968ac849": {
+        "id": "text_a5ac968ac849",
+        "type": "text",
+        "parentId": "column_21a1d4240bd7",
+        "children": [],
+        "props": {
+          "text": "Proof-led decision points"
+        },
+        "style": {
+          "color": "rgba(255,255,255,0.72)",
+          "fontSize": 13,
+          "lineHeight": 1.45
+        }
+      },
+      "column_07aba8227b8f": {
+        "id": "column_07aba8227b8f",
+        "type": "column",
+        "parentId": "container_37ac5d6e8db5",
+        "children": [
+          "heading_1c83cbb59f20",
+          "text_034e0aa7d87f"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 4,
+          "border": "1px solid rgba(255,255,255,0.16)",
+          "borderRadius": 18,
+          "padding": 18,
+          "backgroundColor": "rgba(255,255,255,0.08)",
+          "boxShadow": "0 18px 40px rgba(0,0,0,0.18)"
+        }
+      },
+      "heading_1c83cbb59f20": {
+        "id": "heading_1c83cbb59f20",
+        "type": "heading",
+        "parentId": "column_07aba8227b8f",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Now"
+        },
+        "style": {
+          "color": "#ffffff",
+          "fontSize": 28,
+          "fontWeight": 900,
+          "lineHeight": 1
+        }
+      },
+      "text_034e0aa7d87f": {
+        "id": "text_034e0aa7d87f",
+        "type": "text",
+        "parentId": "column_07aba8227b8f",
+        "children": [],
+        "props": {
+          "text": "Direct action path"
+        },
+        "style": {
+          "color": "rgba(255,255,255,0.72)",
+          "fontSize": 13,
+          "lineHeight": 1.45
+        }
+      },
+      "section_ed411e972905": {
+        "id": "section_ed411e972905",
+        "type": "section",
+        "name": "Proof Strip",
+        "parentId": "cmqnppf5t000mvcj7lguqs75s-v9-page",
+        "children": [
+          "container_3ec7cc1e19e6"
+        ],
+        "props": {},
+        "style": {
+          "width": "100%",
+          "paddingTop": {
+            "desktop": 34,
+            "mobile": 28
+          },
+          "paddingBottom": {
+            "desktop": 34,
+            "mobile": 28
+          },
+          "paddingLeft": {
+            "desktop": 32,
+            "mobile": 18
+          },
+          "paddingRight": {
+            "desktop": 32,
+            "mobile": 18
+          },
+          "backgroundColor": "#ffffff",
+          "borderBottom": "1px solid #dbe3ef"
+        }
+      },
+      "container_3ec7cc1e19e6": {
+        "id": "container_3ec7cc1e19e6",
+        "type": "container",
+        "parentId": "section_ed411e972905",
+        "children": [
+          "column_feda6ba1147d",
+          "column_040bd89fd12c",
+          "column_44dfddc2bb19",
+          "column_eb4fa5b50f91"
+        ],
+        "props": {
+          "layout": "flex",
+          "direction": "column",
+          "widthMode": "boxed",
+          "maxWidth": 1180
+        },
+        "style": {
+          "display": "grid",
+          "flexDirection": "column",
+          "gap": 18,
+          "width": "100%",
+          "maxWidth": 1180,
+          "marginLeft": "auto",
+          "marginRight": "auto",
+          "gridTemplateColumns": {
+            "desktop": "1.1fr repeat(3, minmax(0, 1fr))",
+            "tablet": "repeat(2, minmax(0, 1fr))",
+            "mobile": "1fr"
+          },
+          "alignItems": "center"
+        }
+      },
+      "column_feda6ba1147d": {
+        "id": "column_feda6ba1147d",
+        "type": "column",
+        "parentId": "container_3ec7cc1e19e6",
+        "children": [
+          "heading_8e2aa56e5c5e",
+          "text_15a1b97505bc"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 4,
+          "padding": 12
+        }
+      },
+      "heading_8e2aa56e5c5e": {
+        "id": "heading_8e2aa56e5c5e",
+        "type": "heading",
+        "parentId": "column_feda6ba1147d",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Brand context"
+        },
+        "style": {
+          "fontSize": 18,
+          "fontWeight": 850,
+          "lineHeight": 1.15
+        }
+      },
+      "text_15a1b97505bc": {
+        "id": "text_15a1b97505bc",
+        "type": "text",
+        "parentId": "column_feda6ba1147d",
+        "children": [],
+        "props": {
+          "text": "name is positioned for buyers comparing properties and booking site visits."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 14,
+          "lineHeight": 1.55
+        }
+      },
+      "column_040bd89fd12c": {
+        "id": "column_040bd89fd12c",
+        "type": "column",
+        "parentId": "container_3ec7cc1e19e6",
+        "children": [
+          "heading_93c5ca60e57c",
+          "text_a44c05b1291a"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 4,
+          "padding": 12
+        }
+      },
+      "heading_93c5ca60e57c": {
+        "id": "heading_93c5ca60e57c",
+        "type": "heading",
+        "parentId": "column_040bd89fd12c",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Offer clarity"
+        },
+        "style": {
+          "fontSize": 18,
+          "fontWeight": 850,
+          "lineHeight": 1.15
+        }
+      },
+      "text_a44c05b1291a": {
+        "id": "text_a44c05b1291a",
+        "type": "text",
+        "parentId": "column_040bd89fd12c",
+        "children": [],
+        "props": {
+          "text": "The page keeps a credible company website visible throughout the journey."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 14,
+          "lineHeight": 1.55
+        }
+      },
+      "column_44dfddc2bb19": {
+        "id": "column_44dfddc2bb19",
+        "type": "column",
+        "parentId": "container_3ec7cc1e19e6",
+        "children": [
+          "heading_0387cb379246",
+          "text_797fced9a94c"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 4,
+          "padding": 12
+        }
+      },
+      "heading_0387cb379246": {
+        "id": "heading_0387cb379246",
+        "type": "heading",
+        "parentId": "column_44dfddc2bb19",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Trust signals"
+        },
+        "style": {
+          "fontSize": 18,
+          "fontWeight": 850,
+          "lineHeight": 1.15
+        }
+      },
+      "text_797fced9a94c": {
+        "id": "text_797fced9a94c",
+        "type": "text",
+        "parentId": "column_44dfddc2bb19",
+        "children": [],
+        "props": {
+          "text": "Proof, process, and next steps are introduced before the final CTA."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 14,
+          "lineHeight": 1.55
+        }
+      },
+      "column_eb4fa5b50f91": {
+        "id": "column_eb4fa5b50f91",
+        "type": "column",
+        "parentId": "container_3ec7cc1e19e6",
+        "children": [
+          "heading_6a87b9b5582a",
+          "text_d53b5fd13094"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 4,
+          "padding": 12
+        }
+      },
+      "heading_6a87b9b5582a": {
+        "id": "heading_6a87b9b5582a",
+        "type": "heading",
+        "parentId": "column_eb4fa5b50f91",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Publish aligned"
+        },
+        "style": {
+          "fontSize": 18,
+          "fontWeight": 850,
+          "lineHeight": 1.15
+        }
+      },
+      "text_d53b5fd13094": {
+        "id": "text_d53b5fd13094",
+        "type": "text",
+        "parentId": "column_eb4fa5b50f91",
+        "children": [],
+        "props": {
+          "text": "The same native blueprint powers builder and live page."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 14,
+          "lineHeight": 1.55
+        }
+      },
+      "section_90517b531e10": {
+        "id": "section_90517b531e10",
+        "type": "section",
+        "name": "Services",
+        "parentId": "cmqnppf5t000mvcj7lguqs75s-v9-page",
+        "children": [
+          "container_b204106c6f8b"
+        ],
+        "props": {},
+        "style": {
+          "width": "100%",
+          "paddingTop": {
+            "desktop": 96,
+            "tablet": 72,
+            "mobile": 56
+          },
+          "paddingBottom": {
+            "desktop": 96,
+            "tablet": 72,
+            "mobile": 56
+          },
+          "paddingLeft": {
+            "desktop": 32,
+            "mobile": 18
+          },
+          "paddingRight": {
+            "desktop": 32,
+            "mobile": 18
+          },
+          "backgroundColor": "#f8fafc"
+        }
+      },
+      "container_b204106c6f8b": {
+        "id": "container_b204106c6f8b",
+        "type": "container",
+        "parentId": "section_90517b531e10",
+        "children": [
+          "heading_19a4fb753e42",
+          "container_8d692a55da15"
+        ],
+        "props": {
+          "layout": "flex",
+          "direction": "column",
+          "widthMode": "boxed",
+          "maxWidth": 1180
+        },
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 24,
+          "width": "100%",
+          "maxWidth": 1180,
+          "marginLeft": "auto",
+          "marginRight": "auto"
+        }
+      },
+      "heading_19a4fb753e42": {
+        "id": "heading_19a4fb753e42",
+        "type": "heading",
+        "parentId": "container_b204106c6f8b",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "A modern Real Estate site structure shaped around what visitors need to decide"
+        },
+        "style": {
+          "fontSize": {
+            "desktop": 42,
+            "mobile": 32
+          },
+          "fontWeight": 850,
+          "lineHeight": 1.1,
+          "textAlign": "center"
+        }
+      },
+      "container_8d692a55da15": {
+        "id": "container_8d692a55da15",
+        "type": "container",
+        "parentId": "container_b204106c6f8b",
+        "children": [
+          "column_09a7da2dda8a",
+          "column_a5d1a97e8260",
+          "column_73ad3d01570e"
+        ],
+        "props": {
+          "layout": "grid",
+          "columns": 3,
+          "widthMode": "boxed",
+          "maxWidth": 1180
+        },
+        "style": {
+          "display": "grid",
+          "gridTemplateColumns": {
+            "desktop": "repeat(3, minmax(0, 1fr))",
+            "tablet": "repeat(2, minmax(0, 1fr))",
+            "mobile": "1fr"
+          },
+          "gap": 22,
+          "width": "100%"
+        }
+      },
+      "column_09a7da2dda8a": {
+        "id": "column_09a7da2dda8a",
+        "type": "column",
+        "parentId": "container_8d692a55da15",
+        "children": [
+          "heading_5bd6c40a405e",
+          "text_a21326e57891"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 12,
+          "backgroundColor": "#ffffff",
+          "border": "1px solid #dbe3ef",
+          "borderRadius": 18,
+          "padding": 28,
+          "boxShadow": "0 18px 44px rgba(15,23,42,0.08)"
+        }
+      },
+      "heading_5bd6c40a405e": {
+        "id": "heading_5bd6c40a405e",
+        "type": "heading",
+        "parentId": "column_09a7da2dda8a",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Positioning that lands"
+        },
+        "style": {
+          "fontSize": 24,
+          "fontWeight": 800,
+          "lineHeight": 1.2
+        }
+      },
+      "text_a21326e57891": {
+        "id": "text_a21326e57891",
+        "type": "text",
+        "parentId": "column_09a7da2dda8a",
+        "children": [],
+        "props": {
+          "text": "name gets a direct promise, clear audience fit, and a confident first screen."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 16,
+          "lineHeight": 1.65
+        }
+      },
+      "column_a5d1a97e8260": {
+        "id": "column_a5d1a97e8260",
+        "type": "column",
+        "parentId": "container_8d692a55da15",
+        "children": [
+          "heading_0ff96d412df2",
+          "text_e5ad49aa2724"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 12,
+          "backgroundColor": "#ffffff",
+          "border": "1px solid #dbe3ef",
+          "borderRadius": 18,
+          "padding": 28,
+          "boxShadow": "0 18px 44px rgba(15,23,42,0.08)"
+        }
+      },
+      "heading_0ff96d412df2": {
+        "id": "heading_0ff96d412df2",
+        "type": "heading",
+        "parentId": "column_a5d1a97e8260",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Services with depth"
+        },
+        "style": {
+          "fontSize": 24,
+          "fontWeight": 800,
+          "lineHeight": 1.2
+        }
+      },
+      "text_e5ad49aa2724": {
+        "id": "text_e5ad49aa2724",
+        "type": "text",
+        "parentId": "column_a5d1a97e8260",
+        "children": [],
+        "props": {
+          "text": "Benefits are written around a credible company website, not generic service-card filler."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 16,
+          "lineHeight": 1.65
+        }
+      },
+      "column_73ad3d01570e": {
+        "id": "column_73ad3d01570e",
+        "type": "column",
+        "parentId": "container_8d692a55da15",
+        "children": [
+          "heading_a37db463cfe6",
+          "text_96ef0fa5e35e"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 12,
+          "backgroundColor": "#ffffff",
+          "border": "1px solid #dbe3ef",
+          "borderRadius": 18,
+          "padding": 28,
+          "boxShadow": "0 18px 44px rgba(15,23,42,0.08)"
+        }
+      },
+      "heading_a37db463cfe6": {
+        "id": "heading_a37db463cfe6",
+        "type": "heading",
+        "parentId": "column_73ad3d01570e",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Next step clarity"
+        },
+        "style": {
+          "fontSize": 24,
+          "fontWeight": 800,
+          "lineHeight": 1.2
+        }
+      },
+      "text_96ef0fa5e35e": {
+        "id": "text_96ef0fa5e35e",
+        "type": "text",
+        "parentId": "column_73ad3d01570e",
+        "children": [],
+        "props": {
+          "text": "CTA placement follows visitor intent from hero proof to final enquiry."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 16,
+          "lineHeight": 1.65
+        }
+      },
+      "section_965117c569ba": {
+        "id": "section_965117c569ba",
+        "type": "section",
+        "name": "Process",
+        "parentId": "cmqnppf5t000mvcj7lguqs75s-v9-page",
+        "children": [
+          "container_d6a58a8a24ee"
+        ],
+        "props": {
+          "backgroundPrompt": "name, Real Estate, a credible company website, professional team and customer experience, premium editorial photography, no text, no watermark"
+        },
+        "style": {
+          "width": "100%",
+          "paddingTop": {
+            "desktop": 96,
+            "tablet": 72,
+            "mobile": 56
+          },
+          "paddingBottom": {
+            "desktop": 96,
+            "tablet": 72,
+            "mobile": 56
+          },
+          "paddingLeft": {
+            "desktop": 32,
+            "mobile": 18
+          },
+          "paddingRight": {
+            "desktop": 32,
+            "mobile": 18
+          },
+          "backgroundColor": "#0f172a",
+          "color": "#ffffff",
+          "backgroundImage": "linear-gradient(135deg, rgba(15,23,42,0.98), rgba(37,99,235,0.62)), url('https://assets.getbuildez.com/ai-v9/cmqnpp4my000kvcj7w8mira4q/1782731423991-dd4a2058-4022-42d5-96a8-d5ee98d677ba.jpg')",
+          "backgroundSize": "cover",
+          "backgroundPosition": "center",
+          "backgroundRepeat": "no-repeat"
+        }
+      },
+      "container_d6a58a8a24ee": {
+        "id": "container_d6a58a8a24ee",
+        "type": "container",
+        "parentId": "section_965117c569ba",
+        "children": [
+          "column_169d5958c54f",
+          "container_e26b0d96584a"
+        ],
+        "props": {
+          "layout": "flex",
+          "direction": "column",
+          "widthMode": "boxed",
+          "maxWidth": 1180
+        },
+        "style": {
+          "display": "grid",
+          "flexDirection": "column",
+          "gap": {
+            "desktop": 46,
+            "mobile": 26
+          },
+          "width": "100%",
+          "maxWidth": 1180,
+          "marginLeft": "auto",
+          "marginRight": "auto",
+          "gridTemplateColumns": {
+            "desktop": "minmax(0, 0.9fr) minmax(0, 1.1fr)",
+            "tablet": "1fr",
+            "mobile": "1fr"
+          },
+          "alignItems": "center"
+        }
+      },
+      "column_169d5958c54f": {
+        "id": "column_169d5958c54f",
+        "type": "column",
+        "parentId": "container_d6a58a8a24ee",
+        "children": [
+          "text_2a6529f30d60",
+          "heading_86fd960f70e4",
+          "text_e04d886671f5"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 18
+        }
+      },
+      "text_2a6529f30d60": {
+        "id": "text_2a6529f30d60",
+        "type": "text",
+        "parentId": "column_169d5958c54f",
+        "children": [],
+        "props": {
+          "text": "HOW THE PAGE WORKS"
+        },
+        "style": {
+          "color": "#f97316",
+          "fontSize": 13,
+          "fontWeight": 850,
+          "letterSpacing": 0,
+          "textTransform": "uppercase"
+        }
+      },
+      "heading_86fd960f70e4": {
+        "id": "heading_86fd960f70e4",
+        "type": "heading",
+        "parentId": "column_169d5958c54f",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Guide buyers comparing properties and booking site visits from confidence to contact without losing momentum"
+        },
+        "style": {
+          "color": "#ffffff",
+          "fontSize": {
+            "desktop": 44,
+            "mobile": 32
+          },
+          "fontWeight": 900,
+          "lineHeight": 1.08
+        }
+      },
+      "text_e04d886671f5": {
+        "id": "text_e04d886671f5",
+        "type": "text",
+        "parentId": "column_169d5958c54f",
+        "children": [],
+        "props": {
+          "text": "The layout pairs concise copy with visible proof and a repeated action path, so name feels intentional instead of assembled from generic blocks."
+        },
+        "style": {
+          "color": "rgba(255,255,255,0.76)",
+          "fontSize": 17,
+          "lineHeight": 1.75
+        }
+      },
+      "container_e26b0d96584a": {
+        "id": "container_e26b0d96584a",
+        "type": "container",
+        "parentId": "container_d6a58a8a24ee",
+        "children": [
+          "column_45978b0f755f",
+          "column_11016d357b77",
+          "column_151076a8b920"
+        ],
+        "props": {
+          "layout": "grid",
+          "columns": 1
+        },
+        "style": {
+          "display": "grid",
+          "gridTemplateColumns": "1fr",
+          "gap": 16
+        }
+      },
+      "column_45978b0f755f": {
+        "id": "column_45978b0f755f",
+        "type": "column",
+        "parentId": "container_e26b0d96584a",
+        "children": [
+          "heading_328538d28f57",
+          "column_08933ab63cfb"
+        ],
+        "props": {},
+        "style": {
+          "display": "grid",
+          "gridTemplateColumns": "58px minmax(0, 1fr)",
+          "gap": 16,
+          "alignItems": "start",
+          "border": "1px solid rgba(255,255,255,0.14)",
+          "borderRadius": 20,
+          "backgroundColor": "rgba(255,255,255,0.08)",
+          "padding": 22,
+          "boxShadow": "0 18px 48px rgba(0,0,0,0.22)"
+        }
+      },
+      "heading_328538d28f57": {
+        "id": "heading_328538d28f57",
+        "type": "heading",
+        "parentId": "column_45978b0f755f",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "01"
+        },
+        "style": {
+          "color": "#f97316",
+          "fontSize": 22,
+          "fontWeight": 900,
+          "lineHeight": 1
+        }
+      },
+      "column_08933ab63cfb": {
+        "id": "column_08933ab63cfb",
+        "type": "column",
+        "parentId": "column_45978b0f755f",
+        "children": [
+          "heading_fff66f92670f",
+          "text_76becc3c4ae5"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 7
+        }
+      },
+      "heading_fff66f92670f": {
+        "id": "heading_fff66f92670f",
+        "type": "heading",
+        "parentId": "column_08933ab63cfb",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Establish trust"
+        },
+        "style": {
+          "color": "#ffffff",
+          "fontSize": 21,
+          "fontWeight": 850,
+          "lineHeight": 1.2
+        }
+      },
+      "text_76becc3c4ae5": {
+        "id": "text_76becc3c4ae5",
+        "type": "text",
+        "parentId": "column_08933ab63cfb",
+        "children": [],
+        "props": {
+          "text": "Open with a confident Real Estate promise and visual atmosphere."
+        },
+        "style": {
+          "color": "rgba(255,255,255,0.7)",
+          "fontSize": 15,
+          "lineHeight": 1.6
+        }
+      },
+      "column_11016d357b77": {
+        "id": "column_11016d357b77",
+        "type": "column",
+        "parentId": "container_e26b0d96584a",
+        "children": [
+          "heading_18e1de6330b4",
+          "column_e3e36ffc329c"
+        ],
+        "props": {},
+        "style": {
+          "display": "grid",
+          "gridTemplateColumns": "58px minmax(0, 1fr)",
+          "gap": 16,
+          "alignItems": "start",
+          "border": "1px solid rgba(255,255,255,0.14)",
+          "borderRadius": 20,
+          "backgroundColor": "rgba(255,255,255,0.08)",
+          "padding": 22,
+          "boxShadow": "0 18px 48px rgba(0,0,0,0.22)"
+        }
+      },
+      "heading_18e1de6330b4": {
+        "id": "heading_18e1de6330b4",
+        "type": "heading",
+        "parentId": "column_11016d357b77",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "02"
+        },
+        "style": {
+          "color": "#f97316",
+          "fontSize": 22,
+          "fontWeight": 900,
+          "lineHeight": 1
+        }
+      },
+      "column_e3e36ffc329c": {
+        "id": "column_e3e36ffc329c",
+        "type": "column",
+        "parentId": "column_11016d357b77",
+        "children": [
+          "heading_675ba1feece7",
+          "text_c69cc1c41e0b"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 7
+        }
+      },
+      "heading_675ba1feece7": {
+        "id": "heading_675ba1feece7",
+        "type": "heading",
+        "parentId": "column_e3e36ffc329c",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Explain the value"
+        },
+        "style": {
+          "color": "#ffffff",
+          "fontSize": 21,
+          "fontWeight": 850,
+          "lineHeight": 1.2
+        }
+      },
+      "text_c69cc1c41e0b": {
+        "id": "text_c69cc1c41e0b",
+        "type": "text",
+        "parentId": "column_e3e36ffc329c",
+        "children": [],
+        "props": {
+          "text": "Break a credible company website into scannable benefits with real hierarchy."
+        },
+        "style": {
+          "color": "rgba(255,255,255,0.7)",
+          "fontSize": 15,
+          "lineHeight": 1.6
+        }
+      },
+      "column_151076a8b920": {
+        "id": "column_151076a8b920",
+        "type": "column",
+        "parentId": "container_e26b0d96584a",
+        "children": [
+          "heading_e06e284dd9df",
+          "column_42701b5bd878"
+        ],
+        "props": {},
+        "style": {
+          "display": "grid",
+          "gridTemplateColumns": "58px minmax(0, 1fr)",
+          "gap": 16,
+          "alignItems": "start",
+          "border": "1px solid rgba(255,255,255,0.14)",
+          "borderRadius": 20,
+          "backgroundColor": "rgba(255,255,255,0.08)",
+          "padding": 22,
+          "boxShadow": "0 18px 48px rgba(0,0,0,0.22)"
+        }
+      },
+      "heading_e06e284dd9df": {
+        "id": "heading_e06e284dd9df",
+        "type": "heading",
+        "parentId": "column_151076a8b920",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "03"
+        },
+        "style": {
+          "color": "#f97316",
+          "fontSize": 22,
+          "fontWeight": 900,
+          "lineHeight": 1
+        }
+      },
+      "column_42701b5bd878": {
+        "id": "column_42701b5bd878",
+        "type": "column",
+        "parentId": "column_151076a8b920",
+        "children": [
+          "heading_dc38670e8eec",
+          "text_c87dc951377d"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 7
+        }
+      },
+      "heading_dc38670e8eec": {
+        "id": "heading_dc38670e8eec",
+        "type": "heading",
+        "parentId": "column_42701b5bd878",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Ask clearly"
+        },
+        "style": {
+          "color": "#ffffff",
+          "fontSize": 21,
+          "fontWeight": 850,
+          "lineHeight": 1.2
+        }
+      },
+      "text_c87dc951377d": {
+        "id": "text_c87dc951377d",
+        "type": "text",
+        "parentId": "column_42701b5bd878",
+        "children": [],
+        "props": {
+          "text": "Give visitors a direct route to enquire, book, or call."
+        },
+        "style": {
+          "color": "rgba(255,255,255,0.7)",
+          "fontSize": 15,
+          "lineHeight": 1.6
+        }
+      },
+      "section_cc076d0e88ed": {
+        "id": "section_cc076d0e88ed",
+        "type": "section",
+        "name": "Trust",
+        "parentId": "cmqnppf5t000mvcj7lguqs75s-v9-page",
+        "children": [
+          "container_71b06fe79886"
+        ],
+        "props": {},
+        "style": {
+          "width": "100%",
+          "paddingTop": {
+            "desktop": 96,
+            "tablet": 72,
+            "mobile": 56
+          },
+          "paddingBottom": {
+            "desktop": 96,
+            "tablet": 72,
+            "mobile": 56
+          },
+          "paddingLeft": {
+            "desktop": 32,
+            "mobile": 18
+          },
+          "paddingRight": {
+            "desktop": 32,
+            "mobile": 18
+          },
+          "backgroundColor": "#eef2f7"
+        }
+      },
+      "container_71b06fe79886": {
+        "id": "container_71b06fe79886",
+        "type": "container",
+        "parentId": "section_cc076d0e88ed",
+        "children": [
+          "column_dd57fe70b964",
+          "column_e431065ff593"
+        ],
+        "props": {
+          "layout": "flex",
+          "direction": "column",
+          "widthMode": "boxed",
+          "maxWidth": 1180
+        },
+        "style": {
+          "display": "grid",
+          "flexDirection": "column",
+          "gap": {
+            "desktop": 34,
+            "mobile": 22
+          },
+          "width": "100%",
+          "maxWidth": 1180,
+          "marginLeft": "auto",
+          "marginRight": "auto",
+          "gridTemplateColumns": {
+            "desktop": "minmax(0, 1.05fr) minmax(0, 0.95fr)",
+            "tablet": "1fr",
+            "mobile": "1fr"
+          },
+          "alignItems": "stretch"
+        }
+      },
+      "column_dd57fe70b964": {
+        "id": "column_dd57fe70b964",
+        "type": "column",
+        "parentId": "container_71b06fe79886",
+        "children": [
+          "heading_edf12ae7f9ca",
+          "text_c4208c4bbd74"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "justifyContent": "space-between",
+          "gap": 22,
+          "backgroundColor": "#ffffff",
+          "border": "1px solid #dbe3ef",
+          "borderRadius": 26,
+          "padding": {
+            "desktop": 40,
+            "mobile": 26
+          },
+          "boxShadow": "0 24px 70px rgba(15,23,42,0.1)"
+        }
+      },
+      "heading_edf12ae7f9ca": {
+        "id": "heading_edf12ae7f9ca",
+        "type": "heading",
+        "parentId": "column_dd57fe70b964",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Credibility for name should be visible before visitors ask for it"
+        },
+        "style": {
+          "fontSize": {
+            "desktop": 38,
+            "mobile": 30
+          },
+          "fontWeight": 900,
+          "lineHeight": 1.08
+        }
+      },
+      "text_c4208c4bbd74": {
+        "id": "text_c4208c4bbd74",
+        "type": "text",
+        "parentId": "column_dd57fe70b964",
+        "children": [],
+        "props": {
+          "text": "buyers comparing properties and booking site visits need to see the offer, the reason to trust it, and the next step without digging. This composition is built to make that decision easier."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 17,
+          "lineHeight": 1.75
+        }
+      },
+      "column_e431065ff593": {
+        "id": "column_e431065ff593",
+        "type": "column",
+        "parentId": "container_71b06fe79886",
+        "children": [
+          "image_33547dcbd306"
+        ],
+        "props": {},
+        "style": {
+          "minHeight": {
+            "desktop": 390,
+            "mobile": 280
+          },
+          "borderRadius": 26,
+          "overflow": "hidden",
+          "backgroundColor": "#0f172a",
+          "backgroundImage": "linear-gradient(135deg, rgba(37,99,235,0.3), rgba(249,115,22,0.42))",
+          "boxShadow": "0 24px 70px rgba(15,23,42,0.16)"
+        }
+      },
+      "image_33547dcbd306": {
+        "id": "image_33547dcbd306",
+        "type": "image",
+        "parentId": "column_e431065ff593",
+        "children": [],
+        "props": {
+          "src": "https://assets.getbuildez.com/ai-v9/cmqnpp4my000kvcj7w8mira4q/1782731425939-d49b3ed5-4bf3-4011-b776-ac216574fd30.jpg",
+          "alt": "name premium brand visual",
+          "aiImagePrompt": "name, Real Estate, architectural photography, premium interiors, golden hour exterior, spacious modern property, website hero image, brand atmosphere, no text, no watermark"
+        },
+        "style": {
+          "width": "100%",
+          "height": "100%",
+          "minHeight": {
+            "desktop": 390,
+            "mobile": 280
+          },
+          "objectFit": "cover"
+        },
+        "hidden": false
+      },
+      "section_c1c036eda11a": {
+        "id": "section_c1c036eda11a",
+        "type": "section",
+        "name": "Contact",
+        "parentId": "cmqnppf5t000mvcj7lguqs75s-v9-page",
+        "children": [
+          "container_e552a4f988b1"
+        ],
+        "props": {},
+        "style": {
+          "width": "100%",
+          "paddingTop": {
+            "desktop": 96,
+            "tablet": 72,
+            "mobile": 56
+          },
+          "paddingBottom": {
+            "desktop": 96,
+            "tablet": 72,
+            "mobile": 56
+          },
+          "paddingLeft": {
+            "desktop": 32,
+            "mobile": 18
+          },
+          "paddingRight": {
+            "desktop": 32,
+            "mobile": 18
+          },
+          "backgroundColor": "#ffffff",
+          "backgroundImage": "linear-gradient(135deg, rgba(255,255,255,1), rgba(219,234,254,0.72))"
+        }
+      },
+      "container_e552a4f988b1": {
+        "id": "container_e552a4f988b1",
+        "type": "container",
+        "parentId": "section_c1c036eda11a",
+        "children": [
+          "heading_bdbf0c3c0758",
+          "button_d7052161a63d"
+        ],
+        "props": {
+          "layout": "flex",
+          "direction": "column",
+          "widthMode": "boxed",
+          "maxWidth": 1180
+        },
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": 24,
+          "width": "100%",
+          "maxWidth": 860,
+          "marginLeft": "auto",
+          "marginRight": "auto",
+          "alignItems": "center",
+          "textAlign": "center"
+        }
+      },
+      "heading_bdbf0c3c0758": {
+        "id": "heading_bdbf0c3c0758",
+        "type": "heading",
+        "parentId": "container_e552a4f988b1",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Ready to make name feel sharper online?"
+        },
+        "style": {
+          "fontSize": {
+            "desktop": 40,
+            "mobile": 30
+          },
+          "fontWeight": 850,
+          "lineHeight": 1.12
+        }
+      },
+      "button_d7052161a63d": {
+        "id": "button_d7052161a63d",
+        "type": "button",
+        "parentId": "container_e552a4f988b1",
+        "children": [],
+        "props": {
+          "label": "Start the conversation",
+          "href": "#contact"
+        },
+        "style": {
+          "width": "fit-content",
+          "backgroundColor": "#2563eb",
+          "color": "#ffffff",
+          "paddingTop": 14,
+          "paddingBottom": 14,
+          "paddingLeft": 24,
+          "paddingRight": 24,
+          "borderRadius": 12,
+          "fontWeight": 800
+        }
+      }
+    }
+  }
+}

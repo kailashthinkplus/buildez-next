@@ -62,6 +62,8 @@ interface AiStore {
 
   status: AiStatus;
 
+  errorMessage: string | null;
+
   elapsed: number;
 
   /* ----------------------------------------
@@ -96,6 +98,8 @@ interface AiStore {
 
   setStatus(status: AiStatus): void;
 
+  setErrorMessage(message: string | null): void;
+
   setElapsed(seconds: number): void;
 
   setTone(tone: string | null): void;
@@ -128,6 +132,8 @@ export const useAiStore = create<AiStore>((set) => ({
   conversationId: null,
 
   status: "idle",
+
+  errorMessage: null,
 
   elapsed: 0,
 
@@ -176,7 +182,14 @@ export const useAiStore = create<AiStore>((set) => ({
   ---------------------------------------- */
 
   setStatus(status) {
-    set({ status });
+    set((state) => ({
+      status,
+      errorMessage: status === "error" ? state.errorMessage : null,
+    }));
+  },
+
+  setErrorMessage(errorMessage) {
+    set({ errorMessage });
   },
 
   setElapsed(elapsed) {
@@ -229,6 +242,8 @@ export const useAiStore = create<AiStore>((set) => ({
       conversationId: null,
 
       status: "idle",
+
+      errorMessage: null,
 
       elapsed: 0,
 

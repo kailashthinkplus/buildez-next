@@ -84,9 +84,9 @@ export default function DropZoneIndicator() {
             ...(isVertical
               ? { top: 0, bottom: 0, left: "50%", width: 3, transform: "translateX(-50%)" }
               : { left: 0, right: 0, top: "50%", height: 3, transform: "translateY(-50%)" }),
-            background: "#2563eb",
+            background: "linear-gradient(90deg, #38bdf8, #2563eb)",
             borderRadius: 2,
-            boxShadow: "0 0 8px rgba(37,99,235,0.4)",
+            boxShadow: "0 0 0 4px rgba(37,99,235,0.14), 0 0 18px rgba(56,189,248,0.45)",
           }}
         />
       </div>,
@@ -106,14 +106,15 @@ export default function DropZoneIndicator() {
           top: top + 3,
           width: width - 6,
           height: height - 6,
-          border: "2px dashed #2563eb",
-          borderRadius: 6,
-          background: "rgba(37,99,235,0.06)",
+          border: "2px dashed rgba(56,189,248,0.9)",
+          borderRadius: 10,
+          background: "linear-gradient(135deg, rgba(37,99,235,0.10), rgba(14,165,233,0.08))",
+          boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.20)",
         }}
       >
         <span
           style={{
-            color: "#2563eb",
+            color: "#0ea5e9",
             fontSize: 12,
             fontWeight: 600,
             letterSpacing: "0.03em",
@@ -137,9 +138,9 @@ export default function DropZoneIndicator() {
         top,
         width,
         height,
-        border: "2px solid rgba(37,99,235,0.55)",
-        borderRadius: 4,
-        boxShadow: "0 0 0 3px rgba(37,99,235,0.12), inset 0 0 0 1px rgba(37,99,235,0.08)",
+        border: "2px solid rgba(56,189,248,0.72)",
+        borderRadius: 8,
+        boxShadow: "0 0 0 4px rgba(37,99,235,0.14), inset 0 0 0 1px rgba(255,255,255,0.18)",
       }}
     />,
     document.body

@@ -197,15 +197,16 @@ export function generateRuntimeCSS(page?: RuntimeNode): string {
   /* Layout */
   min-height: 100vh;
   width: 100%;
+  isolation: isolate;
+  contain: layout style paint;
 }
 
 /* ============================================================
-   HARD RESET FOR INTERACTIVE ELEMENTS
+   INTERACTIVE ELEMENT BASELINE
 ============================================================ */
 
 #buildez-preview-root a,
 #buildez-preview-root button {
-  all: unset;
   box-sizing: border-box;
   font-family: inherit;
   font-size: inherit;
@@ -219,8 +220,7 @@ export function generateRuntimeCSS(page?: RuntimeNode): string {
 }
 
 #buildez-preview-root button {
-  background: none;
-  border: none;
+  font: inherit;
 }
 
 /* ============================================================

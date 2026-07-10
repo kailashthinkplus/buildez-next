@@ -10,6 +10,7 @@ export type PagesQuery = {
   search?: string;
   page?: number;
   limit?: number;
+  trash?: boolean;
 };
 
 /* ============================================================
@@ -20,11 +21,13 @@ export function getPagesKey({
   search = "",
   page = 1,
   limit = 10,
+  trash = false,
 }: PagesQuery) {
   const params = new URLSearchParams();
 
   if (siteSlug) params.set("siteSlug", siteSlug);
   if (search) params.set("search", search);
+  if (trash) params.set("trash", "true");
 
   params.set("skip", String((page - 1) * limit));
   params.set("take", String(limit));
@@ -36,6 +39,7 @@ export function getPagesKey({
     search,
     page,
     limit,
+    trash,
     key,
   });
 
@@ -60,10 +64,12 @@ const fetcher = async (url: string) => {
 
   if (!res.ok) {
     const text = await res.text();
+
     console.error("❌ [usePages] FETCH ERROR:", {
       url,
       response: text,
     });
+
     throw new Error(text || "Failed to fetch pages");
   }
 
@@ -85,9 +91,11 @@ const fetcher = async (url: string) => {
     }
   */
 
-  return json?.data?.data ?? { pages: [], total: 0 };
+  return json?.data?.data ?? {
+    pages: [],
+    total: 0,
+  };
 };
-
 
 /* ============================================================
    HOOK
@@ -97,15 +105,23 @@ export function usePages({
   search = "",
   page = 1,
   limit = 10,
+  trash = false,
 }: PagesQuery) {
   console.log("🧩 [usePages] INIT →", {
     siteSlug,
     search,
     page,
     limit,
+    trash,
   });
 
-  const key = getPagesKey({ siteSlug, search, page, limit });
+  const key = getPagesKey({
+    siteSlug,
+    search,
+    page,
+    limit,
+    trash,
+  });
 
   const { data, error, isLoading, mutate } = useSWR(key, fetcher, {
     keepPreviousData: true,

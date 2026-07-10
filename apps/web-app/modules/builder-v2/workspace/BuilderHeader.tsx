@@ -14,6 +14,7 @@ import {
   Redo,
   Eye,
   Maximize2,
+  Minimize2,
   ChevronDown,
   Plus,
   Cloud,
@@ -48,6 +49,8 @@ interface BuilderHeaderProps {
   pageId: string;
   pageStatus: PagePublishStatus;
   pageTitle: string;
+  isFullscreenBuilder?: boolean;
+  onToggleFullscreenBuilder?: () => void;
 }
 
 type PagePublishStatus = "DRAFT" | "PUBLISHED";
@@ -93,9 +96,14 @@ function stripPageIdFromSlug(value: string, pageId: string) {
    BUILDER HEADER — V4 (LOCKED)
 ============================================================================ */
 
-export default function BuilderHeader(
-  { pageId, pageStatus, pageTitle }: BuilderHeaderProps
-) {
+export default function BuilderHeader({
+  pageId,
+  pageStatus,
+  pageTitle,
+  isFullscreenBuilder = false,
+  onToggleFullscreenBuilder,
+}: BuilderHeaderProps) {
+
   const router = useRouter();
   const params = useParams();
 
@@ -642,11 +650,12 @@ const fullLastSavedAt = formatFullDate(lastSavedAt);
           </select>
 
           <button
-            onClick={fitToPage}
-            className="p-2 rounded-xl bg-white/[0.08]"
-          >
-            <Maximize2 size={16} />
-          </button>
+  onClick={onToggleFullscreenBuilder ?? fitToPage}
+  className="p-2 rounded-xl bg-white/[0.08] hover:bg-white/10 transition"
+  title={isFullscreenBuilder ? "Exit fullscreen builder" : "Enter fullscreen builder"}
+>
+  {isFullscreenBuilder ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+</button>
         </div>
 
         {/* =====================================================

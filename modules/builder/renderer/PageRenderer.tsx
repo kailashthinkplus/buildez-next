@@ -260,7 +260,7 @@ function ReactComponentNode({ node, ctx }: { node: BlueprintNode; ctx: RenderCon
         return;
       }
 
-      // ✅ Write complete HTML with Tailwind + React
+      // ✅ Write complete HTML with React. Generated output must carry its own styles.
       doc.open();
       doc.write(`
         <!DOCTYPE html>
@@ -268,7 +268,6 @@ function ReactComponentNode({ node, ctx }: { node: BlueprintNode; ctx: RenderCon
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <script src="https://cdn.tailwindcss.com"><\/script>
             <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"><\/script>
             <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"><\/script>
             <script src="https://unpkg.com/@babel/standalone/babel.min.js"><\/script>
@@ -457,9 +456,6 @@ function HTMLBlock({ node, ctx }: { node: BlueprintNode; ctx: RenderContext }) {
         outline: sel.outline,
       }}
     >
-      {/* Load Tailwind CSS */}
-      <script src="https://cdn.tailwindcss.com"></script>
-      
       {/* AI-Generated HTML Content */}
       <div 
         dangerouslySetInnerHTML={{ __html: htmlContent }}

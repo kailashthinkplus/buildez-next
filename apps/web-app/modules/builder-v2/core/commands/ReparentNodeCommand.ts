@@ -1,4 +1,5 @@
 import type { BuilderBlueprint } from "../../types/blueprint";
+import { isAllowedChildRelationship } from "../validation/blueprintSchema";
 import type { BuilderCommand } from "./BuilderCommand";
 
 export class ReparentNodeCommand implements BuilderCommand {
@@ -17,6 +18,7 @@ export class ReparentNodeCommand implements BuilderCommand {
 
     if (!node || !parent) return false;
     if (this.nodeId === this.newParentId) return false;
+    if (!isAllowedChildRelationship(parent.type, node.type)) return false;
 
     // Prevent cyclical parenting (cannot move a node into its own descendant).
     let cursor: string | null = this.newParentId;
@@ -57,6 +59,10 @@ export class ReparentNodeCommand implements BuilderCommand {
     }
 
     if (this.nodeId === this.newParentId) {
+      return blueprint;
+    }
+
+    if (!isAllowedChildRelationship(newParent.type, node.type)) {
       return blueprint;
     }
 

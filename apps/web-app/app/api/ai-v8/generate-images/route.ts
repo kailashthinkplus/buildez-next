@@ -2,11 +2,14 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-const FREEPIK_API_KEY = process.env.FREEPIK_API_KEY!;
+const MAGNIFIC_API_KEY =
+  process.env.MAGNIFIC_API_KEY?.trim() || process.env.FREEPIK_API_KEY?.trim() || "";
 const FREEPIK_API_URL = "https://api.freepik.com/v1/ai/text-to-image";
 
 interface FreepikImageRequest {
   prompt: string;
+  negative_prompt?: string;
+  guidance_scale?: number;
   num_images?: number;
   image?: {
     size?: "square" | "portrait" | "landscape";
@@ -22,6 +25,7 @@ interface ImageGenerationRequest {
   prompts: string[];
   industry: string;
   size?: "square" | "portrait" | "landscape";
+  siteId?: string;
 }
 
 /* ============================================================
@@ -29,6 +33,7 @@ interface ImageGenerationRequest {
 ============================================================ */
 
 function getStyleForIndustry(industry: string): string {
+  const normalized = industry.trim().toUpperCase().replace(/[\s-]+/g, "_");
   const styles: Record<string, string> = {
     REAL_ESTATE:
       "architectural photography, professional real estate, luxury interior design, modern architecture",
@@ -50,10 +55,11 @@ function getStyleForIndustry(industry: string): string {
     GENERIC: "professional photography, modern style, high quality, clean aesthetic",
   };
 
-  return styles[industry] || styles.GENERIC;
+  return styles[normalized] || styles.GENERIC;
 }
 
 function getLightingForIndustry(industry: string): string {
+  const normalized = industry.trim().toUpperCase().replace(/[\s-]+/g, "_");
   const lighting: Record<string, string> = {
     REAL_ESTATE: "natural daylight, bright and airy, architectural lighting",
     RESTAURANT: "warm ambient lighting, professional food lighting, cozy atmosphere",
@@ -67,7 +73,37 @@ function getLightingForIndustry(industry: string): string {
     GENERIC: "natural professional lighting",
   };
 
-  return lighting[industry] || lighting.GENERIC;
+  return lighting[normalized] || lighting.GENERIC;
+}
+
+function extractFreepikUrl(data: any) {
+  const candidates = [
+    data?.data?.[0]?.image?.url,
+    data?.data?.[0]?.url,
+    data?.data?.[0]?.image_url,
+    data?.images?.[0]?.url,
+    data?.url,
+  ];
+
+  return candidates.find(
+    (value) => typeof value === "string" && /^https?:\/\//i.test(value)
+  ) || null;
+}
+
+function extractFreepikBase64(data: any) {
+  const candidates = [
+    data?.data?.[0]?.b64_json,
+    data?.data?.[0]?.base64,
+    data?.data?.[0]?.image?.base64,
+    data?.images?.[0]?.base64,
+    data?.image,
+  ];
+
+  const found = candidates.find(
+    (value) => typeof value === "string" && value.length > 100
+  );
+
+  return found ? found.replace(/^data:image\/\w+;base64,/, "") : null;
 }
 
 /* ============================================================
@@ -81,17 +117,22 @@ async function generateSingleImage(
   index: number
 ): Promise<{ prompt: string; url: string | null; error?: string; index: number }> {
   try {
-    console.log(`[Freepik] 🎨 Generating image ${index + 1}: "${prompt.substring(0, 50)}..."`);
+    console.log(`[Magnific] 🎨 Generating image ${index + 1}: "${prompt.substring(0, 50)}..."`);
 
     const requestBody: FreepikImageRequest = {
-      prompt: `${prompt}, ${getStyleForIndustry(industry)}`,
+      prompt: [
+        "Photorealistic commercial photography",
+        "realistic environment, natural color grading, sharp focus, premium website visual",
+        prompt,
+        getStyleForIndustry(industry),
+        "no text, no watermark, avoid vector art, avoid clipart, avoid heavy yellow or orange color cast",
+      ].join(", "),
+      negative_prompt:
+        "illustration, vector art, flat vector, drawing, painting, sketch, cartoon, anime, 3d render, digital art, abstract, artistic, stylized, unrealistic, blurry, low quality, watermark, text, logo, yellow tint, orange tint, mustard background, oversaturated yellow",
+      guidance_scale: 6.5,
       num_images: 1,
       image: {
         size: size,
-      },
-      styling: {
-        style: getStyleForIndustry(industry),
-        lighting: getLightingForIndustry(industry),
       },
     };
 
@@ -99,24 +140,25 @@ async function generateSingleImage(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-freepik-api-key": FREEPIK_API_KEY,
+        "x-freepik-api-key": MAGNIFIC_API_KEY,
+        "x-magnific-api-key": MAGNIFIC_API_KEY,
       },
       body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`[Freepik] ❌ API error ${response.status}:`, errorText);
-      throw new Error(`Freepik API error: ${response.status} - ${errorText}`);
+      console.error(`[Magnific] ❌ API error ${response.status}:`, errorText);
+      throw new Error(`Magnific API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
 
-    // Freepik API response structure may vary - adjust based on actual API docs
-    const imageUrl = data.data?.[0]?.image?.url || data.data?.[0]?.url || null;
+    const imageUrl = extractFreepikUrl(data);
+    const base64 = extractFreepikBase64(data);
 
-    if (!imageUrl) {
-      console.warn(`[Freepik] ⚠️ No image URL in response for image ${index + 1}`);
+    if (!imageUrl && !base64) {
+      console.warn(`[Magnific] ⚠️ No image URL in response for image ${index + 1}`);
       return {
         prompt,
         url: null,
@@ -125,15 +167,15 @@ async function generateSingleImage(
       };
     }
 
-    console.log(`[Freepik] ✅ Image ${index + 1} generated successfully`);
+    console.log(`[Magnific] ✅ Image ${index + 1} generated successfully`);
 
     return {
       prompt,
-      url: imageUrl,
+      url: imageUrl || `data:image/jpeg;base64,${base64}`,
       index,
     };
   } catch (error: any) {
-    console.error(`[Freepik] ❌ Image ${index + 1} failed:`, error.message);
+    console.error(`[Magnific] ❌ Image ${index + 1} failed:`, error.message);
     return {
       prompt,
       url: null,
@@ -167,15 +209,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!FREEPIK_API_KEY) {
-      console.error("[Freepik] ❌ FREEPIK_API_KEY not configured");
+    if (!MAGNIFIC_API_KEY) {
+      console.error("[Magnific] ❌ MAGNIFIC_API_KEY or FREEPIK_API_KEY not configured");
       return NextResponse.json(
-        { error: "Freepik API key not configured" },
+        { error: "Magnific/Freepik API key not configured" },
         { status: 500 }
       );
     }
 
-    console.log(`[Freepik] 🚀 Starting generation of ${prompts.length} images for ${industry}`);
+    console.log(`[Magnific] 🚀 Starting generation of ${prompts.length} images for ${industry}`);
     const startTime = Date.now();
 
     // Generate images in parallel (max 3 concurrent to avoid rate limits)
@@ -202,7 +244,7 @@ export async function POST(req: NextRequest) {
     const failedCount = results.length - successCount;
 
     console.log(
-      `[Freepik] ✅ Completed: ${successCount} successful, ${failedCount} failed in ${generationTime}ms`
+      `[Magnific] ✅ Completed: ${successCount} successful, ${failedCount} failed in ${generationTime}ms`
     );
 
     // Log failed images
@@ -210,12 +252,15 @@ export async function POST(req: NextRequest) {
       results
         .filter((r) => !r.url)
         .forEach((r) => {
-          console.warn(`[Freepik] ⚠️ Failed: "${r.prompt}" - ${r.error}`);
+          console.warn(`[Magnific] ⚠️ Failed: "${r.prompt}" - ${r.error}`);
         });
     }
 
     return NextResponse.json({
-      success: true,
+      success: successCount > 0,
+      ...(successCount === 0
+        ? { error: results[0]?.error || "Image generation failed" }
+        : {}),
       images: results,
       metadata: {
         total: prompts.length,
@@ -224,9 +269,9 @@ export async function POST(req: NextRequest) {
         generationTime,
         industry,
       },
-    });
+    }, { status: successCount > 0 ? 200 : 502 });
   } catch (error: any) {
-    console.error("[Freepik] ❌ Generation failed:", error);
+    console.error("[Magnific] ❌ Generation failed:", error);
     return NextResponse.json(
       {
         error: error.message || "Image generation failed",
@@ -244,8 +289,8 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   return NextResponse.json({
     status: "ok",
-    service: "Freepik AI Image Generation",
-    apiKeyConfigured: !!FREEPIK_API_KEY,
+    service: "Magnific AI Image Generation",
+    apiKeyConfigured: !!MAGNIFIC_API_KEY,
     endpoint: FREEPIK_API_URL,
   });
 }

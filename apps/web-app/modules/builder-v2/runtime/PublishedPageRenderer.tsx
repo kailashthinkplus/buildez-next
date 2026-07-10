@@ -1,10 +1,22 @@
 import type React from "react";
+import { isSystemFont, normalizeGoogleFontFamily } from "@/lib/googleFonts";
+import {
+  logBuilderDebug,
+  summarizeBlueprint,
+  summarizeSiteLayout,
+} from "../debug/blueprintDebug";
 import type { BuilderBlueprint, BuilderNode } from "../types/blueprint";
 import { defaultThemeTokens } from "../theme/defaultTheme";
 import { SiteThemeFrame } from "../theme/SiteThemeFrame";
 import type { SiteThemeLayout } from "../theme/siteLayout";
 import type { BuilderThemeTokens } from "../theme/theme.types";
-import PremiumWidgetPreview from "../widgets/premium/PremiumWidgetPreview";
+import ProductionWidgetView from "../widgets/premium/ProductionWidgetView";
+import {
+  getRenderContainerWidthStyle,
+  getRenderSectionContentWidthStyle,
+  resolveRenderStyle,
+  collectRenderCustomCss,
+} from "../core/rendering";
 import {
   ArrowRight,
   Check,
@@ -26,16 +38,82 @@ const PREMIUM_NODE_TYPES = new Set([
   "smartHeader",
   "hero",
   "leadForm",
+  "contactForm",
   "cardGrid",
   "galleryLightbox",
+  "features",
+  "gallery",
+  "masonryGallery",
   "faq",
+  "accordion",
+  "tabs",
   "testimonials",
+  "testimonial",
   "pricing",
+  "statsCounter",
+  "logoCloud",
+  "team",
+  "portfolio",
+  "timeline",
+  "featureGrid",
   "offerGrid",
   "floatingWhatsApp",
+  "socialLinks",
   "locationMap",
   "smartFooter",
+  "cta",
+  "carousel",
+  "beforeAfter",
+  "table",
+  "countdown",
+  "codeBlock",
+  "embed",
+  "blogGrid",
+  "postList",
+  "categoryList",
+  "popupModal",
 ]);
+const FONT_WEIGHTS = [300, 400, 500, 600, 700, 800, 900];
+
+function renderText(value: unknown): string {
+  if (typeof value === "string" || typeof value === "number") {
+    return String(value).trim();
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(renderText).filter(Boolean).join(", ");
+  }
+
+  if (!value || typeof value !== "object") return "";
+
+  const record = value as Record<string, unknown>;
+  const keys = [
+    "label",
+    "text",
+    "title",
+    "heading",
+    "name",
+    "question",
+    "body",
+    "description",
+    "content",
+    "caption",
+    "value",
+  ];
+
+  for (const key of keys) {
+    const result = renderText(record[key]);
+    if (result) return result;
+  }
+
+  return "";
+}
+
+function renderItems(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const items = value.map(renderText).filter(Boolean);
+  return items.length ? items : undefined;
+}
 
 const TOKEN_COLORS: Record<string, string> = {
   "text.primary": "#0f172a",
@@ -62,13 +140,45 @@ const MOTION_KEYFRAMES = `
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
+@keyframes builder-soft-reveal {
+  from { opacity: 0; transform: translateY(14px); filter: saturate(0.92); }
+  to { opacity: 1; transform: translateY(0); filter: saturate(1); }
+}
 #buildez-preview-root,
 #buildez-preview-root * {
   box-sizing: border-box;
 }
+#buildez-preview-root {
+  isolation: isolate;
+  contain: layout style paint;
+  min-height: 100vh;
+  width: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  text-align: initial;
+  text-transform: none;
+}
+#buildez-preview-root a {
+  color: inherit;
+  text-decoration: none;
+}
+#buildez-preview-root button,
+#buildez-preview-root input,
+#buildez-preview-root textarea,
+#buildez-preview-root select {
+  font: inherit;
+}
+#buildez-preview-root button {
+  cursor: pointer;
+}
 #buildez-preview-root img,
 #buildez-preview-root video {
+  display: block;
   max-width: 100%;
+}
+#buildez-preview-root [data-buildez-image-bg="true"] {
+  position: relative;
+  overflow: hidden;
 }
 @media (max-width: 768px) {
   #buildez-preview-root [data-buildez-hide-mobile="true"] {
@@ -118,21 +228,60 @@ export function PublishedPageRenderer({
   const root = blueprint.nodes[blueprint.root];
   const themeTokens = getThemeTokens(blueprint);
 
+  logBuilderDebug("published-render:input", {
+    summary: summarizeBlueprint(blueprint),
+    siteLayout: summarizeSiteLayout(siteLayout),
+  });
+
   if (!root) {
     return null;
   }
 
   return (
     <div id="buildez-preview-root">
+      {collectGoogleFontFamilies(blueprint).map((family) => (
+        <link
+          key={family}
+          rel="stylesheet"
+          href={`https://fonts.googleapis.com/css2?family=${family.replace(/\s+/g, "+")}:wght@${FONT_WEIGHTS.join(";")}&display=swap`}
+        />
+      ))}
       <style dangerouslySetInnerHTML={{ __html: MOTION_KEYFRAMES }} />
       <style dangerouslySetInnerHTML={{ __html: collectCustomKeyframes(blueprint) }} />
       <style dangerouslySetInnerHTML={{ __html: collectMotionCss(blueprint) }} />
       <style dangerouslySetInnerHTML={{ __html: collectResponsiveCss(blueprint) }} />
+      <style dangerouslySetInnerHTML={{ __html: collectRenderCustomCss(blueprint) }} />
       <SiteThemeFrame layout={siteLayout} tokens={themeTokens}>
         <PublishedNode node={root} blueprint={blueprint} />
       </SiteThemeFrame>
     </div>
   );
+}
+
+function collectGoogleFontFamilies(blueprint: BuilderBlueprint) {
+  const fonts = new Set<string>();
+  const tokens = blueprint.theme?.tokens;
+  const typography =
+    tokens && typeof tokens === "object" && !Array.isArray(tokens)
+      ? (tokens as Record<string, unknown>).typography
+      : null;
+
+  if (typography && typeof typography === "object" && !Array.isArray(typography)) {
+    Object.values(typography as Record<string, unknown>).forEach((value) => {
+      if (typeof value !== "string") return;
+      const normalized = normalizeGoogleFontFamily(value);
+      if (normalized && !isSystemFont(normalized)) fonts.add(normalized);
+    });
+  }
+
+  Object.values(blueprint.nodes).forEach((node) => {
+    const family = node.style?.fontFamily;
+    if (typeof family !== "string") return;
+    const normalized = normalizeGoogleFontFamily(family.split(",")[0] || family);
+    if (normalized && !isSystemFont(normalized)) fonts.add(normalized);
+  });
+
+  return [...fonts];
 }
 
 interface PublishedNodeProps {
@@ -153,6 +302,11 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
   const accessibility = asRecord(advanced.accessibility);
   const renderStyle = getRenderStyle(node, blueprint);
   const containerWidthStyle = getContainerWidthStyle(node, blueprint);
+  const sectionContentWidthStyle =
+    getRenderSectionContentWidthStyle(node, blueprint, {
+      device: "desktop",
+      scale: 1,
+    });
   const commonProps = getCommonProps(node, accessibility);
   const childNodes = children.map((child) => (
     <PublishedNode key={child.id} node={child} blueprint={blueprint} />
@@ -179,29 +333,46 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
       return (
         <section
           {...commonProps}
+          data-buildez-image-bg={hasBackgroundImage(node) ? "true" : undefined}
           style={cleanStyle({
             width: "100%",
             ...renderStyle,
             ...containerWidthStyle,
+            boxSizing: "border-box",
           })}
         >
-          {childNodes}
+          <div
+            data-section-content="true"
+            style={cleanStyle({
+              ...sectionContentWidthStyle,
+              boxSizing: "border-box",
+            })}
+          >
+            {childNodes}
+          </div>
         </section>
       );
 
     case "container": {
       const layout = String(props?.layout ?? "flex");
-      const direction = String(props?.direction ?? "row");
+      const direction = String(renderStyle.flexDirection ?? props?.direction ?? "row");
 
       return (
         <div
           {...commonProps}
           data-buildez-stack="true"
           style={cleanStyle({
-            display: layout === "grid" ? "grid" : "flex",
-            flexDirection: direction as React.CSSProperties["flexDirection"],
             ...renderStyle,
             ...containerWidthStyle,
+            display: layout === "grid" ? "grid" : "flex",
+            flexDirection: direction as React.CSSProperties["flexDirection"],
+            boxSizing: "border-box",
+            minWidth: renderStyle.minWidth ?? 0,
+            gridTemplateColumns:
+              layout === "grid"
+                ? renderStyle.gridTemplateColumns ??
+                  `repeat(${Number(props?.columns ?? 3)}, minmax(0, 1fr))`
+                : renderStyle.gridTemplateColumns,
             gap: renderStyle.gap ?? toCssUnit(props?.gap ?? 24, undefined, blueprint),
           })}
         >
@@ -211,21 +382,39 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
     }
 
     case "column": {
-      const width = props?.width;
+      const parentNode = node.parentId ? blueprint.nodes[node.parentId] : undefined;
+      const parentRenderStyle = parentNode ? getRenderStyle(parentNode, blueprint) : {};
+      const parentDirection = parentNode
+        ? String(parentRenderStyle.flexDirection ?? parentNode.props?.direction ?? "row")
+        : "row";
+      const isVerticallyStacked =
+        parentDirection === "column" || parentDirection === "column-reverse";
+      const percentageWidth = parsePercentageWidth(renderStyle.width);
+      const rowFlex = percentageWidth
+        ? `${percentageWidth} 1 0px`
+        : renderStyle.width
+          ? `0 0 ${renderStyle.width}`
+          : "1 1 0";
 
       return (
         <div
           {...commonProps}
           data-buildez-column="true"
           style={cleanStyle({
+            ...renderStyle,
             display: renderStyle.display ?? "flex",
             flexDirection:
               renderStyle.flexDirection ??
               (props?.layout === "horizontal" ? "row" : "column"),
-            flex: cleanStyleValue(node.style?.flex) ?? 1,
+            flex: isVerticallyStacked ? "0 0 auto" : rowFlex,
+            boxSizing: "border-box",
             minWidth: 0,
-            ...renderStyle,
-            width: width ? toCssUnit(width, { scale: false }, blueprint) : renderStyle.width,
+            width: isVerticallyStacked ? "100%" : percentageWidth ? 0 : renderStyle.width,
+            maxWidth: isVerticallyStacked
+              ? "100%"
+              : percentageWidth
+                ? "none"
+                : renderStyle.width ?? "none",
           })}
         >
           {childNodes}
@@ -239,7 +428,7 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
 
       return (
         <HeadingTag {...commonProps} style={cleanStyle(renderStyle)}>
-          {String(props?.text ?? props?.content ?? "")}
+          {renderText(props?.text ?? props?.title ?? props?.content)}
         </HeadingTag>
       );
     }
@@ -250,13 +439,15 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
           {...commonProps}
           style={cleanStyle(renderStyle)}
           dangerouslySetInnerHTML={{
-            __html: String(props?.html ?? props?.text ?? props?.content ?? ""),
+            __html: renderText(props?.html ?? props?.text ?? props?.content),
           }}
         />
       );
 
     case "button": {
-      const label = String(props?.label ?? props?.text ?? "Button");
+      const label =
+        renderText(props?.label ?? props?.text ?? props?.primaryCta ?? props?.cta) ||
+        "Learn more";
       const href = stringOrUndefined(props?.href ?? props?.url);
       const buttonStyle: React.CSSProperties = {
         display: renderStyle.display ?? "inline-flex",
@@ -304,7 +495,7 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
           {...commonProps}
           data-buildez-media="true"
           src={src}
-          alt={String(props?.alt ?? "")}
+          alt={renderText(props?.alt)}
           loading={props?.loading === "eager" ? "eager" : "lazy"}
           decoding="async"
           style={cleanStyle({
@@ -431,14 +622,20 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
       if (PREMIUM_NODE_TYPES.has(node.type)) {
         return (
           <div {...commonProps}>
-            <PremiumWidgetPreview
+            <ProductionWidgetView
               type={node.type}
-              eyebrow={typeof props?.eyebrow === "string" ? props.eyebrow : undefined}
-              title={typeof props?.title === "string" ? props.title : undefined}
-              body={typeof props?.body === "string" ? props.body : undefined}
-              primaryCta={typeof props?.primaryCta === "string" ? props.primaryCta : undefined}
-              secondaryCta={typeof props?.secondaryCta === "string" ? props.secondaryCta : undefined}
-              items={Array.isArray(props?.items) ? props.items.map(String) : undefined}
+              eyebrow={renderText(props?.eyebrow) || undefined}
+              title={renderText(props?.title ?? props?.headline) || undefined}
+              body={
+                renderText(props?.body ?? props?.description ?? props?.content) ||
+                undefined
+              }
+              primaryCta={
+                renderText(props?.primaryCta ?? props?.cta ?? props?.label) ||
+                undefined
+              }
+              secondaryCta={renderText(props?.secondaryCta) || undefined}
+              items={renderItems(props?.items)}
               style={cleanStyle(renderStyle)}
             />
           </div>
@@ -459,72 +656,23 @@ function getRenderStyle(
 ): React.CSSProperties {
   const advanced = asRecord(node.props?.advanced);
   const motion = asRecord(advanced.motion);
-  const style = node.style ?? {};
+  const shouldUseFixedBackground =
+    motion.engine === "parallax" ||
+    Number(motion.parallaxSpeed ?? 0) !== 0 ||
+    Number(motion.parallaxHorizontal ?? 0) !== 0 ||
+    Number(motion.parallaxVertical ?? 0) !== 0;
+
   const baseStyle: React.CSSProperties = {
-    color: resolveTokenColor(style.color, "", blueprint),
-    display: pickResponsive(style.display) as React.CSSProperties["display"],
-    backgroundColor:
-      style.backgroundColor !== undefined
-        ? resolveTokenColor(style.backgroundColor, "transparent", blueprint)
-        : undefined,
-    backgroundImage: stringOrUndefined(style.backgroundImage),
-    backgroundSize: pickResponsive(style.backgroundSize) as React.CSSProperties["backgroundSize"],
-    backgroundPosition: pickResponsive(style.backgroundPosition) as React.CSSProperties["backgroundPosition"],
-    backgroundRepeat: pickResponsive(style.backgroundRepeat) as React.CSSProperties["backgroundRepeat"],
-    backgroundAttachment:
-      (motion.engine === "parallax" || Number(motion.parallaxSpeed ?? 0) !== 0
-        ? "fixed"
-        : pickResponsive(style.backgroundAttachment)) as React.CSSProperties["backgroundAttachment"],
-    opacity: typeof style.opacity === "number" ? style.opacity : undefined,
-    fontFamily: stringOrUndefined(resolveStyleValue(style.fontFamily, blueprint)),
-    fontSize: toCssUnit(style.fontSize, undefined, blueprint),
-    fontWeight: style.fontWeight as React.CSSProperties["fontWeight"],
-    lineHeight: style.lineHeight as React.CSSProperties["lineHeight"],
-    letterSpacing: toCssUnit(style.letterSpacing, undefined, blueprint),
-    textAlign: style.textAlign as React.CSSProperties["textAlign"],
-    textTransform: style.textTransform as React.CSSProperties["textTransform"],
-    textDecoration: style.textDecoration as React.CSSProperties["textDecoration"],
-    padding: toCssUnit(style.padding, undefined, blueprint),
-    paddingTop: toCssUnit(style.paddingTop, undefined, blueprint),
-    paddingRight: toCssUnit(style.paddingRight, undefined, blueprint),
-    paddingBottom: toCssUnit(style.paddingBottom, undefined, blueprint),
-    paddingLeft: toCssUnit(style.paddingLeft, undefined, blueprint),
-    margin: toCssUnit(style.margin, undefined, blueprint),
-    marginTop: toCssUnit(style.marginTop, undefined, blueprint),
-    marginRight: toCssUnit(style.marginRight, undefined, blueprint),
-    marginBottom: toCssUnit(style.marginBottom, undefined, blueprint),
-    marginLeft: toCssUnit(style.marginLeft, undefined, blueprint),
-    borderRadius: toCssUnit(style.borderRadius, undefined, blueprint),
-    border: stringOrUndefined(resolveStyleValue(style.border, blueprint)),
-    boxShadow: stringOrUndefined(resolveStyleValue(style.boxShadow, blueprint)),
-    width: toCssUnit(style.width, { scale: false }, blueprint),
-    height: toCssUnit(style.height, undefined, blueprint),
-    minWidth: toCssUnit(style.minWidth, { scale: false }, blueprint),
-    minHeight: toCssUnit(style.minHeight, undefined, blueprint),
-    maxWidth: toCssUnit(style.maxWidth, { scale: false }, blueprint),
-    maxHeight: toCssUnit(style.maxHeight, undefined, blueprint),
-    gap: toCssUnit(style.gap, undefined, blueprint),
-    flexWrap: pickResponsive(style.flexWrap) as React.CSSProperties["flexWrap"],
-    flexDirection: pickResponsive(style.flexDirection) as React.CSSProperties["flexDirection"],
-    justifyContent: pickResponsive(style.justifyContent) as React.CSSProperties["justifyContent"],
-    alignItems: pickResponsive(style.alignItems) as React.CSSProperties["alignItems"],
-    gridTemplateColumns: resolveStyleValue(style.gridTemplateColumns, blueprint) as string | undefined,
-    position: style.position,
-    top: toCssUnit(style.top, undefined, blueprint),
-    right: toCssUnit(style.right, undefined, blueprint),
-    bottom: toCssUnit(style.bottom, undefined, blueprint),
-    left: toCssUnit(style.left, undefined, blueprint),
-    overflow: pickResponsive(style.overflow) as React.CSSProperties["overflow"],
-    objectFit: pickResponsive(style.objectFit) as React.CSSProperties["objectFit"],
-    objectPosition: pickResponsive(style.objectPosition) as React.CSSProperties["objectPosition"],
-    aspectRatio: pickResponsive(style.aspectRatio) as React.CSSProperties["aspectRatio"],
-    zIndex: style.zIndex,
-    transform: pickResponsive(style.transform) as string | undefined,
-    transition: stringOrUndefined(style.transition),
+    ...resolveRenderStyle(node, blueprint, {
+      device: "desktop",
+      scale: 1,
+      textFallback: "",
+    }),
+    ...(shouldUseFixedBackground ? { backgroundAttachment: "fixed" } : {}),
   };
 
   return cleanStyle({
-    ...baseStyle,
+    ...cleanStyle(baseStyle),
     ...getStylePresetStyle(node.props?.stylePreset),
     ...parseInlineCss(String(advanced.customCss ?? "")),
     ...getMotionStyle(motion),
@@ -535,35 +683,10 @@ function getContainerWidthStyle(
   node: BuilderNode,
   blueprint: BuilderBlueprint
 ): React.CSSProperties {
-  if (!["page", "section", "container"].includes(node.type)) {
-    return {};
-  }
-
-  const widthMode = String(
-    node.props?.container ??
-      node.props?.widthMode ??
-      (node.type === "page" ? "full" : "boxed")
-  );
-
-  if (widthMode === "full") {
-    return {
-      width: "100%",
-      maxWidth: "none",
-      marginLeft: undefined,
-      marginRight: undefined,
-    };
-  }
-
-  return {
-    width: "100%",
-    maxWidth: toCssUnit(
-      node.props?.maxWidth ?? node.style?.maxWidth ?? "1280px",
-      { scale: false },
-      blueprint
-    ),
-    marginLeft: "auto",
-    marginRight: "auto",
-  };
+  return getRenderContainerWidthStyle(node, blueprint, {
+    device: "desktop",
+    scale: 1,
+  });
 }
 
 function getCommonProps(
@@ -574,7 +697,7 @@ function getCommonProps(
   const responsiveVisibility = asRecord(node.props?.__responsiveVisibility);
   const responsive = asRecord(advanced.responsive);
   const cssId = String(advanced.cssId ?? "").trim() || undefined;
-  const className = String(advanced.className ?? node.props?.className ?? "").trim();
+  const className = String(advanced.className ?? "").trim();
   const ariaLabel =
     typeof accessibility.ariaLabel === "string" && accessibility.ariaLabel
       ? accessibility.ariaLabel
@@ -609,6 +732,13 @@ function getCommonProps(
         ? Number(accessibility.tabIndex)
         : undefined,
   };
+}
+
+function hasBackgroundImage(node: BuilderNode) {
+  return (
+    typeof node.style?.backgroundImage === "string" &&
+    /url\(/i.test(node.style.backgroundImage)
+  );
 }
 
 function parseInlineCss(value: string): React.CSSProperties {
@@ -657,9 +787,20 @@ function getMotionStyle(motion: Record<string, unknown>): React.CSSProperties {
   }
 
   const animationMap: Record<string, string> = {
+    fade: "builder-fade-in",
     "fade-in": "builder-fade-in",
+    slide: "builder-slide-up",
     "slide-up": "builder-slide-up",
+    scale: "builder-scale-in",
     "scale-in": "builder-scale-in",
+    rotate: "builder-rotate-in",
+    blur: "builder-blur-in",
+    reveal: "builder-soft-reveal",
+    zoom: "builder-zoom-in",
+    luxury: "builder-luxury-in",
+    editorial: "builder-slide-up",
+    corporate: "builder-fade-in",
+    minimal: "builder-fade-in",
   };
   const animationName = animationMap[preset];
   if (!animationName) return {};
@@ -1068,6 +1209,16 @@ function normalizeStyleConflicts(style: React.CSSProperties): React.CSSPropertie
   normalizeBoxStyle(next, "padding");
   normalizeBoxStyle(next, "margin");
   return next;
+}
+
+function parsePercentageWidth(value: unknown): number | null {
+  if (typeof value !== "string") return null;
+
+  const match = value.trim().match(/^(-?\d+(?:\.\d+)?)%$/);
+  if (!match) return null;
+
+  const numericValue = Number(match[1]);
+  return Number.isFinite(numericValue) && numericValue > 0 ? numericValue : null;
 }
 
 function cleanStyle(style: React.CSSProperties): React.CSSProperties {

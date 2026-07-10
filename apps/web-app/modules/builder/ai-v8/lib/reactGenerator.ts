@@ -873,7 +873,7 @@ function extractImagePlaceholders(code: string) {
   while ((match = imgRegex.exec(code)) !== null) {
     placeholders.push({ 
       id: `img-${index++}`, 
-      prompt: match,[1]
+      prompt: match[1],
       type: 'img',
     });
   }
@@ -884,7 +884,7 @@ function extractImagePlaceholders(code: string) {
   while ((match = bgRegex.exec(code)) !== null) {
     placeholders.push({ 
       id: `bg-${index++}`, 
-      prompt: match,[1]
+      prompt: match[1],
       type: 'bg',
     });
   }

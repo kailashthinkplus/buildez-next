@@ -1,0 +1,643 @@
+{
+  "timestamp": "2026-06-29T13:56:44.189Z",
+  "label": "ai-v9:model-blueprint",
+  "summary": {
+    "present": true,
+    "root": "page-1",
+    "metadata": {
+      "version": 2,
+      "title": "Home",
+      "createdAt": "2026-06-29T13:56:44.169Z",
+      "updatedAt": "2026-06-29T13:56:44.169Z",
+      "aiGenerated": true,
+      "template": "ai-v9-native-blueprint",
+      "industry": "Real Estate"
+    },
+    "theme": {
+      "id": "sanjeevini-custom-preset",
+      "name": "Sanjeevini Custom Theme",
+      "preset": "sanjeevini-custom-preset",
+      "tokenKeys": [
+        "colors",
+        "typography",
+        "spacing",
+        "radius",
+        "shadow",
+        "buttons"
+      ]
+    },
+    "nodeCount": 23,
+    "sectionCount": 5,
+    "imageCount": 3,
+    "backgroundPromptCount": 1,
+    "headings": [
+      "Welcome to Sanjeevini Group",
+      "Crafting Homes That Reflect Your Lifestyle",
+      "Our Projects",
+      "Upcoming Developments",
+      "Customer Testimonials",
+      "Contact Us"
+    ],
+    "textSamples": [
+      "Explore our commitment to delivering quality and innovation in real estate. With over 1,200 satisfied customers, Sanjeevini Group continues to lead in residential and commercial developments.",
+      "View Our Projects",
+      "Contact Us",
+      "Stay tuned for our upcoming projects. We are currently working on 3 million square feet of new developments, designed to elevate your living experience.",
+      "Hear from our satisfied customers who have found their dream homes with Sanjeevini Group.",
+      "Reach out to us for inquiries or to schedule a site visit. Call us at 7307692308."
+    ],
+    "colors": [
+      "#f8fafc",
+      "#82ccdd",
+      "#0f172a",
+      "#475569",
+      "#ffffff",
+      "#0a3d62",
+      "transparent",
+      "#eef2f7"
+    ],
+    "images": [
+      {
+        "id": "section-hero",
+        "type": "section",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "",
+        "backgroundPrompt": "Aerial view of a modern residential development in Bangalore during golden hour, showcasing lush landscaping and contemporary architectural design, high-quality photorealism, no te..."
+      },
+      {
+        "id": "image-project-1",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Exterior of a modern residential building in Bangalore, India, with lush greenery, photorealistic, golden hour lighting, wide-angle shot, no text, no logos",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "image-project-2",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Commercial complex in Bangalore, India, with contemporary design, evening lighting, photorealistic, no text, no logos",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "image-project-3",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Mixed-use development in Bangalore, India, with modern architecture, daytime lighting, photorealistic, no text, no logos",
+        "backgroundPrompt": ""
+      }
+    ],
+    "forbiddenHits": [],
+    "layoutFingerprint": [
+      {
+        "id": "section-hero",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#f8fafc"
+      },
+      {
+        "id": "section-projects",
+        "type": "section",
+        "children": 2,
+        "backgroundColor": "#ffffff"
+      },
+      {
+        "id": "section-upcoming",
+        "type": "section",
+        "children": 2,
+        "backgroundColor": "#eef2f7"
+      },
+      {
+        "id": "section-testimonials",
+        "type": "section",
+        "children": 2,
+        "backgroundColor": "#ffffff"
+      },
+      {
+        "id": "section-contact",
+        "type": "section",
+        "children": 2,
+        "backgroundColor": "#f8fafc"
+      }
+    ]
+  },
+  "blueprint": {
+    "metadata": {
+      "version": 2,
+      "title": "Home",
+      "createdAt": "2026-06-29T13:56:44.169Z",
+      "updatedAt": "2026-06-29T13:56:44.169Z",
+      "aiGenerated": true,
+      "template": "ai-v9-native-blueprint",
+      "industry": "Real Estate"
+    },
+    "theme": {
+      "id": "sanjeevini-custom-preset",
+      "name": "Sanjeevini Custom Theme",
+      "preset": "sanjeevini-custom-preset",
+      "tone": "professional",
+      "previewImageUrl": "",
+      "demoData": {
+        "category": "Real Estate",
+        "audience": "buyers comparing properties and booking site visits",
+        "description": "a credible company website",
+        "sections": [],
+        "highlights": []
+      },
+      "tokens": {
+        "colors": {
+          "background": "#f8fafc",
+          "surface": "#ffffff",
+          "surfaceAlt": "#eef2f7",
+          "textPrimary": "#0f172a",
+          "textSecondary": "#475569",
+          "primary": "#2563eb",
+          "primaryContrast": "#ffffff",
+          "accent": "#f97316",
+          "border": "#dbe3ef"
+        },
+        "typography": {
+          "headingFont": "Inter",
+          "bodyFont": "Inter",
+          "baseSize": 16,
+          "scale": {
+            "h1": 56,
+            "h2": 40,
+            "h3": 28,
+            "body": 16,
+            "small": 14
+          }
+        },
+        "spacing": {
+          "sectionY": 88,
+          "containerX": 24,
+          "contentGap": 28,
+          "cardGap": 20
+        },
+        "radius": {
+          "button": 10,
+          "card": 12,
+          "media": 14
+        },
+        "shadow": {
+          "card": "0 16px 42px rgba(15, 23, 42, 0.08)",
+          "media": "0 24px 70px rgba(15, 23, 42, 0.16)"
+        },
+        "buttons": {
+          "primary": {
+            "backgroundColor": "#0a3d62",
+            "color": "#ffffff",
+            "borderRadius": 10
+          },
+          "secondary": {
+            "backgroundColor": "transparent",
+            "color": "#0f172a",
+            "borderColor": "#cbd5e1",
+            "borderRadius": 10
+          }
+        }
+      }
+    },
+    "root": "page-1",
+    "nodes": {
+      "page-1": {
+        "id": "page-1",
+        "type": "page",
+        "parentId": null,
+        "children": [
+          "section-hero",
+          "section-projects",
+          "section-upcoming",
+          "section-testimonials",
+          "section-contact"
+        ],
+        "props": {
+          "title": "Home",
+          "slug": "/home"
+        },
+        "style": {},
+        "locked": false,
+        "hidden": false
+      },
+      "section-hero": {
+        "id": "section-hero",
+        "type": "section",
+        "parentId": "page-1",
+        "children": [
+          "container-hero"
+        ],
+        "props": {
+          "backgroundPrompt": "Aerial view of a modern residential development in Bangalore during golden hour, showcasing lush landscaping and contemporary architectural design, high-quality photorealism, no text or logos."
+        },
+        "style": {
+          "backgroundColor": "#f8fafc",
+          "padding": {
+            "desktop": "88px 0",
+            "tablet": "72px 0",
+            "mobile": "56px 0"
+          }
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container-hero": {
+        "id": "container-hero",
+        "type": "container",
+        "parentId": "section-hero",
+        "children": [
+          "heading-hero-eyebrow",
+          "heading-hero-title",
+          "text-hero-content",
+          "button-hero-primary",
+          "button-hero-secondary"
+        ],
+        "props": {},
+        "style": {
+          "maxWidth": 1200,
+          "margin": "0 auto",
+          "padding": "0 24px",
+          "textAlign": "center"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-hero-eyebrow": {
+        "id": "heading-hero-eyebrow",
+        "type": "heading",
+        "parentId": "container-hero",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Welcome to Sanjeevini Group"
+        },
+        "style": {
+          "color": "#82ccdd",
+          "marginBottom": 12
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-hero-title": {
+        "id": "heading-hero-title",
+        "type": "heading",
+        "parentId": "container-hero",
+        "children": [],
+        "props": {
+          "level": "h1",
+          "text": "Crafting Homes That Reflect Your Lifestyle"
+        },
+        "style": {
+          "color": "#0f172a",
+          "fontSize": {
+            "desktop": 56,
+            "tablet": 48,
+            "mobile": 40
+          },
+          "fontWeight": "bold",
+          "marginBottom": 24
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-hero-content": {
+        "id": "text-hero-content",
+        "type": "text",
+        "parentId": "container-hero",
+        "children": [],
+        "props": {
+          "text": "Explore our commitment to delivering quality and innovation in real estate. With over 1,200 satisfied customers, Sanjeevini Group continues to lead in residential and commercial developments."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 16,
+          "marginBottom": 32
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "button-hero-primary": {
+        "id": "button-hero-primary",
+        "type": "button",
+        "parentId": "container-hero",
+        "children": [],
+        "props": {
+          "text": "View Our Projects",
+          "href": "#projects"
+        },
+        "style": {
+          "backgroundColor": "#0a3d62",
+          "color": "#ffffff",
+          "borderRadius": 10,
+          "padding": "12px 24px",
+          "marginRight": 16
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "button-hero-secondary": {
+        "id": "button-hero-secondary",
+        "type": "button",
+        "parentId": "container-hero",
+        "children": [],
+        "props": {
+          "text": "Contact Us",
+          "href": "#contact"
+        },
+        "style": {
+          "backgroundColor": "transparent",
+          "color": "#0f172a",
+          "border": "1px solid #cbd5e1",
+          "borderRadius": 10,
+          "padding": "12px 24px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section-projects": {
+        "id": "section-projects",
+        "type": "section",
+        "parentId": "page-1",
+        "children": [
+          "heading-projects",
+          "container-projects"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "padding": {
+            "desktop": "88px 0",
+            "tablet": "72px 0",
+            "mobile": "56px 0"
+          }
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-projects": {
+        "id": "heading-projects",
+        "type": "heading",
+        "parentId": "section-projects",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Our Projects"
+        },
+        "style": {
+          "color": "#0f172a",
+          "textAlign": "center",
+          "marginBottom": 40
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container-projects": {
+        "id": "container-projects",
+        "type": "container",
+        "parentId": "section-projects",
+        "children": [
+          "image-project-1",
+          "image-project-2",
+          "image-project-3"
+        ],
+        "props": {},
+        "style": {
+          "display": "grid",
+          "gridTemplateColumns": {
+            "desktop": "repeat(3, 1fr)",
+            "tablet": "repeat(2, 1fr)",
+            "mobile": "1fr"
+          },
+          "gap": 20,
+          "maxWidth": 1200,
+          "margin": "0 auto",
+          "padding": "0 24px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image-project-1": {
+        "id": "image-project-1",
+        "type": "image",
+        "parentId": "container-projects",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Exterior of a modern residential building in Bangalore, India, with lush greenery, photorealistic, golden hour lighting, wide-angle shot, no text, no logos",
+          "alt": "Modern residential building in Bangalore",
+          "src": ""
+        },
+        "style": {
+          "borderRadius": 14,
+          "boxShadow": "0 24px 70px rgba(15, 23, 42, 0.16)"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image-project-2": {
+        "id": "image-project-2",
+        "type": "image",
+        "parentId": "container-projects",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Commercial complex in Bangalore, India, with contemporary design, evening lighting, photorealistic, no text, no logos",
+          "alt": "Commercial complex in Bangalore",
+          "src": ""
+        },
+        "style": {
+          "borderRadius": 14,
+          "boxShadow": "0 24px 70px rgba(15, 23, 42, 0.16)"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image-project-3": {
+        "id": "image-project-3",
+        "type": "image",
+        "parentId": "container-projects",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Mixed-use development in Bangalore, India, with modern architecture, daytime lighting, photorealistic, no text, no logos",
+          "alt": "Mixed-use development in Bangalore",
+          "src": ""
+        },
+        "style": {
+          "borderRadius": 14,
+          "boxShadow": "0 24px 70px rgba(15, 23, 42, 0.16)"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section-upcoming": {
+        "id": "section-upcoming",
+        "type": "section",
+        "parentId": "page-1",
+        "children": [
+          "heading-upcoming",
+          "text-upcoming"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#eef2f7",
+          "padding": {
+            "desktop": "88px 0",
+            "tablet": "72px 0",
+            "mobile": "56px 0"
+          }
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-upcoming": {
+        "id": "heading-upcoming",
+        "type": "heading",
+        "parentId": "section-upcoming",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Upcoming Developments"
+        },
+        "style": {
+          "color": "#0f172a",
+          "textAlign": "center",
+          "marginBottom": 24
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-upcoming": {
+        "id": "text-upcoming",
+        "type": "text",
+        "parentId": "section-upcoming",
+        "children": [],
+        "props": {
+          "text": "Stay tuned for our upcoming projects. We are currently working on 3 million square feet of new developments, designed to elevate your living experience."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 16,
+          "maxWidth": 800,
+          "margin": "0 auto",
+          "textAlign": "center"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section-testimonials": {
+        "id": "section-testimonials",
+        "type": "section",
+        "parentId": "page-1",
+        "children": [
+          "heading-testimonials",
+          "text-testimonials"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "padding": {
+            "desktop": "88px 0",
+            "tablet": "72px 0",
+            "mobile": "56px 0"
+          }
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-testimonials": {
+        "id": "heading-testimonials",
+        "type": "heading",
+        "parentId": "section-testimonials",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Customer Testimonials"
+        },
+        "style": {
+          "color": "#0f172a",
+          "textAlign": "center",
+          "marginBottom": 24
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-testimonials": {
+        "id": "text-testimonials",
+        "type": "text",
+        "parentId": "section-testimonials",
+        "children": [],
+        "props": {
+          "text": "Hear from our satisfied customers who have found their dream homes with Sanjeevini Group."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 16,
+          "maxWidth": 800,
+          "margin": "0 auto",
+          "textAlign": "center"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section-contact": {
+        "id": "section-contact",
+        "type": "section",
+        "parentId": "page-1",
+        "children": [
+          "heading-contact",
+          "text-contact"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#f8fafc",
+          "padding": {
+            "desktop": "88px 0",
+            "tablet": "72px 0",
+            "mobile": "56px 0"
+          }
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-contact": {
+        "id": "heading-contact",
+        "type": "heading",
+        "parentId": "section-contact",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Contact Us"
+        },
+        "style": {
+          "color": "#0f172a",
+          "textAlign": "center",
+          "marginBottom": 24
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-contact": {
+        "id": "text-contact",
+        "type": "text",
+        "parentId": "section-contact",
+        "children": [],
+        "props": {
+          "text": "Reach out to us for inquiries or to schedule a site visit. Call us at 7307692308."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 16,
+          "maxWidth": 800,
+          "margin": "0 auto",
+          "textAlign": "center"
+        },
+        "locked": false,
+        "hidden": false
+      }
+    }
+  }
+}

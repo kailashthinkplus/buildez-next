@@ -27,18 +27,40 @@ export type NodeType =
   | "hero"
   | "smartHeader"
   | "leadForm"
+  | "contactForm"
   | "cardGrid"
   | "galleryLightbox"
   | "features"
   | "pricing"
   | "gallery"
+  | "masonryGallery"
   | "faq"
+  | "accordion"
+  | "tabs"
   | "testimonials"
+  | "testimonial"
+  | "statsCounter"
+  | "logoCloud"
+  | "team"
+  | "portfolio"
+  | "timeline"
   | "offerGrid"
+  | "featureGrid"
   | "floatingWhatsApp"
+  | "socialLinks"
   | "locationMap"
   | "smartFooter"
   | "cta"
+  | "carousel"
+  | "beforeAfter"
+  | "table"
+  | "countdown"
+  | "codeBlock"
+  | "embed"
+  | "blogGrid"
+  | "postList"
+  | "categoryList"
+  | "popupModal"
   | "footer"
   | "custom";
 
@@ -62,7 +84,17 @@ export type ResponsiveStyleValue<T> = T | ResponsiveValue<T>;
 export interface BuilderStyle {
   color?: string;
 
-  backgroundColor?: string;
+  backgroundColor?: ResponsiveStyleValue<string>;
+
+  backgroundImage?: ResponsiveStyleValue<string>;
+
+  backgroundSize?: ResponsiveStyleValue<string>;
+
+  backgroundPosition?: ResponsiveStyleValue<string>;
+
+  backgroundRepeat?: ResponsiveStyleValue<string>;
+
+  backgroundAttachment?: ResponsiveStyleValue<string>;
 
   opacity?: number;
 

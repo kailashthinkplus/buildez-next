@@ -1,0 +1,1115 @@
+{
+  "timestamp": "2026-07-01T08:42:31.929Z",
+  "label": "ai-v9:normalized-blueprint",
+  "summary": {
+    "present": true,
+    "root": "page-1",
+    "metadata": {
+      "version": 2,
+      "title": "Home",
+      "createdAt": "2026-07-01T08:42:31.915Z",
+      "updatedAt": "2026-07-01T08:42:31.915Z",
+      "aiGenerated": true,
+      "template": "ai-v9-native-blueprint",
+      "industry": "Real Estate"
+    },
+    "theme": {
+      "id": "sanjeevini-real-estate-theme",
+      "name": "Sanjeevini Custom Theme",
+      "preset": "sanjeevini-real-estate-theme",
+      "tokenKeys": [
+        "colors",
+        "typography",
+        "spacing",
+        "radius",
+        "shadow",
+        "buttons"
+      ]
+    },
+    "nodeCount": 48,
+    "sectionCount": 7,
+    "imageCount": 6,
+    "backgroundPromptCount": 1,
+    "headings": [
+      "Welcome to Sanjeevini Group",
+      "Transforming Modern Living in Bangalore",
+      "Our Vision",
+      "Featured Projects",
+      "Whitefield Residences",
+      "Bangalore Business Hub",
+      "Bangalore Luxury Hotel",
+      "Customer Testimonials",
+      "Sustainability",
+      "Contact Us"
+    ],
+    "textSamples": [
+      "Since 2010, Sanjeevini Group has been delivering innovative, high-quality projects across residential, commercial, and hospitality sectors.",
+      "Explore Projects",
+      "Contact Us",
+      "At Sanjeevini Group, we craft homes that reflect your lifestyle, combining creativity and expertise to elevate your living experience.",
+      "Discover our latest developments, each designed with precision and a commitment to quality.",
+      "A modern residential project offering luxurious living spaces in the heart of Whitefield.",
+      "A state-of-the-art commercial space designed for modern businesses.",
+      "Experience luxury and comfort in our premium hotel located in the heart of Bangalore.",
+      "Hear from our satisfied clients about their experiences with Sanjeevini Group.",
+      "Our commitment to green building practices ensures that every project is environmentally friendly and sustainable.",
+      "Start your journey with Sanjeevini Group. Reach out to us for inquiries and site visit bookings.",
+      "Founded in 2010, Sanjeevini Group has developed over 1.5 million square feet of built space and is currently working on 3 million square feet of new development."
+    ],
+    "colors": [
+      "#E9C46A",
+      "#2A9D8F",
+      "#1A3C40",
+      "#ffffff",
+      "transparent",
+      "#264653",
+      "#475569",
+      "#F4A261"
+    ],
+    "images": [
+      {
+        "id": "section-hero",
+        "type": "section",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "",
+        "backgroundPrompt": "Photorealistic exterior of a premium residential tower in Bangalore, India, with modern architecture, natural daylight, low-angle view, true-to-life colors"
+      },
+      {
+        "id": "image-vision",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Interior of a modern, spacious living room in a luxury apartment in Bangalore, India, with natural light, contemporary furniture, and elegant decor",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "image-project-1",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Exterior of a luxury residential building in Whitefield, Bangalore, India, with modern design, landscaped gardens, and natural lighting",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "image-project-2",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Exterior of a commercial complex in Bangalore, India, with modern architecture, glass facade, and bustling environment",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "image-project-3",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Interior of a luxury hotel lobby in Bangalore, India, with elegant design, ambient lighting, and modern furnishings",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "image-sustainability",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Sustainable building practices in Bangalore, India, showing eco-friendly construction materials and green architecture",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "image-about",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Timeline of Sanjeevini Group's achievements in Bangalore, India, with key milestones and project highlights",
+        "backgroundPrompt": ""
+      }
+    ],
+    "forbiddenHits": [],
+    "layoutFingerprint": [
+      {
+        "id": "section-hero",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#E9C46A"
+      },
+      {
+        "id": "section-vision",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#ffffff"
+      },
+      {
+        "id": "section-projects",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#F4A261"
+      },
+      {
+        "id": "section-testimonials",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#ffffff"
+      },
+      {
+        "id": "section-sustainability",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#E9C46A"
+      },
+      {
+        "id": "section-contact",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#ffffff"
+      },
+      {
+        "id": "section-about",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#F4A261"
+      }
+    ]
+  },
+  "blueprint": {
+    "metadata": {
+      "version": 2,
+      "title": "Home",
+      "createdAt": "2026-07-01T08:42:31.915Z",
+      "updatedAt": "2026-07-01T08:42:31.915Z",
+      "aiGenerated": true,
+      "template": "ai-v9-native-blueprint",
+      "industry": "Real Estate"
+    },
+    "theme": {
+      "id": "sanjeevini-real-estate-theme",
+      "name": "Sanjeevini Custom Theme",
+      "preset": "sanjeevini-real-estate-theme",
+      "tone": "professional",
+      "previewImageUrl": "",
+      "demoData": {
+        "category": "Real Estate",
+        "audience": "Home buyers",
+        "description": "Explore projects",
+        "sections": [],
+        "highlights": []
+      },
+      "tokens": {
+        "colors": {
+          "primary": "#1A3C40",
+          "accent": "#264653",
+          "background": "#E9C46A",
+          "surface": "#ffffff",
+          "textPrimary": "#2A9D8F",
+          "textSecondary": "#475569",
+          "surfaceAlt": "#eef2f7",
+          "primaryContrast": "#ffffff",
+          "border": "#dbe3ef"
+        },
+        "typography": {
+          "scale": {
+            "h1": 56,
+            "h2": 40,
+            "h3": 28,
+            "body": 16,
+            "small": 14
+          },
+          "baseSize": 16,
+          "bodyFont": "Inter",
+          "headingFont": "Inter"
+        },
+        "spacing": {
+          "sectionY": 60,
+          "containerX": 20,
+          "contentGap": 28,
+          "cardGap": 20
+        },
+        "radius": {
+          "card": 12,
+          "media": 14,
+          "button": 10
+        },
+        "shadow": {
+          "card": "0 16px 42px rgba(15, 23, 42, 0.08)",
+          "media": "0 24px 70px rgba(15, 23, 42, 0.16)"
+        },
+        "buttons": {
+          "primary": {
+            "backgroundColor": "#1A3C40",
+            "color": "#ffffff",
+            "borderRadius": 10
+          },
+          "secondary": {
+            "backgroundColor": "transparent",
+            "color": "#2A9D8F",
+            "borderColor": "#dbe3ef",
+            "borderRadius": 10
+          }
+        }
+      }
+    },
+    "root": "page-1",
+    "nodes": {
+      "page-1": {
+        "id": "page-1",
+        "type": "page",
+        "parentId": null,
+        "children": [
+          "section-hero",
+          "section-vision",
+          "section-projects",
+          "section-testimonials",
+          "section-sustainability",
+          "section-contact",
+          "section-about"
+        ],
+        "props": {
+          "title": "Home",
+          "slug": "/home"
+        },
+        "style": {},
+        "locked": false,
+        "hidden": false
+      },
+      "section-hero": {
+        "id": "section-hero",
+        "type": "section",
+        "parentId": "page-1",
+        "children": [
+          "container-hero"
+        ],
+        "props": {
+          "backgroundPrompt": "Photorealistic exterior of a premium residential tower in Bangalore, India, with modern architecture, natural daylight, low-angle view, true-to-life colors"
+        },
+        "style": {
+          "backgroundColor": "#E9C46A",
+          "paddingTop": 60,
+          "paddingBottom": 60,
+          "paddingLeft": 20,
+          "paddingRight": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container-hero": {
+        "id": "container-hero",
+        "type": "container",
+        "parentId": "section-hero",
+        "children": [
+          "heading-hero-eyebrow",
+          "heading-hero-title",
+          "text-hero-body",
+          "button-hero-primary",
+          "button-hero-secondary"
+        ],
+        "props": {
+          "maxWidth": 1200
+        },
+        "style": {
+          "margin": "0 auto",
+          "textAlign": "center"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-hero-eyebrow": {
+        "id": "heading-hero-eyebrow",
+        "type": "heading",
+        "parentId": "container-hero",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Welcome to Sanjeevini Group"
+        },
+        "style": {
+          "color": "#2A9D8F",
+          "fontSize": 28,
+          "marginBottom": 10
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-hero-title": {
+        "id": "heading-hero-title",
+        "type": "heading",
+        "parentId": "container-hero",
+        "children": [],
+        "props": {
+          "level": "h1",
+          "text": "Transforming Modern Living in Bangalore"
+        },
+        "style": {
+          "color": "#1A3C40",
+          "fontSize": 56,
+          "fontWeight": "bold",
+          "marginBottom": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-hero-body": {
+        "id": "text-hero-body",
+        "type": "text",
+        "parentId": "container-hero",
+        "children": [],
+        "props": {
+          "text": "Since 2010, Sanjeevini Group has been delivering innovative, high-quality projects across residential, commercial, and hospitality sectors."
+        },
+        "style": {
+          "color": "#2A9D8F",
+          "fontSize": 16,
+          "maxWidth": 800,
+          "margin": "0 auto",
+          "marginBottom": 40
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "button-hero-primary": {
+        "id": "button-hero-primary",
+        "type": "button",
+        "parentId": "container-hero",
+        "children": [],
+        "props": {
+          "text": "Explore Projects",
+          "href": "#section-projects"
+        },
+        "style": {
+          "backgroundColor": "#1A3C40",
+          "color": "#ffffff",
+          "padding": "12px 24px",
+          "borderRadius": 10,
+          "marginRight": 10
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "button-hero-secondary": {
+        "id": "button-hero-secondary",
+        "type": "button",
+        "parentId": "container-hero",
+        "children": [],
+        "props": {
+          "text": "Contact Us",
+          "href": "#section-contact"
+        },
+        "style": {
+          "backgroundColor": "transparent",
+          "color": "#1A3C40",
+          "border": "2px solid #1A3C40",
+          "padding": "10px 22px",
+          "borderRadius": 10
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section-vision": {
+        "id": "section-vision",
+        "type": "section",
+        "parentId": "page-1",
+        "children": [
+          "container-vision"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "paddingTop": 60,
+          "paddingBottom": 60,
+          "paddingLeft": 20,
+          "paddingRight": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container-vision": {
+        "id": "container-vision",
+        "type": "container",
+        "parentId": "section-vision",
+        "children": [
+          "heading-vision-title",
+          "text-vision-body",
+          "image-vision"
+        ],
+        "props": {
+          "maxWidth": 1200
+        },
+        "style": {
+          "margin": "0 auto",
+          "textAlign": "left"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-vision-title": {
+        "id": "heading-vision-title",
+        "type": "heading",
+        "parentId": "container-vision",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Our Vision"
+        },
+        "style": {
+          "color": "#264653",
+          "fontSize": 40,
+          "marginBottom": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-vision-body": {
+        "id": "text-vision-body",
+        "type": "text",
+        "parentId": "container-vision",
+        "children": [],
+        "props": {
+          "text": "At Sanjeevini Group, we craft homes that reflect your lifestyle, combining creativity and expertise to elevate your living experience."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 16,
+          "marginBottom": 40
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image-vision": {
+        "id": "image-vision",
+        "type": "image",
+        "parentId": "container-vision",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Interior of a modern, spacious living room in a luxury apartment in Bangalore, India, with natural light, contemporary furniture, and elegant decor",
+          "src": "",
+          "alt": "Website visual"
+        },
+        "style": {
+          "width": "100%",
+          "borderRadius": 14,
+          "boxShadow": "0 24px 70px rgba(15, 23, 42, 0.16)"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section-projects": {
+        "id": "section-projects",
+        "type": "section",
+        "parentId": "page-1",
+        "children": [
+          "container-projects"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#F4A261",
+          "paddingTop": 60,
+          "paddingBottom": 60,
+          "paddingLeft": 20,
+          "paddingRight": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container-projects": {
+        "id": "container-projects",
+        "type": "container",
+        "parentId": "section-projects",
+        "children": [
+          "heading-projects-title",
+          "text-projects-body",
+          "grid-projects"
+        ],
+        "props": {
+          "maxWidth": 1200
+        },
+        "style": {
+          "margin": "0 auto",
+          "textAlign": "center"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-projects-title": {
+        "id": "heading-projects-title",
+        "type": "heading",
+        "parentId": "container-projects",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Featured Projects"
+        },
+        "style": {
+          "color": "#264653",
+          "fontSize": 40,
+          "marginBottom": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-projects-body": {
+        "id": "text-projects-body",
+        "type": "text",
+        "parentId": "container-projects",
+        "children": [],
+        "props": {
+          "text": "Discover our latest developments, each designed with precision and a commitment to quality."
+        },
+        "style": {
+          "color": "#2A9D8F",
+          "fontSize": 16,
+          "marginBottom": 40
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "grid-projects": {
+        "id": "grid-projects",
+        "type": "container",
+        "parentId": "container-projects",
+        "children": [
+          "project-card-1",
+          "project-card-2",
+          "project-card-3"
+        ],
+        "props": {},
+        "style": {
+          "display": "grid",
+          "gridTemplateColumns": {
+            "desktop": "repeat(3, 1fr)",
+            "tablet": "repeat(2, 1fr)",
+            "mobile": "1fr"
+          },
+          "gap": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "project-card-1": {
+        "id": "project-card-1",
+        "type": "container",
+        "parentId": "grid-projects",
+        "children": [
+          "image-project-1",
+          "heading-project-1",
+          "text-project-1"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "boxShadow": "0 16px 42px rgba(15, 23, 42, 0.08)",
+          "padding": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image-project-1": {
+        "id": "image-project-1",
+        "type": "image",
+        "parentId": "project-card-1",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Exterior of a luxury residential building in Whitefield, Bangalore, India, with modern design, landscaped gardens, and natural lighting",
+          "src": "",
+          "alt": "Website visual"
+        },
+        "style": {
+          "width": "100%",
+          "borderRadius": 12,
+          "marginBottom": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-project-1": {
+        "id": "heading-project-1",
+        "type": "heading",
+        "parentId": "project-card-1",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Whitefield Residences"
+        },
+        "style": {
+          "color": "#1A3C40",
+          "fontSize": 28,
+          "marginBottom": 10
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-project-1": {
+        "id": "text-project-1",
+        "type": "text",
+        "parentId": "project-card-1",
+        "children": [],
+        "props": {
+          "text": "A modern residential project offering luxurious living spaces in the heart of Whitefield."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 14
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "project-card-2": {
+        "id": "project-card-2",
+        "type": "container",
+        "parentId": "grid-projects",
+        "children": [
+          "image-project-2",
+          "heading-project-2",
+          "text-project-2"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "boxShadow": "0 16px 42px rgba(15, 23, 42, 0.08)",
+          "padding": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image-project-2": {
+        "id": "image-project-2",
+        "type": "image",
+        "parentId": "project-card-2",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Exterior of a commercial complex in Bangalore, India, with modern architecture, glass facade, and bustling environment",
+          "src": "",
+          "alt": "Website visual"
+        },
+        "style": {
+          "width": "100%",
+          "borderRadius": 12,
+          "marginBottom": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-project-2": {
+        "id": "heading-project-2",
+        "type": "heading",
+        "parentId": "project-card-2",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Bangalore Business Hub"
+        },
+        "style": {
+          "color": "#1A3C40",
+          "fontSize": 28,
+          "marginBottom": 10
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-project-2": {
+        "id": "text-project-2",
+        "type": "text",
+        "parentId": "project-card-2",
+        "children": [],
+        "props": {
+          "text": "A state-of-the-art commercial space designed for modern businesses."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 14
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "project-card-3": {
+        "id": "project-card-3",
+        "type": "container",
+        "parentId": "grid-projects",
+        "children": [
+          "image-project-3",
+          "heading-project-3",
+          "text-project-3"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "boxShadow": "0 16px 42px rgba(15, 23, 42, 0.08)",
+          "padding": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image-project-3": {
+        "id": "image-project-3",
+        "type": "image",
+        "parentId": "project-card-3",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Interior of a luxury hotel lobby in Bangalore, India, with elegant design, ambient lighting, and modern furnishings",
+          "src": "",
+          "alt": "Website visual"
+        },
+        "style": {
+          "width": "100%",
+          "borderRadius": 12,
+          "marginBottom": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-project-3": {
+        "id": "heading-project-3",
+        "type": "heading",
+        "parentId": "project-card-3",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Bangalore Luxury Hotel"
+        },
+        "style": {
+          "color": "#1A3C40",
+          "fontSize": 28,
+          "marginBottom": 10
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-project-3": {
+        "id": "text-project-3",
+        "type": "text",
+        "parentId": "project-card-3",
+        "children": [],
+        "props": {
+          "text": "Experience luxury and comfort in our premium hotel located in the heart of Bangalore."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 14
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section-testimonials": {
+        "id": "section-testimonials",
+        "type": "section",
+        "parentId": "page-1",
+        "children": [
+          "container-testimonials"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "paddingTop": 60,
+          "paddingBottom": 60,
+          "paddingLeft": 20,
+          "paddingRight": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container-testimonials": {
+        "id": "container-testimonials",
+        "type": "container",
+        "parentId": "section-testimonials",
+        "children": [
+          "heading-testimonials-title",
+          "text-testimonials-body"
+        ],
+        "props": {
+          "maxWidth": 1200
+        },
+        "style": {
+          "margin": "0 auto",
+          "textAlign": "center"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-testimonials-title": {
+        "id": "heading-testimonials-title",
+        "type": "heading",
+        "parentId": "container-testimonials",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Customer Testimonials"
+        },
+        "style": {
+          "color": "#264653",
+          "fontSize": 40,
+          "marginBottom": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-testimonials-body": {
+        "id": "text-testimonials-body",
+        "type": "text",
+        "parentId": "container-testimonials",
+        "children": [],
+        "props": {
+          "text": "Hear from our satisfied clients about their experiences with Sanjeevini Group."
+        },
+        "style": {
+          "color": "#2A9D8F",
+          "fontSize": 16,
+          "marginBottom": 40
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section-sustainability": {
+        "id": "section-sustainability",
+        "type": "section",
+        "parentId": "page-1",
+        "children": [
+          "container-sustainability"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#E9C46A",
+          "paddingTop": 60,
+          "paddingBottom": 60,
+          "paddingLeft": 20,
+          "paddingRight": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container-sustainability": {
+        "id": "container-sustainability",
+        "type": "container",
+        "parentId": "section-sustainability",
+        "children": [
+          "heading-sustainability-title",
+          "text-sustainability-body",
+          "image-sustainability"
+        ],
+        "props": {
+          "maxWidth": 1200
+        },
+        "style": {
+          "margin": "0 auto",
+          "textAlign": "left"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-sustainability-title": {
+        "id": "heading-sustainability-title",
+        "type": "heading",
+        "parentId": "container-sustainability",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Sustainability"
+        },
+        "style": {
+          "color": "#264653",
+          "fontSize": 40,
+          "marginBottom": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-sustainability-body": {
+        "id": "text-sustainability-body",
+        "type": "text",
+        "parentId": "container-sustainability",
+        "children": [],
+        "props": {
+          "text": "Our commitment to green building practices ensures that every project is environmentally friendly and sustainable."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 16,
+          "marginBottom": 40
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image-sustainability": {
+        "id": "image-sustainability",
+        "type": "image",
+        "parentId": "container-sustainability",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Sustainable building practices in Bangalore, India, showing eco-friendly construction materials and green architecture",
+          "src": "",
+          "alt": "Website visual"
+        },
+        "style": {
+          "width": "100%",
+          "borderRadius": 14,
+          "boxShadow": "0 24px 70px rgba(15, 23, 42, 0.16)"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section-contact": {
+        "id": "section-contact",
+        "type": "section",
+        "parentId": "page-1",
+        "children": [
+          "container-contact"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "paddingTop": 60,
+          "paddingBottom": 60,
+          "paddingLeft": 20,
+          "paddingRight": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container-contact": {
+        "id": "container-contact",
+        "type": "container",
+        "parentId": "section-contact",
+        "children": [
+          "heading-contact-title",
+          "text-contact-body"
+        ],
+        "props": {
+          "maxWidth": 1200
+        },
+        "style": {
+          "margin": "0 auto",
+          "textAlign": "center"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-contact-title": {
+        "id": "heading-contact-title",
+        "type": "heading",
+        "parentId": "container-contact",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Contact Us"
+        },
+        "style": {
+          "color": "#264653",
+          "fontSize": 40,
+          "marginBottom": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-contact-body": {
+        "id": "text-contact-body",
+        "type": "text",
+        "parentId": "container-contact",
+        "children": [],
+        "props": {
+          "text": "Start your journey with Sanjeevini Group. Reach out to us for inquiries and site visit bookings."
+        },
+        "style": {
+          "color": "#2A9D8F",
+          "fontSize": 16,
+          "marginBottom": 40
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section-about": {
+        "id": "section-about",
+        "type": "section",
+        "parentId": "page-1",
+        "children": [
+          "container-about"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#F4A261",
+          "paddingTop": 60,
+          "paddingBottom": 60,
+          "paddingLeft": 20,
+          "paddingRight": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container-about": {
+        "id": "container-about",
+        "type": "container",
+        "parentId": "section-about",
+        "children": [
+          "heading-about-title",
+          "text-about-body",
+          "image-about"
+        ],
+        "props": {
+          "maxWidth": 1200
+        },
+        "style": {
+          "margin": "0 auto",
+          "textAlign": "left"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading-about-title": {
+        "id": "heading-about-title",
+        "type": "heading",
+        "parentId": "container-about",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "About Us"
+        },
+        "style": {
+          "color": "#264653",
+          "fontSize": 40,
+          "marginBottom": 20
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text-about-body": {
+        "id": "text-about-body",
+        "type": "text",
+        "parentId": "container-about",
+        "children": [],
+        "props": {
+          "text": "Founded in 2010, Sanjeevini Group has developed over 1.5 million square feet of built space and is currently working on 3 million square feet of new development."
+        },
+        "style": {
+          "color": "#475569",
+          "fontSize": 16,
+          "marginBottom": 40
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image-about": {
+        "id": "image-about",
+        "type": "image",
+        "parentId": "container-about",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Timeline of Sanjeevini Group's achievements in Bangalore, India, with key milestones and project highlights",
+          "src": "",
+          "alt": "Website visual"
+        },
+        "style": {
+          "width": "100%",
+          "borderRadius": 14,
+          "boxShadow": "0 24px 70px rgba(15, 23, 42, 0.16)"
+        },
+        "locked": false,
+        "hidden": false
+      }
+    }
+  }
+}

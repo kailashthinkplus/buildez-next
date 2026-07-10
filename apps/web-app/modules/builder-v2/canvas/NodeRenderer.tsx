@@ -7,8 +7,16 @@ import { useCanvasStore, type Device } from "../store/useCanvasStore";
 import { useHoverStore } from "../store/useHoverStore";
 import { commandBus } from "../core/commands/CommandBus";
 import { UpdateNodeCommand } from "../core/commands/MoveNodeCommand";
+import { getResponsiveValue } from "../core/responsive";
+import {
+  getRenderContainerWidthStyle,
+  getRenderSectionContentWidthStyle,
+  resolveRenderStyle,
+  resolveRenderStyleValue,
+} from "../core/rendering/renderStyleResolver";
+import { collectRenderCustomCss } from "../core/rendering/renderCustomCss";
 import { isSystemFont, normalizeGoogleFontFamily } from "@/lib/googleFonts";
-import PremiumWidgetPreview from "../widgets/premium/PremiumWidgetPreview";
+import ProductionWidgetView from "../widgets/premium/ProductionWidgetView";
 import {
   ArrowRight,
   Check,
@@ -30,16 +38,81 @@ const PREMIUM_NODE_TYPES = new Set([
   "smartHeader",
   "hero",
   "leadForm",
+  "contactForm",
   "cardGrid",
   "galleryLightbox",
+  "features",
+  "gallery",
+  "masonryGallery",
   "faq",
+  "accordion",
+  "tabs",
   "testimonials",
+  "testimonial",
   "pricing",
+  "statsCounter",
+  "logoCloud",
+  "team",
+  "portfolio",
+  "timeline",
+  "featureGrid",
   "offerGrid",
   "floatingWhatsApp",
+  "socialLinks",
   "locationMap",
   "smartFooter",
+  "cta",
+  "carousel",
+  "beforeAfter",
+  "table",
+  "countdown",
+  "codeBlock",
+  "embed",
+  "blogGrid",
+  "postList",
+  "categoryList",
+  "popupModal",
 ]);
+
+function renderText(value: unknown): string {
+  if (typeof value === "string" || typeof value === "number") {
+    return String(value).trim();
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(renderText).filter(Boolean).join(", ");
+  }
+
+  if (!value || typeof value !== "object") return "";
+
+  const record = value as Record<string, unknown>;
+  const keys = [
+    "label",
+    "text",
+    "title",
+    "heading",
+    "name",
+    "question",
+    "body",
+    "description",
+    "content",
+    "caption",
+    "value",
+  ];
+
+  for (const key of keys) {
+    const result = renderText(record[key]);
+    if (result) return result;
+  }
+
+  return "";
+}
+
+function renderItems(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const items = value.map(renderText).filter(Boolean);
+  return items.length ? items : undefined;
+}
 
 function loadGoogleFont(family: string) {
   const normalized = normalizeGoogleFontFamily(family);
@@ -133,10 +206,31 @@ ${selector} {
   animation-timing-function: ${ease};
   animation-fill-mode: both;
 }
+
 ${childDelays}
 `;
     })
     .filter(Boolean)
+    .join("\n");
+}
+
+function collectImageBackgroundCss(blueprint: BuilderBlueprint) {
+  return Object.values(blueprint.nodes)
+    .filter(
+      (node) =>
+        typeof node.style?.backgroundImage === "string" &&
+        /url\(/i.test(node.style.backgroundImage)
+    )
+    .map((node) => {
+      const selector = `[data-node-id="${cssEscape(node.id)}"][data-buildez-image-bg="true"]`;
+
+      return `
+${selector} {
+  position: relative;
+  overflow: hidden;
+}
+`;
+    })
     .join("\n");
 }
 
@@ -157,6 +251,10 @@ function isVisibleOnDevice(node: BuilderNode, device: Device): boolean {
     return false;
   }
 
+  if (device === "mobile" && node.props?.hideOnMobile === true) {
+    return false;
+  }
+
   return visibility?.[device] !== false;
 }
 
@@ -169,6 +267,8 @@ export default function NodeRenderer({ nodes, blueprint }: NodeRendererProps) {
   const fontFamilies = useMemo(() => collectFontFamilies(blueprint), [blueprint]);
   const customKeyframes = useMemo(() => collectCustomKeyframes(blueprint), [blueprint]);
   const motionCss = useMemo(() => collectMotionCss(blueprint), [blueprint]);
+  const imageBackgroundCss = useMemo(() => collectImageBackgroundCss(blueprint), [blueprint]);
+  const customCss = useMemo(() => collectRenderCustomCss(blueprint), [blueprint]);
 
   useEffect(() => {
     fontFamilies.forEach(loadGoogleFont);
@@ -178,6 +278,8 @@ export default function NodeRenderer({ nodes, blueprint }: NodeRendererProps) {
     <div className="w-full h-full">
       {customKeyframes && <style dangerouslySetInnerHTML={{ __html: customKeyframes }} />}
       {motionCss && <style dangerouslySetInnerHTML={{ __html: motionCss }} />}
+      {imageBackgroundCss && <style dangerouslySetInnerHTML={{ __html: imageBackgroundCss }} />}
+      {customCss && <style dangerouslySetInnerHTML={{ __html: customCss }} />}
       {nodes.map((node) => (
         <RenderNode key={node.id} node={node} blueprint={blueprint} />
       ))}
@@ -234,6 +336,7 @@ function parseInlineCss(value: string): React.CSSProperties {
 }
 
 function getMotionStyle(motion: Record<string, unknown>): React.CSSProperties {
+  if (motion.engine === "none") return {};
   const preset = String(motion.preset ?? "none");
   if (preset === "none" || preset === "stagger-children") {
     return {};
@@ -253,9 +356,20 @@ function getMotionStyle(motion: Record<string, unknown>): React.CSSProperties {
   }
 
   const animationMap: Record<string, string> = {
+    fade: "builder-fade-in",
     "fade-in": "builder-fade-in",
+    slide: "builder-slide-up",
     "slide-up": "builder-slide-up",
+    scale: "builder-scale-in",
     "scale-in": "builder-scale-in",
+    rotate: "builder-rotate-in",
+    blur: "builder-blur-in",
+    reveal: "builder-soft-reveal",
+    zoom: "builder-zoom-in",
+    luxury: "builder-luxury-in",
+    editorial: "builder-slide-up",
+    corporate: "builder-fade-in",
+    minimal: "builder-fade-in",
   };
   const animationName = animationMap[preset];
   if (!animationName) return {};
@@ -343,6 +457,16 @@ function normalizeStyleConflicts(style: React.CSSProperties): React.CSSPropertie
   return next;
 }
 
+function parsePercentageWidth(value: unknown): number | null {
+  if (typeof value !== "string") return null;
+
+  const match = value.trim().match(/^(-?\d+(?:\.\d+)?)%$/);
+  if (!match) return null;
+
+  const numericValue = Number(match[1]);
+  return Number.isFinite(numericValue) && numericValue > 0 ? numericValue : null;
+}
+
 const ICONS: Record<string, LucideIcon> = {
   star: Star,
   heart: Heart,
@@ -392,10 +516,20 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
   const isHidden = !!node.hidden;
   const isDragEnabled = node.id !== blueprint.root && !isLocked;
   const responsiveVisible = isVisibleOnDevice(node, device);
-  const canvasWidth =
-    device === "mobile" ? 390 : device === "tablet" ? 768 : 1200;
-  const sizeScale = device === "mobile" ? 0.82 : device === "tablet" ? 0.92 : 1;
 
+const canvasWidth =
+  device === "mobile"
+    ? 390
+    : device === "tablet"
+      ? 768
+      : 1200;
+
+const sizeScale =
+  device === "mobile"
+    ? 0.82
+    : device === "tablet"
+      ? 0.92
+      : 1;
   if (node.parentId !== null && (isHidden || !responsiveVisible)) {
     return null;
   }
@@ -469,13 +603,26 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
     advanced.accessibility && typeof advanced.accessibility === "object"
       ? (advanced.accessibility as Record<string, unknown>)
       : {};
-  const customClass = String(advanced.className ?? node.props?.className ?? "").trim();
-  const cssId = String(advanced.cssId ?? "").trim() || undefined;
+  const seo =
+    advanced.seo && typeof advanced.seo === "object"
+      ? (advanced.seo as Record<string, unknown>)
+      : {};
+  const visibility =
+    advanced.visibility && typeof advanced.visibility === "object"
+      ? (advanced.visibility as Record<string, unknown>)
+      : {};
+  const customClass = String(
+    advanced.className ?? node.props?.className ?? ""
+  ).trim();
+  const cssId =
+    String(advanced.cssId ?? "").trim() ||
+    (node.type === "section"
+      ? String(node.props?.anchorId ?? "").trim()
+      : "") ||
+    undefined;
 
   function pickResponsive(value: unknown): unknown {
-    if (!value || typeof value !== "object" || Array.isArray(value)) return value;
-    const obj = value as Record<string, unknown>;
-    return obj[device] ?? obj.desktop ?? obj.laptop ?? obj.tablet ?? obj.mobile ?? value;
+    return getResponsiveValue(value, device, value);
   }
 
   function getThemeValue(path: string): unknown {
@@ -493,35 +640,49 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
   }
 
   function resolveStyleValue(value: unknown): unknown {
-    const picked = pickResponsive(value);
-    if (typeof picked !== "string" || !picked) return picked;
+  const picked = pickResponsive(value);
+  if (typeof picked !== "string" || !picked) return picked;
 
-    const exactThemeMatch = picked.match(/^theme\.(.+)$/);
-    if (exactThemeMatch) {
-      return getThemeValue(exactThemeMatch[1]) ?? picked;
-    }
-
-    const map: Record<string, string> = {
-      "text.primary": "#0f172a",
-      "text.secondary": "#334155",
-      "primary.500": "#2563eb",
-      surface: "#ffffff",
-      "surface.muted": "#f1f5f9",
-      border: "#e2e8f0",
-      transparent: "transparent",
-      white: "#ffffff",
-      black: "#000000",
-    };
-
-    if (map[picked]) {
-      return map[picked];
-    }
-
-    return picked.replace(/theme\.([a-zA-Z0-9_.]+)/g, (match, path) => {
-      const resolved = getThemeValue(path);
-      return resolved === undefined || resolved === null ? match : String(resolved);
-    });
+  const exactThemeMatch = picked.match(/^theme\.(.+)$/);
+  if (exactThemeMatch) {
+    return getThemeValue(exactThemeMatch[1]) ?? undefined;
   }
+
+  const tokenAliasMap: Record<string, string> = {
+    "text.primary": "colors.text",
+    "text.secondary": "colors.muted",
+    "primary.500": "colors.primary",
+    "primary": "colors.primary",
+    "accent": "colors.accent",
+    "surface": "colors.surface",
+    "surface.muted": "colors.surfaceMuted",
+    "background": "colors.background",
+    "border": "colors.border",
+  };
+
+  if (tokenAliasMap[picked]) {
+    return getThemeValue(tokenAliasMap[picked]) ?? undefined;
+  }
+
+  if (
+    picked === "transparent" ||
+    picked === "white" ||
+    picked === "black" ||
+    picked.startsWith("#") ||
+    picked.startsWith("rgb") ||
+    picked.startsWith("hsl") ||
+    picked.startsWith("linear-gradient") ||
+    picked.startsWith("radial-gradient") ||
+    picked.startsWith("url(")
+  ) {
+    return picked;
+  }
+
+  return picked.replace(/theme\.([a-zA-Z0-9_.]+)/g, (match, path) => {
+    const resolved = getThemeValue(path);
+    return resolved === undefined || resolved === null ? "" : String(resolved);
+  });
+}
 
   function resolveTokenColor(value: unknown, fallback: string): string {
     const resolved = resolveStyleValue(value);
@@ -569,123 +730,56 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
     return m ? Number(m[1]) : null;
   }
 
-  function clampWidth(value: unknown): string | number | undefined {
-    const computed = toCssUnit(value, { scale: false });
-    const px = toPx(computed);
-    if (px !== null && px > canvasWidth) {
-      return "100%";
-    }
-    return computed;
-  }
+  const shouldUseFixedBackground =
+    motion.engine === "parallax" ||
+    Number(motion.parallaxSpeed ?? 0) !== 0 ||
+    Number(motion.parallaxHorizontal ?? 0) !== 0 ||
+    Number(motion.parallaxVertical ?? 0) !== 0;
 
   const nodeStyle: React.CSSProperties = {
-    color: resolveTokenColor(node.style?.color, isDarkMode ? "#e5e7eb" : "#0f172a"),
-    display: pickResponsive(node.style?.display) as React.CSSProperties["display"],
-    backgroundColor:
-      node.style?.backgroundColor !== undefined
-        ? resolveTokenColor(node.style?.backgroundColor, "transparent")
-        : undefined,
-    backgroundImage: node.style?.backgroundImage as string | undefined,
-    backgroundSize: pickResponsive(node.style?.backgroundSize) as React.CSSProperties["backgroundSize"],
-    backgroundPosition: pickResponsive(node.style?.backgroundPosition) as React.CSSProperties["backgroundPosition"],
-    backgroundRepeat: pickResponsive(node.style?.backgroundRepeat) as React.CSSProperties["backgroundRepeat"],
-    backgroundAttachment:
-      (motion.engine === "parallax" || Number(motion.parallaxSpeed ?? 0) !== 0
-        ? "fixed"
-        : pickResponsive(node.style?.backgroundAttachment)) as React.CSSProperties["backgroundAttachment"],
-    opacity: node.style?.opacity,
-    fontFamily: resolveStyleValue(node.style?.fontFamily) as string | undefined,
-    fontSize: toCssUnit(node.style?.fontSize),
-    fontWeight: (node.style?.fontWeight as number | undefined) ?? undefined,
-    lineHeight: (node.style?.lineHeight as number | undefined) ?? undefined,
-    letterSpacing: toCssUnit(node.style?.letterSpacing),
-    textAlign: (node.style?.textAlign as React.CSSProperties["textAlign"]) ?? undefined,
-    textTransform: node.style?.textTransform,
-    textDecoration: node.style?.textDecoration,
-    padding: toCssUnit(node.style?.padding),
-    paddingTop: toCssUnit(node.style?.paddingTop),
-    paddingRight: toCssUnit(node.style?.paddingRight),
-    paddingBottom: toCssUnit(node.style?.paddingBottom),
-    paddingLeft: toCssUnit(node.style?.paddingLeft),
-    margin: toCssUnit(node.style?.margin),
-    marginTop: toCssUnit(node.style?.marginTop),
-    marginRight: toCssUnit(node.style?.marginRight),
-    marginBottom: toCssUnit(node.style?.marginBottom),
-    marginLeft: toCssUnit(node.style?.marginLeft),
-    borderRadius: toCssUnit(node.style?.borderRadius),
-    border: resolveStyleValue(node.style?.border) as string | undefined,
-    boxShadow: resolveStyleValue(node.style?.boxShadow) as string | undefined,
-    width: clampWidth(node.style?.width),
-    height: toCssUnit(node.style?.height),
-    minWidth: clampWidth(node.style?.minWidth),
-    minHeight: toCssUnit(node.style?.minHeight),
-    maxWidth: clampWidth(node.style?.maxWidth),
-    maxHeight: toCssUnit(node.style?.maxHeight),
-    gap: toCssUnit(node.style?.gap) as string | number | undefined,
-    flexWrap: pickResponsive(node.style?.flexWrap) as React.CSSProperties["flexWrap"],
-    flexDirection: pickResponsive(node.style?.flexDirection) as React.CSSProperties["flexDirection"],
-    justifyContent: pickResponsive(node.style?.justifyContent) as React.CSSProperties["justifyContent"],
-    alignItems: pickResponsive(node.style?.alignItems) as React.CSSProperties["alignItems"],
-    gridTemplateColumns: resolveStyleValue(node.style?.gridTemplateColumns) as string | undefined,
-    position: node.style?.position,
-    top: toCssUnit(node.style?.top),
-    right: toCssUnit(node.style?.right),
-    bottom: toCssUnit(node.style?.bottom),
-    left: toCssUnit(node.style?.left),
-    overflow: pickResponsive(node.style?.overflow) as React.CSSProperties["overflow"],
-    objectFit: pickResponsive(node.style?.objectFit) as React.CSSProperties["objectFit"],
-    objectPosition: pickResponsive(node.style?.objectPosition) as React.CSSProperties["objectPosition"],
-    aspectRatio: pickResponsive(node.style?.aspectRatio) as React.CSSProperties["aspectRatio"],
-    zIndex: node.style?.zIndex,
-    transform: pickResponsive(node.style?.transform) as string | undefined,
-    transition: node.style?.transition,
+    ...resolveRenderStyle(node, blueprint, {
+      device,
+      scale: sizeScale,
+      canvasWidth,
+      textFallback: isDarkMode ? "#e5e7eb" : "#0f172a",
+    }),
+    ...(shouldUseFixedBackground ? { backgroundAttachment: "fixed" } : {}),
   };
   const motionStyle = getMotionStyle(motion);
   const customCssStyle = parseInlineCss(String(advanced.customCss ?? ""));
   const renderStyle: React.CSSProperties = {
-    ...nodeStyle,
-    ...getStylePresetStyle(props?.stylePreset),
-    ...customCssStyle,
-    ...motionStyle,
-  };
-  const isParentContainer =
-    type === "page" || type === "section" || type === "container";
-  const widthMode = String(
-    props?.container ?? props?.widthMode ?? (type === "page" ? "full" : "boxed")
-  );
-  const maxWidthProp = props?.maxWidth ?? node.style?.maxWidth ?? "1280px";
-  const containerWidthStyle: React.CSSProperties =
-    isParentContainer && widthMode === "boxed"
-      ? {
-          width: "100%",
-          maxWidth: clampWidth(maxWidthProp),
-          marginLeft: "auto",
-          marginRight: "auto",
-        }
-      : isParentContainer && widthMode === "full"
-        ? {
-            width: "100%",
-            maxWidth: "none",
-            marginLeft: undefined,
-            marginRight: undefined,
-          }
-        : {};
+  ...getStylePresetStyle(props?.stylePreset),
+  ...normalizeStyleConflicts(nodeStyle),
+  ...customCssStyle,
+  ...motionStyle,
+};
+  const containerWidthStyle = getRenderContainerWidthStyle(node, blueprint, {
+  device,
+  scale: sizeScale,
+  canvasWidth,
+});
 
-  const hoverClass = !isLocked
-    ? "hover:bg-blue-50 hover:outline hover:outline-2 hover:outline-blue-400"
-    : "";
+const sectionContentWidthStyle = getRenderSectionContentWidthStyle(
+  node,
+  blueprint,
+  {
+    device,
+    scale: sizeScale,
+    canvasWidth,
+  }
+);
 
   // Base styling: border + cursor + hover effect
   const baseClass = `
-    relative 
-    box-border 
-    select-none 
-    ${isLocked ? "cursor-not-allowed" : "cursor-pointer"}
-    pointer-events-auto
-    ${hoverClass}
-    transition-all
-    ${customClass}
-  `;
+  builder-node
+  group/builder-node
+  relative
+  box-border
+  select-none
+  ${isLocked ? "cursor-not-allowed" : "cursor-pointer"}
+  pointer-events-auto
+  ${customClass}
+`;
 
   const emptyState =
     children.length === 0 &&
@@ -713,6 +807,44 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
     tabIndex:
       accessibility.tabIndex !== undefined && accessibility.tabIndex !== ""
         ? Number(accessibility.tabIndex)
+        : undefined,
+    title:
+      typeof seo.title === "string" && seo.title.trim()
+        ? seo.title
+        : undefined,
+    "data-node-label": String(
+      node.props?.label ?? node.props?.name ?? node.name ?? ""
+    ).trim() || undefined,
+    "data-visibility-condition":
+      visibility.condition && visibility.condition !== "always"
+        ? String(visibility.condition)
+        : undefined,
+    "data-schema-hint":
+      seo.schema && seo.schema !== "none" ? String(seo.schema) : undefined,
+    "data-seo-description":
+      typeof seo.description === "string" && seo.description.trim()
+        ? seo.description
+        : undefined,
+    "data-ai-action-note":
+      typeof node.props?.aiActionNote === "string"
+        ? node.props.aiActionNote
+        : undefined,
+    "data-href":
+      node.type === "button"
+        ? String(node.props?.href ?? node.props?.url ?? "").trim() || undefined
+        : undefined,
+    "data-target":
+      node.type === "button" && node.props?.target
+        ? String(node.props.target)
+        : undefined,
+    "data-widget-variant":
+      typeof node.props?.variant === "string" && node.props.variant
+        ? node.props.variant
+        : undefined,
+    "data-buildez-image-bg":
+      typeof node.style?.backgroundImage === "string" &&
+      /url\(/i.test(node.style.backgroundImage)
+        ? "true"
         : undefined,
   };
 
@@ -746,58 +878,106 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
 
   switch (type) {
     case "page":
-      return (
-        <div 
-          className={`w-full min-h-screen p-6 space-y-4 ${customClass} ${
-            isDarkMode ? "bg-[#0f1118] text-slate-100" : "bg-white text-slate-900"
-          }`}
-          data-drop-target="true"
-          data-node-id={node.id}
-          onClick={handleClick}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          {...commonDragProps}
-          style={normalizeStyleConflicts({
-            ...renderStyle,
-            ...containerWidthStyle,
-          })}
-        >
-          {children.map((child) => (
-            <RenderNode key={child.id} node={child} blueprint={blueprint} />
-          ))}
-        </div>
-      );
+  return (
+    <div
+      className={`builder-node-page ${customClass}`}
+      data-drop-target="true"
+      data-node-id={node.id}
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...commonDragProps}
+      style={normalizeStyleConflicts({
+        ...renderStyle,
+        ...containerWidthStyle,
+        minHeight: renderStyle.minHeight ?? "100vh",
+        width: renderStyle.width ?? "100%",
+      })}
+    >
+      {children.map((child) => (
+        <RenderNode key={child.id} node={child} blueprint={blueprint} />
+      ))}
+    </div>
+  );
 
-    case "section":
-      return (
-        <section
-          className={`w-full py-12 px-4 ${baseClass}`}
-          data-drop-target="true"
-          data-node-id={node.id}
-          onClick={handleClick}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          {...commonDragProps}
-          style={normalizeStyleConflicts({
-            ...renderStyle,
-            ...containerWidthStyle,
-          })}
-        >
-          {children.map((child) => (
-            <RenderNode key={child.id} node={child} blueprint={blueprint} />
-          ))}
-          {emptyState && (
-            <div className="border border-dashed border-slate-300 rounded-md px-3 py-4 text-xs text-slate-500 bg-slate-50/70">
-              Empty section. Use Add from toolbar or sidebar to insert widgets.
-            </div>
-          )}
-        </section>
-      );
+    case "section": {
+  const sectionLayout =
+    renderStyle.display === "grid" ? "grid" : "flex";
+
+  return (
+    <section
+      className={baseClass}
+      data-drop-target="true"
+      data-node-id={node.id}
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...commonDragProps}
+      style={normalizeStyleConflicts({
+        ...renderStyle,
+        ...containerWidthStyle,
+        boxSizing: "border-box",
+
+        // Layout must run on the inner wrapper that owns the children.
+        display: "block",
+        flexDirection: undefined,
+        flexWrap: undefined,
+        justifyContent: undefined,
+        alignItems: undefined,
+        gap: undefined,
+        gridTemplateColumns: undefined,
+      })}
+    >
+      <div
+        data-section-content="true"
+        style={normalizeStyleConflicts({
+          ...sectionContentWidthStyle,
+          boxSizing: "border-box",
+
+          display: sectionLayout,
+          flexDirection:
+            sectionLayout === "flex"
+              ? renderStyle.flexDirection ?? "column"
+              : undefined,
+          flexWrap:
+            sectionLayout === "flex"
+              ? renderStyle.flexWrap
+              : undefined,
+          justifyContent: renderStyle.justifyContent,
+          alignItems: renderStyle.alignItems,
+          gap: renderStyle.gap,
+          gridTemplateColumns:
+            sectionLayout === "grid"
+              ? renderStyle.gridTemplateColumns
+              : undefined,
+        })}
+      >
+        {children.map((child) => (
+          <RenderNode
+            key={child.id}
+            node={child}
+            blueprint={blueprint}
+          />
+        ))}
+
+        {emptyState && (
+          <div
+            data-canvas-placeholder="empty-section"
+            className="rounded-lg border border-dashed border-blue-300/70 bg-blue-50/70 px-3 py-4 text-xs font-medium text-blue-700 shadow-inner"
+          >
+            Empty section. Use Add from toolbar or sidebar to insert widgets.
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
 
    case "container": {
   const layout = props?.layout ?? "flex";
-  const direction = props?.direction ?? "row";
+  const direction = String(renderStyle.flexDirection ?? props?.direction ?? "row");
   const gap = props?.gap ?? 24;
+
   const effectiveDirection =
     direction === "row" && (device === "mobile" || device === "tablet")
       ? "column"
@@ -808,15 +988,36 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
       className={`
         ${baseClass}
         ${layout === "grid" ? "grid" : "flex"}
-        ${layout !== "grid"
-          ? effectiveDirection === "row"
-            ? "flex-row"
-            : "flex-col"
-          : ""}
+        ${
+          layout !== "grid"
+            ? effectiveDirection === "row"
+              ? "flex-row"
+              : "flex-col"
+            : ""
+        }
       `}
       style={normalizeStyleConflicts({
         ...renderStyle,
         ...containerWidthStyle,
+        boxSizing: "border-box",
+        minWidth: renderStyle.minWidth ?? 0,
+
+        display:
+          layout === "grid"
+            ? "grid"
+            : renderStyle.display ?? "flex",
+
+        flexDirection:
+          layout === "grid"
+            ? renderStyle.flexDirection
+            : (effectiveDirection as React.CSSProperties["flexDirection"]),
+
+        gridTemplateColumns:
+          layout === "grid"
+            ? renderStyle.gridTemplateColumns ??
+              `repeat(${Number(props?.columns ?? 3)}, minmax(0, 1fr))`
+            : renderStyle.gridTemplateColumns,
+
         gap: renderStyle.gap ?? toCssUnit(gap),
       })}
       data-drop-target="true"
@@ -833,7 +1034,10 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
       ))}
 
       {emptyState && (
-        <div className="w-full rounded-md border border-dashed border-slate-300 bg-slate-50/70 px-3 py-4 text-xs text-slate-500">
+        <div
+          data-canvas-placeholder="empty-container"
+          className="w-full rounded-lg border border-dashed border-sky-300/80 bg-sky-50/70 px-3 py-4 text-xs font-medium text-sky-700 shadow-inner"
+        >
           Empty container. Insert columns or elements.
         </div>
       )}
@@ -841,26 +1045,126 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
   );
 }
 
-    case "column":
-      const width = props?.width;
-      const columnLayout = props?.layout || "vertical";
+    case "column": {
+      const columnLayout = String(props?.layout ?? "vertical");
+
+      const parentNode = node.parentId
+        ? blueprint.nodes[node.parentId]
+        : undefined;
+
+      const configuredParentDirection = String(
+        resolveRenderStyleValue(
+          parentNode?.style?.flexDirection,
+          blueprint,
+          device
+        ) ??
+          parentNode?.props?.direction ??
+          "row"
+      );
+      const parentDirection =
+        (device === "mobile" || device === "tablet") && configuredParentDirection === "row"
+          ? "column"
+          : configuredParentDirection;
+
+      const isVerticallyStacked =
+        parentDirection === "column" ||
+        parentDirection === "column-reverse";
+
       const effectiveColumnLayout =
         columnLayout === "horizontal" && device === "mobile"
           ? "vertical"
           : columnLayout;
-      const columnClass =
-        effectiveColumnLayout === "horizontal"
-          ? "flex flex-row flex-wrap items-start gap-4"
-          : "flex flex-col";
-      
+
+      const rawResolvedWidth =
+  typeof renderStyle.width === "string" ||
+  typeof renderStyle.width === "number"
+    ? renderStyle.width
+    : undefined;
+
+const resolvedWidth =
+  !isVerticallyStacked &&
+  rawResolvedWidth === "100%" &&
+  parentNode?.type === "container" &&
+  (parentNode.children?.length ?? 0) > 1
+    ? undefined
+    : rawResolvedWidth;
+
+      const positionMode =
+        renderStyle.position === "absolute" ||
+        renderStyle.position === "fixed" ||
+        renderStyle.position === "sticky"
+          ? renderStyle.position
+          : "relative";
+
+      const usesPositionOffsets =
+        positionMode === "absolute" ||
+        positionMode === "fixed" ||
+        positionMode === "sticky";
+
+      const siblingCount =
+  parentNode?.type === "container"
+    ? Math.max(1, parentNode.children?.length ?? 1)
+    : 1;
+
+const equalWidth = `${100 / siblingCount}%`;
+
+const columnFlex = isVerticallyStacked
+  ? "0 0 auto"
+  : resolvedWidth
+    ? `0 0 ${resolvedWidth}`
+    : `0 0 ${equalWidth}`;
+
+      const columnWidth = isVerticallyStacked
+  ? "100%"
+  : resolvedWidth ?? equalWidth;
+
+const columnMaxWidth = isVerticallyStacked
+  ? "100%"
+  : resolvedWidth ?? equalWidth;
+
       return (
         <div
-          className={`${baseClass} ${columnClass} min-h-24 p-2 bg-slate-50/40`}
+          className={`
+            ${baseClass}
+            flex
+            ${
+              effectiveColumnLayout === "horizontal"
+                ? "flex-row flex-wrap items-start"
+                : "flex-col"
+            }
+          `}
           style={normalizeStyleConflicts({
             ...renderStyle,
-            flex: (node.style?.flex as React.CSSProperties["flex"]) ?? 1,
+
+            display: "flex",
+            flexDirection:
+              effectiveColumnLayout === "horizontal"
+                ? "row"
+                : "column",
+
+            flex: columnFlex,
+            width: columnWidth,
+            maxWidth: columnMaxWidth,
             minWidth: 0,
-            width: width ? clampWidth(width) : renderStyle.width,
+
+            position: positionMode,
+
+            top: usesPositionOffsets
+              ? renderStyle.top
+              : undefined,
+            right: usesPositionOffsets
+              ? renderStyle.right
+              : undefined,
+            bottom: usesPositionOffsets
+              ? renderStyle.bottom
+              : undefined,
+            left: usesPositionOffsets
+              ? renderStyle.left
+              : undefined,
+
+            transform: usesPositionOffsets
+              ? renderStyle.transform
+              : undefined,
           })}
           data-drop-target="true"
           data-node-id={node.id}
@@ -868,50 +1172,67 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
           {...commonDragProps}
         >
           {children.map((child) => (
-            <RenderNode key={child.id} node={child} blueprint={blueprint} />
+            <RenderNode
+              key={child.id}
+              node={child}
+              blueprint={blueprint}
+            />
           ))}
+
           {emptyState && (
-            <div className="border border-dashed border-slate-300 rounded-md px-3 py-4 text-xs text-slate-500 bg-white/70">
+            <div
+              data-canvas-placeholder="empty-column"
+              className="w-full border border-dashed border-indigo-300/80 bg-white/80 px-3 py-4 text-xs font-medium text-indigo-700 shadow-inner"
+            >
               Empty column. Drop or add elements here.
             </div>
           )}
         </div>
       );
+    }
 
     case "text":
-      return (
-        <div
-          className={`${baseClass} min-h-8 p-2`}
-          data-node-id={node.id}
-          onClick={handleClick}
-          {...commonDragProps}
-          contentEditable={!isLocked}
-          suppressContentEditableWarning
-          onBlur={(e) => updateInlineText(e.currentTarget.textContent ?? "")}
-          style={normalizeStyleConflicts(renderStyle)}
-          dangerouslySetInnerHTML={{
-            __html: String(props?.html ?? props?.text ?? props?.content ?? "Text"),
-          }}
-        />
-      );
+  return (
+    <div
+      className={`${baseClass} min-h-8 p-2`}
+      data-node-id={node.id}
+      onClick={handleClick}
+      {...commonDragProps}
+      contentEditable={!isLocked}
+      suppressContentEditableWarning
+      onBlur={(e) => updateInlineText(e.currentTarget.textContent ?? "")}
+      style={normalizeStyleConflicts({
+        ...renderStyle,
+        display: "block",
+        width: renderStyle.width ?? "100%",
+      })}
+      dangerouslySetInnerHTML={{
+        __html: String(props?.html ?? props?.text ?? props?.content ?? "Text"),
+      }}
+    />
+  );
 
-    case "heading":
-      const level = (props?.level || "h2") as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-      const HeadingTag = level;
-      return (
-        <HeadingTag
-          className={`${baseClass} min-h-12 p-2 text-slate-900`}
-          data-node-id={node.id}
-          onClick={handleClick}
-          {...commonDragProps}
-          contentEditable={!isLocked}
-          suppressContentEditableWarning
-          onBlur={(e) => updateInlineText(e.currentTarget.textContent ?? "")}
-          style={normalizeStyleConflicts(renderStyle)}
-        >
-          {String(props?.text ?? props?.content ?? "Heading")}
-        </HeadingTag>
-      );
+case "heading":
+  const level = (props?.level || "h2") as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+  const HeadingTag = level;
+  return (
+    <HeadingTag
+      className={baseClass}
+      data-node-id={node.id}
+      onClick={handleClick}
+      {...commonDragProps}
+      contentEditable={!isLocked}
+      suppressContentEditableWarning
+      onBlur={(e) => updateInlineText(e.currentTarget.textContent ?? "")}
+      style={normalizeStyleConflicts({
+        ...renderStyle,
+        display: "block",
+        width: renderStyle.width ?? "100%",
+      })}
+    >
+      {String(props?.text ?? props?.content ?? "Heading")}
+    </HeadingTag>
+  );
 
     case "image":
       if (!props?.src) {
@@ -973,10 +1294,10 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
           aria-hidden={iconDecorative ? true : undefined}
           style={normalizeStyleConflicts({
             ...renderStyle,
-            paddingTop: renderStyle.paddingTop ?? renderStyle.padding ?? "8px",
-            paddingRight: renderStyle.paddingRight ?? renderStyle.padding ?? "8px",
-            paddingBottom: renderStyle.paddingBottom ?? renderStyle.padding ?? "8px",
-            paddingLeft: renderStyle.paddingLeft ?? renderStyle.padding ?? "8px",
+            paddingTop: renderStyle.paddingTop ?? renderStyle.padding,
+            paddingRight: renderStyle.paddingRight ?? renderStyle.padding,
+            paddingBottom: renderStyle.paddingBottom ?? renderStyle.padding,
+            paddingLeft: renderStyle.paddingLeft ?? renderStyle.padding,
           })}
         >
           <IconGlyph name={props?.iconName ?? props?.glyph} size={toPx(toCssUnit(node.style?.fontSize)) ?? 24} />
@@ -1052,7 +1373,7 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
     case "button":
       return (
         <button
-          className={`px-4 py-2 rounded bg-blue-600 text-white ${baseClass}`}
+          className={baseClass}
           data-node-id={node.id}
           onClick={handleClick}
           {...commonDragProps}
@@ -1061,11 +1382,14 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
           onBlur={(e) => updateInlineText(e.currentTarget.textContent ?? "")}
           style={normalizeStyleConflicts({
             ...renderStyle,
-            backgroundColor: resolveTokenColor(node.style?.backgroundColor, "#2563eb"),
-            color: resolveTokenColor(node.style?.color, "#ffffff"),
+            backgroundColor:
+              renderStyle.backgroundColor ??
+              resolveTokenColor(node.style?.backgroundColor, "#2563eb"),
+            color: renderStyle.color ?? resolveTokenColor(node.style?.color, "#ffffff"),
           })}
         >
-          {String(props?.label ?? props?.text ?? "Button")}
+          {renderText(props?.label ?? props?.text ?? props?.primaryCta ?? props?.cta) ||
+            "Learn more"}
         </button>
       );
 
@@ -1078,14 +1402,20 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
             onClick={handleClick}
             {...commonDragProps}
           >
-            <PremiumWidgetPreview
+            <ProductionWidgetView
               type={node.type}
-              eyebrow={typeof props?.eyebrow === "string" ? props.eyebrow : undefined}
-              title={typeof props?.title === "string" ? props.title : undefined}
-              body={typeof props?.body === "string" ? props.body : undefined}
-              primaryCta={typeof props?.primaryCta === "string" ? props.primaryCta : undefined}
-              secondaryCta={typeof props?.secondaryCta === "string" ? props.secondaryCta : undefined}
-              items={Array.isArray(props?.items) ? props.items.map(String) : undefined}
+              eyebrow={renderText(props?.eyebrow) || undefined}
+              title={renderText(props?.title ?? props?.headline) || undefined}
+              body={
+                renderText(props?.body ?? props?.description ?? props?.content) ||
+                undefined
+              }
+              primaryCta={
+                renderText(props?.primaryCta ?? props?.cta ?? props?.label) ||
+                undefined
+              }
+              secondaryCta={renderText(props?.secondaryCta) || undefined}
+              items={renderItems(props?.items)}
               style={normalizeStyleConflicts(renderStyle)}
             />
           </div>

@@ -11,6 +11,8 @@ import SwitchProperty from "../../inspector/properties/SwitchProperty";
 import SliderProperty from "../../inspector/properties/SliderProperty";
 import ColorProperty from "../../inspector/properties/ColorProperty";
 import MediaProperty from "../../inspector/properties/MediaProperty";
+import AlignmentProperty from "../../inspector/properties/AlignmentProperty";
+import { validatePropertyBindings } from "./propertyBindingValidation";
 
 /* ==========================================================
    TYPES
@@ -30,9 +32,20 @@ export default function PropertyRenderer({
   node,
   properties,
 }: PropertyRendererProps) {
+  const bindingValidation = validatePropertyBindings(node, properties);
+  const visiblePropertyIds = new Set(
+    bindingValidation.bindings
+      .filter((binding) => binding.visible && !binding.disabledReason)
+      .map((binding) => binding.propertyId)
+  );
+
   return (
     <div className="space-y-6">
       {properties.map((property) => {
+        if (!visiblePropertyIds.has(property.id)) {
+          return null;
+        }
+
         switch (property.type) {
           case "text":
             return (
@@ -100,12 +113,23 @@ export default function PropertyRenderer({
   max={property.max ?? 100}
   step={property.step ?? 1}
   unit={property.unit}
+  units={property.units}
 />
             );
 
           case "color":
             return (
               <ColorProperty
+                key={property.id}
+                node={node}
+                property={property.id}
+                label={property.label}
+              />
+            );
+
+          case "alignment":
+            return (
+              <AlignmentProperty
                 key={property.id}
                 node={node}
                 property={property.id}
@@ -120,6 +144,7 @@ export default function PropertyRenderer({
                 node={node}
                 property={property.id}
                 label={property.label}
+                siteId=""
               />
             );
 

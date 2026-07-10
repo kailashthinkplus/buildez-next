@@ -1,7 +1,8 @@
 {
-  "/api/tenant/me/route": "app/api/tenant/me/route.js",
   "/api/onboarding/status/route": "app/api/onboarding/status/route.js",
-  "/app/(builder)/[siteSlug]/[pageSlugWithId]/page": "app/app/(builder)/[siteSlug]/[pageSlugWithId]/page.js",
-  "/app/(tenant)/[siteSlug]/dashboard/page": "app/app/(tenant)/[siteSlug]/dashboard/page.js",
-  "/app/(tenant)/[siteSlug]/pages/page": "app/app/(tenant)/[siteSlug]/pages/page.js"
+  "/api/builder-v2/assets/route": "app/api/builder-v2/assets/route.js",
+  "/api/builder-v2/blueprints/[pageId]/route": "app/api/builder-v2/blueprints/[pageId]/route.js",
+  "/api/tenant/me/route": "app/api/tenant/me/route.js",
+  "/api/fonts/google/route": "app/api/fonts/google/route.js",
+  "/(runtime)/[...slug]/page": "app/(runtime)/[...slug]/page.js"
 }

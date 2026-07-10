@@ -49,6 +49,7 @@ export const GET = async (request: NextRequest) => {
     const take = Number(url.searchParams.get("take") ?? 10);
     const skip = Number(url.searchParams.get("skip") ?? 0);
     const siteSlug = url.searchParams.get("siteSlug");
+    const trash = url.searchParams.get("trash") === "true";
 
     console.log("🟢 [PAGES][GET] Params:", {
       search,
@@ -103,7 +104,7 @@ export const GET = async (request: NextRequest) => {
     ------------------------------------------ */
     const where = {
       siteId: { in: siteIds },
-      deletedAt: null,
+      deletedAt: trash ? { not: null } : null,
       ...(search
         ? {
             OR: [
@@ -244,21 +245,22 @@ export const POST = async (request: NextRequest) => {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
 
-    let slug = baseSlug;
-    let counter = 1;
+    const safeBaseSlug = baseSlug || "page";
 
-    while (
-      await prisma.page.findFirst({
-        where: {
-          siteId: site.id,
-          slug,
-          deletedAt: null,
-        },
-        select: { id: true },
-      })
-    ) {
-      slug = `${baseSlug}-${counter++}`;
-    }
+let slug = safeBaseSlug;
+let counter = 2;
+
+while (
+  await prisma.page.findFirst({
+    where: {
+      siteId: site.id,
+      slug,
+    },
+    select: { id: true },
+  })
+) {
+  slug = `${safeBaseSlug}-${counter++}`;
+}
 
     console.log("🟢 [PAGES][POST] Final page slug:", slug);
 

@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import BuilderProvider from "./BuilderProvider";
 import BuilderShell from "./BuilderShell";
-import ColumnStructurePicker from "../layout/ColumnStructurePicker";
 import { LogoUploadModal } from "@/app/app/(builder)/components/LogoUploadModal";
 import { useCanvasStore } from "@/modules/builder/state/useCanvasStore";
 
@@ -12,6 +11,8 @@ import type { BuilderBlueprint } from "../types/blueprint";
 import { defaultThemeTokens } from "../theme/defaultTheme";
 import {
   createDefaultSiteThemeLayout,
+  disableSiteThemeChrome,
+  hasExplicitSiteThemeLayout,
   normalizeSiteThemeLayout,
 } from "../theme/siteLayout";
 import type { BuilderThemeTokens } from "../theme/theme.types";
@@ -160,29 +161,7 @@ export default function BuilderRoot({
       blueprint = convertToV2Blueprint(normalized, pageTitle || "Untitled");
     }
 
-    if (!initialDesignTokens) {
-      return blueprint;
-    }
-
-    return {
-      ...blueprint,
-      theme: {
-        ...blueprint.theme,
-        id:
-          typeof initialDesignTokens.themePresetId === "string"
-            ? initialDesignTokens.themePresetId
-            : blueprint.theme.id,
-        name:
-          typeof initialDesignTokens.themeName === "string"
-            ? initialDesignTokens.themeName
-            : blueprint.theme.name,
-        preset:
-          typeof initialDesignTokens.themePresetId === "string"
-            ? initialDesignTokens.themePresetId
-            : blueprint.theme.preset,
-        tokens: initialDesignTokens,
-      },
-    };
+    return blueprint;
   }, [initialBlueprint, initialDesignTokens, pageId, pageTitle]);
   const siteLayout = useMemo(() => {
     const tokens =
@@ -192,13 +171,16 @@ export default function BuilderRoot({
         ? (v2Blueprint.theme.tokens as unknown as BuilderThemeTokens)
         : defaultThemeTokens;
 
-    return normalizeSiteThemeLayout(
-      initialSiteLayout,
-      createDefaultSiteThemeLayout({
+    const fallbackLayout = createDefaultSiteThemeLayout({
         siteName: pageTitle || "BuildEZ Site",
         tokens,
         presetId: v2Blueprint.theme?.preset ?? "buildez-default",
-      })
+      });
+
+    const hasExplicitLayout = hasExplicitSiteThemeLayout(initialSiteLayout);
+    return normalizeSiteThemeLayout(
+      hasExplicitLayout ? initialSiteLayout : null,
+      hasExplicitLayout ? fallbackLayout : disableSiteThemeChrome(fallbackLayout)
     );
   }, [initialSiteLayout, pageTitle, v2Blueprint]);
 
@@ -234,12 +216,6 @@ export default function BuilderRoot({
           siteLayout={siteLayout}
         />
       </BuilderProvider>
-
-      <ColumnStructurePicker
-        open={false}
-        onClose={() => {}}
-        onSelect={() => {}}
-      />
 
       {logoUploadOpen && (
         <LogoUploadModal

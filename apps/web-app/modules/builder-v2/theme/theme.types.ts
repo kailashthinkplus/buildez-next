@@ -34,6 +34,16 @@ export interface BuilderThemeTokens {
     contentGap: number;
     cardGap: number;
   };
+  defaults: {
+    container: {
+      maxWidth: string;
+      paddingX: {
+        desktop: number;
+        tablet: number;
+        mobile: number;
+      };
+    };
+  };
   radius: {
     button: number;
     card: number;
@@ -77,6 +87,9 @@ export type ThemeTokenPatch = Partial<{
   colors: Partial<BuilderThemeTokens["colors"]>;
   typography: Partial<BuilderThemeTokens["typography"]>;
   spacing: Partial<BuilderThemeTokens["spacing"]>;
+  defaults: Partial<{
+    container: Partial<BuilderThemeTokens["defaults"]["container"]>;
+  }>;
   radius: Partial<BuilderThemeTokens["radius"]>;
   shadow: Partial<BuilderThemeTokens["shadow"]>;
   buttons: Partial<{

@@ -2,9 +2,16 @@ import { headers } from "next/headers";
 import { prisma } from "@buildez/db";
 import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
 import { isBuilderV2Blueprint } from "@/modules/builder-v2/runtime/isBuilderV2Blueprint";
+import {
+  logBuilderDebug,
+  summarizeSiteLayout,
+} from "@/modules/builder-v2/debug/blueprintDebug";
 import { defaultThemeTokens } from "@/modules/builder-v2/theme/defaultTheme";
+import { SiteThemeFrame } from "@/modules/builder-v2/theme/SiteThemeFrame";
 import {
   createDefaultSiteThemeLayout,
+  disableSiteThemeChrome,
+  hasExplicitSiteThemeLayout,
   normalizeSiteThemeLayout,
 } from "@/modules/builder-v2/theme/siteLayout";
 import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
@@ -63,33 +70,7 @@ export default async function PreviewPage({
 
   const blueprintData = matchedPage.blueprint?.data;
   if (isBuilderV2Blueprint(blueprintData)) {
-    const designTokens =
-      matchedPage.site.designTokens &&
-      typeof matchedPage.site.designTokens === "object" &&
-      !Array.isArray(matchedPage.site.designTokens)
-        ? (matchedPage.site.designTokens as Record<string, unknown>)
-        : null;
-    const blueprint = designTokens
-      ? {
-          ...blueprintData,
-          theme: {
-            ...blueprintData.theme,
-            id:
-              typeof designTokens.themePresetId === "string"
-                ? designTokens.themePresetId
-                : blueprintData.theme?.id,
-            name:
-              typeof designTokens.themeName === "string"
-                ? designTokens.themeName
-                : blueprintData.theme?.name,
-            preset:
-              typeof designTokens.themePresetId === "string"
-                ? designTokens.themePresetId
-                : blueprintData.theme?.preset,
-            tokens: designTokens,
-          },
-        }
-      : blueprintData;
+    const blueprint = blueprintData;
     const tokens =
       blueprint.theme?.tokens &&
       typeof blueprint.theme.tokens === "object" &&
@@ -97,13 +78,23 @@ export default async function PreviewPage({
         ? (blueprint.theme.tokens as unknown as BuilderThemeTokens)
         : defaultThemeTokens;
 
-    const siteLayout = normalizeSiteThemeLayout(
-      matchedPage.site.layout,
-      createDefaultSiteThemeLayout({
+    const fallbackLayout = createDefaultSiteThemeLayout({
         siteName: matchedPage.site.name,
         tokens,
         presetId: blueprint.theme?.preset ?? "buildez-default",
-      })
+      });
+    logBuilderDebug("preview:builder-v2-layout-decision", {
+      siteSlug,
+      pageSlugWithId,
+      siteName: matchedPage.site.name,
+      hasExplicitSiteLayout: hasExplicitSiteThemeLayout(matchedPage.site.layout),
+      rawSiteLayout: matchedPage.site.layout,
+      fallbackLayout: summarizeSiteLayout(fallbackLayout),
+    });
+    const hasExplicitLayout = hasExplicitSiteThemeLayout(matchedPage.site.layout);
+    const siteLayout = normalizeSiteThemeLayout(
+      hasExplicitLayout ? matchedPage.site.layout : null,
+      hasExplicitLayout ? fallbackLayout : disableSiteThemeChrome(fallbackLayout)
     );
 
     return <PublishedPageRenderer blueprint={blueprint} siteLayout={siteLayout} />;
@@ -139,16 +130,28 @@ export default async function PreviewPage({
     legacyDesignTokens
       ? (legacyDesignTokens as unknown as BuilderThemeTokens)
       : defaultThemeTokens;
-  const legacySiteLayout = normalizeSiteThemeLayout(
-    matchedPage.site.layout,
-    createDefaultSiteThemeLayout({
+  const legacyFallbackLayout = createDefaultSiteThemeLayout({
       siteName: matchedPage.site.name,
       tokens: legacyTokens,
       presetId:
         typeof legacyDesignTokens?.themePresetId === "string"
           ? legacyDesignTokens.themePresetId
           : "buildez-default",
-    })
+    });
+  logBuilderDebug("preview:legacy-layout-decision", {
+    siteSlug,
+    pageSlugWithId,
+    siteName: matchedPage.site.name,
+    hasExplicitSiteLayout: hasExplicitSiteThemeLayout(matchedPage.site.layout),
+    rawSiteLayout: matchedPage.site.layout,
+    fallbackLayout: summarizeSiteLayout(legacyFallbackLayout),
+  });
+  const hasExplicitLegacyLayout = hasExplicitSiteThemeLayout(matchedPage.site.layout);
+  const legacySiteLayout = normalizeSiteThemeLayout(
+    hasExplicitLegacyLayout ? matchedPage.site.layout : null,
+    hasExplicitLegacyLayout
+      ? legacyFallbackLayout
+      : disableSiteThemeChrome(legacyFallbackLayout)
   );
 
   return (

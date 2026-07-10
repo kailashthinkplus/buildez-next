@@ -10,62 +10,46 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/tenant/me/route.js"
     ],
+    "/api/builder-v2/ai/context/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/builder-v2/ai/context/route.js"
+    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/app/layout": [
+    "/(runtime)/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/app/layout.js"
+      "static/chunks/app/(runtime)/layout.js"
     ],
-    "/app/(builder)/[siteSlug]/[pageSlugWithId]/layout": [
+    "/(runtime)/[...slug]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/app/(builder)/[siteSlug]/[pageSlugWithId]/layout.css",
-      "static/chunks/app/app/(builder)/[siteSlug]/[pageSlugWithId]/layout.js"
+      "static/chunks/app/(runtime)/[...slug]/page.js"
     ],
-    "/app/(builder)/[siteSlug]/[pageSlugWithId]/page": [
+    "/api/builder-v2/assets/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/app/(builder)/[siteSlug]/[pageSlugWithId]/page.js"
-    ],
-    "/api/pages/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/pages/route.js"
+      "static/chunks/app/api/builder-v2/assets/route.js"
     ],
     "/api/builder-v2/blueprints/[pageId]/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/builder-v2/blueprints/[pageId]/route.js"
     ],
-    "/api/builder-v2/ai/generate/route": [
+    "/api/ai/rewrite/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/builder-v2/ai/generate/route.js"
+      "static/chunks/app/api/ai/rewrite/route.js"
     ],
-    "/api/ai-v8/generate-react/route": [
+    "/api/fonts/google/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/ai-v8/generate-react/route.js"
-    ],
-    "/app/(tenant)/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/app/(tenant)/layout.js"
-    ],
-    "/app/(tenant)/[siteSlug]/pages/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/app/(tenant)/[siteSlug]/pages/page.js"
-    ],
-    "/app/(tenant)/[siteSlug]/dashboard/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/app/(tenant)/[siteSlug]/dashboard/page.js"
+      "static/chunks/app/api/fonts/google/route.js"
     ]
   }
 }

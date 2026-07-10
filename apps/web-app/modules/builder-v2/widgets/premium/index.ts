@@ -12,5 +12,8 @@ export {
   FloatingWhatsAppDefinition,
   LocationMapDefinition,
   SmartFooterDefinition,
+  FeaturesDefinition,
+  GalleryDefinition,
+  CtaDefinition,
 } from "./PremiumWidget.definition";
 export { default as PremiumWidget } from "./PremiumWidget";

@@ -1,0 +1,1516 @@
+{
+  "timestamp": "2026-07-01T08:30:09.796Z",
+  "label": "ai-v9:candidate-blueprint:candidate-2",
+  "summary": {
+    "present": true,
+    "root": "page_1",
+    "metadata": {
+      "version": 2,
+      "title": "Home",
+      "createdAt": "2026-07-01T08:30:09.760Z",
+      "updatedAt": "2026-07-01T08:30:09.760Z",
+      "aiGenerated": true,
+      "template": "ai-v9-native-blueprint",
+      "industry": "Real Estate"
+    },
+    "theme": {
+      "id": "sanjeevini-custom-theme",
+      "name": "Sanjeevini Modern Elegance",
+      "preset": "sanjeevini-custom-theme",
+      "tokenKeys": [
+        "colors",
+        "typography",
+        "spacing",
+        "radius",
+        "shadow",
+        "buttons"
+      ]
+    },
+    "nodeCount": 63,
+    "sectionCount": 7,
+    "imageCount": 5,
+    "backgroundPromptCount": 1,
+    "headings": [
+      "Welcome to Sanjeevini Group",
+      "Crafting Homes That Reflect Your Lifestyle",
+      "Our Vision and Mission",
+      "Featured Projects",
+      "Luxury Heights",
+      "Corporate Hub",
+      "Elegant Retreat",
+      "Customer Testimonials",
+      "Our Team",
+      "John Smith"
+    ],
+    "textSamples": [
+      "Discover the perfect blend of modern architecture and serene living in Bangalore. Trusted by over 1,200 customers.",
+      "Explore Our Projects",
+      "Contact Us",
+      "At Sanjeevini Group, we aim to create homes that enhance your living experience, combining creativity with expertise to deliver on our promises.",
+      "Explore our key developments that blend modern architecture with luxurious living.",
+      "An epitome of luxury living in the heart of Bangalore.",
+      "State-of-the-art facilities for modern businesses.",
+      "Experience luxury and comfort in our hospitality spaces.",
+      "Our customers trust us to deliver quality and excellence. Here's what they have to say.",
+      "\"Sanjeevini Group has truly exceeded our expectations with their commitment to quality and attention to detail.\"",
+      "\"Our experience with Sanjeevini Group has been nothing short of exceptional. Highly recommended!\"",
+      "Meet the experts behind our successful projects, dedicated to delivering excellence.",
+      "Senior Architect with over 15 years of experience in residential and commercial projects.",
+      "Project Manager with a focus on timely delivery and client satisfaction."
+    ],
+    "colors": [
+      "#212121",
+      "#ffffff",
+      "#e0f7fa",
+      "#ffab00",
+      "#004d40",
+      "transparent",
+      "#eef2f7",
+      "#f8fafc"
+    ],
+    "images": [
+      {
+        "id": "section_hero",
+        "type": "section",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "",
+        "backgroundPrompt": "Wide-angle shot of a modern residential complex in Bangalore during golden hour, showcasing architectural elegance and natural surroundings, high-resolution, realistic lighting"
+      },
+      {
+        "id": "image_project_1",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Exterior of a luxury residential project in Bangalore, modern design, natural daylight, high-resolution",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "image_project_2",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Photorealistic image of a modern commercial building in Bangalore, sleek architecture, natural daylight",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "image_project_3",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Luxury hospitality project in Bangalore with elegant interiors, warm lighting, high-resolution",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "image_team_member_1",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Professional portrait of a senior architect at Sanjeevini Group, natural lighting, high-resolution",
+        "backgroundPrompt": ""
+      },
+      {
+        "id": "image_team_member_2",
+        "type": "image",
+        "hidden": false,
+        "src": "",
+        "backgroundImage": "",
+        "aiImagePrompt": "Professional portrait of a project manager at Sanjeevini Group, natural lighting, high-resolution",
+        "backgroundPrompt": ""
+      }
+    ],
+    "forbiddenHits": [],
+    "layoutFingerprint": [
+      {
+        "id": "section_hero",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#e0f7fa"
+      },
+      {
+        "id": "section_vision",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#ffffff"
+      },
+      {
+        "id": "section_projects",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#eef2f7"
+      },
+      {
+        "id": "section_testimonials",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#ffffff"
+      },
+      {
+        "id": "section_team",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#eef2f7"
+      },
+      {
+        "id": "section_sustainability",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#ffffff"
+      },
+      {
+        "id": "section_contact",
+        "type": "section",
+        "children": 1,
+        "backgroundColor": "#eef2f7"
+      }
+    ]
+  },
+  "blueprint": {
+    "metadata": {
+      "version": 2,
+      "title": "Home",
+      "createdAt": "2026-07-01T08:30:09.760Z",
+      "updatedAt": "2026-07-01T08:30:09.760Z",
+      "aiGenerated": true,
+      "template": "ai-v9-native-blueprint",
+      "industry": "Real Estate"
+    },
+    "theme": {
+      "id": "sanjeevini-custom-theme",
+      "name": "Sanjeevini Modern Elegance",
+      "preset": "sanjeevini-custom-theme",
+      "tone": "professional",
+      "previewImageUrl": "",
+      "demoData": {
+        "category": "Real Estate",
+        "audience": "Home buyers",
+        "description": "Explore projects",
+        "sections": [],
+        "highlights": []
+      },
+      "tokens": {
+        "colors": {
+          "primary": "#004d40",
+          "accent": "#e0f7fa",
+          "background": "#ffffff",
+          "textPrimary": "#212121",
+          "textSecondary": "#475569",
+          "surface": "#ffffff",
+          "surfaceAlt": "#eef2f7",
+          "primaryContrast": "#ffffff",
+          "border": "#dbe3ef"
+        },
+        "typography": {
+          "scale": {
+            "h1": 56,
+            "h2": 40,
+            "h3": 28,
+            "body": 16,
+            "small": 14
+          },
+          "baseSize": 16,
+          "bodyFont": "Inter",
+          "headingFont": "Inter"
+        },
+        "spacing": {
+          "cardGap": 20,
+          "sectionY": 88,
+          "containerX": 24,
+          "contentGap": 28
+        },
+        "radius": {
+          "card": 12,
+          "media": 14,
+          "button": 10
+        },
+        "shadow": {
+          "card": "0 16px 42px rgba(15, 23, 42, 0.08)",
+          "media": "0 24px 70px rgba(15, 23, 42, 0.16)"
+        },
+        "buttons": {
+          "primary": {
+            "color": "#ffffff",
+            "borderRadius": 10,
+            "backgroundColor": "#004d40"
+          },
+          "secondary": {
+            "color": "#004d40",
+            "borderColor": "#cbd5e1",
+            "borderRadius": 10,
+            "backgroundColor": "transparent"
+          }
+        }
+      }
+    },
+    "root": "page_1",
+    "nodes": {
+      "page_1": {
+        "id": "page_1",
+        "type": "page",
+        "parentId": null,
+        "children": [
+          "section_hero",
+          "section_vision",
+          "section_projects",
+          "section_testimonials",
+          "section_team",
+          "section_sustainability",
+          "section_contact"
+        ],
+        "props": {
+          "title": "Home",
+          "slug": "/home"
+        },
+        "style": {
+          "backgroundColor": "#ffffff",
+          "color": "#212121",
+          "fontFamily": "Inter, serif"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section_hero": {
+        "id": "section_hero",
+        "type": "section",
+        "parentId": "page_1",
+        "children": [
+          "container_hero"
+        ],
+        "props": {
+          "backgroundPrompt": "Wide-angle shot of a modern residential complex in Bangalore during golden hour, showcasing architectural elegance and natural surroundings, high-resolution, realistic lighting"
+        },
+        "style": {
+          "padding": {
+            "desktop": "80px 0",
+            "tablet": "60px 0",
+            "mobile": "40px 0"
+          },
+          "backgroundColor": "#e0f7fa",
+          "textAlign": "center"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container_hero": {
+        "id": "container_hero",
+        "type": "container",
+        "parentId": "section_hero",
+        "children": [
+          "heading_hero_eyebrow",
+          "heading_hero_title",
+          "text_hero_body",
+          "button_hero_primary",
+          "button_hero_secondary"
+        ],
+        "props": {},
+        "style": {
+          "maxWidth": "1200px",
+          "margin": "0 auto",
+          "padding": "0 24px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_hero_eyebrow": {
+        "id": "heading_hero_eyebrow",
+        "type": "heading",
+        "parentId": "container_hero",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Welcome to Sanjeevini Group"
+        },
+        "style": {
+          "color": "#ffab00",
+          "fontSize": {
+            "desktop": 24,
+            "tablet": 20,
+            "mobile": 18
+          },
+          "textTransform": "uppercase",
+          "marginBottom": "16px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_hero_title": {
+        "id": "heading_hero_title",
+        "type": "heading",
+        "parentId": "container_hero",
+        "children": [],
+        "props": {
+          "level": "h1",
+          "text": "Crafting Homes That Reflect Your Lifestyle"
+        },
+        "style": {
+          "color": "#004d40",
+          "fontSize": {
+            "desktop": 56,
+            "tablet": 48,
+            "mobile": 40
+          },
+          "fontWeight": "bold",
+          "marginBottom": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_hero_body": {
+        "id": "text_hero_body",
+        "type": "text",
+        "parentId": "container_hero",
+        "children": [],
+        "props": {
+          "text": "Discover the perfect blend of modern architecture and serene living in Bangalore. Trusted by over 1,200 customers."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 18,
+            "tablet": 16,
+            "mobile": 14
+          },
+          "marginBottom": "30px",
+          "lineHeight": 1.6
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "button_hero_primary": {
+        "id": "button_hero_primary",
+        "type": "button",
+        "parentId": "container_hero",
+        "children": [],
+        "props": {
+          "text": "Explore Our Projects",
+          "href": "#projects"
+        },
+        "style": {
+          "backgroundColor": "#004d40",
+          "color": "#ffffff",
+          "padding": "12px 24px",
+          "borderRadius": 10,
+          "fontSize": 16,
+          "marginRight": "16px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "button_hero_secondary": {
+        "id": "button_hero_secondary",
+        "type": "button",
+        "parentId": "container_hero",
+        "children": [],
+        "props": {
+          "text": "Contact Us",
+          "href": "#contact"
+        },
+        "style": {
+          "backgroundColor": "transparent",
+          "color": "#004d40",
+          "padding": "12px 24px",
+          "border": "2px solid #004d40",
+          "borderRadius": 10,
+          "fontSize": 16
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section_vision": {
+        "id": "section_vision",
+        "type": "section",
+        "parentId": "page_1",
+        "children": [
+          "container_vision"
+        ],
+        "props": {},
+        "style": {
+          "padding": {
+            "desktop": "80px 0",
+            "tablet": "60px 0",
+            "mobile": "40px 0"
+          },
+          "backgroundColor": "#ffffff"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container_vision": {
+        "id": "container_vision",
+        "type": "container",
+        "parentId": "section_vision",
+        "children": [
+          "heading_vision_title",
+          "text_vision_body"
+        ],
+        "props": {},
+        "style": {
+          "maxWidth": "800px",
+          "margin": "0 auto",
+          "padding": "0 24px",
+          "textAlign": "center"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_vision_title": {
+        "id": "heading_vision_title",
+        "type": "heading",
+        "parentId": "container_vision",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Our Vision and Mission"
+        },
+        "style": {
+          "color": "#004d40",
+          "fontSize": {
+            "desktop": 40,
+            "tablet": 36,
+            "mobile": 32
+          },
+          "fontWeight": "bold",
+          "marginBottom": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_vision_body": {
+        "id": "text_vision_body",
+        "type": "text",
+        "parentId": "container_vision",
+        "children": [],
+        "props": {
+          "text": "At Sanjeevini Group, we aim to create homes that enhance your living experience, combining creativity with expertise to deliver on our promises."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 18,
+            "tablet": 16,
+            "mobile": 14
+          },
+          "lineHeight": 1.6
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section_projects": {
+        "id": "section_projects",
+        "type": "section",
+        "parentId": "page_1",
+        "children": [
+          "container_projects"
+        ],
+        "props": {},
+        "style": {
+          "padding": {
+            "desktop": "80px 0",
+            "tablet": "60px 0",
+            "mobile": "40px 0"
+          },
+          "backgroundColor": "#eef2f7"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container_projects": {
+        "id": "container_projects",
+        "type": "container",
+        "parentId": "section_projects",
+        "children": [
+          "heading_projects_title",
+          "text_projects_intro",
+          "container_projects_grid"
+        ],
+        "props": {},
+        "style": {
+          "maxWidth": "1200px",
+          "margin": "0 auto",
+          "padding": "0 24px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_projects_title": {
+        "id": "heading_projects_title",
+        "type": "heading",
+        "parentId": "container_projects",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Featured Projects"
+        },
+        "style": {
+          "color": "#004d40",
+          "fontSize": {
+            "desktop": 40,
+            "tablet": 36,
+            "mobile": 32
+          },
+          "fontWeight": "bold",
+          "marginBottom": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_projects_intro": {
+        "id": "text_projects_intro",
+        "type": "text",
+        "parentId": "container_projects",
+        "children": [],
+        "props": {
+          "text": "Explore our key developments that blend modern architecture with luxurious living."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 18,
+            "tablet": 16,
+            "mobile": 14
+          },
+          "lineHeight": 1.6,
+          "marginBottom": "30px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container_projects_grid": {
+        "id": "container_projects_grid",
+        "type": "container",
+        "parentId": "container_projects",
+        "children": [
+          "column_project_1",
+          "column_project_2",
+          "column_project_3"
+        ],
+        "props": {},
+        "style": {
+          "display": "grid",
+          "gridTemplateColumns": {
+            "desktop": "repeat(3, 1fr)",
+            "tablet": "repeat(2, 1fr)",
+            "mobile": "1fr"
+          },
+          "gap": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "column_project_1": {
+        "id": "column_project_1",
+        "type": "column",
+        "parentId": "container_projects_grid",
+        "children": [
+          "image_project_1",
+          "heading_project_1",
+          "text_project_1"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "boxShadow": "0 16px 42px rgba(15, 23, 42, 0.08)",
+          "padding": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image_project_1": {
+        "id": "image_project_1",
+        "type": "image",
+        "parentId": "column_project_1",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Exterior of a luxury residential project in Bangalore, modern design, natural daylight, high-resolution",
+          "alt": "Luxury Residential Project",
+          "src": ""
+        },
+        "style": {
+          "width": "100%",
+          "borderRadius": 12,
+          "marginBottom": "16px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_project_1": {
+        "id": "heading_project_1",
+        "type": "heading",
+        "parentId": "column_project_1",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Luxury Heights"
+        },
+        "style": {
+          "color": "#004d40",
+          "fontSize": {
+            "desktop": 28,
+            "tablet": 24,
+            "mobile": 22
+          },
+          "fontWeight": "bold",
+          "marginBottom": "10px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_project_1": {
+        "id": "text_project_1",
+        "type": "text",
+        "parentId": "column_project_1",
+        "children": [],
+        "props": {
+          "text": "An epitome of luxury living in the heart of Bangalore."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 16,
+            "tablet": 14,
+            "mobile": 12
+          },
+          "lineHeight": 1.4
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "column_project_2": {
+        "id": "column_project_2",
+        "type": "column",
+        "parentId": "container_projects_grid",
+        "children": [
+          "image_project_2",
+          "heading_project_2",
+          "text_project_2"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "boxShadow": "0 16px 42px rgba(15, 23, 42, 0.08)",
+          "padding": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image_project_2": {
+        "id": "image_project_2",
+        "type": "image",
+        "parentId": "column_project_2",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Photorealistic image of a modern commercial building in Bangalore, sleek architecture, natural daylight",
+          "alt": "Modern Commercial Building",
+          "src": ""
+        },
+        "style": {
+          "width": "100%",
+          "borderRadius": 12,
+          "marginBottom": "16px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_project_2": {
+        "id": "heading_project_2",
+        "type": "heading",
+        "parentId": "column_project_2",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Corporate Hub"
+        },
+        "style": {
+          "color": "#004d40",
+          "fontSize": {
+            "desktop": 28,
+            "tablet": 24,
+            "mobile": 22
+          },
+          "fontWeight": "bold",
+          "marginBottom": "10px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_project_2": {
+        "id": "text_project_2",
+        "type": "text",
+        "parentId": "column_project_2",
+        "children": [],
+        "props": {
+          "text": "State-of-the-art facilities for modern businesses."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 16,
+            "tablet": 14,
+            "mobile": 12
+          },
+          "lineHeight": 1.4
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "column_project_3": {
+        "id": "column_project_3",
+        "type": "column",
+        "parentId": "container_projects_grid",
+        "children": [
+          "image_project_3",
+          "heading_project_3",
+          "text_project_3"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "boxShadow": "0 16px 42px rgba(15, 23, 42, 0.08)",
+          "padding": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image_project_3": {
+        "id": "image_project_3",
+        "type": "image",
+        "parentId": "column_project_3",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Luxury hospitality project in Bangalore with elegant interiors, warm lighting, high-resolution",
+          "alt": "Luxury Hospitality Project",
+          "src": ""
+        },
+        "style": {
+          "width": "100%",
+          "borderRadius": 12,
+          "marginBottom": "16px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_project_3": {
+        "id": "heading_project_3",
+        "type": "heading",
+        "parentId": "column_project_3",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Elegant Retreat"
+        },
+        "style": {
+          "color": "#004d40",
+          "fontSize": {
+            "desktop": 28,
+            "tablet": 24,
+            "mobile": 22
+          },
+          "fontWeight": "bold",
+          "marginBottom": "10px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_project_3": {
+        "id": "text_project_3",
+        "type": "text",
+        "parentId": "column_project_3",
+        "children": [],
+        "props": {
+          "text": "Experience luxury and comfort in our hospitality spaces."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 16,
+            "tablet": 14,
+            "mobile": 12
+          },
+          "lineHeight": 1.4
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section_testimonials": {
+        "id": "section_testimonials",
+        "type": "section",
+        "parentId": "page_1",
+        "children": [
+          "container_testimonials"
+        ],
+        "props": {},
+        "style": {
+          "padding": {
+            "desktop": "80px 0",
+            "tablet": "60px 0",
+            "mobile": "40px 0"
+          },
+          "backgroundColor": "#ffffff"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container_testimonials": {
+        "id": "container_testimonials",
+        "type": "container",
+        "parentId": "section_testimonials",
+        "children": [
+          "heading_testimonials_title",
+          "text_testimonials_intro",
+          "container_testimonials_grid"
+        ],
+        "props": {},
+        "style": {
+          "maxWidth": "1200px",
+          "margin": "0 auto",
+          "padding": "0 24px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_testimonials_title": {
+        "id": "heading_testimonials_title",
+        "type": "heading",
+        "parentId": "container_testimonials",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Customer Testimonials"
+        },
+        "style": {
+          "color": "#004d40",
+          "fontSize": {
+            "desktop": 40,
+            "tablet": 36,
+            "mobile": 32
+          },
+          "fontWeight": "bold",
+          "marginBottom": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_testimonials_intro": {
+        "id": "text_testimonials_intro",
+        "type": "text",
+        "parentId": "container_testimonials",
+        "children": [],
+        "props": {
+          "text": "Our customers trust us to deliver quality and excellence. Here's what they have to say."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 18,
+            "tablet": 16,
+            "mobile": 14
+          },
+          "lineHeight": 1.6,
+          "marginBottom": "30px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container_testimonials_grid": {
+        "id": "container_testimonials_grid",
+        "type": "container",
+        "parentId": "container_testimonials",
+        "children": [
+          "column_testimonial_1",
+          "column_testimonial_2"
+        ],
+        "props": {},
+        "style": {
+          "display": "grid",
+          "gridTemplateColumns": {
+            "desktop": "repeat(2, 1fr)",
+            "tablet": "1fr",
+            "mobile": "1fr"
+          },
+          "gap": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "column_testimonial_1": {
+        "id": "column_testimonial_1",
+        "type": "column",
+        "parentId": "container_testimonials_grid",
+        "children": [
+          "text_testimonial_1"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#f8fafc",
+          "borderRadius": 12,
+          "padding": "20px",
+          "boxShadow": "0 16px 42px rgba(15, 23, 42, 0.08)"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_testimonial_1": {
+        "id": "text_testimonial_1",
+        "type": "text",
+        "parentId": "column_testimonial_1",
+        "children": [],
+        "props": {
+          "text": "\"Sanjeevini Group has truly exceeded our expectations with their commitment to quality and attention to detail.\""
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 16,
+            "tablet": 14,
+            "mobile": 12
+          },
+          "lineHeight": 1.6
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "column_testimonial_2": {
+        "id": "column_testimonial_2",
+        "type": "column",
+        "parentId": "container_testimonials_grid",
+        "children": [
+          "text_testimonial_2"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#f8fafc",
+          "borderRadius": 12,
+          "padding": "20px",
+          "boxShadow": "0 16px 42px rgba(15, 23, 42, 0.08)"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_testimonial_2": {
+        "id": "text_testimonial_2",
+        "type": "text",
+        "parentId": "column_testimonial_2",
+        "children": [],
+        "props": {
+          "text": "\"Our experience with Sanjeevini Group has been nothing short of exceptional. Highly recommended!\""
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 16,
+            "tablet": 14,
+            "mobile": 12
+          },
+          "lineHeight": 1.6
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section_team": {
+        "id": "section_team",
+        "type": "section",
+        "parentId": "page_1",
+        "children": [
+          "container_team"
+        ],
+        "props": {},
+        "style": {
+          "padding": {
+            "desktop": "80px 0",
+            "tablet": "60px 0",
+            "mobile": "40px 0"
+          },
+          "backgroundColor": "#eef2f7"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container_team": {
+        "id": "container_team",
+        "type": "container",
+        "parentId": "section_team",
+        "children": [
+          "heading_team_title",
+          "text_team_intro",
+          "container_team_grid"
+        ],
+        "props": {},
+        "style": {
+          "maxWidth": "1200px",
+          "margin": "0 auto",
+          "padding": "0 24px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_team_title": {
+        "id": "heading_team_title",
+        "type": "heading",
+        "parentId": "container_team",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Our Team"
+        },
+        "style": {
+          "color": "#004d40",
+          "fontSize": {
+            "desktop": 40,
+            "tablet": 36,
+            "mobile": 32
+          },
+          "fontWeight": "bold",
+          "marginBottom": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_team_intro": {
+        "id": "text_team_intro",
+        "type": "text",
+        "parentId": "container_team",
+        "children": [],
+        "props": {
+          "text": "Meet the experts behind our successful projects, dedicated to delivering excellence."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 18,
+            "tablet": 16,
+            "mobile": 14
+          },
+          "lineHeight": 1.6,
+          "marginBottom": "30px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container_team_grid": {
+        "id": "container_team_grid",
+        "type": "container",
+        "parentId": "container_team",
+        "children": [
+          "column_team_member_1",
+          "column_team_member_2"
+        ],
+        "props": {},
+        "style": {
+          "display": "grid",
+          "gridTemplateColumns": {
+            "desktop": "repeat(2, 1fr)",
+            "tablet": "1fr",
+            "mobile": "1fr"
+          },
+          "gap": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "column_team_member_1": {
+        "id": "column_team_member_1",
+        "type": "column",
+        "parentId": "container_team_grid",
+        "children": [
+          "image_team_member_1",
+          "heading_team_member_1",
+          "text_team_member_1"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "padding": "20px",
+          "boxShadow": "0 16px 42px rgba(15, 23, 42, 0.08)"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image_team_member_1": {
+        "id": "image_team_member_1",
+        "type": "image",
+        "parentId": "column_team_member_1",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Professional portrait of a senior architect at Sanjeevini Group, natural lighting, high-resolution",
+          "alt": "Senior Architect",
+          "src": ""
+        },
+        "style": {
+          "width": "100%",
+          "borderRadius": 12,
+          "marginBottom": "16px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_team_member_1": {
+        "id": "heading_team_member_1",
+        "type": "heading",
+        "parentId": "column_team_member_1",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "John Smith"
+        },
+        "style": {
+          "color": "#004d40",
+          "fontSize": {
+            "desktop": 28,
+            "tablet": 24,
+            "mobile": 22
+          },
+          "fontWeight": "bold",
+          "marginBottom": "10px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_team_member_1": {
+        "id": "text_team_member_1",
+        "type": "text",
+        "parentId": "column_team_member_1",
+        "children": [],
+        "props": {
+          "text": "Senior Architect with over 15 years of experience in residential and commercial projects."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 16,
+            "tablet": 14,
+            "mobile": 12
+          },
+          "lineHeight": 1.4
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "column_team_member_2": {
+        "id": "column_team_member_2",
+        "type": "column",
+        "parentId": "container_team_grid",
+        "children": [
+          "image_team_member_2",
+          "heading_team_member_2",
+          "text_team_member_2"
+        ],
+        "props": {},
+        "style": {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "padding": "20px",
+          "boxShadow": "0 16px 42px rgba(15, 23, 42, 0.08)"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "image_team_member_2": {
+        "id": "image_team_member_2",
+        "type": "image",
+        "parentId": "column_team_member_2",
+        "children": [],
+        "props": {
+          "aiImagePrompt": "Professional portrait of a project manager at Sanjeevini Group, natural lighting, high-resolution",
+          "alt": "Project Manager",
+          "src": ""
+        },
+        "style": {
+          "width": "100%",
+          "borderRadius": 12,
+          "marginBottom": "16px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_team_member_2": {
+        "id": "heading_team_member_2",
+        "type": "heading",
+        "parentId": "column_team_member_2",
+        "children": [],
+        "props": {
+          "level": "h3",
+          "text": "Jane Doe"
+        },
+        "style": {
+          "color": "#004d40",
+          "fontSize": {
+            "desktop": 28,
+            "tablet": 24,
+            "mobile": 22
+          },
+          "fontWeight": "bold",
+          "marginBottom": "10px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_team_member_2": {
+        "id": "text_team_member_2",
+        "type": "text",
+        "parentId": "column_team_member_2",
+        "children": [],
+        "props": {
+          "text": "Project Manager with a focus on timely delivery and client satisfaction."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 16,
+            "tablet": 14,
+            "mobile": 12
+          },
+          "lineHeight": 1.4
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section_sustainability": {
+        "id": "section_sustainability",
+        "type": "section",
+        "parentId": "page_1",
+        "children": [
+          "container_sustainability"
+        ],
+        "props": {},
+        "style": {
+          "padding": {
+            "desktop": "80px 0",
+            "tablet": "60px 0",
+            "mobile": "40px 0"
+          },
+          "backgroundColor": "#ffffff"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container_sustainability": {
+        "id": "container_sustainability",
+        "type": "container",
+        "parentId": "section_sustainability",
+        "children": [
+          "heading_sustainability_title",
+          "text_sustainability_intro",
+          "container_sustainability_content"
+        ],
+        "props": {},
+        "style": {
+          "maxWidth": "1200px",
+          "margin": "0 auto",
+          "padding": "0 24px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_sustainability_title": {
+        "id": "heading_sustainability_title",
+        "type": "heading",
+        "parentId": "container_sustainability",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Sustainability Practices"
+        },
+        "style": {
+          "color": "#004d40",
+          "fontSize": {
+            "desktop": 40,
+            "tablet": 36,
+            "mobile": 32
+          },
+          "fontWeight": "bold",
+          "marginBottom": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_sustainability_intro": {
+        "id": "text_sustainability_intro",
+        "type": "text",
+        "parentId": "container_sustainability",
+        "children": [],
+        "props": {
+          "text": "We are committed to sustainable building practices that minimize environmental impact and promote resource efficiency."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 18,
+            "tablet": 16,
+            "mobile": 14
+          },
+          "lineHeight": 1.6,
+          "marginBottom": "30px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container_sustainability_content": {
+        "id": "container_sustainability_content",
+        "type": "container",
+        "parentId": "container_sustainability",
+        "children": [
+          "text_sustainability_stat_1",
+          "text_sustainability_stat_2"
+        ],
+        "props": {},
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "alignItems": "center",
+          "gap": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_sustainability_stat_1": {
+        "id": "text_sustainability_stat_1",
+        "type": "text",
+        "parentId": "container_sustainability_content",
+        "children": [],
+        "props": {
+          "text": "Over 50% of our projects incorporate green building practices."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 16,
+            "tablet": 14,
+            "mobile": 12
+          },
+          "lineHeight": 1.4
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_sustainability_stat_2": {
+        "id": "text_sustainability_stat_2",
+        "type": "text",
+        "parentId": "container_sustainability_content",
+        "children": [],
+        "props": {
+          "text": "We aim to reduce energy consumption by 30% in all new developments."
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 16,
+            "tablet": 14,
+            "mobile": 12
+          },
+          "lineHeight": 1.4
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "section_contact": {
+        "id": "section_contact",
+        "type": "section",
+        "parentId": "page_1",
+        "children": [
+          "container_contact"
+        ],
+        "props": {},
+        "style": {
+          "padding": {
+            "desktop": "80px 0",
+            "tablet": "60px 0",
+            "mobile": "40px 0"
+          },
+          "backgroundColor": "#eef2f7"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "container_contact": {
+        "id": "container_contact",
+        "type": "container",
+        "parentId": "section_contact",
+        "children": [
+          "heading_contact_title",
+          "text_contact_intro",
+          "button_contact_phone"
+        ],
+        "props": {},
+        "style": {
+          "maxWidth": "800px",
+          "margin": "0 auto",
+          "padding": "0 24px",
+          "textAlign": "center"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "heading_contact_title": {
+        "id": "heading_contact_title",
+        "type": "heading",
+        "parentId": "container_contact",
+        "children": [],
+        "props": {
+          "level": "h2",
+          "text": "Contact Us"
+        },
+        "style": {
+          "color": "#004d40",
+          "fontSize": {
+            "desktop": 40,
+            "tablet": 36,
+            "mobile": 32
+          },
+          "fontWeight": "bold",
+          "marginBottom": "20px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "text_contact_intro": {
+        "id": "text_contact_intro",
+        "type": "text",
+        "parentId": "container_contact",
+        "children": [],
+        "props": {
+          "text": "We're here to assist you with any inquiries. Reach out to us today!"
+        },
+        "style": {
+          "color": "#212121",
+          "fontSize": {
+            "desktop": 18,
+            "tablet": 16,
+            "mobile": 14
+          },
+          "lineHeight": 1.6,
+          "marginBottom": "30px"
+        },
+        "locked": false,
+        "hidden": false
+      },
+      "button_contact_phone": {
+        "id": "button_contact_phone",
+        "type": "button",
+        "parentId": "container_contact",
+        "children": [],
+        "props": {
+          "text": "Call Us: 7307692308",
+          "href": "tel:7307692308"
+        },
+        "style": {
+          "backgroundColor": "#004d40",
+          "color": "#ffffff",
+          "padding": "12px 24px",
+          "borderRadius": 10,
+          "fontSize": 16
+        },
+        "locked": false,
+        "hidden": false
+      }
+    }
+  }
+}

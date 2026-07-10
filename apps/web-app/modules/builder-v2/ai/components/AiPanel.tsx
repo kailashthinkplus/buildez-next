@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowUp,
   ChevronDown,
+  CheckCircle2,
   Image as ImageIcon,
   Loader2,
   Paperclip,
@@ -17,7 +18,8 @@ import { useAiStore, type AiAgentActivity } from "../store/useAiStore";
 
 interface AiPanelProps {
   pageId: string;
-  onRunAI: (prompt: string) => Promise<void> | void;
+  siteId: string;
+  onRunAI: (prompt: string, context?: Record<string, unknown> | null) => Promise<void> | void;
   onAbortAI: () => void;
   aiChatRuntime: {
     status: "idle" | "running" | "success" | "error";
@@ -82,6 +84,56 @@ interface ThoughtLine {
   warnings?: string[];
 }
 
+interface AgentHistoryItem extends ThoughtLine {
+  id: string;
+  ok: boolean;
+  stage: string;
+}
+
+interface PersistedChatItem {
+  id: string;
+  role: "user" | "assistant" | "system";
+  text: string;
+}
+
+interface ContextForm {
+  companyName: string;
+  websiteName: string;
+  pageName: string;
+  industry: string;
+  useCase: string;
+  websiteUrl: string;
+  logoUrl: string;
+  referenceImageUrl: string;
+  referenceImageIntent: string;
+  designIntent: string;
+  audience: string;
+  offer: string;
+  researchEnabled: boolean;
+}
+
+type ContextQuestion = {
+  key: keyof ContextForm;
+  label: string;
+  options: string[];
+};
+
+const EMPTY_CONTEXT: ContextForm = {
+  companyName: "",
+  websiteName: "",
+  pageName: "",
+  industry: "",
+  useCase: "",
+  websiteUrl: "",
+  logoUrl: "",
+  referenceImageUrl: "",
+  referenceImageIntent: "",
+  designIntent: "",
+  audience: "",
+  offer: "",
+  researchEnabled: true,
+};
+
 function agentLabel(agent: string) {
   return AGENT_LABELS[agent] || agent.replace(/Agent$/, "");
 }
@@ -106,7 +158,233 @@ function buildRunningThoughts(elapsed: number): ThoughtLine[] {
   return RUNNING_THOUGHTS.slice(0, activeIndex + 1);
 }
 
+function promptNeedsContext(prompt: string) {
+  const lower = prompt.toLowerCase();
+  const hasSpecificBusiness =
+    /\b(?:for|called|named|brand|company|business)\s+["']?[a-z0-9][a-z0-9 &.-]{2,}/i.test(prompt) ||
+    /https?:\/\//i.test(prompt);
+  const hasIndustry =
+    /(real estate|restaurant|saas|software|clinic|healthcare|school|academy|portfolio|ecommerce|store|retail|fitness|travel|legal|agency|consulting|construction|interior|salon|hotel|finance|nonprofit|manufacturing|logistics|events|creator|education|professional services|local business)/i.test(prompt);
+  const hasUseCase =
+    /(lead|booking|appointment|reservation|sell|shop|portfolio|contact|demo|trial|enquiry|inquiry|pricing|about|services)/i.test(prompt);
+  const isGeneric =
+    prompt.trim().length < 90 ||
+    /(make|create|generate|build)\s+(a\s+)?(website|page|site)$/i.test(lower);
+
+  return isGeneric || !hasSpecificBusiness || !hasIndustry || !hasUseCase;
+}
+
+function optionSetFor(key: keyof ContextForm, context: Partial<ContextForm>) {
+  const industry = String(context.industry || "").toLowerCase();
+
+  if (key === "industry") {
+    return ["Professional services", "Local business", "Software", "Ecommerce"];
+  }
+
+  if (key === "audience") {
+    if (/real estate|construction|property|builder/.test(industry)) {
+      return ["Home buyers", "Property investors", "Families relocating", "Commercial buyers"];
+    }
+
+    if (/clinic|health|doctor|medical/.test(industry)) {
+      return ["New patients", "Families", "Corporate clients", "Local residents"];
+    }
+
+    if (/saas|software|technology/.test(industry)) {
+      return ["Founders", "Operations teams", "Enterprise buyers", "Product teams"];
+    }
+
+    return ["Local customers", "Premium buyers", "Business owners", "First-time visitors"];
+  }
+
+  if (key === "offer") {
+    if (/real estate|construction|property|builder/.test(industry)) {
+      return ["Book a site visit", "Explore projects", "Request a callback", "View availability"];
+    }
+
+    if (/clinic|health|doctor|medical/.test(industry)) {
+      return ["Book an appointment", "Call the clinic", "View services", "Request consultation"];
+    }
+
+    if (/saas|software|technology/.test(industry)) {
+      return ["Book a demo", "Start a trial", "Request pricing", "Talk to sales"];
+    }
+
+    return ["Request a quote", "Book a consultation", "Call now", "Send an enquiry"];
+  }
+
+  if (key === "useCase") {
+    return ["Company website", "Lead generation", "Landing page", "Online sales"];
+  }
+
+  if (key === "designIntent") {
+    if (/real estate|construction|property|builder/.test(industry)) {
+      return [
+        "Cinematic architectural editorial",
+        "Premium brochure with dense proof",
+        "Minimal luxury with strong imagery",
+        "Bold conversion-led property page",
+      ];
+    }
+    if (/restaurant|hospitality|cafe|hotel/.test(industry)) {
+      return ["Atmospheric editorial", "Warm premium", "Bold nightlife", "Clean local"];
+    }
+    if (/saas|software|technology/.test(industry)) {
+      return ["Product-led clean", "Enterprise trust", "Bold startup", "Minimal technical"];
+    }
+    if (/clinic|health|doctor|medical/.test(industry)) {
+      return ["Calm clinical", "Warm human", "Premium specialist", "Clean modern"];
+    }
+    if (/shop|store|ecommerce|retail/.test(industry)) {
+      return ["Premium catalog", "Lifestyle editorial", "Bold launch", "Minimal product"];
+    }
+    return ["Premium editorial", "Clean professional", "Bold conversion", "Warm local"];
+  }
+
+  return [];
+}
+
+function contextQuestions(prompt: string, context: Partial<ContextForm>): ContextQuestion[] {
+  const questions: ContextQuestion[] = [];
+
+  if (!context.industry) {
+    questions.push({
+      key: "industry",
+      label: "What industry should I optimize for?",
+      options: optionSetFor("industry", context),
+    });
+  }
+
+  if (!hasSpecificDesignIntent(context.designIntent)) {
+    questions.push({
+      key: "designIntent",
+      label: "What design type and layout direction should it follow?",
+      options: optionSetFor("designIntent", context),
+    });
+  }
+
+  if (!context.audience) {
+    questions.push({
+      key: "audience",
+      label: "Who is the main audience?",
+      options: optionSetFor("audience", context),
+    });
+  }
+
+  if (!context.offer) {
+    questions.push({
+      key: "offer",
+      label: "What action should visitors take?",
+      options: optionSetFor("offer", context),
+    });
+  }
+
+  if (!context.useCase) {
+    questions.push({
+      key: "useCase",
+      label: "What kind of page is this?",
+      options: optionSetFor("useCase", context),
+    });
+  }
+
+  if (!context.websiteUrl && /brand|company|existing|match|research/i.test(prompt)) {
+    questions.push({
+      key: "websiteUrl",
+      label: "Use an existing website for research?",
+      options: ["I will add it later", "Skip website research"],
+    });
+  }
+
+  return questions.slice(0, 4);
+}
+
+function hasSpecificDesignIntent(value: unknown) {
+  if (typeof value !== "string" || !value.trim()) return false;
+  return !/^(clean professional|professional|premium|friendly|bold|clean modern)$/i.test(
+    value.trim()
+  );
+}
+
+function inferContextFromPrompt(prompt: string): Partial<ContextForm> {
+  const companyMatch =
+    prompt.match(/\b(?:called|named|brand|company|business)\s+["']?([a-z0-9][a-z0-9 &.'-]{2,60})/i) ||
+    prompt.match(/\bfor\s+["']?([A-Z][A-Za-z0-9 &.'-]{2,80}?)(?:\s+(?:in|at|from|website|company|business|studio|clinic|store|agency|platform)\b|$)/i) ||
+    prompt.match(/\b([A-Z][A-Za-z0-9 &.'-]{2,80}?\s+(?:Group|Builders|Developers|Construction|Realty|Homes|Estates|Studio|Clinic|Labs|Agency|School|Cafe|Hotel|Store|Shop|Technologies|Solutions))\b/i);
+  const websiteMatch = prompt.match(/https?:\/\/[^\s)]+|(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s)]*)?/i);
+  const next: Partial<ContextForm> = {};
+
+  if (companyMatch?.[1]) {
+    next.companyName = companyMatch[1]
+      .replace(/\b(?:bangalore|bengaluru|real estate|construction|company|home|website)\b.*$/i, "")
+      .replace(/\b(?:website|company|business|studio|clinic|store|agency|platform)\b.*$/i, "")
+      .replace(/[.,;:!?]+$/, "")
+      .trim();
+  }
+  if (websiteMatch?.[0]) {
+    const raw = websiteMatch[0].replace(/[.,;:!?]+$/, "");
+    next.websiteUrl = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  }
+
+  if (!next.industry) {
+    if (/\b(real estate|property|properties|developer|builders?|realty|homes?|apartments?)\b/i.test(prompt)) {
+      next.industry = "Real Estate";
+    } else if (/\b(construction|contractor|interior|architecture)\b/i.test(prompt)) {
+      next.industry = "Construction";
+    } else if (/\b(clinic|doctor|medical|healthcare|hospital|dental)\b/i.test(prompt)) {
+      next.industry = "Healthcare";
+    } else if (/\b(saas|software|app|platform|technology)\b/i.test(prompt)) {
+      next.industry = "Software";
+    } else if (/\b(restaurant|cafe|food|hotel|hospitality)\b/i.test(prompt)) {
+      next.industry = "Hospitality";
+    } else if (/\b(shop|store|ecommerce|retail|product)\b/i.test(prompt)) {
+      next.industry = "Ecommerce";
+    } else if (/\b(law|legal|attorney|advocate)\b/i.test(prompt)) {
+      next.industry = "Legal";
+    } else if (/\b(finance|accounting|wealth|insurance|bank)\b/i.test(prompt)) {
+      next.industry = "Finance";
+    } else if (/\b(fitness|gym|yoga|wellness)\b/i.test(prompt)) {
+      next.industry = "Fitness";
+    } else if (/\b(travel|tour|tourism)\b/i.test(prompt)) {
+      next.industry = "Travel";
+    } else if (/\b(agency|consulting|services|professional)\b/i.test(prompt)) {
+      next.industry = "Professional services";
+    }
+  }
+
+  const fieldPatterns: Array<[keyof ContextForm, RegExp]> = [
+    ["industry", /\bindustry\s+(?:is|=|:)\s+([^.\n,;]{2,80})/i],
+    ["audience", /\b(?:audience|customers|users)\s+(?:is|are|=|:)\s+([^.\n;]{2,120})/i],
+    ["offer", /\b(?:offer|service|product|cta|goal)\s+(?:is|=|:)\s+([^.\n;]{2,120})/i],
+    ["useCase", /\b(?:use case|purpose)\s+(?:is|=|:)\s+([^.\n;]{2,100})/i],
+    ["designIntent", /\b(?:design intent|visual direction|style)\s+(?:is|=|:)\s+([^.\n;]{2,100})/i],
+  ];
+
+  fieldPatterns.forEach(([key, pattern]) => {
+    const match = prompt.match(pattern);
+    if (match?.[1]) {
+      (next as Record<string, string>)[key] = match[1].trim();
+    }
+  });
+
+  return next;
+}
+
+function contextSummary(context: Partial<ContextForm>) {
+  return [
+    context.companyName && `company: ${context.companyName}`,
+    context.industry && `industry: ${context.industry}`,
+    context.audience && `audience: ${context.audience}`,
+    context.offer && `offer: ${context.offer}`,
+    context.designIntent && `design: ${context.designIntent}`,
+    context.websiteUrl && `website: ${context.websiteUrl}`,
+  ]
+    .filter(Boolean)
+    .join(" • ");
+}
+
 export default function AiPanel({
+  pageId,
+  siteId,
   onRunAI,
   onAbortAI,
   aiChatRuntime,
@@ -115,12 +393,30 @@ export default function AiPanel({
   hasGeneratedCode = false,
 }: AiPanelProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const referenceInputRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const lastAgentSignatureRef = useRef("");
   const { elapsed } = useAiRuntime();
   const agents = useAiStore((s) => s.agents);
+  const setAiStatus = useAiStore((s) => s.setStatus);
+  const setAiErrorMessage = useAiStore((s) => s.setErrorMessage);
+  const setAiAgents = useAiStore((s) => s.setAgents);
 
   const [prompt, setPrompt] = useState("");
   const [tone, setTone] = useState("Professional");
   const [lastUserPrompt, setLastUserPrompt] = useState("");
+  const [agentHistory, setAgentHistory] = useState<AgentHistoryItem[]>([]);
+  const [contextForm, setContextForm] = useState<ContextForm>(EMPTY_CONTEXT);
+  const [savedContextSummary, setSavedContextSummary] = useState("");
+  const [persistedHistory, setPersistedHistory] = useState<PersistedChatItem[]>([]);
+  const [contextPrompts, setContextPrompts] = useState<ContextQuestion[]>([]);
+  const [pendingGenerationPrompt, setPendingGenerationPrompt] = useState("");
+  const [referenceUploadStatus, setReferenceUploadStatus] = useState("");
+  const [designReviewStatus, setDesignReviewStatus] = useState<
+    "idle" | "pending" | "accepted"
+  >("idle");
+  const [acceptingDesign, setAcceptingDesign] = useState(false);
   const [mode, setMode] = useState<"generate" | "refine">(
     hasGeneratedCode ? "refine" : "generate"
   );
@@ -128,37 +424,316 @@ export default function AiPanel({
   const isRunning = aiChatRuntime.status === "running";
   const isError = aiChatRuntime.status === "error";
 
-  const visibleThoughts = useMemo(() => {
-    if (isRunning) return buildRunningThoughts(elapsed);
-    return agents.map(formatAgent);
-  }, [agents, elapsed, isRunning]);
-  const activeThought = visibleThoughts[visibleThoughts.length - 1];
+  async function saveContext(nextContext: ContextForm) {
+    try {
+      const res = await fetch("/api/builder-v2/ai/context", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pageId, context: nextContext }),
+      });
+      if (!res.ok) return nextContext;
+      const payload = await res.json();
+      const merged = {
+        ...(payload.context || {}),
+        ...nextContext,
+        researchEnabled: payload.context?.researchEnabled !== false,
+      };
+      setContextForm(merged);
+      setSavedContextSummary(contextSummary(merged));
+      return merged;
+    } catch (error) {
+      console.error("[AI Context] Failed to save context", error);
+      return nextContext;
+    }
+  }
+
+  async function uploadReferenceImage(file: File) {
+    if (!file || isRunning) return;
+    if (!file.type.startsWith("image/")) {
+      setReferenceUploadStatus("Please attach an image file.");
+      return;
+    }
+
+    setReferenceUploadStatus("Uploading reference...");
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("siteId", siteId);
+    formData.append("usage", "ai-reference");
+
+    try {
+      const res = await fetch("/api/builder-v2/assets/upload", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      const payload = await res.json();
+      if (!res.ok || !payload?.asset?.url) {
+        throw new Error(payload?.error || "Image upload failed.");
+      }
+
+      const nextContext = {
+        ...contextForm,
+        referenceImageUrl: payload.asset.url,
+        referenceImageIntent:
+          "Use this uploaded UI or visual reference to match layout, spacing, color relationships, imagery direction, and overall composition in the generated builder blueprint.",
+      };
+      setReferenceUploadStatus("Reference attached");
+      await saveContext(nextContext);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Image upload failed.";
+      setReferenceUploadStatus(message);
+    } finally {
+      if (referenceInputRef.current) referenceInputRef.current.value = "";
+    }
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadContext() {
+      try {
+        const res = await fetch(`/api/builder-v2/ai/context?pageId=${encodeURIComponent(pageId)}`, {
+          credentials: "include",
+          cache: "no-store",
+        });
+        if (!res.ok) return;
+        const payload = await res.json();
+        if (cancelled || !payload?.context) return;
+        const nextContext = {
+          ...EMPTY_CONTEXT,
+          ...payload.context,
+          researchEnabled: payload.context.researchEnabled !== false,
+        };
+        setContextForm(nextContext);
+        setSavedContextSummary(contextSummary(nextContext));
+        if (Array.isArray(payload.messages)) {
+          setPersistedHistory(
+            payload.messages
+              .map((message: any) => ({
+                id: String(message.id),
+                role: message.role === "user" ? "user" : "assistant",
+                text:
+                  typeof message.content?.text === "string"
+                    ? message.content.text
+                    : "",
+              }))
+              .filter((message: PersistedChatItem) => message.text)
+              .slice(-10)
+          );
+        }
+      } catch (error) {
+        console.error("[AI Context] Failed to load saved context", error);
+      }
+    }
+
+    loadContext();
+    return () => {
+      cancelled = true;
+    };
+  }, [pageId]);
+
+  useEffect(() => {
+    function onLogoComplete(event: Event) {
+      const detail =
+        event instanceof CustomEvent && event.detail && typeof event.detail === "object"
+          ? (event.detail as { logoUrl?: unknown })
+          : {};
+      const logoUrl = typeof detail.logoUrl === "string" ? detail.logoUrl.trim() : "";
+      if (!logoUrl) return;
+
+      const nextContext = {
+        ...contextForm,
+        logoUrl,
+      };
+      setContextForm(nextContext);
+      setSavedContextSummary(contextSummary(nextContext));
+      void saveContext(nextContext);
+    }
+
+    window.addEventListener("ai:logo-complete", onLogoComplete);
+    return () => window.removeEventListener("ai:logo-complete", onLogoComplete);
+  }, [contextForm]);
+
+  const activeThought = useMemo(() => {
+    if (!isRunning) return null;
+    const thoughts = buildRunningThoughts(elapsed);
+    return thoughts[thoughts.length - 1] || null;
+  }, [elapsed, isRunning]);
+
+  useEffect(() => {
+    const signature = agents
+      .map((agent) => `${agent.agent}:${agent.stage}:${agent.ok}:${agent.summary}`)
+      .join("|");
+
+    if (isRunning || !agents.length || !signature || signature === lastAgentSignatureRef.current) {
+      return;
+    }
+
+    lastAgentSignatureRef.current = signature;
+    const runId = `${Date.now()}`;
+    setAgentHistory((current) => [
+      ...current,
+      ...agents.map((agent, index) => {
+        const formatted = formatAgent(agent);
+        return {
+          ...formatted,
+          id: `${runId}-${agent.agent}-${index}`,
+          ok: agent.ok,
+          stage: agent.stage,
+        };
+      }),
+    ]);
+  }, [agents, isRunning]);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      bottomRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [
+    activeThought?.title,
+    activeThought?.body,
+    agentHistory.length,
+    aiChatRuntime.status,
+    elapsed,
+    lastUserPrompt,
+  ]);
+
+  async function runGeneration(cleanPrompt: string, nextContext: ContextForm) {
+    const savedContext =
+      JSON.stringify(nextContext) !== JSON.stringify(contextForm)
+        ? await saveContext(nextContext)
+        : nextContext;
+
+    setContextPrompts([]);
+    setPendingGenerationPrompt("");
+    setDesignReviewStatus("idle");
+
+    await onRunAI(cleanPrompt, {
+      ...(savedContext as unknown as Record<string, unknown>),
+      tone,
+      noCodeOutput: true,
+    });
+    setDesignReviewStatus("pending");
+  }
+
+  async function acceptDesign() {
+    if (acceptingDesign || designReviewStatus !== "pending") return;
+
+    setAcceptingDesign(true);
+    try {
+      const res = await fetch("/api/builder-v2/ai/finalize-design", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ pageId }),
+      });
+
+      if (!res.ok) {
+        let message = "Could not accept this design.";
+        try {
+          const payload = await res.json();
+          message = payload?.error || payload?.message || message;
+        } catch {
+          // Keep fallback message.
+        }
+        throw new Error(message);
+      }
+
+      setDesignReviewStatus("accepted");
+    } catch (error) {
+      console.error("[AiPanel] Failed to accept design:", error);
+    } finally {
+      setAcceptingDesign(false);
+    }
+  }
 
   async function submitPrompt(nextPrompt = prompt) {
     const cleanPrompt = nextPrompt.trim();
     if (!cleanPrompt || isRunning) return;
 
+    setAiStatus("idle");
+    setAiErrorMessage(null);
+    setAiAgents([]);
     setPrompt("");
     setLastUserPrompt(cleanPrompt);
+    setDesignReviewStatus("idle");
 
     if (mode === "refine" && hasGeneratedCode && onRefine) {
+      setContextPrompts([]);
+      setPendingGenerationPrompt("");
       onRefine(`${cleanPrompt}\n\nTone: ${tone}`);
       return;
     }
 
-    await onRunAI(`${cleanPrompt}
+    const inferredContext = {
+      ...contextForm,
+      ...inferContextFromPrompt(cleanPrompt),
+    };
+    const missingQuestions =
+      mode === "generate" &&
+      (promptNeedsContext(cleanPrompt) || !hasSpecificDesignIntent(inferredContext.designIntent))
+        ? contextQuestions(cleanPrompt, inferredContext)
+        : [];
 
-Tone: ${tone}
+    if (missingQuestions.length) {
+      setContextForm(inferredContext);
+      setContextPrompts(missingQuestions);
+      setPendingGenerationPrompt(cleanPrompt);
+      if (JSON.stringify(inferredContext) !== JSON.stringify(contextForm)) {
+        await saveContext(inferredContext);
+      }
+      return;
+    }
 
-No-code output:
-- Keep responses in plain language for a no-code user
-- Generate polished, editable website sections
-- Coordinate strategy, layout, design, copy, assets, validation, and QA agents
-- Offer options when multiple strong directions are possible`);
+    await runGeneration(cleanPrompt, inferredContext);
+  }
+
+  async function chooseContextOption(question: ContextQuestion, value: string) {
+    if (isRunning) return;
+
+    setAiStatus("idle");
+    setAiErrorMessage(null);
+    const remainingQuestions = contextPrompts.filter(
+      (item) => item.key !== question.key
+    );
+    const nextContext = {
+      ...contextForm,
+      [question.key]:
+        question.key === "websiteUrl" && value === "Skip website research"
+          ? ""
+          : value,
+      researchEnabled:
+        question.key === "websiteUrl" && value === "Skip website research"
+          ? false
+          : contextForm.researchEnabled,
+    };
+
+    setContextForm(nextContext);
+    setContextPrompts(remainingQuestions);
+    await saveContext(nextContext);
+
+    if (!remainingQuestions.length && pendingGenerationPrompt) {
+      await runGeneration(pendingGenerationPrompt, nextContext);
+    }
+  }
+
+  async function continuePendingGeneration() {
+    if (!pendingGenerationPrompt || isRunning) return;
+    setAiStatus("idle");
+    setAiErrorMessage(null);
+    await runGeneration(pendingGenerationPrompt, contextForm);
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[#0a0c10] text-white">
+    <div className="flex h-full min-h-0 flex-col border-white/10 bg-[#121418]/90 text-[13px] text-white shadow-2xl shadow-black/50 backdrop-blur-2xl">
       <style>{`
         @keyframes buildez-ai-scan {
           0% { transform: translateX(-120%); opacity: 0; }
@@ -193,7 +768,7 @@ No-code output:
         }
       `}</style>
 
-      <div className="border-b border-neutral-800/80 bg-[#0d1016]/95 px-4 py-3 backdrop-blur-2xl">
+      <div className="border-b border-white/10 bg-[#0f1118]/80 px-4 py-3 backdrop-blur-xl">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-sm font-semibold">
@@ -217,13 +792,13 @@ No-code output:
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4">
+      <div ref={scrollRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-[#121418]/70 px-4 py-4 backdrop-blur-xl">
         <div
           className={`relative max-w-[92%] overflow-hidden rounded-[22px] border border-neutral-800 bg-neutral-900/70 px-4 py-3 shadow-xl shadow-black/20 ${
             isRunning ? "buildez-ai-scan" : ""
           }`}
         >
-          <p className="text-sm leading-6 text-neutral-200">
+          <p className="text-xs leading-5 text-neutral-200">
             Tell me what to build or improve. I will work through strategy,
             layout, design, copy, assets, and QA, then place the result on the
             canvas.
@@ -232,9 +807,125 @@ No-code output:
 
         {lastUserPrompt ? (
           <div className="ml-auto max-w-[88%] rounded-[22px] bg-neutral-800 px-4 py-3 shadow-xl shadow-black/20">
-            <p className="text-sm leading-6 text-neutral-100">{lastUserPrompt}</p>
+            <p className="text-xs leading-5 text-neutral-100">{lastUserPrompt}</p>
           </div>
         ) : null}
+
+        {persistedHistory.map((item) => (
+          <div
+            key={item.id}
+            className={
+              item.role === "user"
+                ? "ml-auto max-w-[88%] rounded-[22px] bg-neutral-800 px-4 py-3 shadow-xl shadow-black/20"
+                : "max-w-[94%] rounded-[22px] border border-neutral-800 bg-[#111419]/95 px-4 py-3 shadow-xl shadow-black/25"
+            }
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+              {item.role === "user" ? "Previous prompt" : "Previous AI response"}
+            </p>
+            <p className="mt-1 text-xs leading-5 text-neutral-100">{item.text}</p>
+          </div>
+        ))}
+
+        {contextPrompts.length ? (
+          <div className="max-w-[94%] rounded-[18px] border border-sky-500/20 bg-sky-500/[0.08] px-4 py-3 shadow-xl shadow-sky-950/10">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-sky-200">
+                  Brand context
+                </p>
+                <p className="mt-1 text-xs leading-5 text-sky-50/90">
+                  Choose a few details before generation starts.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={continuePendingGeneration}
+                disabled={!pendingGenerationPrompt || isRunning}
+                className="shrink-0 rounded-full bg-sky-400 px-3 py-1.5 text-[11px] font-semibold text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Continue
+              </button>
+            </div>
+            <div className="mt-3 space-y-3">
+              {contextPrompts.map((question) => (
+                <div key={question.key}>
+                  <p className="text-xs leading-5 text-sky-50/85">
+                    {question.label}
+                  </p>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    {question.options.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => chooseContextOption(question, option)}
+                        disabled={isRunning}
+                        className="rounded-full border border-sky-300/20 bg-sky-300/10 px-2.5 py-1 text-[11px] text-sky-50 transition hover:border-sky-200/45 hover:bg-sky-300/18 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {savedContextSummary ? (
+          <div className="max-w-[94%] rounded-[22px] border border-emerald-500/20 bg-emerald-500/[0.08] px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-200">
+              Using saved context
+            </p>
+            <p className="mt-1 text-xs leading-5 text-emerald-50/90">
+              {savedContextSummary}
+            </p>
+          </div>
+        ) : null}
+
+        {contextForm.referenceImageUrl ? (
+          <div className="max-w-[94%] rounded-[18px] border border-violet-500/20 bg-violet-500/[0.08] px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-violet-200">
+              Reference attached
+            </p>
+            <p className="mt-1 text-xs leading-5 text-violet-50/85">
+              I will map the uploaded visual direction into the builder and published page.
+            </p>
+          </div>
+        ) : null}
+
+        {agentHistory.map((item) => (
+          <div
+            key={item.id}
+            className="max-w-[94%] rounded-[22px] border border-neutral-800 bg-[#111419]/95 px-4 py-3 shadow-xl shadow-black/25"
+          >
+            <div className="flex items-start gap-3">
+              <span
+                className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${
+                  item.ok ? "bg-emerald-300" : "bg-amber-300"
+                }`}
+              />
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-xs font-semibold text-neutral-300">
+                    {item.title}
+                  </p>
+                  <span className="rounded-full border border-neutral-800 px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-neutral-500">
+                    {item.stage}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs leading-5 text-neutral-200">
+                  {item.body}
+                </p>
+                {item.warnings?.length ? (
+                  <p className="mt-1 text-xs leading-5 text-amber-200/80">
+                    {item.warnings.join(" ")}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ))}
 
         {isRunning ? (
           <div className="relative overflow-hidden rounded-[22px] border border-sky-500/20 bg-sky-500/[0.07] px-4 py-3 shadow-[0_0_34px_rgba(14,165,233,0.12)]">
@@ -251,7 +942,7 @@ No-code output:
                   <span className="buildez-ai-dot [animation-delay:240ms]">.</span>
                   <span className="ml-1 text-neutral-500">{elapsed}s</span>
                 </div>
-                <p className="mt-1 text-sm leading-6 text-neutral-300">
+                <p className="mt-1 text-xs leading-5 text-neutral-300">
                   {activeThought
                     ? `${activeThought.title}: ${activeThought.body}`
                     : "Coordinating the generation agents."}
@@ -261,64 +952,52 @@ No-code output:
           </div>
         ) : null}
 
-        {visibleThoughts.length ? (
-          <div className="max-w-[94%] rounded-[22px] border border-neutral-800 bg-[#111419]/95 px-4 py-3 shadow-xl shadow-black/25">
-            <div className="space-y-3">
-              {visibleThoughts.map((item, index) => (
-                <div
-                  key={`${item.title}-${index}`}
-                  className="grid grid-cols-[68px_minmax(0,1fr)] gap-3"
-                >
-                  <div className="flex items-center gap-2">
-                    {isRunning && index === visibleThoughts.length - 1 ? (
-                      <span className="h-1.5 w-1.5 rounded-full bg-sky-300 shadow-[0_0_12px_rgba(125,211,252,0.8)]" />
-                    ) : (
-                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-700" />
-                    )}
-                    <p
-                      className={`text-xs font-semibold ${
-                        isRunning && index === visibleThoughts.length - 1
-                          ? "text-sky-200"
-                          : "text-neutral-500"
-                      }`}
-                    >
-                      {item.title}
-                    </p>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm leading-6 text-neutral-200">
-                      {item.body}
-                    </p>
-                    {"warnings" in item && item.warnings.length ? (
-                      <p className="mt-1 text-xs leading-5 text-amber-200/80">
-                        {item.warnings.join(" ")}
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : null}
-
-        {!isRunning && aiChatRuntime.status === "success" ? (
+        {!isRunning && aiChatRuntime.status === "success" && designReviewStatus !== "idle" ? (
           <div className="max-w-[92%] rounded-[22px] border border-emerald-500/20 bg-emerald-500/10 px-4 py-3">
-            <p className="text-sm leading-6 text-emerald-100">
-              Done. I generated the page and completed the quality pass.
+            <p className="text-xs leading-5 text-emerald-100">
+              Done. I generated this page only and completed the quality pass.
             </p>
+            {designReviewStatus === "pending" ? (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={acceptDesign}
+                  disabled={acceptingDesign}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-emerald-300 px-3 py-1.5 text-[11px] font-semibold text-emerald-950 transition hover:bg-emerald-200 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {acceptingDesign ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  )}
+                  Accept design
+                </button>
+                <span className="text-[11px] leading-4 text-emerald-50/70">
+                  Accept before building the rest of the pages.
+                </span>
+              </div>
+            ) : null}
+            {designReviewStatus === "accepted" ? (
+              <p className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-100">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Design accepted for future pages.
+              </p>
+            ) : null}
           </div>
         ) : null}
 
         {isError ? (
           <div className="max-w-[92%] rounded-[22px] border border-red-500/25 bg-red-500/10 px-4 py-3">
-            <p className="text-sm leading-6 text-red-100">
+            <p className="text-xs leading-5 text-red-100">
               {aiChatRuntime.message || "AI request failed."}
             </p>
           </div>
         ) : null}
+
+        <div ref={bottomRef} />
       </div>
 
-      <div className="shrink-0 border-t border-neutral-800/80 bg-[#0d1016]/95 p-3 pb-[max(12px,env(safe-area-inset-bottom))] backdrop-blur-2xl">
+      <div className="shrink-0 border-t border-white/10 bg-[#0f1118]/80 p-3 pb-[max(12px,env(safe-area-inset-bottom))] backdrop-blur-xl">
         {!lastUserPrompt && !isRunning ? (
           <div className="mb-2 flex gap-2 overflow-x-auto pb-1">
             {SUGGESTIONS.map((item) => (
@@ -353,10 +1032,10 @@ No-code output:
                 submitPrompt();
               }
             }}
-            rows={3}
+            rows={2}
             disabled={isRunning}
             placeholder="Add follow up..."
-            className="min-h-[68px] w-full resize-none bg-transparent px-3 py-2 text-sm leading-6 text-neutral-100 outline-none placeholder:text-neutral-600 disabled:opacity-60"
+            className="min-h-[46px] w-full resize-none bg-transparent px-3 py-1.5 text-xs leading-5 text-neutral-100 outline-none placeholder:text-neutral-600 disabled:opacity-60"
           />
 
           <div className="flex items-center justify-between gap-2 px-1 pb-1">
@@ -397,10 +1076,21 @@ No-code output:
               <button
                 type="button"
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-neutral-500 transition hover:bg-neutral-800 hover:text-neutral-200"
+                onClick={() => referenceInputRef.current?.click()}
                 aria-label="Attach file"
               >
                 <Paperclip className="h-4 w-4" />
               </button>
+              <input
+                ref={referenceInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) uploadReferenceImage(file);
+                }}
+              />
 
               <button
                 type="button"
@@ -422,6 +1112,11 @@ No-code output:
             </div>
           </div>
         </div>
+        {referenceUploadStatus ? (
+          <p className="px-2 pt-1 text-[11px] leading-4 text-neutral-500">
+            {referenceUploadStatus}
+          </p>
+        ) : null}
       </div>
     </div>
   );

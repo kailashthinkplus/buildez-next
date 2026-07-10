@@ -8,6 +8,54 @@ type BlueprintPayload = {
   metadata?: Record<string, unknown> | null;
 };
 
+export const GET = apiHandler(
+  async ({ auth, params }) => {
+    const pageId = params?.pageId;
+
+    if (!pageId) {
+      throw new Error("Missing pageId");
+    }
+
+    const page = await prisma.page.findFirst({
+      where: {
+        id: pageId,
+        site: {
+          tenantId: auth.tenant.id,
+        },
+      },
+      include: {
+        blueprint: true,
+        site: {
+          include: {
+            layout: true,
+          },
+        },
+      },
+    });
+
+    if (!page) {
+      throw new Error("Page not found");
+    }
+
+    return {
+      pageId: page.id,
+      pageStatus: page.status,
+      blueprint: page.blueprint?.data ?? null,
+      schemaVersion: page.blueprint?.schemaVersion ?? null,
+      reactCode: page.reactCode,
+      metadata: page.metadata,
+      siteLayout: page.site.layout
+        ? {
+            header: page.site.layout.header,
+            footer: page.site.layout.footer,
+          }
+        : null,
+      updatedAt: page.blueprint?.updatedAt?.toISOString() ?? null,
+    };
+  },
+  { requireTenant: true }
+);
+
 export const POST = apiHandler(
   async ({ auth, params, req }) => {
     const pageId = params?.pageId;

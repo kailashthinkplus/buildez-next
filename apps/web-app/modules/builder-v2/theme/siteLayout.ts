@@ -9,6 +9,7 @@ export type SiteHeaderLayout = {
   enabled: boolean;
   variant: "solid" | "soft" | "minimal";
   brandLabel: string;
+  logoUrl?: string;
   ctaLabel: string;
   ctaHref: string;
   navItems: SiteNavItem[];
@@ -18,6 +19,7 @@ export type SiteFooterLayout = {
   enabled: boolean;
   variant: "solid" | "soft" | "minimal";
   brandLabel: string;
+  logoUrl?: string;
   body: string;
   copyright: string;
   navItems: SiteNavItem[];
@@ -108,6 +110,76 @@ export function normalizeSiteThemeLayout(
         : fallback.footer.navItems,
     },
   };
+}
+
+export function hasExplicitSiteThemeLayout(value: unknown): boolean {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+
+  const layout = value as Record<string, unknown>;
+  const header =
+    layout.header && typeof layout.header === "object"
+      ? (layout.header as Partial<SiteHeaderLayout>)
+      : null;
+  const footer =
+    layout.footer && typeof layout.footer === "object"
+      ? (layout.footer as Partial<SiteFooterLayout>)
+      : null;
+
+  return Boolean(
+    (header && !isDefaultHeaderLayout(header)) ||
+      (footer && !isDefaultFooterLayout(footer))
+  );
+}
+
+export function disableSiteThemeChrome(layout: SiteThemeLayout): SiteThemeLayout {
+  return {
+    header: {
+      ...layout.header,
+      enabled: false,
+    },
+    footer: {
+      ...layout.footer,
+      enabled: false,
+    },
+  };
+}
+
+function labels(items: unknown) {
+  return Array.isArray(items)
+    ? items
+        .map((item) =>
+          item && typeof item === "object"
+            ? String((item as SiteNavItem).label || "").toLowerCase()
+            : ""
+        )
+        .filter(Boolean)
+        .join("|")
+    : "";
+}
+
+function isDefaultHeaderLayout(header: Partial<SiteHeaderLayout>) {
+  const nav = labels(header.navItems);
+  return (
+    (header.enabled === undefined || header.enabled === true) &&
+    (header.variant === undefined || header.variant === "solid") &&
+    (header.ctaLabel === undefined || header.ctaLabel === "Contact") &&
+    (header.ctaHref === undefined || header.ctaHref === "#contact") &&
+    (!nav || nav === "home|services|work|contact")
+  );
+}
+
+function isDefaultFooterLayout(footer: Partial<SiteFooterLayout>) {
+  const nav = labels(footer.navItems);
+  return (
+    (footer.enabled === undefined || footer.enabled === true) &&
+    (footer.variant === undefined || footer.variant === "solid") &&
+    (footer.body === undefined ||
+      footer.body === "A polished website built with a consistent site-wide theme.") &&
+    (!nav || nav === "home|services|contact|privacy") &&
+    (!footer.copyright || /all rights reserved/i.test(footer.copyright))
+  );
 }
 
 function isNavItem(value: unknown): value is SiteNavItem {

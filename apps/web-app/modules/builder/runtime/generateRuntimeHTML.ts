@@ -93,11 +93,9 @@ function renderNode(
     case "section": {
       const role = node.props?.role;
       const variant = node.props?.backgroundVariant;
-      const className = node.props?.className ? ` ${node.props.className}` : "";
-      
       return `
 <section 
-  class="be-section${className}" 
+  class="be-section" 
   data-id="${node.id}"
   ${role ? `data-role="${role}"` : ""}
   ${variant ? `data-background="${variant}"` : ""}
@@ -131,11 +129,9 @@ ${(node.children ?? []).map(child => renderNode(child, page)).join("")}
       const layout = node.props?.layout;
       const direction = node.props?.direction;
       const visual = node.props?.visual;
-      const className = node.props?.className ? ` ${node.props.className}` : "";
-      
       return `
 <div 
-  class="be-container${className}" 
+  class="be-container" 
   data-id="${node.id}"
   ${layout ? `data-layout="${layout}"` : ""}
   ${direction ? `data-direction="${direction}"` : ""}
@@ -147,9 +143,8 @@ ${(node.children ?? []).map(child => renderNode(child, page)).join("")}
     }
 
     case "column": {
-      const columnClass = node.props?.className ? ` ${node.props.className}` : "";
       return `
-<div class="be-column${columnClass}" data-id="${node.id}" style="${styleStr}">
+<div class="be-column" data-id="${node.id}" style="${styleStr}">
 ${(node.children ?? []).map(child => renderNode(child, page)).join("")}
 </div>`;
     }
@@ -161,7 +156,7 @@ ${(node.children ?? []).map(child => renderNode(child, page)).join("")}
       
       return `
 <${tag} 
-  class="be-heading${node.props?.className ? ` ${node.props.className}` : ""}" 
+  class="be-heading" 
   data-id="${node.id}"
   ${emphasis ? `data-emphasis="${emphasis}"` : ""}
   style="${styleStr}"
@@ -176,7 +171,7 @@ ${escapeHtml(node.props?.text || "")}
       if (node.props?.html) {
         return `
 <div 
-  class="be-text${node.props?.className ? ` ${node.props.className}` : ""}" 
+  class="be-text" 
   data-id="${node.id}"
   data-role="${role}"
   style="${styleStr}"
@@ -187,7 +182,7 @@ ${node.props.html}
 
       return `
 <p 
-  class="be-text${node.props?.className ? ` ${node.props.className}` : ""}" 
+  class="be-text" 
   data-id="${node.id}"
   data-role="${role}"
   style="${styleStr}"
@@ -203,7 +198,7 @@ ${escapeHtml(node.props?.text || "")}
       
       return `
 <img 
-  class="be-image${node.props?.className ? ` ${node.props.className}` : ""}"
+  class="be-image"
   data-id="${node.id}"
   src="${node.props.src}"
   alt="${escapeHtml(node.props.alt || "")}"
@@ -221,7 +216,7 @@ ${escapeHtml(node.props?.text || "")}
       
       return `
 <a 
-  class="be-button${node.props?.className ? ` ${node.props.className}` : ""}"
+  class="be-button"
   data-id="${node.id}"
   data-variant="${variant}"
   href="${href}"
@@ -265,7 +260,7 @@ ${escapeHtml(label)}
 
       return `
 <video
-  class="be-video${node.props?.className ? ` ${node.props.className}` : ""}"
+  class="be-video"
   data-id="${node.id}"
   src="${node.props.src}"
   ${node.props?.poster ? `poster="${node.props.poster}"` : ""}

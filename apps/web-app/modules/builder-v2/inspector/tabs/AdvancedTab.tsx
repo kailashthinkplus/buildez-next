@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import type { BuilderNode } from "../../types/blueprint";
+import { useCanvasStore } from "../../store/useCanvasStore";
+import { Activity } from "lucide-react";
 import {
   DeviceSwitcher,
   Field,
@@ -14,9 +15,9 @@ import {
   getAdvanced,
   setAdvancedGroupValue,
   setAdvancedValue,
-  setPropValue,
-  type InspectorDevice,
 } from "./InspectorControls";
+import { MOTION_INSPECTOR_GROUPS, buildDefaultMotionMetadata } from "../motion/motionInspectorMetadata";
+import { MOTION_PRESETS } from "../motion/motionPresets";
 
 interface AdvancedTabProps {
   node: BuilderNode;
@@ -27,7 +28,8 @@ export default function AdvancedTab({
   node,
   onUpdateNode,
 }: AdvancedTabProps) {
-  const [device, setDevice] = useState<InspectorDevice>("desktop");
+  const device = useCanvasStore((state) => state.device);
+  const setDevice = useCanvasStore((state) => state.setDevice);
   const advanced = getAdvanced(node);
   const responsiveVisibility =
     node.props?.__responsiveVisibility &&
@@ -73,7 +75,11 @@ export default function AdvancedTab({
       </Section>
 
       <Section title="Responsive" description="Per-device behavior and overrides">
-        <DeviceSwitcher value={device} onChange={setDevice} />
+        <DeviceSwitcher
+          value={device}
+          onChange={setDevice}
+          inheritedLabel={`${device} controls edit the active canvas breakpoint`}
+        />
         <ToggleInput
           label={`Visible on ${device}`}
           checked={responsiveVisibility[device] !== false}
@@ -115,32 +121,31 @@ export default function AdvancedTab({
         </div>
       </Section>
 
-      <Section title="Motion" description="Animation and scroll effects">
-        <Field label="Animation engine">
+      <Section title="Motion" description="Live CSS motion applied on the canvas.">
+        <Field label="Motion engine">
           <SelectInput
             value={motion.engine ?? "css"}
-            onChange={(value) => setAdvancedGroupValue(node, "motion", "engine", value, onUpdateNode)}
+            onChange={(value) => {
+              setAdvancedValue(node, "motion", { ...buildDefaultMotionMetadata(), ...motion, engine: value }, onUpdateNode);
+            }}
             options={[
-              { value: "css", label: "CSS transition" },
-              { value: "gsap", label: "GSAP timeline" },
-              { value: "parallax", label: "Parallax" },
-              { value: "scroll-trigger", label: "GSAP ScrollTrigger" },
+              { value: "css", label: "CSS motion" },
+              { value: "none", label: "Disabled" },
             ]}
           />
         </Field>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           <Field label="Preset">
             <SelectInput
               value={motion.preset ?? "none"}
               onChange={(value) => setAdvancedGroupValue(node, "motion", "preset", value, onUpdateNode)}
               options={[
                 { value: "none", label: "None" },
-                { value: "fade-in", label: "Fade in" },
-                { value: "slide-up", label: "Slide up" },
-                { value: "scale-in", label: "Scale in" },
-                { value: "stagger-children", label: "Stagger children" },
-                { value: "custom-keyframes", label: "Custom keyframes" },
+                ...MOTION_PRESETS.map((preset) => ({
+                  value: preset.id,
+                  label: preset.label,
+                })),
               ]}
             />
           </Field>
@@ -160,7 +165,7 @@ export default function AdvancedTab({
           </Field>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           <Field label="Duration">
             <SliderWithInput
               value={motion.duration ?? 0.6}
@@ -183,11 +188,31 @@ export default function AdvancedTab({
           </Field>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           <Field label="Parallax speed">
             <SliderWithInput
               value={motion.parallaxSpeed ?? 0}
               onChange={(value) => setAdvancedGroupValue(node, "motion", "parallaxSpeed", value, onUpdateNode)}
+              min={-2}
+              max={2}
+              step={0.1}
+              unit=""
+            />
+          </Field>
+          <Field label="Horizontal parallax">
+            <SliderWithInput
+              value={motion.parallaxHorizontal ?? 0}
+              onChange={(value) => setAdvancedGroupValue(node, "motion", "parallaxHorizontal", value, onUpdateNode)}
+              min={-2}
+              max={2}
+              step={0.1}
+              unit=""
+            />
+          </Field>
+          <Field label="Vertical parallax">
+            <SliderWithInput
+              value={motion.parallaxVertical ?? motion.parallaxSpeed ?? 0}
+              onChange={(value) => setAdvancedGroupValue(node, "motion", "parallaxVertical", value, onUpdateNode)}
               min={-2}
               max={2}
               step={0.1}
@@ -206,12 +231,37 @@ export default function AdvancedTab({
           </Field>
         </div>
 
-        <Field label="Custom keyframes">
+        <div className="rounded-md border border-white/10 bg-white/[0.035] p-3">
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/60">
+            Motion groups
+          </div>
+          <div className="grid grid-cols-1 gap-2">
+            {MOTION_INSPECTOR_GROUPS.map((group) => (
+              <button
+                key={group.id}
+                type="button"
+                onClick={() =>
+                  setAdvancedGroupValue(node, "motion", "activeGroup", group.id, onUpdateNode)
+                }
+                className={`flex items-center gap-2 rounded border px-2 py-2 text-left text-[11px] transition ${
+                  motion.activeGroup === group.id
+                    ? "border-blue-400/50 bg-blue-500/20 text-white"
+                    : "border-white/10 bg-white/[0.04] text-white/55 hover:bg-white/[0.08] hover:text-white"
+                }`}
+              >
+                <Activity size={14} aria-hidden />
+                {group.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <Field label="Timeline notes">
           <TextArea
-            rows={5}
-            value={motion.keyframes ?? ""}
-            onChange={(value) => setAdvancedGroupValue(node, "motion", "keyframes", value, onUpdateNode)}
-            placeholder="@keyframes float { from { transform: translateY(0); } to { transform: translateY(-12px); } }"
+            rows={4}
+            value={motion.timelineNotes ?? ""}
+            onChange={(value) => setAdvancedGroupValue(node, "motion", "timelineNotes", value, onUpdateNode)}
+            placeholder="Notes for the motion timeline."
           />
         </Field>
       </Section>
@@ -286,8 +336,16 @@ export default function AdvancedTab({
             <TextInput
               value={advanced.className ?? node.props?.className ?? ""}
               onChange={(value) => {
-                setAdvancedValue(node, "className", value, onUpdateNode);
-                setPropValue(node, "className", value, onUpdateNode);
+                onUpdateNode(node.id, {
+                  props: {
+                    ...node.props,
+                    className: value,
+                    advanced: {
+                      ...advanced,
+                      className: value,
+                    },
+                  },
+                });
               }}
               placeholder="section-large"
             />

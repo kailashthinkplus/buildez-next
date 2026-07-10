@@ -14,6 +14,7 @@ import { useBuilderStore } from "../store/useBuilderStore";
 import { useSelectionStore } from "../store/useSelectionStore";
 import { commandBus } from "../core/commands/CommandBus";
 import { InsertNodeCommand } from "../core/commands/InsertNodeCommand";
+import { buildNativeInsertionPlan } from "../core/commands/nativeHierarchyInsertion";
 import { UpdateNodeCommand } from "../core/commands/MoveNodeCommand";
 import { DeleteNodeCommand } from "../core/commands/DeleteNodeCommand";
 import { DuplicateNodeCommand } from "../core/commands/DuplicateNodeCommand";
@@ -31,12 +32,24 @@ import { BlueprintFactory } from "../core/engine/BlueprintFactory";
 import { AiConversation } from "../ai/services/AiConversation";
 import { useAiStore } from "../ai/store/useAiStore";
 import { WidgetRegistry } from "../core/registry/WidgetRegistry";
-import { Copy, Package, Palette, Sparkles, Trash2 } from "lucide-react";
+import { Copy, Maximize2, Minimize2, Package, Palette, Sparkles, Trash2 } from "lucide-react";
+import { applyColumnStructureToBlueprint } from "../layout/columnStructure";
+import { setResponsiveOverride } from "../core/responsive";
+import ColumnStructurePicker from "../layout/ColumnStructurePicker";
+import {
+  buildFullscreenBuilderState,
+  readFullscreenPreference,
+  writeFullscreenPreference,
+} from "./fullscreenBuilder";
 
 import type { BuilderBlueprint } from "../types/blueprint";
 import type { SiteThemeLayout } from "../theme/siteLayout";
 
 const HEADER_HEIGHT = 56;
+const LEFT_TOOLBAR_WIDTH = 60;
+const LEFT_PANEL_WIDTH = 360;
+const INSPECTOR_WIDTH = 280;
+const CANVAS_EDGE_GUTTER = 24;
 
 /* ============================================================
    TYPES
@@ -58,6 +71,90 @@ type DragGhostDetail = {
   source?: string;
 };
 
+function isBuilderBlueprint(value: unknown): value is BuilderBlueprint {
+  const blueprint = value as BuilderBlueprint | null;
+  return (
+    !!blueprint &&
+    typeof blueprint === "object" &&
+    typeof blueprint.root === "string" &&
+    !!blueprint.nodes &&
+    typeof blueprint.nodes === "object"
+  );
+}
+
+function normalizeLegacyNode(
+  node: any,
+  parentId: string | null,
+  nodes: Record<string, BuilderNode>
+): string {
+  const id =
+    typeof node?.id === "string" && node.id
+      ? node.id
+      : crypto.randomUUID();
+  const rawChildren = Array.isArray(node?.children) ? node.children : [];
+  const childIds: string[] = [];
+
+  nodes[id] = {
+    id,
+    type: node?.type ?? "container",
+    name: node?.name,
+    parentId,
+    children: childIds,
+    props: node?.props ?? {},
+    style: node?.style ?? {},
+    locked: !!node?.locked,
+    hidden: !!node?.hidden,
+  } as BuilderNode;
+
+  for (const child of rawChildren) {
+    childIds.push(normalizeLegacyNode(child, id, nodes));
+  }
+
+  return id;
+}
+
+function normalizeBlueprintForBuilder(
+  value: unknown,
+  title: string
+): BuilderBlueprint | null {
+  if (isBuilderBlueprint(value)) return value;
+
+  const raw = value as any;
+  const page =
+    raw?.type === "page" && Array.isArray(raw.children)
+      ? raw
+      : raw?.page && Array.isArray(raw.page.children)
+        ? {
+            id: raw.page.id,
+            type: "page",
+            props: raw.page.props ?? {},
+            children: raw.page.children,
+          }
+        : null;
+
+  if (!page) return null;
+
+  const nodes: Record<string, BuilderNode> = {};
+  const root = normalizeLegacyNode(page, null, nodes);
+
+  return {
+    metadata: {
+      version: 2,
+      title,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    theme: {
+      id: "default",
+      name: "Default",
+      preset: "default",
+      tokens: {},
+    },
+    root,
+    nodes,
+  };
+}
+
 /* ============================================================
    EMPTY CANVAS MESSAGE (BRANDED)
 ============================================================ */
@@ -78,10 +175,11 @@ function EmptyCanvasMessage() {
       `}
     >
       <div
+        data-canvas-placeholder="empty-page"
         className={`
           mb-6 w-20 h-20 rounded-2xl
           flex items-center justify-center text-5xl
-          backdrop-blur-sm border
+          backdrop-blur-sm border shadow-[0_24px_70px_rgba(15,23,42,0.16)]
           ${
             isDarkMode
               ? "bg-gradient-to-br from-blue-500/20 to-purple-500/20 border-white/10"
@@ -94,7 +192,7 @@ function EmptyCanvasMessage() {
 
       <div
         className={`
-          text-2xl font-bold mb-3
+          text-2xl font-bold mb-3 tracking-tight
           ${isDarkMode ? "text-white/90" : "text-slate-800"}
         `}
       >
@@ -107,8 +205,7 @@ function EmptyCanvasMessage() {
           ${isDarkMode ? "text-white/60" : "text-slate-500"}
         `}
       >
-        Use the AI panel to generate your website, or drag blocks from the sidebar
-        to start designing.
+        Drag blocks from the sidebar or use the add controls to start composing native Builder sections.
       </div>
     </div>
   );
@@ -158,8 +255,19 @@ function CollapseButton({
 export default function BuilderShell(
   { pageId, pageStatus, pageTitle, siteId, siteLayout }: BuilderShellProps
 ) {
+  const shellRef = useRef<HTMLDivElement | null>(null);
+const canvasViewportRef = useRef<HTMLDivElement | null>(null);
+  const [currentSiteLayout, setCurrentSiteLayout] = useState(siteLayout ?? null);
+
+  useEffect(() => {
+    setCurrentSiteLayout(siteLayout ?? null);
+  }, [siteLayout]);
   /* Call all hooks at the top, before any conditionals */
   const [isInspectorCollapsed, setIsInspectorCollapsed] = useState(false);
+  const [isFullscreenBuilder, setIsFullscreenBuilder] = useState(false);
+  const [canvasContentHeight, setCanvasContentHeight] = useState(0);
+  const [leftChromeWidth, setLeftChromeWidth] = useState(LEFT_TOOLBAR_WIDTH + LEFT_PANEL_WIDTH);
+  const [pendingColumnTargetId, setPendingColumnTargetId] = useState<string | null>(null);
   const [dragGhost, setDragGhost] = useState<{
     id: string;
     type: string;
@@ -170,6 +278,7 @@ export default function BuilderShell(
   const [canPasteStyle, setCanPasteStyle] = useState(false);
   const [canPasteElement, setCanPasteElement] = useState(false);
   const dragRafRef = useRef<number | null>(null);
+  const canvasSandboxRef = useRef<HTMLDivElement | null>(null);
   const dragPosRef = useRef<{ x: number; y: number } | null>(null);
   const pendingDropRef = useRef<{
     targetParentId: string;
@@ -184,15 +293,31 @@ export default function BuilderShell(
 
   /* Builder V2 */
   const blueprint = useBuilderStore((s) => s.blueprint);
+  const initializeBuilder = useBuilderStore((s) => s.initialize);
   const selectedId = useSelectionStore((s) => s.selectedNodeId);
   const select = useSelectionStore((s) => s.select);
+  const fullscreenState = buildFullscreenBuilderState(
+    isFullscreenBuilder,
+    typeof document !== "undefined" && Boolean(document.fullscreenEnabled)
+  );
 
 const [canUndo, setCanUndo] = useState(false);
 const [canRedo, setCanRedo] = useState(false);
 
 const onUndo = () => commandBus.undo();
 
+
 const onRedo = () => commandBus.redo();
+useEffect(() => {
+  if (!blueprint) {
+    select(null);
+    return;
+  }
+
+  if (selectedId && !blueprint.nodes[selectedId]) {
+    select(null);
+  }
+}, [blueprint, selectedId, select]);
 
 /* Wire command bus state to local component state */
 useEffect(() => {
@@ -204,6 +329,51 @@ useEffect(() => {
   return () => unsubscribe();
 }, []);
 
+useEffect(() => {
+  setIsFullscreenBuilder(readFullscreenPreference(window.localStorage));
+}, []);
+
+useEffect(() => {
+  writeFullscreenPreference(window.localStorage, isFullscreenBuilder);
+}, [isFullscreenBuilder]);
+
+useEffect(() => {
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape" && isFullscreenBuilder) {
+      setIsFullscreenBuilder(false);
+      if (document.fullscreenElement) {
+        void document.exitFullscreen().catch(() => {});
+      }
+    }
+  };
+
+  const handleFullscreenChange = () => {
+    if (!document.fullscreenElement && isFullscreenBuilder) {
+      setIsFullscreenBuilder(false);
+    }
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+    document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  };
+}, [isFullscreenBuilder]);
+
+const toggleFullscreenBuilder = () => {
+  const next = !isFullscreenBuilder;
+  setIsFullscreenBuilder(next);
+
+  if (next && shellRef.current?.requestFullscreen) {
+    void shellRef.current.requestFullscreen().catch(() => {});
+  }
+
+  if (!next && document.fullscreenElement) {
+    void document.exitFullscreen().catch(() => {});
+  }
+};
+
 const onSave = () => {};
 
 const onPublish = () => {};
@@ -214,7 +384,9 @@ const isNodeLocked = (id: string): boolean => {
 };
 
 const onUpdateNode = (id: string, patch: Record<string, unknown>) => {
-  if (isNodeLocked(id)) {
+  const isUnlockOnly =
+    patch.locked === false && Object.keys(patch).every((key) => key === "locked");
+  if (isNodeLocked(id) && !isUnlockOnly) {
     return;
   }
 
@@ -274,94 +446,12 @@ const onApplyColumnStructure = (targetId: string, widths: number[]) => {
     id: crypto.randomUUID(),
     name: "Apply Column Structure",
     execute(currentBlueprint) {
-      const target = currentBlueprint.nodes[targetId];
-      if (!target || !["page", "section", "container", "column"].includes(target.type)) {
-        return currentBlueprint;
-      }
-
-      const nodes = { ...currentBlueprint.nodes };
-      const existingChildren = [...target.children];
-      const contentChildren: string[] = [];
-
-      for (const childId of existingChildren) {
-        const child = nodes[childId];
-        if (!child) continue;
-
-        if (child.type === "column") {
-          contentChildren.push(...child.children);
-          delete nodes[childId];
-        } else {
-          contentChildren.push(childId);
-        }
-      }
-
-      const columnIds = widths.map((width) => {
-        const column = BlueprintFactory.createNode("column", targetId);
-        const widthValue = `${Math.round(width * 1000) / 1000}%`;
-
-        nodes[column.id] = {
-          ...column,
-          props: {
-            ...column.props,
-            layout: "vertical",
-          },
-          style: {
-            ...column.style,
-            width: widthValue,
-            flex: `0 0 ${widthValue}`,
-            maxWidth: widthValue,
-            minHeight: column.style?.minHeight ?? 120,
-            minWidth: 0,
-          },
-        };
-
-        return column.id;
-      });
-
-      const firstColumn = nodes[columnIds[0]];
-      if (firstColumn) {
-        nodes[firstColumn.id] = {
-          ...firstColumn,
-          children: contentChildren,
-        };
-
-        for (const childId of contentChildren) {
-          const child = nodes[childId];
-          if (child) {
-            nodes[childId] = {
-              ...child,
-              parentId: firstColumn.id,
-            };
-          }
-        }
-      }
-
-      nodes[target.id] = {
-        ...target,
-        children: columnIds,
-        props: {
-          ...target.props,
-          layout: "flex",
-          direction: "row",
-        },
-        style: {
-          ...target.style,
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          alignItems: target.style?.alignItems ?? "stretch",
-          gap: target.style?.gap ?? 16,
-        },
-      };
-
-      return {
-        ...currentBlueprint,
-        metadata: {
-          ...currentBlueprint.metadata,
-          updatedAt: new Date().toISOString(),
-        },
-        nodes,
-      };
+      return applyColumnStructureToBlueprint(
+        currentBlueprint,
+        targetId,
+        widths,
+        (parentId) => BlueprintFactory.createNode("column", parentId)
+      );
     },
   });
 };
@@ -499,40 +589,54 @@ const onAddBlock = (type: string, parentId?: string) => {
   if (!blueprint) return;
 
   const parent = resolveInsertParentId(type, parentId);
-
-  // Elementor-like behavior: when adding a column to non-container area,
-  // inject a container first and place the column inside it.
-  if (type === "column") {
-    const parentNode = blueprint.nodes[parent];
-    if (!parentNode) return;
-
-    if (parentNode.type === "container") {
-      const columnNode = BlueprintFactory.createNode("column", parentNode.id);
-      commandBus.execute(new InsertNodeCommand(parentNode.id, columnNode));
-      select(columnNode.id);
-      return;
-    }
-
-    const containerNode = BlueprintFactory.createNode("container", parentNode.id);
-    const columnNode = BlueprintFactory.createNode("column", containerNode.id);
-
-    commandBus.execute(new InsertNodeCommand(parentNode.id, containerNode));
-    commandBus.execute(new InsertNodeCommand(containerNode.id, columnNode));
-    select(columnNode.id);
+  if (type === "section") {
+    insertSectionStructure(blueprint.root, undefined, "BuilderShell add section");
     return;
   }
+  const plan = buildNativeInsertionPlan(
+    blueprint,
+    type as any,
+    parent,
+    (nodeType, nodeParentId) => BlueprintFactory.createNode(nodeType, nodeParentId)
+  );
 
-  const node = BlueprintFactory.createNode(type as any, parent);
-  commandBus.execute(new InsertNodeCommand(parent, node));
+  if (!plan) return;
 
-  // Quick start nested layout: adding a container seeds one column so users
-  // can immediately place elements.
-  if (type === "container") {
-    const columnNode = BlueprintFactory.createNode("column", node.id);
-    commandBus.execute(new InsertNodeCommand(node.id, columnNode));
-  }
+  executeInsertionPlan("BuilderShell -> InsertNodeCommand", plan);
+select(plan.selectNodeId);
 
-  select(node.id);
+if (type === "column") {
+  setPendingColumnTargetId(plan.selectNodeId);
+}
+};
+
+const insertSectionStructure = (
+  pageId: string,
+  index: number | undefined,
+  commandName: string
+) => {
+  if (!blueprint || blueprint.nodes[pageId]?.type !== "page") return;
+  const section = BlueprintFactory.createNode("section", pageId);
+  const container = BlueprintFactory.createNode("container", section.id);
+  const plan = {
+    steps: [
+      { parentId: pageId, node: section, index },
+      { parentId: section.id, node: container },
+    ],
+    selectNodeId: container.id,
+  };
+  executeInsertionPlan(commandName, plan);
+  select(container.id);
+  setPendingColumnTargetId(container.id);
+};
+
+const onAddSectionAtPageBottom = () => {
+  if (!blueprint) return;
+  insertSectionStructure(
+    blueprint.root,
+    blueprint.nodes[blueprint.root]?.children.length,
+    "BuilderShell bottom add section"
+  );
 };
 
 const insertBlockAtDrop = (
@@ -544,42 +648,77 @@ const insertBlockAtDrop = (
     return;
   }
 
-  if (type === "column") {
-    const parentNode = blueprint.nodes[parentId];
-    if (!parentNode) return;
+  const plan = buildNativeInsertionPlan(
+    blueprint,
+    type as any,
+    parentId,
+    (nodeType, nodeParentId) => BlueprintFactory.createNode(nodeType, nodeParentId),
+    insertIndex
+  );
 
-    if (parentNode.type === "container") {
-      const columnNode = BlueprintFactory.createNode("column", parentNode.id);
-      commandBus.execute(new InsertNodeCommand(parentNode.id, columnNode, insertIndex));
-      select(columnNode.id);
-      return;
-    }
+  if (!plan) return;
 
-    const containerNode = BlueprintFactory.createNode("container", parentNode.id);
-    const columnNode = BlueprintFactory.createNode("column", containerNode.id);
+  executeInsertionPlan("BuilderShell drop -> InsertNodeCommand", plan);
+select(plan.selectNodeId);
 
-    commandBus.execute(new InsertNodeCommand(parentNode.id, containerNode, insertIndex));
-    commandBus.execute(new InsertNodeCommand(containerNode.id, columnNode));
-    select(columnNode.id);
+if (type === "column") {
+  setPendingColumnTargetId(plan.selectNodeId);
+}
+};
+
+const executeInsertionPlan = (
+  name: string,
+  plan: ReturnType<typeof buildNativeInsertionPlan>
+) => {
+  if (!plan) return;
+
+  if (plan.steps.length === 1) {
+    const step = plan.steps[0];
+    commandBus.execute(new InsertNodeCommand(step.parentId, step.node, step.index));
     return;
   }
 
-  const node = BlueprintFactory.createNode(type as any, parentId);
-  commandBus.execute(new InsertNodeCommand(parentId, node, insertIndex));
-
-  if (type === "container") {
-    const columnNode = BlueprintFactory.createNode("column", node.id);
-    commandBus.execute(new InsertNodeCommand(node.id, columnNode));
-  }
-
-  select(node.id);
+  commandBus.transaction(name, () => {
+    for (const step of plan.steps) {
+      commandBus.execute(new InsertNodeCommand(step.parentId, step.node, step.index));
+    }
+  });
 };
 
-const onRunAI = (prompt: string) => {
-  if (!blueprint) return;
-  AiConversation.run({ pageId, prompt }).catch((err) =>
-    console.error("[BuilderShell] AI run failed:", err)
-  );
+const onRunAI = async (prompt: string, context?: Record<string, unknown> | null) => {
+  if (!blueprint) {
+    throw new Error("Builder is still loading. Please wait for the canvas before generating.");
+  }
+  try {
+    await AiConversation.run({ pageId, prompt, context });
+
+    const res = await fetch(`/api/builder-v2/blueprints/${pageId}`, {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error("AI generated the page, but the refreshed blueprint could not be loaded.");
+    }
+
+    const payload = await res.json();
+    const nextBlueprint = normalizeBlueprintForBuilder(
+      payload?.data?.blueprint,
+      pageTitle || "Untitled"
+    );
+
+    if (!nextBlueprint) {
+      throw new Error("AI generated the page, but no builder blueprint was returned.");
+    }
+
+    initializeBuilder(nextBlueprint);
+    setCurrentSiteLayout(payload?.data?.siteLayout ?? payload?.siteLayout ?? currentSiteLayout);
+    select(null);
+  } catch (err) {
+    console.error("[BuilderShell] AI run failed:", err);
+    throw err;
+  }
 };
 
 const onAbortAI = () => {
@@ -601,6 +740,7 @@ const onCapturePrompt = (prompt: string) => {
 
 const aiChatRuntime = {
   status: useAiStore((s) => s.status) as "idle" | "running" | "success" | "error",
+  message: useAiStore((s) => s.errorMessage) || undefined,
 };
 
 const reactCode: string | null = null;
@@ -1009,21 +1149,62 @@ const onCanvasClick = () => {
     };
   }, [blueprint]);
 
+const fixedDeviceWidth =
+  device === "mobile"
+    ? 390
+    : device === "tablet"
+      ? 768
+      : null;
+
+const canvasScale = zoom / 100;
+const canvasWidth = fixedDeviceWidth ?? 1200;
+const rightChromeWidth =
+  fullscreenState.sidebarsCollapsed || isInspectorCollapsed
+    ? 0
+    : INSPECTOR_WIDTH;
+const canvasChromeLeftInset =
+  fullscreenState.sidebarsCollapsed ? 0 : leftChromeWidth;
+const canvasChromeRightInset =
+  fullscreenState.sidebarsCollapsed ? 0 : rightChromeWidth;
+const scaledCanvasWidth = canvasWidth * canvasScale;
+const scaledCanvasHeight = canvasContentHeight * canvasScale;
+const canvasScrollWidth =
+  canvasChromeLeftInset + scaledCanvasWidth + canvasChromeRightInset + CANVAS_EDGE_GUTTER * 2;
+const canvasScrollHeight = Math.max(scaledCanvasHeight + CANVAS_EDGE_GUTTER * 2, 0);
+const canvasVisibleLaneOffset =
+  canvasChromeLeftInset + canvasChromeRightInset;
+
+useEffect(() => {
+  const canvas = canvasSandboxRef.current;
+  if (!canvas) return;
+
+  const measure = () => setCanvasContentHeight(canvas.scrollHeight);
+  measure();
+  const observer = new ResizeObserver(measure);
+  observer.observe(canvas);
+  return () => observer.disconnect();
+}, [blueprint, device]);
+
+useEffect(() => {
+  const viewport = canvasViewportRef.current;
+  if (!viewport) return;
+  const onWheel = (event: WheelEvent) => {
+    if (!event.shiftKey || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    event.preventDefault();
+    viewport.scrollLeft += event.deltaY;
+  };
+  viewport.addEventListener("wheel", onWheel, { passive: false });
+  return () => {
+    viewport.removeEventListener("wheel", onWheel);
+  };
+}, []);
+
   /* ============================================================
      GUARD CHECKS (AFTER ALL HOOKS)
   ============================================================ */
-  if (!blueprint) {
+  if (!isBuilderBlueprint(blueprint) || !blueprint.nodes[blueprint.root]) {
     return null;
   }
-
-  const rootNode = blueprint.nodes[blueprint.root];
-  if (!rootNode) {
-    return null;
-  }
-
-  const inspectorWidth = isInspectorCollapsed ? 0 : 280;
-  const canvasWidth =
-    device === "mobile" ? 390 : device === "tablet" ? 768 : 1200;
   const selectedNode = selectedId ? blueprint.nodes[selectedId] : null;
   const responsiveVisibility =
     selectedNode?.props?.__responsiveVisibility as
@@ -1032,152 +1213,199 @@ const onCanvasClick = () => {
   const isVisibleOnCurrentDevice = responsiveVisibility?.[device] !== false;
 
   return (
-    <div className="builder-shell h-screen w-full bg-[var(--dashboard-bg)] text-[var(--dashboard-text)] dark:bg-[#0F1118] dark:text-white overflow-hidden">
+    <>
+    <div
+      ref={shellRef}
+      data-builder-fullscreen={fullscreenState.enabled ? "true" : "false"}
+      data-builder-focus-mode={fullscreenState.focusMode ? "true" : "false"}
+      className="builder-shell h-screen w-full bg-[var(--dashboard-bg)] text-[var(--dashboard-text)] dark:bg-[#0F1118] dark:text-white overflow-hidden"
+    >
       {/* HEADER */}
-      <div
-        className="fixed top-0 left-0 right-0 z-[10000]"
-        style={{ height: HEADER_HEIGHT }}
-      >
-        <BuilderHeader
-          pageId={pageId}
-          pageStatus={pageStatus}
-          pageTitle={pageTitle}
-        />
-      </div>
+      {!fullscreenState.focusMode && (
+        <div
+          className="fixed top-0 left-0 right-0 z-[10000]"
+          style={{ height: HEADER_HEIGHT }}
+        >
+          <BuilderHeader
+            pageId={pageId}
+            pageStatus={pageStatus}
+            pageTitle={pageTitle}
+            isFullscreenBuilder={isFullscreenBuilder}
+onToggleFullscreenBuilder={toggleFullscreenBuilder}
+          />
+        </div>
+      )}
 
       {/* BODY */}
-      <div
-        className="flex w-full relative"
-        style={{
-          marginTop: HEADER_HEIGHT,
-          height: `calc(100vh - ${HEADER_HEIGHT}px)`,
-        }}
-      >
-        <IntegratedLeftSidebar
-          blueprint={blueprint}
-          selectedId={selectedId}
-          onSelect={select}
-          onUpdateNode={onUpdateNode}
-          onAddBlock={onAddBlock}
-          onRunAI={onRunAI}
-          onAbortAI={onAbortAI}
-          pageId={pageId}
-          siteId={siteId}
-          aiChatRuntime={aiChatRuntime}
-          onRequestLogoUpload={onRequestLogoUpload}
-          onCapturePrompt={onCapturePrompt}
-        />
+        <div
+  className="relative w-full overflow-hidden"
+  style={{
+    marginTop: fullscreenState.focusMode ? 0 : HEADER_HEIGHT,
+    height: fullscreenState.focusMode
+      ? "100vh"
+      : `calc(100vh - ${HEADER_HEIGHT}px)`,
+  }}
+>
+        {!fullscreenState.sidebarsCollapsed && (
+  <div className="absolute inset-y-0 left-0 z-[100]">
+    <IntegratedLeftSidebar
+      blueprint={blueprint}
+      selectedId={selectedId}
+      onSelect={select}
+      onUpdateNode={onUpdateNode}
+      onAddBlock={onAddBlock}
+      onRunAI={onRunAI}
+      onAbortAI={onAbortAI}
+      pageId={pageId}
+      siteId={siteId}
+      aiChatRuntime={aiChatRuntime}
+      onRequestLogoUpload={onRequestLogoUpload}
+      onCapturePrompt={onCapturePrompt}
+      onChromeWidthChange={setLeftChromeWidth}
+    />
+  </div>
+)}
 
         {/* CANVAS */}
-        <main
-          className={`builder-canvas-main flex-1 relative overflow-hidden ${
-            isDarkMode ? "bg-[#1E1F22]" : "bg-[#0F1118]"
-          }`}
-        >
-          <div className="w-full h-full overflow-auto relative" data-builder-canvas-scroll="true">
-            <div
-              className="min-h-full relative builder-canvas-sandbox mx-auto"
-              style={{
-                width: `${canvasWidth}px`,
-                minWidth: `${canvasWidth}px`,
-                maxWidth: `${canvasWidth}px`,
-                transform: `scale(${zoom / 100})`,
-                transformOrigin: "top center",
+<main
+  className={`builder-canvas-main absolute inset-0 ${
+    isDarkMode ? "bg-[#1E1F22]" : "bg-[#0F1118]"
+  }`}
+>
+  <div
+    ref={canvasViewportRef}
+    className="relative h-full w-full overflow-scroll overscroll-contain"
+    style={{ scrollbarGutter: "stable" }}
+    data-builder-canvas-scroll="true"
+  >
+    <div
+      className="relative min-h-full p-6"
+      style={{
+        minWidth: `max(100%, ${canvasScrollWidth}px)`,
+        minHeight: `${canvasScrollHeight}px`,
+      }}
+    >
+      <div
+        className="relative flex shrink-0 justify-center"
+        style={{
+          marginLeft: `${canvasChromeLeftInset}px`,
+          marginRight: `${canvasChromeRightInset}px`,
+          width: `calc(100% - ${canvasVisibleLaneOffset}px)`,
+          minWidth: `${scaledCanvasWidth}px`,
+          height: canvasContentHeight ? `${scaledCanvasHeight}px` : undefined,
+        }}
+      >
+          <div
+            ref={canvasSandboxRef}
+            className="relative builder-canvas-sandbox"
+            style={{
+              width: `${canvasWidth}px`,
+              minWidth: `${canvasWidth}px`,
+              maxWidth: `${canvasWidth}px`,
+              transform: `scale(${canvasScale})`,
+              transformOrigin: "top left",
+            }}
+          >
+            <BuilderCanvas
+              blueprint={blueprint}
+              siteLayout={currentSiteLayout}
+              onCanvasClick={onCanvasClick}
+              onAddSection={onAddSectionAtPageBottom}
+              onResizeNode={(nodeId, width, height) => {
+                const target = blueprint.nodes[nodeId];
+
+                if (
+                  !target ||
+                  target.type === "page" ||
+                  isNodeLocked(nodeId)
+                ) {
+                  return;
+                }
+
+                onUpdateNode(nodeId, {
+                  style: {
+                    ...target.style,
+                    width: setResponsiveOverride(
+                      target.style?.width,
+                      device,
+                      `${width}px`
+                    ),
+                    height: setResponsiveOverride(
+                      target.style?.height,
+                      device,
+                      `${height}px`
+                    ),
+                  },
+                });
               }}
-            >
-              <BuilderCanvas
-                blueprint={blueprint}
-                siteLayout={siteLayout}
-                onCanvasClick={onCanvasClick}
-                selectionToolbarProps={{
-                  selectedId,
-                  selectedType: selectedNode?.type,
-                  isRoot: selectedId === blueprint.root,
-                  onAdd: (type) => onAddBlock(type),
-                  onDuplicate: () => selectedId && onDuplicateNode(selectedId),
-                  onDelete: () => selectedId && onDeleteNode(selectedId),
-                  onMoveUp: () => selectedId && onMoveNodeUp(selectedId),
-                  onMoveDown: () => selectedId && onMoveNodeDown(selectedId),
-                  onWrap: () => selectedId && onWrapNode(selectedId),
-                  onCopy: () => selectedId && onCopyNode(selectedId),
-                  onPaste: () => selectedId && onPasteNode(selectedId),
-                  canPaste: canPasteElement,
-                  onToggleVisibility: () =>
-                    selectedId && onToggleNodeVisibility(selectedId),
-                  onToggleLock: () => selectedId && onToggleNodeLock(selectedId),
-                  onOpenNavigator,
-                  onOpenSettings,
-                  onToggleResponsiveVisibility: () =>
-                    selectedId && onToggleResponsiveVisibility(selectedId),
-                  isHidden: !!selectedNode?.hidden,
-                  isLocked: !!selectedNode?.locked,
-                  isResponsiveVisible: isVisibleOnCurrentDevice,
-                  currentDevice: device,
-                }}
-              />
-
-              <ContextMenu
-                actions={[
-                  {
-                    label: "Duplicate",
-                    icon: <Copy size={14} aria-hidden />,
-                    action: () => selectedId && onDuplicateNode(selectedId),
-                  },
-                  {
-                    label: "Wrap in Container",
-                    icon: <Package size={14} aria-hidden />,
-                    action: () => selectedId && onWrapNode(selectedId),
-                  },
-                  {
-                    label: "Copy Style",
-                    icon: <Palette size={14} aria-hidden />,
-                    action: () => selectedId && onCopyNodeStyle(selectedId),
-                  },
-                  {
-                    label: "Paste Style",
-                    icon: <Palette size={14} aria-hidden />,
-                    action: () => selectedId && onPasteNodeStyle(selectedId),
-                    disabled: !canPasteStyle,
-                  },
-                  {
-                    label: "Delete",
-                    icon: <Trash2 size={14} aria-hidden />,
-                    action: () => selectedId && onDeleteNode(selectedId),
-                    isDanger: true,
-                  },
-                ]}
-              />
-
-              <DropZoneIndicator />
-
-              {(
-                blueprint.nodes[blueprint.root]?.children?.length ?? 0
-              ) === 0 && <EmptyCanvasMessage />}
-            </div>
+              selectionToolbarProps={{
+                selectedId,
+                selectedType: selectedNode?.type,
+                isRoot: selectedId === blueprint.root,
+                onAdd: (type) => onAddBlock(type),
+                onDuplicate: () => selectedId && onDuplicateNode(selectedId),
+                onDelete: () => selectedId && onDeleteNode(selectedId),
+                onMoveUp: () => selectedId && onMoveNodeUp(selectedId),
+                onMoveDown: () => selectedId && onMoveNodeDown(selectedId),
+                onWrap: () => selectedId && onWrapNode(selectedId),
+                onCopy: () => selectedId && onCopyNode(selectedId),
+                onPaste: () => selectedId && onPasteNode(selectedId),
+                canPaste: canPasteElement,
+                onToggleVisibility: () => selectedId && onToggleNodeVisibility(selectedId),
+                onToggleLock: () => selectedId && onToggleNodeLock(selectedId),
+                onOpenNavigator,
+                onOpenSettings,
+                onAI: () => window.dispatchEvent(new CustomEvent("builder:open-panel", { detail: { panel: "ai" } })),
+                onToggleResponsiveVisibility: () => selectedId && onToggleResponsiveVisibility(selectedId),
+                isHidden: !!selectedNode?.hidden,
+                isLocked: !!selectedNode?.locked,
+                isResponsiveVisible: isVisibleOnCurrentDevice,
+                currentDevice: device,
+              }}
+            />
           </div>
-        </main>
+      </div>
+    </div>
+  </div>
+</main>
 
         {/* INSPECTOR */}
-        <aside
-          className="builder-chrome relative shrink-0 overflow-visible border-l backdrop-blur-xl"
-          style={{ width: inspectorWidth }}
-        >
-          <div className="h-full overflow-hidden">
-            {!isInspectorCollapsed && (
-              <InspectorPanel
-                selectedId={selectedId}
-                blueprint={blueprint}
-                onUpdateNode={onUpdateNode}
-                onApplyColumnStructure={onApplyColumnStructure}
-                siteId={siteId}
-              />
-            )}
-          </div>
-          <CollapseButton
-            isCollapsed={isInspectorCollapsed}
-            onClick={() => setIsInspectorCollapsed(!isInspectorCollapsed)}
-          />
-        </aside>
+{!fullscreenState.sidebarsCollapsed && (
+  <aside
+    className="builder-chrome absolute inset-y-0 right-0 z-[110] overflow-visible border-l border-white/10 bg-[#121418]/90 shadow-2xl shadow-black/50 backdrop-blur-2xl"
+    style={{
+      width: isInspectorCollapsed ? 0 : INSPECTOR_WIDTH,
+      pointerEvents: isInspectorCollapsed ? "none" : "auto",
+    }}
+  >
+    {!isInspectorCollapsed && (
+      <div className="h-full overflow-hidden bg-[#121418]/90 backdrop-blur-2xl">
+        <InspectorPanel
+          selectedId={selectedId}
+          blueprint={blueprint}
+          onUpdateNode={onUpdateNode}
+          onApplyColumnStructure={onApplyColumnStructure}
+          siteId={siteId}
+        />
+      </div>
+    )}
+
+    <div
+      className="pointer-events-auto"
+      style={{
+        position: "absolute",
+        top: "50%",
+        left: isInspectorCollapsed ? -24 : -12,
+        transform: "translateY(-50%)",
+      }}
+    >
+      <CollapseButton
+        isCollapsed={isInspectorCollapsed}
+        onClick={() => setIsInspectorCollapsed((current) => !current)}
+      />
+    </div>
+  </aside>
+)}
       </div>
 
       {dragGhost && <DragGhost drag={dragGhost} />}
@@ -1185,6 +1413,7 @@ const onCanvasClick = () => {
       <style>{`
         .builder-canvas-sandbox {
           isolation: isolate;
+          contain: layout style paint;
           background: ${isDarkMode ? "#0f1118" : "#ffffff"};
           color: ${isDarkMode ? "#e5e7eb" : "#0f172a"};
           font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -1200,6 +1429,18 @@ const onCanvasClick = () => {
 
         .builder-canvas-sandbox a {
           color: inherit;
+          text-decoration: none;
+        }
+
+        .builder-canvas-sandbox button,
+        .builder-canvas-sandbox input,
+        .builder-canvas-sandbox textarea,
+        .builder-canvas-sandbox select {
+          font: inherit;
+        }
+
+        .builder-canvas-sandbox button {
+          cursor: pointer;
         }
 
         .builder-dragging .builder-canvas-sandbox [data-node-id]:hover {
@@ -1260,7 +1501,51 @@ const onCanvasClick = () => {
             transform: scale(1);
           }
         }
+
+        @keyframes builder-rotate-in {
+          from { opacity: 0; transform: rotate(-4deg) scale(.98); }
+          to { opacity: 1; transform: rotate(0) scale(1); }
+        }
+
+        @keyframes builder-blur-in {
+          from { opacity: 0; filter: blur(14px); }
+          to { opacity: 1; filter: blur(0); }
+        }
+
+        @keyframes builder-soft-reveal {
+          from { opacity: 0; clip-path: inset(0 0 100% 0); transform: translateY(12px); }
+          to { opacity: 1; clip-path: inset(0); transform: translateY(0); }
+        }
+
+        @keyframes builder-zoom-in {
+          from { opacity: 0; transform: scale(.9); }
+          to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes builder-luxury-in {
+          from { opacity: 0; transform: translateY(32px); filter: blur(8px); }
+          to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .builder-node { animation: none !important; transition: none !important; }
+        }
       `}</style>
     </div>
+    <ColumnStructurePicker
+      open={Boolean(pendingColumnTargetId)}
+      onClose={() => setPendingColumnTargetId(null)}
+      onSelect={(columns) => {
+        if (!pendingColumnTargetId) return;
+
+        const widths = Array.isArray(columns)
+          ? columns
+          : Array.from({ length: columns }, () => 100 / columns);
+
+        onApplyColumnStructure(pendingColumnTargetId, widths);
+        setPendingColumnTargetId(null);
+      }}
+    />
+    </>
   );
 }

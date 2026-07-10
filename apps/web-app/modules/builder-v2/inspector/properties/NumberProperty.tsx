@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import type { BuilderNode } from "../../types/blueprint";
-import { useNodeUpdater } from "../tabs/hooks/useNodeUpdater";
+import { useNodeUpdater } from "../hooks/useNodeUpdater";
 
 interface NumberPropertyProps {
   node: BuilderNode;
@@ -30,7 +30,7 @@ export default function NumberProperty({
   step = 1,
   placeholder,
 }: NumberPropertyProps) {
-  const updateNode = useNodeUpdater();
+  const { updateNode } = useNodeUpdater();
 
   const [value, setValue] = useState<string>(
     node.props?.[property]?.toString() ?? ""

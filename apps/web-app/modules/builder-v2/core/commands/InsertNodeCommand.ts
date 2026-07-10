@@ -3,6 +3,7 @@ import type {
   BuilderNode,
 } from "../../types/blueprint";
 
+import { isAllowedChildRelationship } from "../validation/blueprintSchema";
 import type { BuilderCommand } from "./BuilderCommand";
 
 export class InsertNodeCommand implements BuilderCommand {
@@ -24,6 +25,16 @@ export class InsertNodeCommand implements BuilderCommand {
       blueprint.nodes[this.parentId];
 
     if (!parent) {
+      return blueprint;
+    }
+
+    if (!isAllowedChildRelationship(parent.type, this.node.type)) {
+      console.warn("[Builder] InsertNodeCommand rejected invalid hierarchy", {
+        parentId: parent.id,
+        parentType: parent.type,
+        childId: this.node.id,
+        childType: this.node.type,
+      });
       return blueprint;
     }
 

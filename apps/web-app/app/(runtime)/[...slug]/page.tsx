@@ -3,10 +3,16 @@ import { prisma } from "@buildez/db";
 
 import { renderPage } from "@/lib/runtime/render-page";
 import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
+import {
+  logBuilderDebug,
+  summarizeSiteLayout,
+} from "@/modules/builder-v2/debug/blueprintDebug";
 import { defaultThemeTokens } from "@/modules/builder-v2/theme/defaultTheme";
 import { SiteThemeFrame } from "@/modules/builder-v2/theme/SiteThemeFrame";
 import {
   createDefaultSiteThemeLayout,
+  disableSiteThemeChrome,
+  hasExplicitSiteThemeLayout,
   normalizeSiteThemeLayout,
 } from "@/modules/builder-v2/theme/siteLayout";
 import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
@@ -35,13 +41,23 @@ export default async function PublicRuntimePage(props: {
       !Array.isArray(result.blueprint.theme.tokens)
         ? (result.blueprint.theme.tokens as unknown as BuilderThemeTokens)
         : defaultThemeTokens;
-    const siteLayout = normalizeSiteThemeLayout(
-      result.siteLayout,
-      createDefaultSiteThemeLayout({
+    const fallbackLayout = createDefaultSiteThemeLayout({
         siteName: result.page.site.name,
         tokens,
         presetId: result.blueprint.theme?.preset ?? "buildez-default",
-      })
+      });
+    logBuilderDebug("runtime:builder-v2-layout-decision", {
+      siteSlug,
+      pageSlug,
+      siteName: result.page.site.name,
+      hasExplicitSiteLayout: hasExplicitSiteThemeLayout(result.siteLayout),
+      rawSiteLayout: result.siteLayout,
+      fallbackLayout: summarizeSiteLayout(fallbackLayout),
+    });
+    const hasExplicitLayout = hasExplicitSiteThemeLayout(result.siteLayout);
+    const siteLayout = normalizeSiteThemeLayout(
+      hasExplicitLayout ? result.siteLayout : null,
+      hasExplicitLayout ? fallbackLayout : disableSiteThemeChrome(fallbackLayout)
     );
 
     return (
@@ -62,16 +78,28 @@ export default async function PublicRuntimePage(props: {
     legacyDesignTokens
       ? (legacyDesignTokens as unknown as BuilderThemeTokens)
       : defaultThemeTokens;
-  const legacySiteLayout = normalizeSiteThemeLayout(
-    result.siteLayout,
-    createDefaultSiteThemeLayout({
+  const legacyFallbackLayout = createDefaultSiteThemeLayout({
       siteName: result.page.site.name,
       tokens: legacyTokens,
       presetId:
         typeof legacyDesignTokens?.themePresetId === "string"
           ? legacyDesignTokens.themePresetId
           : "buildez-default",
-    })
+    });
+  logBuilderDebug("runtime:legacy-layout-decision", {
+    siteSlug,
+    pageSlug,
+    siteName: result.page.site.name,
+    hasExplicitSiteLayout: hasExplicitSiteThemeLayout(result.siteLayout),
+    rawSiteLayout: result.siteLayout,
+    fallbackLayout: summarizeSiteLayout(legacyFallbackLayout),
+  });
+  const hasExplicitLegacyLayout = hasExplicitSiteThemeLayout(result.siteLayout);
+  const legacySiteLayout = normalizeSiteThemeLayout(
+    hasExplicitLegacyLayout ? result.siteLayout : null,
+    hasExplicitLegacyLayout
+      ? legacyFallbackLayout
+      : disableSiteThemeChrome(legacyFallbackLayout)
   );
 
   return (

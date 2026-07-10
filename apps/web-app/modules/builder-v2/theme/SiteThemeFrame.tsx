@@ -1,11 +1,12 @@
 import type React from "react";
 
+import { normalizeThemeTokens } from "./defaultTheme";
 import type { BuilderThemeTokens } from "./theme.types";
 import type { SiteFooterLayout, SiteHeaderLayout, SiteThemeLayout } from "./siteLayout";
 
 type SiteThemeFrameProps = {
   layout?: SiteThemeLayout | null;
-  tokens: BuilderThemeTokens;
+  tokens?: Partial<BuilderThemeTokens> | Record<string, unknown> | null;
   children: React.ReactNode;
   mode?: "canvas" | "published";
 };
@@ -16,21 +17,23 @@ export function SiteThemeFrame({
   children,
   mode = "published",
 }: SiteThemeFrameProps) {
+  const safeTokens = normalizeThemeTokens(tokens);
+
   return (
     <div
       style={{
-        background: tokens.colors.background,
-        color: tokens.colors.textPrimary,
-        fontFamily: fontStack(tokens.typography.bodyFont),
+        background: safeTokens.colors.background,
+        color: safeTokens.colors.textPrimary,
+        fontFamily: fontStack(safeTokens.typography.bodyFont),
         minHeight: "100vh",
       }}
     >
       {layout?.header?.enabled && (
-        <ThemeHeader header={layout.header} tokens={tokens} mode={mode} />
+        <ThemeHeader header={layout.header} tokens={safeTokens} mode={mode} />
       )}
       {children}
       {layout?.footer?.enabled && (
-        <ThemeFooter footer={layout.footer} tokens={tokens} mode={mode} />
+        <ThemeFooter footer={layout.footer} tokens={safeTokens} mode={mode} />
       )}
     </div>
   );
@@ -45,7 +48,8 @@ export function ThemeHeader({
   tokens: BuilderThemeTokens;
   mode?: "canvas" | "published";
 }) {
-  const styles = getShellStyles(header.variant, tokens, "header");
+  const safeTokens = normalizeThemeTokens(tokens);
+  const styles = getShellStyles(header.variant, safeTokens, "header");
 
   return (
     <header
@@ -61,33 +65,47 @@ export function ThemeHeader({
         <a
           href="/"
           style={{
-            color: tokens.colors.textPrimary,
+            color: safeTokens.colors.textPrimary,
             display: "inline-flex",
             alignItems: "center",
             gap: 10,
-            fontFamily: fontStack(tokens.typography.headingFont),
+            fontFamily: fontStack(safeTokens.typography.headingFont),
             fontSize: 18,
             fontWeight: 700,
             textDecoration: "none",
           }}
         >
-          <span
-            aria-hidden="true"
-            style={{
-              background: tokens.colors.primary,
-              borderRadius: Math.max(6, tokens.radius.button),
-              color: tokens.colors.primaryContrast,
-              display: "inline-flex",
-              height: 34,
-              width: 34,
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 13,
-              fontWeight: 800,
-            }}
-          >
-            {getInitials(header.brandLabel)}
-          </span>
+          {header.logoUrl ? (
+            <img
+              src={header.logoUrl}
+              alt=""
+              style={{
+                display: "block",
+                height: 34,
+                maxWidth: 120,
+                objectFit: "contain",
+                width: "auto",
+              }}
+            />
+          ) : (
+            <span
+              aria-hidden="true"
+              style={{
+                background: safeTokens.colors.primary,
+                borderRadius: Math.max(6, safeTokens.radius.button),
+                color: safeTokens.colors.primaryContrast,
+                display: "inline-flex",
+                height: 34,
+                width: 34,
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 13,
+                fontWeight: 800,
+              }}
+            >
+              {getInitials(header.brandLabel)}
+            </span>
+          )}
           {header.brandLabel}
         </a>
 
@@ -97,7 +115,7 @@ export function ThemeHeader({
             display: "flex",
             alignItems: "center",
             gap: 22,
-            color: tokens.colors.textSecondary,
+            color: safeTokens.colors.textSecondary,
             fontSize: 14,
             fontWeight: 600,
           }}
@@ -119,9 +137,9 @@ export function ThemeHeader({
         <a
           href={header.ctaHref}
           style={{
-            background: tokens.buttons.primary.backgroundColor,
-            borderRadius: tokens.buttons.primary.borderRadius,
-            color: tokens.buttons.primary.color,
+            background: safeTokens.buttons.primary.backgroundColor,
+            borderRadius: safeTokens.buttons.primary.borderRadius,
+            color: safeTokens.buttons.primary.color,
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
@@ -146,7 +164,8 @@ export function ThemeFooter({
   tokens: BuilderThemeTokens;
   mode?: "canvas" | "published";
 }) {
-  const styles = getShellStyles(footer.variant, tokens, "footer");
+  const safeTokens = normalizeThemeTokens(tokens);
+  const styles = getShellStyles(footer.variant, safeTokens, "footer");
 
   return (
     <footer data-buildez-site-footer="true" style={styles.shell}>
@@ -156,24 +175,40 @@ export function ThemeFooter({
           alignItems: "flex-start",
           display: "grid",
           gridTemplateColumns: "minmax(0, 1.4fr) minmax(0, 1fr)",
-          gap: tokens.spacing.contentGap,
+          gap: safeTokens.spacing.contentGap,
         }}
       >
         <div>
           <div
             style={{
-              color: tokens.colors.textPrimary,
-              fontFamily: fontStack(tokens.typography.headingFont),
+              color: safeTokens.colors.textPrimary,
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              fontFamily: fontStack(safeTokens.typography.headingFont),
               fontSize: 20,
               fontWeight: 700,
             }}
           >
+            {footer.logoUrl ? (
+              <img
+                src={footer.logoUrl}
+                alt=""
+                style={{
+                  display: "block",
+                  height: 30,
+                  maxWidth: 110,
+                  objectFit: "contain",
+                  width: "auto",
+                }}
+              />
+            ) : null}
             {footer.brandLabel}
           </div>
           <p
             style={{
-              color: tokens.colors.textSecondary,
-              fontSize: tokens.typography.scale.small,
+              color: safeTokens.colors.textSecondary,
+              fontSize: safeTokens.typography.scale.small,
               lineHeight: 1.7,
               margin: "10px 0 0",
               maxWidth: 460,
@@ -183,7 +218,7 @@ export function ThemeFooter({
           </p>
           <p
             style={{
-              color: tokens.colors.textSecondary,
+              color: safeTokens.colors.textSecondary,
               fontSize: 12,
               margin: "22px 0 0",
             }}
@@ -206,7 +241,7 @@ export function ThemeFooter({
               key={`${item.label}-${item.href}`}
               href={item.href}
               style={{
-                color: tokens.colors.textSecondary,
+                color: safeTokens.colors.textSecondary,
                 fontSize: 14,
                 fontWeight: 600,
                 textDecoration: "none",

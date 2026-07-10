@@ -21,6 +21,7 @@ import {
   Plus,
   Smartphone,
   Square,
+  Sparkles,
   Star,
   Tablet,
   Text,
@@ -53,6 +54,7 @@ export interface SelectionToolbarProps {
   onToggleLock?(): void;
   onOpenNavigator?(): void;
   onOpenSettings?(): void;
+  onAI?(): void;
   onToggleResponsiveVisibility?(): void;
   isHidden?: boolean;
   isLocked?: boolean;
@@ -94,6 +96,7 @@ export default function SelectionToolbar({
   onToggleVisibility,
   onToggleLock,
   onOpenNavigator,
+  onAI,
   onToggleResponsiveVisibility,
   isHidden,
   isLocked,
@@ -199,6 +202,9 @@ export default function SelectionToolbar({
       }
 
       const canvasRect = canvasRoot?.getBoundingClientRect();
+      const canvasScale = canvasRoot && canvasRoot.offsetWidth > 0
+        ? (canvasRect?.width ?? canvasRoot.offsetWidth) / canvasRoot.offsetWidth
+        : 1;
       const SAFE_MARGIN = 12;
       const canvasWidth = canvasRect?.width ?? window.innerWidth;
       const canvasHeight = canvasRect?.height ?? window.innerHeight;
@@ -211,7 +217,9 @@ export default function SelectionToolbar({
 
       // Center toolbar over element
       let left =
-        rect.left - (canvasRect?.left ?? 0) + rect.width / 2 - toolbarWidth / 2;
+        (rect.left - (canvasRect?.left ?? 0)) / canvasScale +
+        rect.width / canvasScale / 2 -
+        toolbarWidth / 2;
       const maxLeft = Math.max(leftBoundary, rightBoundary - toolbarWidth);
       left = Math.max(
         leftBoundary,
@@ -219,12 +227,12 @@ export default function SelectionToolbar({
       );
 
       // Prefer above the element
-      let top = rect.top - (canvasRect?.top ?? 0) - TOOLBAR_HEIGHT - GAP;
+      let top = (rect.top - (canvasRect?.top ?? 0)) / canvasScale - TOOLBAR_HEIGHT - GAP;
       let placement: "top" | "bottom" = "top";
 
       // If it would go under the header, show below instead
       if (top < topBoundary) {
-        top = rect.bottom - (canvasRect?.top ?? 0) + GAP;
+        top = (rect.bottom - (canvasRect?.top ?? 0)) / canvasScale + GAP;
         placement = "bottom";
       }
 
@@ -434,6 +442,18 @@ export default function SelectionToolbar({
         >
           <Plus size={14} />
         </button>
+
+        {onAI && (
+          <button
+            type="button"
+            onClick={onAI}
+            className={actionClass(false)}
+            title="Edit with AI"
+            aria-label="Edit selected element with AI"
+          >
+            <Sparkles size={14} />
+          </button>
+        )}
 
         <button
           type="button"

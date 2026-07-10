@@ -85,9 +85,10 @@ export const useBuilderStore = create<BuilderState>((set) => ({
     unsubscribeCommandBus?.();
 
     commandBus.initialize(blueprint);
+    const normalized = commandBus.getBlueprint();
 
     set({
-      blueprint,
+      blueprint: normalized,
       loading: false,
       dirty: false,
       revision: 0,

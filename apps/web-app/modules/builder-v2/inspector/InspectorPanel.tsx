@@ -41,18 +41,18 @@ export default function InspectorPanel({
 
   if (!node) {
     return (
-      <div className="builder-chrome h-full flex items-center justify-center text-sm text-white/40">
+      <div className="builder-chrome h-full flex items-center justify-center bg-[#121418]/90 text-sm text-white/40 shadow-2xl shadow-black/50 backdrop-blur-2xl">
         Select an element to edit
       </div>
     );
   }
 
   return (
-    <div className="builder-chrome h-full flex flex-col">
+    <div className="builder-chrome h-full flex flex-col bg-[#121418]/90 text-white shadow-2xl shadow-black/50 backdrop-blur-2xl">
       {/* =====================================================
          HEADER
       ===================================================== */}
-      <div className="border-b border-white/10 bg-[#0B0D12] px-4 py-3">
+      <div className="border-b border-white/10 bg-[#0f1118]/80 px-4 py-3 backdrop-blur-xl">
         <div className="flex items-center justify-between gap-3">
           <div>
             <div className="text-sm font-semibold capitalize text-white">
@@ -94,7 +94,7 @@ export default function InspectorPanel({
       {/* =====================================================
          BODY
       ===================================================== */}
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="flex-1 overflow-y-auto bg-[#121418]/70 p-3 backdrop-blur-xl">
         {activeTab === "content" && (
           <ContentTab
             node={node}
@@ -105,10 +105,12 @@ export default function InspectorPanel({
 
         {activeTab === "style" && (
           <DesignTab
-            node={node}
-            onUpdateNode={onUpdateNode}
-            onApplyColumnStructure={onApplyColumnStructure}
-          />
+  node={node}
+  blueprint={blueprint}
+  onUpdateNode={onUpdateNode}
+  onApplyColumnStructure={onApplyColumnStructure}
+  siteId={siteId}
+/>
         )}
 
         {activeTab === "advanced" && (

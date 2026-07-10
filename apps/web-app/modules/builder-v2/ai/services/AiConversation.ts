@@ -10,6 +10,7 @@ export interface RunAiOptions {
   pageId: string;
   prompt: string;
   tone?: string;
+  context?: Record<string, unknown> | null;
 }
 
 /* ==========================================================
@@ -25,11 +26,13 @@ export class AiConversation {
     pageId,
     prompt,
     tone,
+    context,
   }: RunAiOptions) {
     const store = useAiStore.getState();
 
     try {
       store.setStatus("running");
+      store.setErrorMessage(null);
       store.setElapsed(0);
       store.setAgents([]);
 
@@ -45,7 +48,7 @@ Instructions:
 - Use strong CTAs`
         : prompt;
 
-      const res = await fetch("/api/builder-v2/ai/generate", {
+      const res = await fetch("/api/builder-v2/ai/generate-v9", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -54,6 +57,7 @@ Instructions:
         body: JSON.stringify({
           pageId,
           prompt: finalPrompt,
+          context,
         }),
       });
 
@@ -77,8 +81,25 @@ Instructions:
       const result = await res.json();
 
       const agents = Array.isArray(result?.metadata?.agents)
-        ? result.metadata.agents
+        ? [...result.metadata.agents]
         : [];
+      const qualityWarnings = Array.isArray(result?.metadata?.qualityWarnings)
+        ? result.metadata.qualityWarnings.filter(Boolean)
+        : [];
+
+      if (
+        result?.metadata?.qualityStatus === "needs_improvement" &&
+        qualityWarnings.length
+      ) {
+        agents.push({
+          agent: "QualityGateAgent",
+          stage: "quality",
+          ok: false,
+          summary:
+            `Generated a usable draft at ${result.metadata.qualityScore ?? "unknown"}/100; visual quality needs improvement.`,
+          warnings: qualityWarnings,
+        });
+      }
 
       store.setAgents(agents);
 
@@ -90,6 +111,8 @@ Instructions:
 
       console.error(err);
 
+      const message = err instanceof Error ? err.message : "AI request failed";
+      store.setErrorMessage(message);
       store.setStatus("error");
 
       throw err;

@@ -9,12 +9,12 @@ import type { CSSProperties, ReactNode } from "react";
 
 type PreviewProps = {
   type: string;
-  eyebrow?: string;
-  title?: string;
-  body?: string;
-  primaryCta?: string;
-  secondaryCta?: string;
-  items?: string[];
+  eyebrow?: unknown;
+  title?: unknown;
+  body?: unknown;
+  primaryCta?: unknown;
+  secondaryCta?: unknown;
+  items?: unknown;
   style?: CSSProperties;
 };
 
@@ -29,12 +29,12 @@ export default function PremiumWidgetPreview({
   style,
 }: PreviewProps) {
   const data = getPreviewData(type, {
-    eyebrow,
-    title,
-    body,
-    primaryCta,
-    secondaryCta,
-    items,
+    eyebrow: toText(eyebrow),
+    title: toText(title),
+    body: toText(body),
+    primaryCta: toText(primaryCta),
+    secondaryCta: toText(secondaryCta),
+    items: toItems(items),
   });
 
   if (type === "smartHeader") {
@@ -142,20 +142,48 @@ export default function PremiumWidgetPreview({
     );
   }
 
-  if (type === "galleryLightbox") {
+  if (type === "galleryLightbox" || type === "gallery") {
     return (
       <Shell data={data} style={style}>
         <div className="grid grid-cols-2 gap-3">
-          {["bg-blue-100", "bg-slate-200", "bg-emerald-100", "bg-amber-100"].map(
+          {[
+            "bg-[linear-gradient(135deg,#dbeafe,#f8fafc)]",
+            "bg-[linear-gradient(135deg,#dcfce7,#f8fafc)]",
+            "bg-[linear-gradient(135deg,#fef3c7,#f8fafc)]",
+            "bg-[linear-gradient(135deg,#ede9fe,#f8fafc)]",
+          ].map(
             (color, index) => (
               <div
                 key={color}
-                className={`aspect-[4/3] rounded-xl ${color} flex items-end p-3 text-xs font-semibold text-slate-600`}
+                className={`aspect-[4/3] rounded-xl ${color} flex items-end p-3 text-xs font-semibold text-slate-700 ring-1 ring-slate-200/70`}
               >
-                Image {index + 1}
+                {data.items[index] || `Image ${index + 1}`}
               </div>
             )
           )}
+        </div>
+      </Shell>
+    );
+  }
+
+  if (type === "features") {
+    return (
+      <Shell data={data} style={style}>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {data.items.slice(0, 4).map((item, index) => (
+            <div
+              key={`${item}-${index}`}
+              className="rounded-xl border border-slate-200 bg-slate-50 p-4"
+            >
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white">
+                <Check className="h-4 w-4" />
+              </div>
+              <div className="text-sm font-semibold text-slate-950">{item}</div>
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                Clear, editable proof point with enough context to guide the visitor.
+              </p>
+            </div>
+          ))}
         </div>
       </Shell>
     );
@@ -228,15 +256,49 @@ export default function PremiumWidgetPreview({
               key={`${item}-${index}`}
               className="rounded-xl border border-slate-200 bg-slate-50 p-4"
             >
-              <div className="mb-3 h-16 rounded-lg bg-white" />
+              <div className="mb-3 h-16 rounded-lg bg-[linear-gradient(135deg,#eff6ff,#ffffff)] ring-1 ring-slate-200/80" />
               <div className="text-sm font-semibold text-slate-900">{item}</div>
               <p className="mt-1 text-xs leading-5 text-slate-500">
-                Editable marketplace content card
+                Useful detail, proof, and next-step context for this item.
               </p>
             </div>
           ))}
         </div>
       </Shell>
+    );
+  }
+
+  if (type === "cta") {
+    return (
+      <section
+        className="overflow-hidden rounded-2xl bg-slate-950 p-6 text-white shadow-sm"
+        style={style}
+      >
+        <div className="grid gap-5 md:grid-cols-[1fr_auto] md:items-center">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-white/70">
+              {data.eyebrow}
+            </p>
+            <h3 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight">
+              {data.title}
+            </h3>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300">
+              {data.body}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950">
+              {data.primaryCta}
+              <ArrowRight className="h-4 w-4" />
+            </button>
+            {data.secondaryCta && (
+              <button className="rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-white">
+                {data.secondaryCta}
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
     );
   }
 
@@ -332,6 +394,39 @@ type ResolvedPreviewData = {
   items: string[];
 };
 
+function toText(value: unknown): string {
+  if (typeof value === "string" || typeof value === "number") {
+    return String(value).trim();
+  }
+  if (Array.isArray(value)) {
+    return value.map(toText).filter(Boolean).join(", ");
+  }
+  if (!value || typeof value !== "object") return "";
+  const record = value as Record<string, unknown>;
+  for (const key of [
+    "label",
+    "text",
+    "title",
+    "heading",
+    "name",
+    "question",
+    "body",
+    "description",
+    "content",
+    "caption",
+    "value",
+  ]) {
+    const result = toText(record[key]);
+    if (result) return result;
+  }
+  return "";
+}
+
+function toItems(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.map(toText).filter(Boolean);
+}
+
 function getPreviewData(
   type: string,
   override: Partial<ResolvedPreviewData>
@@ -346,33 +441,49 @@ function getPreviewData(
       items: ["Logo area", "Menu links", "Primary CTA", "Mobile drawer"],
     },
     hero: {
-      eyebrow: "Hero",
-      title: "Launch a stronger website",
-      body: "High-impact intro section with proof, messaging, media, and conversion actions.",
-      primaryCta: "Get started",
-      secondaryCta: "See examples",
-      items: ["Outcome-led headline", "Trust proof", "CTA pair", "Media slot"],
+      eyebrow: "Premium launch",
+      title: "A sharper first impression with proof built in",
+      body: "A cinematic opening section with a clear promise, decision cues, and an immediate next step.",
+      primaryCta: "Plan the next step",
+      secondaryCta: "Explore proof",
+      items: ["Location fit", "Construction proof", "Visit path", "Project clarity"],
     },
     leadForm: {
-      eyebrow: "Lead capture",
-      title: "Capture qualified leads",
-      body: "Validated capture flow for inquiries, quotes, appointments, and waitlists.",
-      primaryCta: "Submit request",
+      eyebrow: "Enquiry",
+      title: "Make the next step feel effortless",
+      body: "A focused contact path for visitors who are ready to ask, book, reserve, or compare options.",
+      primaryCta: "Send enquiry",
       items: ["Name", "Email", "Phone", "Message"],
     },
     cardGrid: {
-      eyebrow: "Cards",
-      title: "Show what makes you different",
-      body: "Repeatable cards for services, benefits, programs, or feature sets.",
-      primaryCta: "Explore services",
-      items: ["Benefit card", "Service card", "Proof card", "Process card"],
+      eyebrow: "Decision cues",
+      title: "Show the details visitors compare first",
+      body: "Repeatable proof cards for benefits, services, project details, amenities, or buying criteria.",
+      primaryCta: "Compare options",
+      items: ["Site-visit readiness", "Delivery context", "Project comparison", "Enquiry route"],
     },
     galleryLightbox: {
-      eyebrow: "Gallery",
-      title: "Showcase visual proof",
-      body: "Visual showcase with captions, categories, and immersive viewing.",
+      eyebrow: "Visual proof",
+      title: "Let visitors inspect the experience",
+      body: "A gallery section for real images, captions, categories, and inspection-ready visual storytelling.",
       primaryCta: "View gallery",
-      items: ["Portfolio", "Properties", "Venues", "Products"],
+      items: ["Exterior approach", "Arrival court", "Interior finish", "Amenity view"],
+    },
+    features: {
+      eyebrow: "Why it matters",
+      title: "Proof points that make the decision easier",
+      body: "A premium feature grid for benefits, process, trust, materials, amenities, or service depth.",
+      primaryCta: "Explore details",
+      secondaryCta: "Ask a question",
+      items: ["Built-area context", "Construction method", "Location decision", "Site visit path"],
+    },
+    gallery: {
+      eyebrow: "Visual proof",
+      title: "A closer look at the experience",
+      body: "A polished image-led section for projects, places, products, or portfolio moments.",
+      primaryCta: "View gallery",
+      secondaryCta: "Book a visit",
+      items: ["Wide exterior", "Landscape detail", "Amenity area", "Finish detail"],
     },
     faq: {
       eyebrow: "FAQ",
@@ -382,11 +493,11 @@ function getPreviewData(
       items: ["Pricing", "Timeline", "Process", "Support"],
     },
     testimonials: {
-      eyebrow: "Social proof",
-      title: "Trusted by happy customers",
-      body: "Trust-building reviews, quotes, ratings, logos, and outcomes.",
-      primaryCta: "Read stories",
-      items: ["Excellent results", "Fast launch", "Clear process", "Great support"],
+      eyebrow: "Trust",
+      title: "Confidence signals without forcing fake quotes",
+      body: "A proof section for verified reviews, outcomes, ratings, logos, or trust-led statements.",
+      primaryCta: "View proof",
+      items: ["Delivered work", "Ongoing pipeline", "Buyer guidance", "Commitment clarity"],
     },
     pricing: {
       eyebrow: "Pricing",
@@ -396,11 +507,19 @@ function getPreviewData(
       items: ["Starter", "Pro", "Business", "Custom"],
     },
     offerGrid: {
-      eyebrow: "Catalog",
-      title: "Browse featured offers",
-      body: "Merchandising grid for products, listings, programs, or packages.",
-      primaryCta: "View offers",
-      items: ["Product card", "Package card", "Listing card", "Program card"],
+      eyebrow: "Featured options",
+      title: "Compare the most relevant offers",
+      body: "A merchandising grid for listings, packages, projects, products, or service options.",
+      primaryCta: "View options",
+      items: ["Residential project", "Commercial brief", "Mixed-use enquiry", "Site visit option"],
+    },
+    cta: {
+      eyebrow: "Next step",
+      title: "Ready to move from browsing to a real conversation?",
+      body: "Close the page with one clear action, a supportive alternative, and concise reassurance.",
+      primaryCta: "Start the conversation",
+      secondaryCta: "View details",
+      items: ["Project details", "Site visit timing", "Callback support"],
     },
     floatingWhatsApp: {
       eyebrow: "Chat",

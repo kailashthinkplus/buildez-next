@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 import type { BuilderNode } from "../../types/blueprint";
-import { useNodeUpdater } from "../tabs/hooks/useNodeUpdater";
+import { useNodeUpdater } from "../hooks/useNodeUpdater";
 
 /* ==========================================================
    TYPES
@@ -38,7 +38,7 @@ export default function SelectProperty({
   options,
   placeholder = "Select...",
 }: SelectPropertyProps) {
-  const updateNode = useNodeUpdater();
+  const { updateNode } = useNodeUpdater();
 
   const [value, setValue] = useState(
     String(node.props?.[property] ?? "")

@@ -3,7 +3,7 @@
 import MediaPicker from "../../media/components/MediaPicker";
 import type { MediaAsset } from "../../media/types/media";
 import type { BuilderNode } from "../../types/blueprint";
-import { useNodeUpdater } from "../tabs/hooks/useNodeUpdater";
+import { useNodeUpdater } from "../hooks/useNodeUpdater";
 
 /* ==========================================================
    TYPES
@@ -12,7 +12,7 @@ import { useNodeUpdater } from "../tabs/hooks/useNodeUpdater";
 interface MediaPropertyProps {
   node: BuilderNode;
 
-  siteId: string;
+  siteId?: string;
 
   property: string;
 
@@ -25,7 +25,7 @@ interface MediaPropertyProps {
 
 export default function MediaProperty({
   node,
-  siteId,
+  siteId = "",
   property,
   label,
 }: MediaPropertyProps) {

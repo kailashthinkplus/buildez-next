@@ -15,6 +15,7 @@ import { defaultThemeTokens } from "../theme/defaultTheme";
 import { SiteThemeFrame } from "../theme/SiteThemeFrame";
 import type { SiteThemeLayout } from "../theme/siteLayout";
 import type { BuilderThemeTokens } from "../theme/theme.types";
+import { Plus } from "lucide-react";
 
 const CONTAINER_TYPES = new Set(["page", "section", "container", "column"]);
 
@@ -52,6 +53,8 @@ interface CanvasRootProps {
   siteLayout?: SiteThemeLayout | null;
   selectionToolbarProps: SelectionToolbarProps;
   onCanvasClick?(): void;
+  onAddSection?(): void;
+  onResizeNode?(nodeId: string, width: number, height: number): void;
 }
 
 export default function CanvasRoot({
@@ -59,6 +62,8 @@ export default function CanvasRoot({
   siteLayout,
   selectionToolbarProps,
   onCanvasClick,
+  onAddSection,
+  onResizeNode,
 }: CanvasRootProps) {
   const pendingDropRef = useRef<PendingDrop | null>(null);
   const rootNode = blueprint.nodes[blueprint.root];
@@ -229,9 +234,31 @@ export default function CanvasRoot({
     >
       <SiteThemeFrame layout={siteLayout} tokens={themeTokens} mode="canvas">
         <NodeRenderer nodes={rootNodes} blueprint={blueprint} />
+        <div
+          data-canvas-add-section="true"
+          className="builder-chrome px-6 py-8"
+        >
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onAddSection?.();
+            }}
+            className="group flex min-h-24 w-full items-center justify-center gap-3 rounded-xl border-2 border-dashed border-blue-400/45 bg-blue-500/[0.06] text-sm font-semibold text-blue-600 transition hover:border-blue-400 hover:bg-blue-500/[0.12] hover:text-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            aria-label="Add a new section"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-white shadow-sm transition group-hover:scale-105">
+              <Plus size={20} aria-hidden />
+            </span>
+            Add section
+          </button>
+        </div>
       </SiteThemeFrame>
 
-      <SelectionOverlay selectionToolbarProps={selectionToolbarProps} />
+      <SelectionOverlay
+        selectionToolbarProps={selectionToolbarProps}
+        onResize={onResizeNode}
+      />
 
       <HoverOverlay />
     </div>

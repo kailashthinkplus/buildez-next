@@ -123,16 +123,17 @@ function parseJSXContent(jsxContent: string, parentId: string): BlueprintNode[] 
   const navMatches = extractTopLevelElement(jsxContent, "nav");
   console.log("[ReactParser] Found", navMatches.length, "nav elements");
   if (navMatches.length > 0) {
-    nodes.push(parseSection(navMatches[0], `${parentId}-nav`, "header"));
-    console.log("[ReactParser] ✓ Parsed navigation");
+    console.log("[ReactParser] Skipping standalone navigation; app shell owns site nav");
   }
 
   // Parse header/hero
   const headerMatches = extractTopLevelElement(jsxContent, "header");
   console.log("[ReactParser] Found", headerMatches.length, "header elements");
-  if (headerMatches.length > 0) {
+  if (headerMatches.length > 0 && /id=["']hero["']/i.test(headerMatches[0])) {
     nodes.push(parseSection(headerMatches[0], `${parentId}-hero`, "section"));
-    console.log("[ReactParser] ✓ Parsed hero section");
+    console.log("[ReactParser] ✓ Parsed hero header section");
+  } else if (headerMatches.length > 0) {
+    console.log("[ReactParser] Skipping site header/navigation header");
   }
 
   // Parse sections
@@ -241,6 +242,11 @@ function extractTopLevelElement(jsx: string, tagName: string): string[] {
   return results;
 }
 
+function stripElements(html: string, tagName: string): string {
+  const elements = extractTopLevelElement(html, tagName);
+  return elements.reduce((nextHtml, element) => nextHtml.replace(element, ""), html);
+}
+
 /* ============================================================
    ✅ PARSE SECTION (HEADER/SECTION/FOOTER) - WITH STYLES
 ============================================================ */
@@ -266,7 +272,7 @@ function parseSection(
 
   console.log(`[parseSection] ${id} - className: "${classNames}", hasStyles: ${Object.keys(inlineStyles).length > 0}`);
 
-  const children = extractElements(html, id);
+  const children = extractStructuredChildren(html, id);
 
   // If no children found, extract at least the text content
   if (children.length === 0) {
@@ -283,23 +289,28 @@ function parseSection(
     }
   }
 
+  const sectionChildren =
+    children.length === 1 && children[0]?.type === "container"
+      ? children
+      : [
+          {
+            id: `${id}-container`,
+            type: "container",
+            props: {
+              className: "container mx-auto px-6 max-w-7xl",
+            },
+            children,
+          },
+        ];
+
   return {
     id,
     type: nodeType,
     props: {
       className: classNames,
-      style: inlineStyles, // ✅ Now preserved!
     },
-    children: [
-      {
-        id: `${id}-container`,
-        type: "container",
-        props: {
-          className: "container mx-auto px-6 max-w-7xl",
-        },
-        children,
-      },
-    ],
+    style: inlineStyles,
+    children: sectionChildren,
   };
 }
 
@@ -343,12 +354,13 @@ function parseReactStyleObject(styleString: string): Record<string, string> {
 function extractElements(html: string, parentId: string): BlueprintNode[] {
   const children: BlueprintNode[] = [];
   let childIndex = 0;
+  const contentHtml = stripElements(html, "nav");
 
   // Extract headings (h1-h6) with better pattern
   const headingPattern = /<(h[1-6])[^>]*?(?:className=["']([^"']*)["'])?[^>]*>([\s\S]*?)<\/\1>/gi;
   let match;
 
-  while ((match = headingPattern.exec(html)) !== null) {
+  while ((match = headingPattern.exec(contentHtml)) !== null) {
     const level = match[1].toLowerCase();
     const className = match[2] || "";
     let text = match[3];
@@ -366,12 +378,16 @@ function extractElements(html: string, parentId: string): BlueprintNode[] {
         text,
         className,
       },
+      style:
+        level === "h1"
+          ? { fontSize: 64, lineHeight: 1.05, fontWeight: 800, maxWidth: "980px" }
+          : { fontWeight: 700, maxWidth: "820px" },
     });
   }
 
   // Extract paragraphs
   const pPattern = /<p[^>]*?(?:className=["']([^"']*)["'])?[^>]*>([\s\S]*?)<\/p>/gi;
-  while ((match = pPattern.exec(html)) !== null) {
+  while ((match = pPattern.exec(contentHtml)) !== null) {
     const className = match[1] || "";
     let text = match[2];
 
@@ -386,12 +402,13 @@ function extractElements(html: string, parentId: string): BlueprintNode[] {
         text,
         className,
       },
+      style: { maxWidth: "760px" },
     });
   }
 
   // Extract buttons
   const buttonPattern = /<button[^>]*?(?:className=["']([^"']*)["'])?[^>]*>([\s\S]*?)<\/button>/gi;
-  while ((match = buttonPattern.exec(html)) !== null) {
+  while ((match = buttonPattern.exec(contentHtml)) !== null) {
     const className = match[1] || "";
     let label = match[2];
 
@@ -403,38 +420,45 @@ function extractElements(html: string, parentId: string): BlueprintNode[] {
       id: `${parentId}-button-${childIndex++}`,
       type: "button",
       props: {
+        label,
         text: label,
         href: "#",
         className,
       },
+      style: { width: "fit-content", alignSelf: "flex-start" },
     });
   }
 
   // Extract anchor buttons/links
   const anchorPattern =
     /<a[^>]*?href=["']([^"']*)["'][^>]*?(?:className=["']([^"']*)["'])?[^>]*>([\s\S]*?)<\/a>/gi;
-  while ((match = anchorPattern.exec(html)) !== null) {
+  while ((match = anchorPattern.exec(contentHtml)) !== null) {
     const href = match[1] || "#";
     const className = match[2] || "";
     let label = match[3];
 
     label = cleanHTML(label);
     if (!label) continue;
+    if (/^(home|about|features|services|work|contact|pricing|blog|menu)$/i.test(label)) {
+      continue;
+    }
 
     children.push({
       id: `${parentId}-button-${childIndex++}`,
       type: "button",
       props: {
+        label,
         text: label,
         href,
         className,
       },
+      style: { width: "fit-content", alignSelf: "flex-start" },
     });
   }
 
   // ✅ Extract images (with actual URLs from Freepik)
   const imgPattern = /<img[^>]*?src=["']([^"']*)["'][^>]*?(?:alt=["']([^"']*)["'])?[^>]*?(?:className=["']([^"']*)["'])?[^>]*?\/?>/gi;
-  while ((match = imgPattern.exec(html)) !== null) {
+  while ((match = imgPattern.exec(contentHtml)) !== null) {
     const src = match[1];
     const alt = match[2] || "Image";
     const className = match[3] || "";
@@ -463,11 +487,315 @@ function extractElements(html: string, parentId: string): BlueprintNode[] {
         alt,
         className,
       },
+      style: {
+        width: "100%",
+        maxWidth: "720px",
+        borderRadius: 24,
+        minHeight: 320,
+      },
     });
   }
 
   console.log(`[ReactParser] Extracted ${children.length} elements from ${parentId}`);
   return children;
+}
+
+/* ============================================================
+   STRUCTURED JSX PARSER
+   Keeps generated grids/cards/split layouts instead of flattening
+   every heading, paragraph, image, and CTA into one stack.
+============================================================ */
+
+type ParsedElement = {
+  tag: string;
+  openTag: string;
+  inner: string;
+  selfClosing: boolean;
+};
+
+const VOID_TAGS = new Set(["img", "input", "br", "hr", "meta", "link"]);
+
+function extractStructuredChildren(html: string, parentId: string): BlueprintNode[] {
+  const inner = getElementInner(html);
+  const directChildren = extractDirectChildElements(inner);
+
+  if (!directChildren.length) {
+    return extractElements(html, parentId);
+  }
+
+  const structured = directChildren
+    .map((child, index) => parseStructuredElement(child, `${parentId}-${index}`))
+    .flat()
+    .filter(Boolean) as BlueprintNode[];
+
+  return structured.length ? structured : extractElements(html, parentId);
+}
+
+function parseStructuredElement(html: string, id: string): BlueprintNode[] {
+  const element = parseElementShell(html);
+  if (!element) return [];
+
+  const { tag, openTag, inner } = element;
+  if (["nav", "script", "style"].includes(tag)) return [];
+
+  const className = extractAttr(openTag, "className") || extractAttr(openTag, "class") || "";
+  const style = parseStyleAttribute(openTag);
+  const childElements = extractDirectChildElements(inner);
+  const children = childElements
+    .map((child, index) => parseStructuredElement(child, `${id}-${index}`))
+    .flat()
+    .filter(Boolean) as BlueprintNode[];
+
+  if (/^h[1-6]$/.test(tag)) {
+    const text = cleanHTML(inner);
+    if (!text) return [];
+    return [{
+      id,
+      type: "heading",
+      props: {
+        level: tag,
+        text,
+        className,
+      },
+      style,
+    }];
+  }
+
+  if (["p", "span", "li"].includes(tag)) {
+    const text = cleanHTML(inner);
+    if (!text || text.length < 2) return [];
+    return [{
+      id,
+      type: "text",
+      props: {
+        text,
+        className,
+      },
+      style: { maxWidth: "760px", ...style },
+    }];
+  }
+
+  if (tag === "img") {
+    const src = extractAttr(openTag, "src");
+    if (!src || src === "PLACEHOLDER" || src.startsWith("data:") || src.includes("placehold.co")) {
+      return [];
+    }
+
+    return [{
+      id,
+      type: "image",
+      props: {
+        src,
+        alt: extractAttr(openTag, "alt") || "Website visual",
+        className,
+        radius: className.includes("rounded") ? 18 : undefined,
+        aspectRatio: inferAspectRatio(className),
+      },
+      style: {
+        width: "100%",
+        minHeight: className.includes("h-") ? undefined : 280,
+        objectFit: "cover",
+        ...style,
+      },
+    }];
+  }
+
+  if (tag === "a" || tag === "button") {
+    const label = cleanHTML(inner);
+    if (!label) return [];
+    if (/^(home|about|features|services|work|contact|pricing|blog|menu)$/i.test(label)) {
+      return [];
+    }
+
+    return [{
+      id,
+      type: "button",
+      props: {
+        label,
+        text: label,
+        href: tag === "a" ? extractAttr(openTag, "href") || `#${slugifyLabel(label)}` : "#contact",
+        variant: inferButtonVariant(className),
+        className,
+      },
+      style: { width: "fit-content", ...style },
+    }];
+  }
+
+  if (tag === "section" || tag === "header" || tag === "footer") {
+    const nodeType = tag === "header" ? "section" : tag as "section" | "footer";
+    return [parseSection(html, id, nodeType)];
+  }
+
+  if (["div", "main", "ul", "ol", "article", "aside"].includes(tag)) {
+    const fallbackChildren = children.length ? children : extractElements(html, id);
+    if (!fallbackChildren.length) return [];
+
+    const layout = inferContainerLayout(className);
+    const isCard = isCardLike(className, tag);
+
+    return [{
+      id,
+      type: layout === "item" ? "column" : "container",
+      props: {
+        className,
+        ...(layout === "grid" ? { layout: "grid", columns: inferGridColumns(className), gap: inferGap(className) } : {}),
+        ...(layout === "columns" ? { layout: "columns", direction: "row", gap: inferGap(className) } : {}),
+        ...(isCard ? { visual: className.includes("glass") || className.includes("backdrop") ? "glass" : "card" } : {}),
+      },
+      style,
+      children: fallbackChildren,
+    }];
+  }
+
+  return children;
+}
+
+function parseElementShell(html: string): ParsedElement | null {
+  const openMatch = html.match(/^<([a-zA-Z][\w:-]*)([^>]*)>/);
+  if (!openMatch) return null;
+
+  const tag = openMatch[1].toLowerCase();
+  const openTag = openMatch[0];
+  const selfClosing = /\/>$/.test(openTag) || VOID_TAGS.has(tag);
+  const inner = selfClosing ? "" : getElementInner(html);
+
+  return { tag, openTag, inner, selfClosing };
+}
+
+function getElementInner(html: string) {
+  const openEnd = html.indexOf(">");
+  if (openEnd === -1) return "";
+
+  const closeMatch = html.match(/<\/([a-zA-Z][\w:-]*)>\s*$/);
+  if (!closeMatch) return "";
+
+  return html.slice(openEnd + 1, closeMatch.index).trim();
+}
+
+function extractDirectChildElements(html: string): string[] {
+  const children: string[] = [];
+  let index = 0;
+
+  while (index < html.length) {
+    const openIndex = html.indexOf("<", index);
+    if (openIndex === -1) break;
+    if (html[openIndex + 1] === "/") {
+      index = openIndex + 2;
+      continue;
+    }
+
+    const openMatch = html.slice(openIndex).match(/^<([a-zA-Z][\w:-]*)([^>]*)>/);
+    if (!openMatch) {
+      index = openIndex + 1;
+      continue;
+    }
+
+    const tag = openMatch[1].toLowerCase();
+    const openTag = openMatch[0];
+    const openEnd = openIndex + openTag.length;
+
+    if (/\/>$/.test(openTag) || VOID_TAGS.has(tag)) {
+      children.push(html.slice(openIndex, openEnd));
+      index = openEnd;
+      continue;
+    }
+
+    const closeTag = `</${tag}>`;
+    let depth = 1;
+    let cursor = openEnd;
+
+    while (depth > 0 && cursor < html.length) {
+      const nextOpen = html.indexOf(`<${tag}`, cursor);
+      const nextClose = html.indexOf(closeTag, cursor);
+      if (nextClose === -1) break;
+
+      if (nextOpen !== -1 && nextOpen < nextClose) {
+        depth++;
+        cursor = nextOpen + tag.length + 1;
+      } else {
+        depth--;
+        cursor = nextClose + closeTag.length;
+      }
+    }
+
+    if (depth === 0) {
+      children.push(html.slice(openIndex, cursor));
+      index = cursor;
+    } else {
+      index = openEnd;
+    }
+  }
+
+  return children;
+}
+
+function extractAttr(tag: string, attr: string) {
+  const escaped = attr.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const quoted = tag.match(new RegExp(`${escaped}\\s*=\\s*["']([^"']*)["']`, "i"));
+  if (quoted?.[1]) return quoted[1].trim();
+
+  const expression = tag.match(new RegExp(`${escaped}\\s*=\\s*\\{\\s*["']([^"']*)["']\\s*\\}`, "i"));
+  return expression?.[1]?.trim() || "";
+}
+
+function parseStyleAttribute(tag: string): Record<string, string | number> {
+  const reactStyle = tag.match(/style=\{\{([^}]*)\}\}/);
+  if (reactStyle?.[1]) return parseReactStyleObject(reactStyle[1]);
+
+  const htmlStyle = extractAttr(tag, "style");
+  if (!htmlStyle) return {};
+
+  return htmlStyle.split(";").reduce<Record<string, string>>((acc, item) => {
+    const [rawKey, ...valueParts] = item.split(":");
+    const value = valueParts.join(":").trim();
+    if (!rawKey || !value) return acc;
+    const key = rawKey.trim().replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+    acc[key] = value;
+    return acc;
+  }, {});
+}
+
+function inferContainerLayout(className: string): "grid" | "columns" | "stack" | "item" {
+  if (/\bgrid\b/.test(className)) return "grid";
+  if (/\bflex\b/.test(className) && /(?:flex-row|md:flex-row|lg:flex-row|items-|justify-|gap-)/.test(className)) {
+    return "columns";
+  }
+  if (/rounded|shadow|border|bg-|p-\d|px-\d|py-\d/.test(className)) return "item";
+  return "stack";
+}
+
+function inferGridColumns(className: string) {
+  const explicit = className.match(/(?:lg:|xl:)?grid-cols-(\d+)/);
+  return explicit ? Number(explicit[1]) : 3;
+}
+
+function inferGap(className: string) {
+  const gap = className.match(/(?:lg:|md:)?gap-(\d+)/);
+  return gap ? Number(gap[1]) * 4 : 24;
+}
+
+function isCardLike(className: string, tag: string) {
+  return tag === "article" || /rounded|shadow|border|bg-white|bg-slate|bg-gray|backdrop|p-\d/.test(className);
+}
+
+function inferButtonVariant(className: string) {
+  if (/border|outline|ring/.test(className)) return "secondary";
+  if (/gradient/.test(className)) return "gradient";
+  if (/ghost|transparent/.test(className)) return "ghost";
+  return "primary";
+}
+
+function inferAspectRatio(className: string) {
+  if (/aspect-square/.test(className)) return "1 / 1";
+  if (/aspect-video/.test(className)) return "16 / 9";
+  return undefined;
+}
+
+function slugifyLabel(label: string) {
+  return label
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || "contact";
 }
 
 /* ============================================================
@@ -581,8 +909,7 @@ function convertJSXToHTML(jsx: string): string {
   // Convert {variable} to empty (can't resolve without execution)
   html = html.replace(/\{[^}]*\}/g, "");
 
-  // Add Tailwind CDN
-  return `<script src="https://cdn.tailwindcss.com"></script>\n${html}`;
+  return html;
 }
 
 /* ============================================================

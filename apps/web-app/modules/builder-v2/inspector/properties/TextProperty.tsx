@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 import type { BuilderNode } from "../../types/blueprint";
-import { useNodeUpdater } from "../tabs/hooks/useNodeUpdater";
+import { useNodeUpdater } from "../hooks/useNodeUpdater";
 
 interface TextPropertyProps {
   node: BuilderNode;
@@ -18,7 +18,7 @@ export default function TextProperty({
   label,
   placeholder,
 }: TextPropertyProps) {
-  const updateNode = useNodeUpdater();
+  const { updateNode } = useNodeUpdater();
 
   const target =
   property === "text" ||

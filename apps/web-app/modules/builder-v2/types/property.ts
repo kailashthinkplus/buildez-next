@@ -59,4 +59,8 @@ export interface WidgetProperty {
   step?: number;
 
   unit?: string;
+
+  units?: ("px" | "%" | "em" | "rem" | "vw" | "vh")[];
+
+  themeTokenReady?: boolean;
 }

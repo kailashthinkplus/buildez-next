@@ -3,16 +3,16 @@
 import WidgetFrame from "../sdk/WidgetFrame";
 import { useWidget } from "../sdk/useWidget";
 import type { BuilderNode } from "../../types/blueprint";
-import PremiumWidgetPreview from "./PremiumWidgetPreview";
+import ProductionWidgetView from "./ProductionWidgetView";
 import type { CSSProperties } from "react";
 
 type PremiumWidgetProps = {
-  eyebrow?: string;
-  title?: string;
-  body?: string;
-  primaryCta?: string;
-  secondaryCta?: string;
-  items?: string[];
+  eyebrow?: unknown;
+  title?: unknown;
+  body?: unknown;
+  primaryCta?: unknown;
+  secondaryCta?: unknown;
+  items?: unknown;
 };
 
 export default function PremiumWidget({ node }: { node: BuilderNode }) {
@@ -21,7 +21,7 @@ export default function PremiumWidget({ node }: { node: BuilderNode }) {
 
   return (
     <WidgetFrame nodeId={node.id}>
-      <PremiumWidgetPreview
+      <ProductionWidgetView
         type={node.type}
         eyebrow={props.eyebrow}
         title={props.title}

@@ -11,7 +11,7 @@ export default function PreviewLayout({
 }) {
   return (
     <div
-      id="buildez-preview-root"
+      id="buildez-preview-shell"
       style={{
         width: "100%",
         minHeight: "100vh",

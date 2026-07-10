@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import type { BuilderNode } from "../../types/blueprint";
-import { useNodeUpdater } from "../tabs/hooks/useNodeUpdater";
+import { useNodeUpdater } from "../hooks/useNodeUpdater";
 
 interface TextareaPropertyProps {
   node: BuilderNode;
@@ -20,7 +20,7 @@ export default function TextareaProperty({
   placeholder,
   rows = 4,
 }: TextareaPropertyProps) {
-  const updateNode = useNodeUpdater();
+  const { updateNode } = useNodeUpdater();
 
   const [value, setValue] = useState(
     String(node.props?.[property] ?? "")

@@ -1,11 +1,15 @@
 const ColumnDefaults = {
-  props: {},
+  props: {
+    layout: "vertical",
+  },
+
   style: {
-    flex: 1,
+    flex: "1 1 0",
     minWidth: 0,
     minHeight: 80,
-    padding: 8,
-    gap: 12,
+    padding: 0,
+    margin: 0,
+    gap: 0,
     backgroundColor: "transparent",
   },
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { ImagePlus, Sparkles, WandSparkles } from "lucide-react";
 import type { BuilderNode } from "../../types/blueprint";
 import type { WidgetProperty } from "../../types/property";
 import { WidgetRegistry } from "../../core/registry/WidgetRegistry";
@@ -31,6 +32,10 @@ export default function ContentTab({
   siteId,
 }: ContentTabProps) {
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [generatingImage, setGeneratingImage] = useState(false);
+  const [imageGenerationError, setImageGenerationError] = useState("");
+  const [generatingText, setGeneratingText] = useState(false);
+  const [textGenerationError, setTextGenerationError] = useState("");
   const registryProperties = useMemo(() => {
     if (!WidgetRegistry.has(node.type)) return [];
     return WidgetRegistry.get(node.type).properties;
@@ -63,7 +68,7 @@ export default function ContentTab({
       props: {
         ...node.props,
         text: value,
-        html: node.type === "text" ? value : node.props?.html,
+        ...(node.type === "text" ? { html: value } : {}),
       },
     });
   };
@@ -105,6 +110,92 @@ export default function ContentTab({
     }
   };
 
+  const handleGenerateImage = async () => {
+    const prompt = String(
+      node.props?.aiImagePrompt || node.props?.imagePrompt || node.props?.alt || ""
+    ).trim();
+
+    if (!prompt) {
+      setImageGenerationError("Add an image prompt first.");
+      return;
+    }
+
+    setGeneratingImage(true);
+    setImageGenerationError("");
+
+    try {
+      const res = await fetch("/api/ai-v8/generate-images", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompts: [prompt],
+          industry: String(node.props?.industry || "GENERIC"),
+          size: "landscape",
+          siteId,
+        }),
+      });
+      const body = await res.json().catch(() => ({}));
+      const generatedUrl =
+        body?.images?.find?.((image: any) => typeof image?.url === "string" && image.url)?.url ||
+        body?.url ||
+        body?.image?.url;
+
+      if (!res.ok || !generatedUrl) {
+        throw new Error(body?.error || "Image generation failed.");
+      }
+
+      onUpdateNode(node.id, {
+        hidden: false,
+        props: {
+          ...node.props,
+          src: generatedUrl,
+          aiImagePrompt: prompt,
+          imagePrompt: prompt,
+          alt:
+            typeof node.props?.alt === "string" && node.props.alt.trim()
+              ? node.props.alt
+              : prompt.slice(0, 120),
+        },
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Image generation failed.";
+      setImageGenerationError(message);
+    } finally {
+      setGeneratingImage(false);
+    }
+  };
+
+  const handleGenerateText = async () => {
+    const seed = contentValue.trim() ||
+      (node.type === "heading"
+        ? "Write a concise, specific website section heading."
+        : "Write a concise, useful website paragraph for this section.");
+    setGeneratingText(true);
+    setTextGenerationError("");
+    try {
+      const response = await fetch("/api/ai/rewrite", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: seed,
+          tone: "professional",
+          length: node.type === "heading" ? "shorter" : "same",
+          audience: "website visitors",
+        }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok || !body?.text) throw new Error(body?.error || "Text generation failed");
+      setText(String(body.text));
+    } catch (error) {
+      setTextGenerationError(error instanceof Error ? error.message : "Text generation failed");
+    } finally {
+      setGeneratingText(false);
+    }
+  };
+
   const isPrimaryText = node.type === "heading" || node.type === "button";
   const hasPrimaryContentSection =
     node.type === "text" ||
@@ -137,6 +228,16 @@ export default function ContentTab({
               }}
             />
           </Field>
+          <button
+            type="button"
+            disabled={generatingText}
+            onClick={() => void handleGenerateText()}
+            className="flex w-full items-center justify-center gap-2 rounded-md border border-blue-400/30 bg-blue-500/10 px-3 py-2 text-sm font-medium text-blue-100 transition hover:bg-blue-500/20 disabled:opacity-50"
+          >
+            <WandSparkles size={16} aria-hidden />
+            {generatingText ? "Generating..." : "Generate AI content"}
+          </button>
+          {textGenerationError && <p className="text-xs text-red-300">{textGenerationError}</p>}
         </Section>
       )}
 
@@ -154,6 +255,18 @@ export default function ContentTab({
               placeholder="Enter text..."
             />
           </Field>
+          {node.type === "heading" && (
+            <button
+              type="button"
+              disabled={generatingText}
+              onClick={() => void handleGenerateText()}
+              className="flex w-full items-center justify-center gap-2 rounded-md border border-blue-400/30 bg-blue-500/10 px-3 py-2 text-sm font-medium text-blue-100 transition hover:bg-blue-500/20 disabled:opacity-50"
+            >
+              <WandSparkles size={16} aria-hidden />
+              {generatingText ? "Generating..." : "Generate AI content"}
+            </button>
+          )}
+          {textGenerationError && <p className="text-xs text-red-300">{textGenerationError}</p>}
         </Section>
       )}
 
@@ -246,14 +359,37 @@ export default function ContentTab({
             />
           </Field>
 
-          {uploadingImage && <p className="text-xs text-white/45">Uploading...</p>}
-          {node.props?.src && (
-            <img
-              src={String(node.props.src)}
-              alt=""
-              className="h-36 w-full rounded-md border border-white/10 object-cover"
+          <Field label="AI image prompt">
+            <TextArea
+              rows={5}
+              value={node.props?.aiImagePrompt ?? node.props?.imagePrompt ?? ""}
+              onChange={(value) => {
+                onUpdateNode(node.id, {
+                  props: {
+                    ...node.props,
+                    aiImagePrompt: value,
+                    imagePrompt: value,
+                  },
+                });
+              }}
+              placeholder="Photorealistic commercial website photograph, natural daylight..."
             />
+          </Field>
+
+          <button
+            type="button"
+            onClick={handleGenerateImage}
+            disabled={generatingImage}
+            className="flex w-full items-center justify-center gap-2 rounded-md border border-blue-400/30 bg-blue-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <ImagePlus size={15} aria-hidden />
+            {generatingImage ? "Generating image..." : "Generate still image"}
+          </button>
+          {imageGenerationError && (
+            <p className="text-xs text-red-300">{imageGenerationError}</p>
           )}
+
+          {uploadingImage && <p className="text-xs text-white/45">Uploading...</p>}
 
           <Field label="Alt text">
             <TextInput
@@ -440,6 +576,63 @@ export default function ContentTab({
         </Section>
       )}
 
+      {["section", "container", "column"].includes(node.type) && (
+        <Section
+          title={labelize(node.type)}
+          description="Content behavior and AI actions"
+          defaultOpen
+        >
+          <Field label="Name">
+            <TextInput
+              value={String(node.props?.label ?? node.props?.name ?? "")}
+              onChange={(value) => {
+                onUpdateNode(node.id, {
+                  props: {
+                    ...node.props,
+                    label: value,
+                    name: value,
+                  },
+                });
+              }}
+              placeholder={`${labelize(node.type)} name`}
+            />
+          </Field>
+
+          {node.type === "section" && (
+            <Field label="HTML anchor ID">
+              <TextInput
+                value={String(node.props?.anchorId ?? "")}
+                onChange={(value) =>
+                  setPropValue(node, "anchorId", value, onUpdateNode)
+                }
+                placeholder="hero-section"
+              />
+            </Field>
+          )}
+
+          <button
+            type="button"
+            onClick={() => {
+              onUpdateNode(node.id, {
+                props: {
+                  ...node.props,
+                  aiActionNote:
+                    node.type === "section"
+                      ? "AI section generation will connect in Phase 40D."
+                      : node.type === "container"
+                        ? "AI layout generation will connect in Phase 40D."
+                        : "AI column fill will connect in Phase 40D.",
+                },
+              });
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-md border border-blue-400/30 bg-blue-500/10 px-3 py-2 text-sm font-medium text-blue-100 transition hover:bg-blue-500/20"
+          >
+            <Sparkles size={16} aria-hidden />
+            Generate with AI
+          </button>
+        </Section>
+      )}
+
       {schemaProperties.length > 0 && (
         <Section
           title="Widget Options"
@@ -459,25 +652,27 @@ export default function ContentTab({
         </Section>
       )}
 
-      <Section
-        title="Style Preset"
-        description="Apply a shared visual preset"
-        defaultOpen={!hasPrimaryContentSection}
-      >
-        <Field label="Token preset">
-          <SelectInput
-            value={node.props?.stylePreset ?? "custom"}
-            onChange={(value) => setPropValue(node, "stylePreset", value, onUpdateNode)}
-            options={[
-              { value: "custom", label: "Custom" },
-              { value: "brand-primary", label: "Brand primary" },
-              { value: "brand-secondary", label: "Brand secondary" },
-              { value: "muted", label: "Muted surface" },
-              { value: "card", label: "Card" },
-            ]}
-          />
-        </Field>
-      </Section>
+      {!["page", "section", "container", "column"].includes(node.type) && (
+  <Section
+    title="Style Preset"
+    description="Apply a shared visual preset"
+    defaultOpen={!hasPrimaryContentSection}
+  >
+    <Field label="Token preset">
+      <SelectInput
+        value={node.props?.stylePreset ?? "custom"}
+        onChange={(value) => setPropValue(node, "stylePreset", value, onUpdateNode)}
+        options={[
+          { value: "custom", label: "Custom" },
+          { value: "brand-primary", label: "Brand primary" },
+          { value: "brand-secondary", label: "Brand secondary" },
+          { value: "muted", label: "Muted surface" },
+          { value: "card", label: "Card" },
+        ]}
+      />
+    </Field>
+  </Section>
+)}
     </div>
   );
 }
@@ -614,6 +809,41 @@ function getInspectorSchemaProperties(
   properties: WidgetProperty[]
 ) {
   const manuallyHandledByType: Record<string, Set<string>> = {
+    page: new Set(["backgroundColor", "backgroundImage", "width", "minHeight"]),
+    section: new Set([
+      "container",
+      "maxWidth",
+      "paddingTop",
+      "paddingBottom",
+      "backgroundColor",
+      "backgroundImage",
+      "backgroundSize",
+      "backgroundPosition",
+      "backgroundRepeat",
+      "backgroundAttachment",
+    ]),
+    container: new Set([
+      "layout",
+      "direction",
+      "justify",
+      "align",
+      "wrap",
+      "width",
+      "maxWidth",
+      "gap",
+      "padding",
+      "margin",
+      "backgroundColor",
+      "backgroundImage",
+    ]),
+    column: new Set([
+      "flex",
+      "minWidth",
+      "minHeight",
+      "padding",
+      "gap",
+      "backgroundColor",
+    ]),
     heading: new Set(["text", "level"]),
     text: new Set(["text"]),
     button: new Set(["text", "url"]),
@@ -637,13 +867,7 @@ function getInspectorSchemaProperties(
 
   return properties.filter((property) => {
     if (skipped.has(property.id)) return false;
-    return [
-      "content",
-      "layout",
-      "style",
-      "advanced",
-      "responsive",
-    ].includes(property.category);
+    return ["content", "advanced", "responsive"].includes(property.category);
   });
 }
 
@@ -652,4 +876,10 @@ function stripHtml(value: string) {
   const div = document.createElement("div");
   div.innerHTML = value;
   return div.textContent ?? "";
+}
+
+function labelize(value: string) {
+  return value
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (char) => char.toUpperCase());
 }

@@ -1,5 +1,5 @@
 import type { BuilderBlueprint } from "../../types/blueprint";
-
+import { validateBlueprint } from "../validation";
 import type { BuilderCommand } from "./BuilderCommand";
 
 export class ReorderNodeCommand implements BuilderCommand {
@@ -9,7 +9,7 @@ export class ReorderNodeCommand implements BuilderCommand {
 
   constructor(
     private readonly nodeId: string,
-    private readonly direction: "up" | "down"
+    private readonly directionOrIndex: "up" | "down" | number
   ) {}
 
   execute(blueprint: BuilderBlueprint): BuilderBlueprint {
@@ -31,10 +31,9 @@ export class ReorderNodeCommand implements BuilderCommand {
       return blueprint;
     }
 
-    const targetIndex =
-      this.direction === "up" ? currentIndex - 1 : currentIndex + 1;
+    const targetIndex = this.resolveTargetIndex(currentIndex, parent.children.length);
 
-    if (targetIndex < 0 || targetIndex >= parent.children.length) {
+    if (targetIndex < 0 || targetIndex >= parent.children.length || targetIndex === currentIndex) {
       return blueprint;
     }
 
@@ -42,7 +41,7 @@ export class ReorderNodeCommand implements BuilderCommand {
     const [moved] = nextChildren.splice(currentIndex, 1);
     nextChildren.splice(targetIndex, 0, moved);
 
-    return {
+    const next: BuilderBlueprint = {
       ...blueprint,
       metadata: {
         ...blueprint.metadata,
@@ -56,5 +55,13 @@ export class ReorderNodeCommand implements BuilderCommand {
         },
       },
     };
+
+    return validateBlueprint(next).valid ? next : blueprint;
+  }
+
+  private resolveTargetIndex(currentIndex: number, siblingCount: number): number {
+    if (this.directionOrIndex === "up") return currentIndex - 1;
+    if (this.directionOrIndex === "down") return currentIndex + 1;
+    return Math.max(0, Math.min(this.directionOrIndex, siblingCount - 1));
   }
 }

@@ -1,27 +1,8 @@
 "use client";
 
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-
-export type ColumnStructurePreset = {
-  id: string;
-  label: string;
-  columns: number[];
-};
-
-const PRESETS: ColumnStructurePreset[] = [
-  { id: "stack", label: "Stack", columns: [100] },
-  { id: "row", label: "Row", columns: [50, 50] },
-  { id: "2-even", label: "2 equal", columns: [50, 50] },
-  { id: "2-left", label: "1 / 2", columns: [33.333, 66.667] },
-  { id: "4-even", label: "4 equal", columns: [25, 25, 25, 25] },
-  { id: "3-center", label: "1 / 2 / 1", columns: [25, 50, 25] },
-  { id: "2x2", label: "2 x 2", columns: [50, 50, 50, 50] },
-  { id: "top-bottom", label: "Top / bottom", columns: [50, 50] },
-  { id: "sidebar-right", label: "Sidebar right", columns: [50, 25, 25] },
-  { id: "3x2", label: "3 x 2", columns: [33.333, 33.333, 33.333, 33.333, 33.333, 33.333] },
-  { id: "mixed-left", label: "Mixed left", columns: [33.333, 33.333, 33.333] },
-  { id: "mixed-right", label: "Mixed right", columns: [50, 50, 33.333, 66.667] },
-];
+import { COLUMN_STRUCTURE_PRESETS } from "./columnStructure";
 
 export default function ColumnStructurePicker({
   open,
@@ -34,8 +15,8 @@ export default function ColumnStructurePicker({
 }) {
   if (!open) return null;
 
-  return (
-    <div className="fixed inset-0 z-[20000] flex items-center justify-center bg-black/55 p-6 backdrop-blur-sm">
+  return createPortal(
+  <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/70 p-6 backdrop-blur-sm">
       <div className="w-full max-w-5xl rounded-2xl border border-white/10 bg-[#0F1118] p-6 shadow-2xl">
         {/* HEADER */}
         <div className="flex items-center justify-between mb-4">
@@ -50,7 +31,7 @@ export default function ColumnStructurePicker({
 
         {/* GRID */}
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4 lg:grid-cols-6">
-          {PRESETS.map((preset) => (
+          {COLUMN_STRUCTURE_PRESETS.map((preset) => (
             <button
               key={preset.id}
               onClick={() => onSelect(preset.columns)}
@@ -85,5 +66,7 @@ export default function ColumnStructurePicker({
         </div>
       </div>
     </div>
+  ,
+  document.body
   );
 }

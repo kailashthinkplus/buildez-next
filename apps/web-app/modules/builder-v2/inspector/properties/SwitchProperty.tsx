@@ -4,7 +4,7 @@ import * as Switch from "@radix-ui/react-switch";
 import { useEffect, useState } from "react";
 
 import type { BuilderNode } from "../../types/blueprint";
-import { useNodeUpdater } from "../tabs/hooks/useNodeUpdater";
+import { useNodeUpdater } from "../hooks/useNodeUpdater";
 
 /* ==========================================================
    TYPES
@@ -30,7 +30,7 @@ export default function SwitchProperty({
   label,
   description,
 }: SwitchPropertyProps) {
-  const updateNode = useNodeUpdater();
+  const { updateNode } = useNodeUpdater();
 
   const [checked, setChecked] = useState(
     Boolean(node.props?.[property])

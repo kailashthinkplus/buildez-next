@@ -60,7 +60,7 @@ export function renderNodeToHtml(
 
     case "section":
       return `
-<section class="be-section${node.props?.className ? ` ${node.props.className}` : ""}" data-id="${node.id}"${styleString}>
+<section class="be-section" data-id="${node.id}"${styleString}>
   ${node.children?.map((c) => renderNodeToHtml(c, device)).join("") ?? ""}
 </section>
 `;
@@ -87,14 +87,14 @@ export function renderNodeToHtml(
 
     case "container":
       return `
-<div class="be-container${node.props?.className ? ` ${node.props.className}` : ""}" data-id="${node.id}"${styleString}>
+<div class="be-container" data-id="${node.id}"${styleString}>
   ${node.children?.map((c) => renderNodeToHtml(c, device)).join("") ?? ""}
 </div>
 `;
 
     case "column":
       return `
-<div class="be-column${node.props?.className ? ` ${node.props.className}` : ""}" data-id="${node.id}"${styleString}>
+<div class="be-column" data-id="${node.id}"${styleString}>
   ${node.children?.map((c) => renderNodeToHtml(c, device)).join("") ?? ""}
 </div>
 `;
@@ -106,7 +106,7 @@ export function renderNodeToHtml(
       );
 
       return `
-<h${level} class="be-heading${node.props?.className ? ` ${node.props.className}` : ""}"${styleString}>
+<h${level} class="be-heading"${styleString}>
   ${escapeHtml(node.props?.text ?? "")}
 </h${level}>
 `;
@@ -114,7 +114,7 @@ export function renderNodeToHtml(
 
     case "text":
       return `
-<p class="be-text${node.props?.className ? ` ${node.props.className}` : ""}"${styleString}>
+<p class="be-text"${styleString}>
   ${node.props?.html ?? escapeHtml(node.props?.text ?? "")}
 </p>
 `;
@@ -125,7 +125,7 @@ export function renderNodeToHtml(
 
       return `
 <img
-  class="be-image${node.props?.className ? ` ${node.props.className}` : ""}"
+  class="be-image"
   src="${src}"
   alt="${escapeHtml(alt)}"
   loading="lazy"
@@ -138,7 +138,7 @@ export function renderNodeToHtml(
     case "button":
       return `
 <a
-  class="be-button${node.props?.className ? ` ${node.props.className}` : ""}"
+  class="be-button"
   href="${node.props?.href || "#"}"
   ${styleAttr ? `style="${styleAttr}"` : ""}
 >
