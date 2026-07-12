@@ -315,17 +315,13 @@ export async function dragPaletteWidgetIntoVisibleTarget(
   }
 
   const sourceBox = await source.boundingBox();
-  const targetBox = await target.boundingBox();
-  const viewportBox = await canvasViewport.boundingBox();
 
-  expect(sourceBox, "palette source must have a bounding box")
-    .not.toBeNull();
-  expect(targetBox, "visible target must have a bounding box")
-    .not.toBeNull();
-  expect(viewportBox, "canvas viewport must have a bounding box")
-    .not.toBeNull();
+  expect(
+    sourceBox,
+    "palette source must have a browser bounding box",
+  ).not.toBeNull();
 
-  if (!sourceBox || !targetBox || !viewportBox) {
+  if (!sourceBox) {
     return;
   }
 
@@ -349,44 +345,178 @@ export async function dragPaletteWidgetIntoVisibleTarget(
   );
 
   /*
-   * Re-read geometry after drag activation because selection chrome,
-   * drag ghost and canvas layout may change during dragstart.
+   * Locate a real visible point whose topmost Builder node is the
+   * requested target. This avoids accidentally hitting a containing
+   * Section after vertical or horizontal canvas scrolling.
    */
-  const liveTarget = await target.boundingBox();
-  const liveViewport = await canvasViewport.boundingBox();
+  const resolveTargetPoint = async () =>
+    page.evaluate((requestedTargetId) => {
+      const targetElement = document.querySelector(
+        `.builder-canvas-sandbox [data-node-id="${CSS.escape(
+          requestedTargetId,
+        )}"]`,
+      ) as HTMLElement | null;
 
-  expect(liveTarget).not.toBeNull();
-  expect(liveViewport).not.toBeNull();
+      const viewportElement = document.querySelector(
+        "[data-builder-canvas-scroll='true']",
+      ) as HTMLElement | null;
 
-  if (!liveTarget || !liveViewport) {
+      if (!targetElement || !viewportElement) {
+        return null;
+      }
+
+      const targetRect = targetElement.getBoundingClientRect();
+      const viewportRect =
+        viewportElement.getBoundingClientRect();
+
+      const visibleLeft = Math.max(
+        targetRect.left,
+        viewportRect.left,
+      );
+      const visibleRight = Math.min(
+        targetRect.right,
+        viewportRect.right,
+      );
+      const visibleTop = Math.max(
+        targetRect.top,
+        viewportRect.top,
+      );
+      const visibleBottom = Math.min(
+        targetRect.bottom,
+        viewportRect.bottom,
+      );
+
+      if (
+        visibleRight <= visibleLeft ||
+        visibleBottom <= visibleTop
+      ) {
+        return null;
+      }
+
+      const insetValues = [
+        6,
+        10,
+        14,
+        18,
+        24,
+        32,
+        40,
+      ];
+
+      const candidates: Array<{
+        x: number;
+        y: number;
+      }> = [];
+
+      for (const inset of insetValues) {
+        candidates.push(
+          {
+            x: visibleLeft + inset,
+            y: visibleTop + inset,
+          },
+          {
+            x: visibleRight - inset,
+            y: visibleTop + inset,
+          },
+          {
+            x: visibleLeft + inset,
+            y: visibleBottom - inset,
+          },
+          {
+            x: visibleRight - inset,
+            y: visibleBottom - inset,
+          },
+          {
+            x: visibleLeft + inset,
+            y: (visibleTop + visibleBottom) / 2,
+          },
+          {
+            x: visibleRight - inset,
+            y: (visibleTop + visibleBottom) / 2,
+          },
+          {
+            x: (visibleLeft + visibleRight) / 2,
+            y: visibleTop + inset,
+          },
+          {
+            x: (visibleLeft + visibleRight) / 2,
+            y: visibleBottom - inset,
+          },
+        );
+      }
+
+      candidates.push({
+        x: (visibleLeft + visibleRight) / 2,
+        y: (visibleTop + visibleBottom) / 2,
+      });
+
+      for (const candidate of candidates) {
+        if (
+          candidate.x <= viewportRect.left ||
+          candidate.x >= viewportRect.right ||
+          candidate.y <= viewportRect.top ||
+          candidate.y >= viewportRect.bottom
+        ) {
+          continue;
+        }
+
+        const elements = document.elementsFromPoint(
+          candidate.x,
+          candidate.y,
+        );
+
+        const topBuilderNode = elements.find(
+          (element) =>
+            element.hasAttribute("data-node-id") &&
+            element.closest(".builder-canvas-sandbox"),
+        );
+
+        if (
+          topBuilderNode?.getAttribute("data-node-id") ===
+          requestedTargetId
+        ) {
+          return candidate;
+        }
+      }
+
+      return null;
+    }, targetId);
+
+  let targetPoint = await resolveTargetPoint();
+
+  expect(
+    targetPoint,
+    `a visible direct hit lane must exist for ${targetId}`,
+  ).not.toBeNull();
+
+  if (!targetPoint) {
     await page.mouse.up();
     return;
   }
 
-  /*
-   * Use the target's visible left padding lane rather than its child
-   * content. Clamp the point within the actual canvas viewport.
-   */
-  const targetX = Math.max(
-    liveViewport.x + 40,
-    Math.min(
-      liveViewport.x + liveViewport.width - 40,
-      liveTarget.x + Math.min(32, liveTarget.width / 3),
-    ),
+  await page.mouse.move(
+    targetPoint.x,
+    targetPoint.y,
+    { steps: 32 },
   );
 
-  const targetY = Math.max(
-    liveViewport.y + 60,
-    Math.min(
-      liveViewport.y + liveViewport.height - 60,
-      liveTarget.y + liveTarget.height / 2,
-    ),
-  );
+  /*
+   * Geometry may change while moving the drag ghost. Resolve the lane
+   * again immediately before asserting and releasing.
+   */
+  targetPoint = await resolveTargetPoint();
+
+  expect(targetPoint).not.toBeNull();
+
+  if (!targetPoint) {
+    await page.mouse.up();
+    return;
+  }
 
   await page.mouse.move(
-    targetX,
-    targetY,
-    { steps: 32 },
+    targetPoint.x,
+    targetPoint.y,
+    { steps: 6 },
   );
 
   await expect(shell).toHaveAttribute(
@@ -403,40 +533,21 @@ export async function dragPaletteWidgetIntoVisibleTarget(
   );
 
   /*
-   * Re-enter the current live target immediately before release so
-   * the final production hit test uses current scroll geometry.
+   * Revalidate the exact hit lane immediately before mouse release.
    */
-  const releaseTarget = await target.boundingBox();
-  const releaseViewport = await canvasViewport.boundingBox();
+  const releasePoint = await resolveTargetPoint();
 
-  expect(releaseTarget).not.toBeNull();
-  expect(releaseViewport).not.toBeNull();
+  expect(releasePoint).not.toBeNull();
 
-  if (!releaseTarget || !releaseViewport) {
+  if (!releasePoint) {
     await page.mouse.up();
     return;
   }
 
-  const releaseX = Math.max(
-    releaseViewport.x + 40,
-    Math.min(
-      releaseViewport.x + releaseViewport.width - 40,
-      releaseTarget.x + Math.min(32, releaseTarget.width / 3),
-    ),
-  );
-
-  const releaseY = Math.max(
-    releaseViewport.y + 60,
-    Math.min(
-      releaseViewport.y + releaseViewport.height - 60,
-      releaseTarget.y + releaseTarget.height / 2,
-    ),
-  );
-
   await page.mouse.move(
-    releaseX,
-    releaseY,
-    { steps: 4 },
+    releasePoint.x,
+    releasePoint.y,
+    { steps: 3 },
   );
 
   await page.mouse.up();

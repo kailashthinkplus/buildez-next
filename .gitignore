@@ -42,3 +42,31 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# Builder RC local test artifacts
+test-results/
+playwright-report/
+blob-report/
+apps/web-app/test-results/
+apps/web-app/playwright-report/
+apps/web-app/blob-report/
+apps/web-app/playwright/.auth/
+apps/web-app/.env.e2e.local
+# Playwright traces, screenshots and recordings
+**/trace.zip
+**/test-failed-*.png
+**/video.webm
+**/error-context.md
+# Local RC patch scripts and temporary helpers
+scripts/fix_*.py
+scripts/add_*_debug.py
+scripts/*_debug.py
+# Local backup files created during RC patching
+*.bak
+*.bak2
+*.fix2.bak
+*.open-order.bak
+*.visible-target.bak
+*.geometry-debug.bak
+*.hit-test.bak
+# Generated Next.js output
+apps/web-app/.next/
