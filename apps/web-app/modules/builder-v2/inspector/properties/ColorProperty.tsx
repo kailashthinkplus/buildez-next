@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import type { BuilderNode } from "../../types/blueprint";
 import ColorPicker from "../components/ColorPicker";
 import { useNodeUpdater } from "../hooks/useNodeUpdater";
@@ -31,28 +29,16 @@ export default function ColorProperty({
   placeholder = "#000000",
 }: ColorPropertyProps) {
 
-  const { updateStyle } = useNodeUpdater();
+  const { updateStyle, removeStyle } = useNodeUpdater();
 
-  const [value, setValue] = useState(
-    String(node.style?.[property] ?? "")
-  );
+  const value = String(node.style?.[property] ?? "");
 
-  useEffect(() => {
-    setValue(
-      String(node.style?.[property] ?? "")
-    );
-  }, [node.id, node.style, property]);
+  function update(next: string) {
+    updateStyle(node.id, property, next);
+  }
 
-  function update(next: string | undefined) {
-
-    setValue(next ?? "");
-
-    updateStyle(
-      node.id,
-      property,
-      next
-    );
-
+  function clear() {
+    removeStyle(node.id, property);
   }
 
   return (
@@ -66,7 +52,7 @@ export default function ColorProperty({
       <ColorPicker
         value={value || placeholder}
         onChange={update}
-        onClear={() => update(undefined)}
+        onClear={clear}
         themeTokenReady
       />
 

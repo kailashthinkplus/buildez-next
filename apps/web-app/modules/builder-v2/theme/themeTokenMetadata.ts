@@ -8,6 +8,9 @@ export type ThemeTokenCategory =
   | "radius"
   | "shadow"
   | "buttons"
+  | "states"
+  | "forms"
+  | "cards"
   | "defaults";
 
 export type ThemeTokenMetadata = Readonly<{
@@ -37,6 +40,9 @@ export function buildThemeTokenMetadata(
     tokenSection("radius", "Radius", "Shared border radius defaults for buttons, cards, and media.", safeTokens.radius),
     tokenSection("shadow", "Shadows", "Shared shadow presets for cards and media.", safeTokens.shadow),
     tokenSection("buttons", "Button defaults", "Primary and secondary button token defaults.", safeTokens.buttons),
+    tokenSection("states", "Interaction states", "Semantic status, disabled, and focus colors.", safeTokens.states),
+    tokenSection("forms", "Form defaults", "Shared input surfaces, text, border, focus, error, and disabled colors.", safeTokens.forms),
+    tokenSection("cards", "Card defaults", "Shared card surfaces, text, borders, shadow, and hover surface.", safeTokens.cards),
     {
       id: "defaults",
       title: "Section and container defaults",

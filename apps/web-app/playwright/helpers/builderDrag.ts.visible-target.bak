@@ -1,0 +1,274 @@
+import { expect, type Locator, type Page } from "@playwright/test";
+
+type DropPosition = "before" | "after" | "inside";
+
+export async function dragBuilderNode(
+  page: Page,
+  source: Locator,
+  target: Locator,
+  position: DropPosition = "inside"
+) {
+  await expect(source).toBeVisible();
+  await expect(target).toBeVisible();
+  const sourceBox = await source.boundingBox();
+  const targetBox = await target.boundingBox();
+  expect(sourceBox, "drag source must have a browser bounding box").not.toBeNull();
+  expect(targetBox, "drop target must have a browser bounding box").not.toBeNull();
+  if (!sourceBox || !targetBox) return;
+
+  const targetPosition = {
+    // Use the visual centre for inside drops. The old 8px inset could sit
+    // underneath the Builder's fixed left chrome after Playwright scrolled a
+    // wide canvas target into view, causing dragTo to retry until timeout.
+    x: position === "inside" ? Math.min(8, targetBox.width / 2) : targetBox.width / 2,
+    y:
+    position === "before"
+      ? 3
+      : position === "after"
+        ? targetBox.height - 3
+        : targetBox.height / 2,
+  };
+
+  const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
+  await source.dispatchEvent("dragstart", { dataTransfer });
+  await target.dispatchEvent("dragover", {
+    dataTransfer,
+    clientX: targetBox.x + targetPosition.x,
+    clientY: targetBox.y + targetPosition.y,
+  });
+  await target.dispatchEvent("drop", {
+    dataTransfer,
+    clientX: targetBox.x + targetPosition.x,
+    clientY: targetBox.y + targetPosition.y,
+  });
+  await source.dispatchEvent("dragend", { dataTransfer });
+  await dataTransfer.dispose();
+  await expect(page.getByTestId("builder-drop-indicator")).toHaveCount(0);
+}
+
+export async function dragSelectedNodeByHandle(
+  page: Page,
+  nodeId: string,
+  target: Locator,
+) {
+  const shell = page.getByTestId("builder-shell");
+  const handle = page.getByTestId("builder-node-drag-handle");
+  await expect(handle).toHaveAttribute("data-drag-node-id", nodeId);
+  await expect(target).toBeVisible();
+
+  const viewport = page.locator("[data-builder-canvas-scroll='true']");
+  const sourceBeforeScroll = await handle.boundingBox();
+  const viewportSize = page.viewportSize();
+  expect(sourceBeforeScroll, "drag handle must have a browser bounding box").not.toBeNull();
+  expect(viewportSize, "browser viewport must be available for native drag").not.toBeNull();
+  if (!sourceBeforeScroll || !viewportSize) return;
+  await viewport.evaluate((element, sourceY) => {
+    element.scrollTop += sourceY - 130;
+  }, sourceBeforeScroll.y);
+  await page.evaluate(() => new Promise<void>((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+  ));
+  await handle.hover();
+
+  const sourceBox = await handle.boundingBox();
+  const targetBox = await target.boundingBox();
+  expect(sourceBox, "drag handle must remain visible after canvas positioning").not.toBeNull();
+  expect(targetBox, "drop target must be visible after canvas positioning").not.toBeNull();
+  if (!sourceBox || !targetBox) return;
+
+  const targetId = await target.getAttribute("data-node-id");
+  expect(targetId, "drop target must expose its production node id").toBeTruthy();
+  if (!targetId) return;
+  const start = { x: sourceBox.x + sourceBox.width / 2, y: sourceBox.y + sourceBox.height / 2 };
+  const end = {
+    // Stay inside the visible canvas lane rather than fixed side chrome.
+    x: targetBox.x + Math.min(12, targetBox.width / 2),
+    y: Math.min(targetBox.y + targetBox.height - 56, viewportSize.height - 60),
+  };
+
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  await page.mouse.move(start.x, start.y + 10, { steps: 4 });
+  await expect(shell).toHaveAttribute("data-dnd-active-id", nodeId);
+  await page.mouse.move(end.x, end.y, { steps: 24 });
+  const safeY = viewportSize.height - Math.max(160, viewportSize.height * 0.2);
+  let targetSurroundsSafeLane = false;
+  for (let step = 0; step < 30; step += 1) {
+    const live = await target.boundingBox();
+    targetSurroundsSafeLane = Boolean(
+      live && live.y + 40 < safeY && live.y + live.height - 40 > safeY,
+    );
+    if (targetSurroundsSafeLane) break;
+    // Each native dragover event advances the production edge auto-scroll.
+    await page.mouse.move(end.x + (step % 2 === 0 ? 1 : -1), end.y);
+  }
+  expect(targetSurroundsSafeLane, "native auto-scroll should expose Container B's safe inside lane").toBe(true);
+  const liveTarget = await target.boundingBox();
+  expect(liveTarget).not.toBeNull();
+  if (!liveTarget) return;
+  await page.mouse.move(liveTarget.x + Math.min(12, liveTarget.width / 2), safeY, { steps: 8 });
+  await expect(shell).toHaveAttribute("data-dnd-over-id", targetId);
+  await expect(shell).toHaveAttribute("data-dnd-intent", "inside");
+  await expect(shell).toHaveAttribute("data-dnd-valid", "true");
+  // Assertions take time while the production edge auto-scroll remains live.
+  // Re-enter the target's current central padding lane immediately before
+  // release so the committed pending drop matches the observed contract.
+  const releaseBox = await target.boundingBox();
+  expect(releaseBox).not.toBeNull();
+  if (!releaseBox) return;
+  await page.mouse.move(
+    releaseBox.x + Math.min(12, releaseBox.width / 2),
+    Math.max(60, releaseBox.y + 40),
+    { steps: 2 },
+  );
+  await page.mouse.up();
+  await expect(shell).toHaveAttribute("data-dnd-active-id", "");
+}
+
+export async function dragPaletteWidgetInside(
+  page: Page,
+  widgetType: string,
+  target: Locator,
+) {
+  await page.evaluate(() => {
+    (window as any).__builderLastDropCommit = null;
+    window.addEventListener("builder:drop-commit", (event) => {
+      (window as any).__builderLastDropCommit = (event as CustomEvent).detail;
+    }, { once: true });
+  });
+  const source = page.getByTestId(`palette-widget-${widgetType}`);
+  const shell = page.getByTestId("builder-shell");
+  await expect(source).toBeVisible();
+  await expect(target).toBeVisible();
+  const sourceBox = await source.boundingBox();
+  const targetBox = await target.boundingBox();
+  expect(sourceBox).not.toBeNull();
+  expect(targetBox).not.toBeNull();
+  if (!sourceBox || !targetBox) return;
+  const targetId = await target.getAttribute("data-node-id");
+  expect(targetId).toBeTruthy();
+  if (!targetId) return;
+
+  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(sourceBox.x + sourceBox.width / 2 + 10, sourceBox.y + sourceBox.height / 2, { steps: 4 });
+  await expect(shell).toHaveAttribute("data-dnd-active-id", new RegExp(`^new:${widgetType}:`));
+  const viewportSize = page.viewportSize();
+  expect(viewportSize).not.toBeNull();
+  if (!viewportSize) return;
+  const targetLaneX = (box: { x: number; width: number }) =>
+    box.x < viewportSize.width / 3
+      ? Math.max(box.x + 40, Math.min(viewportSize.width / 2, box.x + box.width - 40))
+      : box.x + Math.min(12, box.width / 2);
+  const visibleCenter = targetBox.y + targetBox.height / 2;
+  const edgeY = Math.min(targetBox.y + targetBox.height - 56, viewportSize.height - 60);
+  await page.mouse.move(targetLaneX(targetBox),
+    visibleCenter < viewportSize.height - 100 ? visibleCenter : edgeY, { steps: 24 });
+  if (visibleCenter >= viewportSize.height - 100) {
+    const safeY = viewportSize.height - Math.max(160, viewportSize.height * 0.2);
+    let exposed = false;
+    for (let step = 0; step < 40; step += 1) {
+      const live = await target.boundingBox();
+      exposed = Boolean(live && live.y + 40 < safeY && live.y + live.height - 40 > safeY);
+      if (exposed) break;
+      await page.mouse.move(targetLaneX(targetBox) + (step % 2 ? 1 : -1), edgeY);
+    }
+    expect(exposed, "native auto-scroll should expose the palette target lane").toBe(true);
+    const live = await target.boundingBox();
+    expect(live).not.toBeNull();
+    if (!live) return;
+    await page.mouse.move(targetLaneX(live), safeY, { steps: 8 });
+  }
+  await expect(shell).toHaveAttribute("data-dnd-over-id", targetId);
+  await expect(shell).toHaveAttribute("data-dnd-intent", "inside");
+  await expect(shell).toHaveAttribute("data-dnd-valid", "true");
+  const releaseBox = await target.boundingBox();
+  expect(releaseBox).not.toBeNull();
+  if (!releaseBox) return;
+  await page.mouse.move(targetLaneX(releaseBox), Math.max(60, releaseBox.y + 40), { steps: 2 });
+  await page.mouse.up();
+  await expect(shell).toHaveAttribute("data-dnd-active-id", "");
+  const committed = await page.evaluate(() => (window as any).__builderLastDropCommit);
+  expect(committed, "native palette drop must reach the production commit handler").toBeTruthy();
+  expect(committed.targetParentId).toBe(targetId);
+  expect(committed.intent).toBe("inside");
+}
+
+export async function dragSelectedNodeRelativeToSibling(
+  page: Page,
+  nodeId: string,
+  sibling: Locator,
+  intent: "before" | "after",
+) {
+  const handle = page.getByTestId("builder-node-drag-handle");
+  const shell = page.getByTestId("builder-shell");
+  await expect(handle).toHaveAttribute("data-drag-node-id", nodeId);
+  await handle.hover();
+  const sourceBox = await handle.boundingBox();
+  const targetBox = await sibling.boundingBox();
+  expect(sourceBox).not.toBeNull();
+  expect(targetBox).not.toBeNull();
+  if (!sourceBox || !targetBox) return;
+  const targetId = await sibling.getAttribute("data-node-id");
+  expect(targetId).toBeTruthy();
+  if (!targetId) return;
+
+  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2 + 10, { steps: 4 });
+  await expect(shell).toHaveAttribute("data-dnd-active-id", nodeId);
+  const liveTargetBox = await sibling.boundingBox();
+  expect(liveTargetBox).not.toBeNull();
+  if (!liveTargetBox) return;
+  await page.mouse.move(
+    liveTargetBox.x + Math.min(12, liveTargetBox.width / 2),
+    intent === "before" ? liveTargetBox.y + 3 : liveTargetBox.y + liveTargetBox.height - 3,
+    { steps: 18 },
+  );
+  await expect(shell).toHaveAttribute("data-dnd-over-id", targetId);
+  await expect(shell).toHaveAttribute("data-dnd-intent", intent);
+  await page.mouse.up();
+  await expect(shell).toHaveAttribute("data-dnd-active-id", "");
+}
+
+export async function dragPaletteWidgetRelativeToSibling(
+  page: Page,
+  widgetType: string,
+  sibling: Locator,
+  intent: "before" | "after",
+) {
+  await page.evaluate(() => {
+    (window as any).__builderLastDropCommit = null;
+    window.addEventListener("builder:drop-commit", (event) => {
+      (window as any).__builderLastDropCommit = (event as CustomEvent).detail;
+    }, { once: true });
+  });
+  const source = page.getByTestId(`palette-widget-${widgetType}`);
+  const shell = page.getByTestId("builder-shell");
+  const sourceBox = await source.boundingBox();
+  const siblingBox = await sibling.boundingBox();
+  expect(sourceBox).not.toBeNull();
+  expect(siblingBox).not.toBeNull();
+  if (!sourceBox || !siblingBox) return;
+  const siblingId = await sibling.getAttribute("data-node-id");
+  expect(siblingId).toBeTruthy();
+  if (!siblingId) return;
+  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(sourceBox.x + sourceBox.width / 2 + 10, sourceBox.y + sourceBox.height / 2, { steps: 4 });
+  await expect(shell).toHaveAttribute("data-dnd-active-id", new RegExp(`^new:${widgetType}:`));
+  const live = await sibling.boundingBox();
+  expect(live).not.toBeNull();
+  if (!live) return;
+  await page.mouse.move(
+    live.x + Math.min(100, live.width / 2),
+    intent === "before" ? live.y + 3 : live.y + live.height - 3,
+    { steps: 18 },
+  );
+  await expect(shell).toHaveAttribute("data-dnd-over-id", siblingId);
+  await expect(shell).toHaveAttribute("data-dnd-intent", intent);
+  await page.mouse.up();
+  const committed = await page.evaluate(() => (window as any).__builderLastDropCommit);
+  expect(committed).toBeTruthy();
+  expect(committed.intent).toBe(intent);
+}

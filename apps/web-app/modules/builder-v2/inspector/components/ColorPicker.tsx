@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface ColorPickerProps {
   value: string;
@@ -27,27 +27,16 @@ export default function ColorPicker({
 }: ColorPickerProps) {
   const [showPicker, setShowPicker] = useState(false);
   const normalizedColor = normalizeColor(value);
-  const [customColor, setCustomColor] = useState(normalizedColor === "transparent" ? "#000000" : normalizedColor);
-
-  useEffect(() => {
-    const next = normalizeColor(value);
-    setCustomColor(next === "transparent" ? "#000000" : next);
-  }, [value]);
+  const customColor = normalizedColor === "transparent" ? "#000000" : normalizedColor;
 
   const isTransparent = normalizedColor === "transparent";
 
   const handleColorSelect = (color: string) => {
     onChange(color);
-    setCustomColor(color);
   };
 
   const handleClear = () => {
-    if (onClear) {
-      onClear();
-    } else {
-      onChange("transparent");
-    }
-    setCustomColor("#000000");
+    onClear?.();
   };
 
   return (
@@ -82,13 +71,12 @@ export default function ColorPicker({
           onChange={(event) => {
             const next = event.target.value;
             onChange(next);
-            setCustomColor(normalizeColor(next) === "transparent" ? "#000000" : normalizeColor(next));
           }}
           placeholder="#000000"
           className="h-8 min-w-0 flex-1 rounded-md border border-white/10 bg-white/[0.06] px-2 text-xs text-white outline-none placeholder:text-white/35 focus:border-blue-400/60"
         />
 
-        {allowClear && (
+        {allowClear && onClear && (
           <button
             type="button"
             onClick={handleClear}

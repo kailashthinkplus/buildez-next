@@ -89,7 +89,7 @@ export default function MediaLibraryModal({
 
   return createPortal(
 
-    <div className="fixed inset-0 z-[100000]">
+    <div className="fixed inset-0 z-[100000] flex items-center justify-center p-6">
 
       {/* Backdrop */}
 
@@ -102,11 +102,14 @@ export default function MediaLibraryModal({
 
       <div
         className="
-          absolute
-          inset-0
+          relative
+          h-[min(780px,calc(100vh-3rem))]
+          w-full
+          max-w-5xl
+          rounded-2xl
           border
           border-white/10
-          bg-[#111827]
+          bg-[#0F1118]
           shadow-2xl
           overflow-hidden
           flex
@@ -120,7 +123,7 @@ export default function MediaLibraryModal({
 
         <div
           className="
-            h-16
+            min-h-16
             border-b
             border-white/10
             px-6
@@ -145,8 +148,8 @@ export default function MediaLibraryModal({
           <button
             onClick={onClose}
             className="
-              w-10
-              h-10
+              w-9
+              h-9
               rounded-lg
               hover:bg-white/10
               flex

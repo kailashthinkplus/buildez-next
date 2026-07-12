@@ -1,0 +1,35 @@
+$ node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/rc-t3 -name '*.test.ts' -print)
+(node:75102) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ RC-T3 active Builder store exposes no direct Blueprint replacement action (0.661708ms)
+(node:75103) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ rc-t3/operations/drop-commit-safety > current valid drop commits (0.616792ms)
+✔ rc-t3/operations/drop-commit-safety > cancelled drop cannot commit (0.058875ms)
+✔ rc-t3/operations/drop-commit-safety > consumed token cannot commit twice (0.041ms)
+✔ rc-t3/operations/drop-commit-safety > inactive drag cannot commit (0.035709ms)
+✔ rc-t3/operations/drop-commit-safety > stale over target cannot commit (0.036916ms)
+✔ rc-t3/operations/drop-commit-safety > stale intent cannot commit (0.03175ms)
+✔ rc-t3/operations/drop-commit-safety > payload mismatch cannot commit (0.0355ms)
+✔ rc-t3/operations/drop-commit-safety > Builder chrome cannot commit (0.032834ms)
+✔ rc-t3/operations/drop-commit-safety > self or descendant pointer cannot commit (0.046125ms)
+(node:75104) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ rc-t3/operations/inline-text-noop > unchanged button text produces no patch (0.560792ms)
+✔ rc-t3/operations/inline-text-noop > unchanged heading text produces no patch (0.05ms)
+✔ rc-t3/operations/inline-text-noop > changed button updates label and text (0.045625ms)
+✔ rc-t3/operations/inline-text-noop > changed button preserves sibling props (0.034542ms)
+(node:75105) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ RC-T3 duplicate exposes the new root and preserves an independent semantic subtree (5.357875ms)
+✔ RC-T3 paste exposes its independent root and invalid paste leaves history unchanged (3.145042ms)
+✔ RC-T3 delete, wrap, and reparent round-trip exact operation state (3.341042ms)
+✔ RC-T3 rejected cycle and protected delete are exact no-ops without history (0.492125ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 632.686625

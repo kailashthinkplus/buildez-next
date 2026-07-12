@@ -2,17 +2,19 @@ import type { BuilderStyle } from "../../types/blueprint";
 
 const HeadingDefaults = {
   props: {
-    text: "Your Heading",
+    text: "A clear headline that communicates real value",
     level: "h2",
   },
 
   style: {
-    color: "text.primary",
-    fontSize: 48,
+    color: "theme.colors.textPrimary",
+    fontFamily: "theme.typography.headingFont",
+    fontSize: { desktop: 40, tablet: 34, mobile: 30 },
     fontWeight: 700,
     lineHeight: 1.2,
     textAlign: "left",
-    marginBottom: 16,
+    letterSpacing: -0.02,
+    marginBottom: 12,
   } satisfies BuilderStyle,
 };
 

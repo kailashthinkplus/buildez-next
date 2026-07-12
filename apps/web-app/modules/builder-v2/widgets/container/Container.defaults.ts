@@ -10,11 +10,12 @@ const ContainerDefaults = {
 
   style: {
     width: "100%",
-    gap: 24,
+    gap: { desktop: 24, tablet: 20, mobile: 16 },
     padding: 0,
     margin: 0,
     borderRadius: 0,
     backgroundColor: "transparent",
+    maxWidth: "1120px",
   },
 };
 

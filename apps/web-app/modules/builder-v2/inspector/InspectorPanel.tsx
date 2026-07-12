@@ -41,18 +41,18 @@ export default function InspectorPanel({
 
   if (!node) {
     return (
-      <div className="builder-chrome h-full flex items-center justify-center bg-[#121418]/90 text-sm text-white/40 shadow-2xl shadow-black/50 backdrop-blur-2xl">
+      <div className="h-full flex items-center justify-center bg-[rgb(15_17_24/82%)] backdrop-blur-2xl text-sm text-white/40 shadow-2xl shadow-black/50">
         Select an element to edit
       </div>
     );
   }
 
   return (
-    <div className="builder-chrome h-full flex flex-col bg-[#121418]/90 text-white shadow-2xl shadow-black/50 backdrop-blur-2xl">
+    <div className="h-full flex flex-col text-white shadow-2xl shadow-black/50">
       {/* =====================================================
          HEADER
       ===================================================== */}
-      <div className="border-b border-white/10 bg-[#0f1118]/80 px-4 py-3 backdrop-blur-xl">
+      <div className="border-b border-white/10 bg-black/75 px-4 py-3 backdrop-blur-2xl">
         <div className="flex items-center justify-between gap-3">
           <div>
             <div className="text-sm font-semibold capitalize text-white">

@@ -55,6 +55,24 @@ function getThemeValue(tokens: unknown, path: string) {
 function resolveThemeToken(value: unknown, tokens: unknown): unknown {
   if (typeof value !== "string") return value;
 
+  const aliases: Record<string, string> = {
+    "text.primary": "colors.textPrimary",
+    "text.secondary": "colors.textSecondary",
+    "primary.500": "colors.primary",
+    primary: "colors.primary",
+    accent: "colors.accent",
+    surface: "colors.surface",
+    "surface.muted": "colors.surfaceAlt",
+    background: "colors.background",
+    border: "colors.border",
+  };
+
+  const alias = aliases[value];
+  if (alias) return getThemeValue(tokens, alias) ?? value;
+
+  const direct = value.match(/^theme\.([a-zA-Z0-9_.-]+)$/);
+  if (direct) return getThemeValue(tokens, direct[1]) ?? value;
+
   const exact = value.match(/^\{theme\.([a-zA-Z0-9_.-]+)\}$/);
   if (exact) {
     return getThemeValue(tokens, exact[1]) ?? value;

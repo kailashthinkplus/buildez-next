@@ -5,7 +5,32 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck:builder": "tsc -p tsconfig.builder.json --noEmit"
+    "typecheck:builder": "tsc -p tsconfig.builder.json --noEmit",
+    "test:builder": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__ -name '*.test.ts' -print)",
+    "test:builder:rc-t1": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/commands modules/builder-v2/__tests__/serialization modules/builder-v2/__tests__/rc-t1 -name '*.test.ts' -print)",
+    "test:builder:rc-t2": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/canvas modules/builder-v2/__tests__/layout modules/builder-v2/__tests__/responsive modules/builder-v2/__tests__/parity modules/builder-v2/__tests__/workspace modules/builder-v2/__tests__/rc-t2 -name '*.test.ts' -print)",
+    "test:builder:rc-t3": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/commands modules/builder-v2/__tests__/rc-t1/commands modules/builder-v2/__tests__/rc-t3 -name '*.test.ts' -print)",
+    "test:builder:operations": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/rc-t3 -name '*.test.ts' -print)",
+    "test:builder:layout": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/layout modules/builder-v2/__tests__/responsive modules/builder-v2/__tests__/rc-t2/layout -name '*.test.ts' -print)",
+    "test:builder:canvas": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/canvas modules/builder-v2/__tests__/workspace modules/builder-v2/__tests__/rc-t2/canvas -name '*.test.ts' -print 2>/dev/null)",
+    "test:builder:blueprint": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/serialization modules/builder-v2/__tests__/rc-t1/blueprint -name '*.test.ts' -print)",
+    "test:builder:commands": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/commands modules/builder-v2/__tests__/rc-t1/commands -name '*.test.ts' -print)",
+    "test:builder:watch": "node --import tsx --test --test-concurrency=1 --watch $(find modules/builder-v2/__tests__ -name '*.test.ts' -print)",
+    "playwright:install": "playwright install chromium",
+    "test:builder:browser:auth": "playwright test --project=setup",
+    "test:builder:browser": "playwright test --project=builder-chromium",
+    "test:builder:browser:operations": "playwright test --project=builder-chromium --grep @operations",
+    "test:builder:browser:operations:headed": "playwright test --project=builder-chromium --grep @operations --headed",
+    "test:builder:browser:operations:fixture": "playwright test --project=builder-chromium --grep @fixture",
+    "test:builder:browser:operations:dnd": "playwright test --project=builder-chromium --grep @dnd",
+    "test:builder:browser:operations:palette": "playwright test --project=builder-chromium --grep @palette",
+    "test:builder:browser:operations:reorder": "playwright test --project=builder-chromium --grep @reorder",
+    "test:builder:browser:operations:keyboard": "playwright test --project=builder-chromium --grep @keyboard",
+    "test:builder:browser:operations:invalid": "playwright test --project=builder-chromium --grep @invalid-dnd",
+    "test:builder:browser:operations:cleanup": "tsx playwright/scripts/cleanupDisposablePages.ts",
+    "test:builder:visual": "playwright test --project=setup && playwright test --project=builder-chromium --no-deps --grep @visual",
+    "test:builder:visual:update": "playwright test --project=setup && playwright test --project=builder-chromium --no-deps --grep @visual --update-snapshots",
+    "test:builder:browser:operations:scroll": "playwright test --project=builder-chromium --grep @scroll"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1073.0",
@@ -38,9 +63,11 @@
     "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@types/uuid": "^11.0.0",
     "autoprefixer": "^10.4.24",
     "postcss": "^8.5.6",
-    "tailwindcss": "3.4.17"
+    "tailwindcss": "3.4.17",
+    "tsx": "^4.21.0"
   }
 }

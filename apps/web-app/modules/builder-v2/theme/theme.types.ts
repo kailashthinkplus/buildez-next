@@ -66,6 +66,30 @@ export interface BuilderThemeTokens {
       borderRadius: number;
     };
   };
+  states: {
+    success: string;
+    warning: string;
+    error: string;
+    info: string;
+    disabled: string;
+    focusRing: string;
+  };
+  forms: {
+    background: string;
+    text: string;
+    placeholder: string;
+    border: string;
+    borderFocus: string;
+    error: string;
+    disabledBackground: string;
+  };
+  cards: {
+    background: string;
+    text: string;
+    border: string;
+    shadow: string;
+    hoverBackground: string;
+  };
 }
 
 export interface ThemePreset {
@@ -96,4 +120,7 @@ export type ThemeTokenPatch = Partial<{
     primary: Partial<BuilderThemeTokens["buttons"]["primary"]>;
     secondary: Partial<BuilderThemeTokens["buttons"]["secondary"]>;
   }>;
+  states: Partial<BuilderThemeTokens["states"]>;
+  forms: Partial<BuilderThemeTokens["forms"]>;
+  cards: Partial<BuilderThemeTokens["cards"]>;
 }>;

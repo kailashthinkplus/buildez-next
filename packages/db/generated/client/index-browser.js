@@ -128,6 +128,13 @@ exports.Prisma.UserScalarFieldEnum = {
   phone: 'phone',
   name: 'name',
   avatarUrl: 'avatarUrl',
+  bio: 'bio',
+  jobTitle: 'jobTitle',
+  company: 'company',
+  website: 'website',
+  city: 'city',
+  country: 'country',
+  timezone: 'timezone',
   passwordHash: 'passwordHash',
   googleId: 'googleId',
   role: 'role',
@@ -363,6 +370,27 @@ exports.Prisma.SiteScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
+};
+
+exports.Prisma.CmsCollectionScalarFieldEnum = {
+  id: 'id',
+  siteId: 'siteId',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  icon: 'icon',
+  fields: 'fields',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CmsEntryScalarFieldEnum = {
+  id: 'id',
+  collectionId: 'collectionId',
+  data: 'data',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SiteLayoutScalarFieldEnum = {
@@ -851,6 +879,8 @@ exports.Prisma.ModelName = {
   ThemeAsset: 'ThemeAsset',
   MediaAsset: 'MediaAsset',
   Site: 'Site',
+  CmsCollection: 'CmsCollection',
+  CmsEntry: 'CmsEntry',
   SiteLayout: 'SiteLayout',
   Domain: 'Domain',
   Page: 'Page',

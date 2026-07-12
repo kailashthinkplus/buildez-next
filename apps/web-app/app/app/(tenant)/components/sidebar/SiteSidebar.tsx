@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { DashboardLogo } from "../DashboardLogo";
 import {
   LayoutDashboard,
   FileText,
@@ -12,7 +12,11 @@ import {
   Bot,
   Layers,
   Settings,
+  Database,
   X,
+  Search,
+  CircleHelp,
+  ExternalLink,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useWorkspace } from "../WorkspaceContext";
@@ -36,6 +40,7 @@ export function SiteSidebar({
         { name: "Dashboard", href: `${base}/dashboard`, icon: LayoutDashboard },
         { name: "Pages", href: `${base}/pages`, icon: FileText },
         { name: "Media", href: `${base}/media`, icon: ImageIcon },
+        { name: "CMS", href: `${base}/cms`, icon: Database },
         { name: "Themes", href: `${base}/themes`, icon: Brush },
         { name: "Plugins", href: `${base}/plugins`, icon: Puzzle },
       ],
@@ -57,25 +62,12 @@ export function SiteSidebar({
   ];
 
   return (
-    <div className="h-full px-4 py-6 flex flex-col gap-8">
+    <div className="h-full px-3 py-4 flex flex-col overflow-y-auto">
       {/* LOGO + SITE NAME */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-2">
         <div className="flex flex-col">
-          <Image
-            src="/buildez-logo-light.svg"
-            alt="BuildEZ"
-            width={148}
-            height={72}
-            className="block h-11 w-[148px] object-contain object-left dark:hidden"
-          />
-          <Image
-            src="/buildez-logo-dark.svg"
-            alt="BuildEZ"
-            width={148}
-            height={72}
-            className="hidden h-11 w-[148px] object-contain object-left dark:block"
-          />
-          <span className="text-xs dashboard-muted mt-1">
+          <DashboardLogo />
+          <span className="max-w-[150px] truncate text-[11px] dashboard-muted mt-0.5">
             {currentWebsite.name}
           </span>
         </div>
@@ -87,10 +79,9 @@ export function SiteSidebar({
         </button>
       </div>
 
-      {/* SECTIONS */}
       {sections.map((section) => (
-        <div key={section.title}>
-          <div className="text-xs uppercase font-semibold dashboard-faint mb-2">
+        <div key={section.title} className="mb-5">
+          <div className="px-3 text-[10px] uppercase tracking-[.14em] font-semibold dashboard-faint mb-2">
             {section.title}
           </div>
 
@@ -101,7 +92,7 @@ export function SiteSidebar({
                 <Link
                   key={href}
                   href={href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition ${
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${
                     active
                       ? "dashboard-nav-active"
                       : "dashboard-muted dashboard-hover"
@@ -115,6 +106,10 @@ export function SiteSidebar({
           </div>
         </div>
       ))}
+      <div className="mt-auto border-t dashboard-border pt-3 space-y-1">
+        <Link href={`${base}/settings`} className="flex items-center gap-3 px-3 py-2 text-sm dashboard-muted dashboard-hover rounded-xl"><CircleHelp size={17}/> Help & support</Link>
+        <Link href={`/${currentWebsite.slug}`} className="flex items-center gap-3 px-3 py-2 text-sm dashboard-muted dashboard-hover rounded-xl"><ExternalLink size={17}/> View live site</Link>
+      </div>
     </div>
   );
 }

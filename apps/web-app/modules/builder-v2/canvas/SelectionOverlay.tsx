@@ -134,21 +134,21 @@ export default function SelectionOverlay({
             type="button"
             aria-label="Resize width"
             onPointerDown={(event) => beginResize(event, "width")}
-            className="absolute z-40 h-3.5 w-2 -translate-y-1/2 translate-x-1/2 cursor-ew-resize rounded-full border border-white bg-blue-500 shadow"
+            className="absolute z-40 h-3 w-1.5 -translate-y-1/2 translate-x-1/2 cursor-ew-resize rounded-full border border-white/80 bg-blue-400/85 shadow-sm"
             style={{ left: rect.left + rect.width, top: rect.top + rect.height / 2 }}
           />
           <button
             type="button"
             aria-label="Resize height"
             onPointerDown={(event) => beginResize(event, "height")}
-            className="absolute z-40 h-2 w-3.5 -translate-x-1/2 translate-y-1/2 cursor-ns-resize rounded-full border border-white bg-blue-500 shadow"
+            className="absolute z-40 h-1.5 w-3 -translate-x-1/2 translate-y-1/2 cursor-ns-resize rounded-full border border-white/80 bg-blue-400/85 shadow-sm"
             style={{ left: rect.left + rect.width / 2, top: rect.top + rect.height }}
           />
           <button
             type="button"
             aria-label="Resize proportionally"
             onPointerDown={(event) => beginResize(event, "both")}
-            className="absolute z-40 h-2.5 w-2.5 translate-x-1/2 translate-y-1/2 cursor-nwse-resize rounded-sm border border-white bg-blue-500 shadow"
+            className="absolute z-40 h-2 w-2 translate-x-1/2 translate-y-1/2 cursor-nwse-resize rounded-[3px] border border-white/80 bg-blue-400/85 shadow-sm"
             style={{ left: rect.left + rect.width, top: rect.top + rect.height }}
           />
         </>

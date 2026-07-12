@@ -199,8 +199,9 @@ export default function ThemeMarketplaceClient({
   }
 
   return (
-    <div className="p-6 md:p-8">
-      <div className="mx-auto max-w-6xl space-y-6">
+    <div className="relative px-1 py-2 md:px-2">
+      <div className="pointer-events-none absolute left-[15%] top-10 h-72 w-72 rounded-full bg-cyan-400/10 blur-[100px]" />
+      <div className="relative mx-auto max-w-[1400px] space-y-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide dashboard-muted">
@@ -213,7 +214,7 @@ export default function ThemeMarketplaceClient({
             </p>
           </div>
 
-          <div className="rounded-lg dashboard-card px-4 py-3 text-sm">
+          <div className="rounded-2xl dashboard-card-strong px-5 py-4 text-sm">
             <div className="flex items-center gap-2 font-medium">
               <Palette className="h-4 w-4" />
               {activePreset.name}
@@ -243,8 +244,8 @@ export default function ThemeMarketplaceClient({
             return (
               <article
                 key={preset.id}
-                className={`overflow-hidden rounded-lg border dashboard-card ${
-                  isActive || isSelected ? "border-blue-500" : "dashboard-border"
+                className={`theme-market-card group overflow-hidden rounded-[22px] border dashboard-card ${
+                  isActive || isSelected ? "border-blue-400/70 ring-4 ring-blue-500/10" : "dashboard-border"
                 }`}
               >
                 <div className="relative aspect-[16/9] overflow-hidden border-b dashboard-border">
@@ -254,7 +255,7 @@ export default function ThemeMarketplaceClient({
                       alt={`${preset.name} theme preview thumbnail`}
                       fill
                       sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-                      className="object-cover"
+                      className="object-cover transition duration-500 group-hover:scale-[1.025]"
                     />
                   ) : (
                     <ThemePreviewFallback presetName={preset.name} tokens={preset.tokens} />
@@ -281,7 +282,7 @@ export default function ThemeMarketplaceClient({
                       setSelectedPresetId(preset.id);
                       setDetailsOpen(true);
                     }}
-                    className="flex w-full items-center justify-center gap-2 rounded-lg border dashboard-border px-4 py-2 text-sm font-medium dashboard-hover"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border dashboard-border px-4 py-2.5 text-sm font-medium dashboard-hover"
                   >
                     <Eye className="h-4 w-4" />
                     View Details
@@ -294,7 +295,7 @@ export default function ThemeMarketplaceClient({
                     className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${
                       isActive
                         ? "bg-green-600 text-white"
-                        : "bg-[var(--brand)] text-white hover:brightness-110 disabled:opacity-60"
+                        : "dashboard-primary-button text-white disabled:opacity-60"
                     }`}
                   >
                     {isActive ? (

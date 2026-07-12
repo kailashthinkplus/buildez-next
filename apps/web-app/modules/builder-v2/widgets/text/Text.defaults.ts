@@ -6,12 +6,14 @@ const TextDefaults = {
   },
 
   style: {
-    color: "text.secondary",
-    fontSize: 16,
+    color: "theme.colors.textSecondary",
+    fontFamily: "theme.typography.bodyFont",
+    fontSize: { desktop: 16, mobile: 15 },
     fontWeight: 400,
     lineHeight: 1.7,
     textAlign: "left",
-    marginBottom: 16,
+    marginBottom: 12,
+    maxWidth: "68ch",
   } satisfies BuilderStyle,
 };
 

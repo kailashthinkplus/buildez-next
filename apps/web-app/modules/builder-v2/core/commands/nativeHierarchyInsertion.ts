@@ -110,6 +110,17 @@ export function buildNativeInsertionPlan(
     };
   }
 
+  // An explicit container/column drop must honor the visible target. Both
+  // relationships are valid in the production schema; synthesizing a sibling
+  // container made the canvas indicator disagree with the resulting tree.
+  if (context.type === "container" || context.type === "column") {
+    const widget = createNode(type, context.id);
+    return {
+      steps: [{ parentId: context.id, node: widget, index }],
+      selectNodeId: widget.id,
+    };
+  }
+
   const column = findInsertionColumn(blueprint, context.id);
   if (column) {
     const widget = createNode(type, column.id);

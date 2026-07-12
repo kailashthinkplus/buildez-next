@@ -19,6 +19,7 @@ interface MediaGridProps {
   onSelect(asset: MediaAsset): void;
 
   onDelete?(asset: MediaAsset): void;
+  columns?: "responsive" | "two";
 }
 
 /* ==========================================================
@@ -31,6 +32,7 @@ export default function MediaGrid({
   selectedAsset = null,
   onSelect,
   onDelete,
+  columns = "responsive",
 }: MediaGridProps) {
   /* --------------------------------------------------------
      Loading
@@ -39,16 +41,15 @@ export default function MediaGrid({
   if (loading) {
     return (
       <div
-        className="
+        className={`
           p-6
           grid
           grid-cols-2
-          sm:grid-cols-3
-          lg:grid-cols-5
+          ${columns === "responsive" ? "sm:grid-cols-3 lg:grid-cols-5" : ""}
           gap-4
           overflow-y-auto
           h-full
-        "
+        `}
       >
         {Array.from({ length: 15 }).map((_, index) => (
           <div
@@ -74,7 +75,7 @@ export default function MediaGrid({
   if (assets.length === 0) {
     return (
       <div
-        className="
+        className={`
           h-full
           flex
           flex-col
@@ -82,7 +83,7 @@ export default function MediaGrid({
           justify-center
           text-center
           px-10
-        "
+        `}
       >
         <div
           className="
@@ -140,13 +141,12 @@ export default function MediaGrid({
       "
     >
       <div
-        className="
+        className={`
           grid
           grid-cols-2
-          sm:grid-cols-3
-          lg:grid-cols-5
+          ${columns === "responsive" ? "sm:grid-cols-3 lg:grid-cols-5" : ""}
           gap-4
-        "
+        `}
       >
         {assets.map((asset) => (
           <MediaCard

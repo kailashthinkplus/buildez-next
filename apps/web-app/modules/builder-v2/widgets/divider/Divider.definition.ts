@@ -33,7 +33,7 @@ export const DividerDefinition: WidgetDefinition = {
       type: "color",
       target: "style",
       category: "style",
-      defaultValue: "#cbd5e1",
+      defaultValue: "theme.colors.border",
     },
   ],
 };

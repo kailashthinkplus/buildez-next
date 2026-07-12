@@ -219,7 +219,7 @@ export async function POST(req: NextRequest) {
           processed.info.width && processed.info.height
             ? `${processed.info.width}:${processed.info.height}`
             : null,
-        tags: [],
+        tags: ["User uploaded"],
       },
     });
 

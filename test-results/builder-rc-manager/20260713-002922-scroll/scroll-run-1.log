@@ -1,0 +1,28 @@
+$ playwright test --project=builder-chromium --grep @scroll
+SyntaxError: /Users/kailash/buildez/apps/web-app/playwright/tests/builder/operations/scroll-targeting.spec.ts: Unexpected token, expected "," (136:26)
+
+  134 |
+  135 |
+> 136 |     await openBlocks(page);
+      |                           ^
+  137 |       );
+  138 |
+  139 |     await dragPaletteWidgetInside(page, "heading", target);
+
+   at builder/operations/scroll-targeting.spec.ts:136
+
+  134 |
+  135 |
+> 136 |     await openBlocks(page);
+      |                          ^
+  137 |       );
+  138 |
+  139 |     await dragPaletteWidgetInside(page, "heading", target);
+Error: No tests found
+
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m
+[ELIFECYCLE] Command failed with exit code 1.

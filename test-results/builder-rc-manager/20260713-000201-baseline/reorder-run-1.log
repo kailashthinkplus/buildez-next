@@ -1,0 +1,13 @@
+$ playwright test --project=builder-chromium --grep @reorder
+
+Running 2 tests using 1 worker
+
+  ✓  1 [setup] › playwright/tests/auth.setup.ts:7:6 › authenticate Builder RC user (1.7s)
+  ✓  2 [builder-chromium] › playwright/tests/builder/operations/reorder.spec.ts:22:5 › @operations @reorder moves first sibling to last, undo/redo, save and reload (3.8s)
+
+  2 passed (6.4s)
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m

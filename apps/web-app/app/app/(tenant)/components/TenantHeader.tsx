@@ -67,16 +67,16 @@ export function TenantHeader({
     <header
       className="
         relative z-40
-        h-16 flex items-center justify-between
+        h-[68px] flex items-center justify-between
         px-4 md:px-8
         text-[14px]
-        dashboard-panel border-b
+        border-b dashboard-border
         backdrop-blur-xl
         text-[var(--dashboard-text)]
       "
     >
       {/* LEFT */}
-      <div className="flex items-center gap-4">
+      <div className="flex min-w-0 items-center gap-3">
         {/* MOBILE MENU */}
         <div className="flex items-center gap-3 md:hidden">
           <button
@@ -142,10 +142,10 @@ export function TenantHeader({
       </div>
 
       {/* SEARCH */}
-      <div className="hidden md:flex relative w-72 items-center">
+      <div className="hidden xl:flex relative w-[360px] items-center">
         <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-600 dark:text-slate-300" />
         <input
-          placeholder="Search…"
+          placeholder="Search pages, media, settings..."
           className="
             pl-10 pr-4 py-2 w-full rounded-xl
             dashboard-input
@@ -155,11 +155,11 @@ export function TenantHeader({
       </div>
 
       {/* RIGHT */}
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-2">
         <ThemeToggle />
 
         <div className="hidden sm:flex items-center gap-4">
-          <Bell className="h-5 w-5 dashboard-muted" />
+          <button className="flex h-9 w-9 items-center justify-center rounded-xl dashboard-hover"><Bell className="h-[18px] w-[18px] dashboard-muted" /></button>
 
           {/* USER */}
           <button

@@ -1,7 +1,7 @@
 const DividerDefaults = {
   props: {},
   style: {
-    color: "#cbd5e1",
+    color: "theme.colors.border",
     height: 1,
   },
 };

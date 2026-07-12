@@ -1,0 +1,6 @@
+$ tsx playwright/scripts/cleanupDisposablePages.ts
+(node:94506) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Disposable pages found: 0
+Disposable pages cleaned: 0
+Disposable pages remaining: 0

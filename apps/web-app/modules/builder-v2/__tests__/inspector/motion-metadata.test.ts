@@ -16,8 +16,8 @@ export const motionMetadataSpec = createRegressionSpec({
   assertions: [
     assertCondition("all required motion groups exist", requiredGroups.every((id) => MOTION_INSPECTOR_GROUPS.some((group) => group.id === id))),
     assertCondition("all required motion presets exist", requiredPresets.every((id) => MOTION_PRESETS.some((preset) => preset.id === id))),
-    assertCondition("motion presets are metadata only", MOTION_PRESETS.every((preset) => preset.metadataOnly && !preset.runtimeExecution)),
-    assertEqual("default motion metadata blocks runtime execution", defaults.runtimeExecution, false),
-    assertEqual("default motion engine is metadata", defaults.engine, "metadata"),
+    assertCondition("motion presets execute at runtime", MOTION_PRESETS.every((preset) => !preset.metadataOnly && preset.runtimeExecution)),
+    assertEqual("default motion metadata enables runtime execution", defaults.runtimeExecution, true),
+    assertEqual("default motion engine is CSS", defaults.engine, "css"),
   ],
 });

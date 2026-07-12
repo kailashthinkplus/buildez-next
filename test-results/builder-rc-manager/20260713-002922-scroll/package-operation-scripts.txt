@@ -1,0 +1,10 @@
+test:builder:browser:operations=playwright test --project=builder-chromium --grep @operations
+test:builder:browser:operations:headed=playwright test --project=builder-chromium --grep @operations --headed
+test:builder:browser:operations:fixture=playwright test --project=builder-chromium --grep @fixture
+test:builder:browser:operations:dnd=playwright test --project=builder-chromium --grep @dnd
+test:builder:browser:operations:palette=playwright test --project=builder-chromium --grep @palette
+test:builder:browser:operations:reorder=playwright test --project=builder-chromium --grep @reorder
+test:builder:browser:operations:keyboard=playwright test --project=builder-chromium --grep @keyboard
+test:builder:browser:operations:invalid=playwright test --project=builder-chromium --grep @invalid-dnd
+test:builder:browser:operations:cleanup=tsx playwright/scripts/cleanupDisposablePages.ts
+test:builder:browser:operations:scroll=playwright test --project=builder-chromium --grep @scroll

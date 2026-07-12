@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { ImagePlus, Sparkles, WandSparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Database, ImagePlus, Sparkles, WandSparkles } from "lucide-react";
 import type { BuilderNode } from "../../types/blueprint";
 import type { WidgetProperty } from "../../types/property";
 import { WidgetRegistry } from "../../core/registry/WidgetRegistry";
@@ -26,6 +26,13 @@ interface ContentTabProps {
   siteId: string;
 }
 
+function cmsBindableProperties(node: BuilderNode) {
+  if (node.type === "image") return ["src", "alt", "caption"];
+  if (node.type === "button") return ["label", "text", "href"];
+  if (node.type === "heading" || node.type === "text") return ["text", "html"];
+  return ["title", "heading", "description", "text", "image", "src", "href", "items"];
+}
+
 export default function ContentTab({
   node,
   onUpdateNode,
@@ -36,6 +43,12 @@ export default function ContentTab({
   const [imageGenerationError, setImageGenerationError] = useState("");
   const [generatingText, setGeneratingText] = useState(false);
   const [textGenerationError, setTextGenerationError] = useState("");
+  const [cmsCollections, setCmsCollections] = useState<any[]>([]);
+  const [cmsEntries, setCmsEntries] = useState<any[]>([]);
+  const [cmsCollectionId, setCmsCollectionId] = useState("");
+  const [cmsEntryId, setCmsEntryId] = useState("");
+  useEffect(() => { fetch(`/api/cms/collections?siteId=${siteId}`).then(r => r.json()).then(b => setCmsCollections(b.collections || [])); }, [siteId]);
+  useEffect(() => { if (!cmsCollectionId) return setCmsEntries([]); fetch(`/api/cms/entries?collectionId=${cmsCollectionId}`).then(r => r.json()).then(b => setCmsEntries((b.entries || []).filter((entry: any) => entry.status === "PUBLISHED"))); }, [cmsCollectionId]);
   const registryProperties = useMemo(() => {
     if (!WidgetRegistry.has(node.type)) return [];
     return WidgetRegistry.get(node.type).properties;
@@ -208,6 +221,15 @@ export default function ContentTab({
 
   return (
     <div className="space-y-3 pb-8">
+      <Section title="CMS data" description="Populate this widget from a published CMS entry">
+        <div className="space-y-2 rounded-lg border border-blue-400/20 bg-blue-500/[0.05] p-3">
+          <div className="flex items-center gap-2 text-xs font-medium text-blue-300"><Database size={14}/> Dynamic content binding</div>
+          <select value={cmsCollectionId} onChange={(e) => { setCmsCollectionId(e.target.value); setCmsEntryId(""); }} className="w-full rounded-md border border-white/10 bg-[#181b22] px-2 py-2 text-xs text-white"><option value="">Choose collection</option>{cmsCollections.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+          <select value={cmsEntryId} onChange={(e) => setCmsEntryId(e.target.value)} disabled={!cmsCollectionId} className="w-full rounded-md border border-white/10 bg-[#181b22] px-2 py-2 text-xs text-white disabled:opacity-40"><option value="">Choose published entry</option>{cmsEntries.map((entry) => <option key={entry.id} value={entry.id}>{String(entry.data?.[cmsCollections.find(c => c.id === cmsCollectionId)?.fields?.[0]?.key] || "Untitled")}</option>)}</select>
+          {cmsEntryId && <div className="space-y-2 pt-1">{cmsCollections.find(c => c.id === cmsCollectionId)?.fields?.map((field: any) => <div key={field.key} className="grid grid-cols-[1fr_1fr] items-center gap-2"><span className="truncate text-[11px] text-white/55">{field.name}</span><select defaultValue="" onChange={(e) => { const property = e.target.value; if (!property) return; const entry = cmsEntries.find(x => x.id === cmsEntryId); onUpdateNode(node.id, { props: { ...node.props, [property]: entry?.data?.[field.key], cmsBindings: { ...(node.props?.cmsBindings as object || {}), [property]: { collectionId: cmsCollectionId, entryId: cmsEntryId, fieldKey: field.key } } } }); }} className="rounded border border-white/10 bg-[#181b22] px-1.5 py-1.5 text-[11px]"><option value="">Bind to property…</option>{cmsBindableProperties(node).map(p => <option key={p} value={p}>{p}</option>)}</select></div>)}</div>}
+          {Object.keys((node.props?.cmsBindings as object) || {}).length > 0 && <button type="button" onClick={() => onUpdateNode(node.id, { props: { ...node.props, cmsBindings: {} } })} className="text-left text-[11px] text-red-300">Clear all bindings</button>}
+        </div>
+      </Section>
       {node.type === "text" && (
         <Section
           title="Text"
@@ -383,7 +405,7 @@ export default function ContentTab({
             className="flex w-full items-center justify-center gap-2 rounded-md border border-blue-400/30 bg-blue-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <ImagePlus size={15} aria-hidden />
-            {generatingImage ? "Generating image..." : "Generate still image"}
+            {generatingImage ? "Generating image..." : "Generate Image with AI "}
           </button>
           {imageGenerationError && (
             <p className="text-xs text-red-300">{imageGenerationError}</p>

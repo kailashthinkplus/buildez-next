@@ -108,7 +108,7 @@ export default function WidgetMarketplaceModal({
 
   const defaultCount = catalog.filter((item) => item.tier === "default").length;
   const premiumCount = catalog.filter((item) => item.tier === "premium").length;
-  const aiReadyCount = catalog.filter((item) => item.ai.canGenerate).length;
+  const availableCount = catalog.filter((item) => item.launchStatus === "available").length;
 
   return createPortal(
     <div className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm">
@@ -123,7 +123,7 @@ export default function WidgetMarketplaceModal({
               Builder-native widget catalog
             </h2>
             <p className="mt-1 text-sm text-white/55">
-              Premium widgets are available inside Blocks and ready for AI selection.
+              Production-ready, builder-native widgets with professional defaults.
             </p>
           </div>
 
@@ -141,7 +141,7 @@ export default function WidgetMarketplaceModal({
           <section className="grid gap-3 sm:grid-cols-3">
             <Metric icon={Layers} label="Default" value={defaultCount} />
             <Metric icon={Crown} label="Premium" value={premiumCount} />
-            <Metric icon={Bot} label="AI-ready" value={aiReadyCount} />
+            <Metric icon={Bot} label="Insertable" value={availableCount} />
           </section>
 
           <section className="mt-5 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
@@ -232,6 +232,7 @@ function WidgetCard({
   onClose(): void;
 }) {
   const isPremium = item.tier === "premium";
+  const isInsertable = item.launchStatus === "available";
   const chipTags = Array.from(
     new Set([item.category, item.type, ...item.tags])
   ).slice(0, 5);
@@ -289,16 +290,24 @@ function WidgetCard({
       </div>
 
       <div className="mt-auto pt-5">
+        {!isInsertable && (
+          <p className="mb-3 text-xs leading-5 text-amber-200/80">
+            {item.launchNote ?? "This widget is not yet available for production insertion."}
+          </p>
+        )}
         <button
           type="button"
           onClick={() => {
-            onInsert?.(item.type);
-            onClose();
+            if (isInsertable) {
+              onInsert?.(item.type);
+              onClose();
+            }
           }}
-          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 text-sm font-semibold text-white transition hover:bg-blue-500"
+          disabled={!isInsertable}
+          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/40"
         >
           <PackagePlus className="h-4 w-4" />
-          Insert widget
+          {isInsertable ? "Insert widget" : "Unavailable"}
         </button>
       </div>
     </article>

@@ -2,8 +2,7 @@
 
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { prisma } from "@buildez/db";
-import { AuthProvider } from "@prisma/client";
+import { AuthProvider, prisma } from "@buildez/db";
 import { cookies } from "next/headers";
 
 export async function POST(req: Request) {

@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { BuilderBlueprint, BuilderNode } from "../types/blueprint";
 import { useSelectionStore } from "../store/useSelectionStore";
 import { useCanvasStore, type Device } from "../store/useCanvasStore";
 import { useHoverStore } from "../store/useHoverStore";
 import { commandBus } from "../core/commands/CommandBus";
 import { UpdateNodeCommand } from "../core/commands/MoveNodeCommand";
+import { buildInlineTextProps } from "./inlineTextUpdate";
 import { getResponsiveValue } from "../core/responsive";
 import {
   getRenderContainerWidthStyle,
@@ -17,6 +18,8 @@ import {
 import { collectRenderCustomCss } from "../core/rendering/renderCustomCss";
 import { isSystemFont, normalizeGoogleFontFamily } from "@/lib/googleFonts";
 import ProductionWidgetView from "../widgets/premium/ProductionWidgetView";
+import MotionRuntimeEffects from "../motion/MotionRuntimeEffects";
+import { buildRuntimeMotionEntries } from "../motion/runtimeMotionEntries";
 import {
   ArrowRight,
   Check,
@@ -189,7 +192,7 @@ function collectMotionCss(blueprint: BuilderBlueprint) {
         return "";
       }
 
-      const selector = `[data-node-id="${cssEscape(node.id)}"] > *`;
+      const selector = `:is([data-node-id="${cssEscape(node.id)}"],[data-buildez-node-id="${cssEscape(node.id)}"]) > *`;
       const stagger = Number(motion.stagger ?? 0.08);
       const duration = Number(motion.duration ?? 0.6);
       const delay = Number(motion.delay ?? 0);
@@ -269,13 +272,15 @@ export default function NodeRenderer({ nodes, blueprint }: NodeRendererProps) {
   const motionCss = useMemo(() => collectMotionCss(blueprint), [blueprint]);
   const imageBackgroundCss = useMemo(() => collectImageBackgroundCss(blueprint), [blueprint]);
   const customCss = useMemo(() => collectRenderCustomCss(blueprint), [blueprint]);
+  const motionEntries = useMemo(() => buildRuntimeMotionEntries(blueprint), [blueprint]);
 
   useEffect(() => {
     fontFamilies.forEach(loadGoogleFont);
   }, [fontFamilies]);
 
   return (
-    <div className="w-full h-full">
+    <div id="buildez-canvas-motion-root" className="w-full h-full">
+      <MotionRuntimeEffects entries={motionEntries} rootId="buildez-canvas-motion-root" />
       {customKeyframes && <style dangerouslySetInnerHTML={{ __html: customKeyframes }} />}
       {motionCss && <style dangerouslySetInnerHTML={{ __html: motionCss }} />}
       {imageBackgroundCss && <style dangerouslySetInnerHTML={{ __html: imageBackgroundCss }} />}
@@ -505,7 +510,24 @@ function normalizeEase(value: string) {
 }
 
 function RenderNode({ node, blueprint }: RenderNodeProps) {
-  const { type, props } = node;
+  const { type } = node;
+  const bindings = (node.props?.cmsBindings || {}) as Record<string, { entryId?: string; fieldKey?: string }>;
+  const [cmsData, setCmsData] = useState<Record<string, unknown> | null>(null);
+  const bindingEntryId = Object.values(bindings).find((binding) => binding?.entryId)?.entryId;
+  useEffect(() => {
+    if (!bindingEntryId) return setCmsData(null);
+    let active = true;
+    fetch(`/api/cms/runtime/${bindingEntryId}`).then((response) => response.ok ? response.json() : null).then((body) => { if (active && body?.entry?.data) setCmsData(body.entry.data); });
+    return () => { active = false; };
+  }, [bindingEntryId]);
+  const props = useMemo(() => {
+    if (!cmsData) return node.props;
+    const next = { ...node.props } as Record<string, any>;
+    for (const [property, binding] of Object.entries(bindings)) {
+      if (binding.fieldKey && cmsData[binding.fieldKey] !== undefined) next[property] = cmsData[binding.fieldKey];
+    }
+    return next;
+  }, [node.props, bindings, cmsData]);
   const selectedId = useSelectionStore((s) => s.selectedNodeId);
   const select = useSelectionStore((s) => s.select);
   const device = useCanvasStore((s) => s.device);
@@ -513,6 +535,7 @@ function RenderNode({ node, blueprint }: RenderNodeProps) {
   const setHoveredNodeId = useHoverStore((s) => s.setHoveredNodeId);
   const isSelected = selectedId === node.id;
   const isLocked = !!node.locked;
+  const isDisabled = Boolean(node.props?.disabled);
   const isHidden = !!node.hidden;
   const isDragEnabled = node.id !== blueprint.root && !isLocked;
   const responsiveVisible = isVisibleOnDevice(node, device);
@@ -595,10 +618,16 @@ const sizeScale =
     node.props?.advanced && typeof node.props.advanced === "object"
       ? (node.props.advanced as Record<string, unknown>)
       : {};
-  const motion =
+  const storedMotion =
     advanced.motion && typeof advanced.motion === "object"
       ? (advanced.motion as Record<string, unknown>)
       : {};
+  const motion: Record<string, unknown> = {
+    ...storedMotion,
+    ...(storedMotion.preset === undefined && typeof node.props?.motionPreset === "string"
+      ? { preset: node.props.motionPreset }
+      : {}),
+  };
   const accessibility =
     advanced.accessibility && typeof advanced.accessibility === "object"
       ? (advanced.accessibility as Record<string, unknown>)
@@ -777,6 +806,8 @@ const sectionContentWidthStyle = getRenderSectionContentWidthStyle(
   box-border
   select-none
   ${isLocked ? "cursor-not-allowed" : "cursor-pointer"}
+  ${isLocked ? "outline outline-2 outline-amber-400/70 bg-amber-400/[0.08]" : ""}
+  ${isDisabled ? "opacity-45 grayscale" : ""}
   pointer-events-auto
   ${customClass}
 `;
@@ -815,6 +846,8 @@ const sectionContentWidthStyle = getRenderSectionContentWidthStyle(
     "data-node-label": String(
       node.props?.label ?? node.props?.name ?? node.name ?? ""
     ).trim() || undefined,
+    "data-node-parent-id": node.parentId ?? undefined,
+    "data-node-type": node.type,
     "data-visibility-condition":
       visibility.condition && visibility.condition !== "always"
         ? String(visibility.condition)
@@ -853,27 +886,9 @@ const sectionContentWidthStyle = getRenderSectionContentWidthStyle(
       return;
     }
 
-    if (type === "button") {
-      commandBus.execute(
-        new UpdateNodeCommand(node.id, {
-          props: {
-            ...node.props,
-            text: value,
-            label: value,
-          },
-        })
-      );
-      return;
-    }
-
-    commandBus.execute(
-      new UpdateNodeCommand(node.id, {
-        props: {
-          ...node.props,
-          text: value,
-        },
-      })
-    );
+    const props = buildInlineTextProps(node, value);
+    if (!props) return;
+    commandBus.execute(new UpdateNodeCommand(node.id, { props }));
   };
 
   switch (type) {
@@ -1089,14 +1104,10 @@ const resolvedWidth =
     ? undefined
     : rawResolvedWidth;
 
-      const positionMode =
-        renderStyle.position === "absolute" ||
-        renderStyle.position === "fixed" ||
-        renderStyle.position === "sticky"
-          ? renderStyle.position
-          : "relative";
+      const positionMode = renderStyle.position ?? "relative";
 
       const usesPositionOffsets =
+        positionMode === "relative" ||
         positionMode === "absolute" ||
         positionMode === "fixed" ||
         positionMode === "sticky";
@@ -1395,12 +1406,14 @@ case "heading":
 
     default:
       if (PREMIUM_NODE_TYPES.has(node.type)) {
+        const { position, top, right, bottom, left, zIndex, ...innerWidgetStyle } = renderStyle;
         return (
           <div
             className={baseClass}
             data-node-id={node.id}
             onClick={handleClick}
             {...commonDragProps}
+            style={{ position, top, right, bottom, left, zIndex }}
           >
             <ProductionWidgetView
               type={node.type}
@@ -1416,7 +1429,7 @@ case "heading":
               }
               secondaryCta={renderText(props?.secondaryCta) || undefined}
               items={renderItems(props?.items)}
-              style={normalizeStyleConflicts(renderStyle)}
+              style={normalizeStyleConflicts(innerWidgetStyle)}
             />
           </div>
         );

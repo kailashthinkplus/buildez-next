@@ -67,6 +67,30 @@ export const defaultThemeTokens: BuilderThemeTokens = {
       borderRadius: 10,
     },
   },
+  states: {
+    success: "#15803d",
+    warning: "#b45309",
+    error: "#b91c1c",
+    info: "#0369a1",
+    disabled: "#94a3b8",
+    focusRing: "#2563eb",
+  },
+  forms: {
+    background: "#ffffff",
+    text: "#0f172a",
+    placeholder: "#64748b",
+    border: "#cbd5e1",
+    borderFocus: "#2563eb",
+    error: "#b91c1c",
+    disabledBackground: "#f1f5f9",
+  },
+  cards: {
+    background: "#ffffff",
+    text: "#0f172a",
+    border: "#dbe3ef",
+    shadow: "0 16px 42px rgba(15, 23, 42, 0.08)",
+    hoverBackground: "#f8fafc",
+  },
 };
 
 export const defaultThemePreset: ThemePreset = {
@@ -124,6 +148,9 @@ export function mergeThemeTokens(
         ...patch.buttons?.secondary,
       },
     },
+    states: { ...base.states, ...patch.states },
+    forms: { ...base.forms, ...patch.forms },
+    cards: { ...base.cards, ...patch.cards },
   });
 }
 
@@ -172,6 +199,9 @@ export function normalizeThemeTokens(inputTokens?: unknown): BuilderThemeTokens 
   const buttons = isRecord(tokens.buttons) ? tokens.buttons : {};
   const primaryButton = isRecord(buttons.primary) ? buttons.primary : {};
   const secondaryButton = isRecord(buttons.secondary) ? buttons.secondary : {};
+  const states = isRecord(tokens.states) ? tokens.states : {};
+  const forms = isRecord(tokens.forms) ? tokens.forms : {};
+  const cards = isRecord(tokens.cards) ? tokens.cards : {};
 
   return stripUndefinedThemeValues({
     colors: {
@@ -279,6 +309,30 @@ export function normalizeThemeTokens(inputTokens?: unknown): BuilderThemeTokens 
           numberOr(radius.button, defaultThemeTokens.buttons.secondary.borderRadius)
         ),
       },
+    },
+    states: {
+      success: stringOr(states.success, defaultThemeTokens.states.success),
+      warning: stringOr(states.warning, defaultThemeTokens.states.warning),
+      error: stringOr(states.error, defaultThemeTokens.states.error),
+      info: stringOr(states.info, defaultThemeTokens.states.info),
+      disabled: stringOr(states.disabled, defaultThemeTokens.states.disabled),
+      focusRing: stringOr(states.focusRing, stringOr(colors.primary, defaultThemeTokens.states.focusRing)),
+    },
+    forms: {
+      background: stringOr(forms.background, stringOr(colors.surface, defaultThemeTokens.forms.background)),
+      text: stringOr(forms.text, stringOr(colors.textPrimary, defaultThemeTokens.forms.text)),
+      placeholder: stringOr(forms.placeholder, stringOr(colors.textSecondary, defaultThemeTokens.forms.placeholder)),
+      border: stringOr(forms.border, stringOr(colors.border, defaultThemeTokens.forms.border)),
+      borderFocus: stringOr(forms.borderFocus, stringOr(colors.primary, defaultThemeTokens.forms.borderFocus)),
+      error: stringOr(forms.error, stringOr(states.error, defaultThemeTokens.forms.error)),
+      disabledBackground: stringOr(forms.disabledBackground, stringOr(colors.surfaceAlt, defaultThemeTokens.forms.disabledBackground)),
+    },
+    cards: {
+      background: stringOr(cards.background, stringOr(colors.surface, defaultThemeTokens.cards.background)),
+      text: stringOr(cards.text, stringOr(colors.textPrimary, defaultThemeTokens.cards.text)),
+      border: stringOr(cards.border, stringOr(colors.border, defaultThemeTokens.cards.border)),
+      shadow: stringOr(cards.shadow, defaultThemeTokens.cards.shadow),
+      hoverBackground: stringOr(cards.hoverBackground, stringOr(colors.surfaceAlt, defaultThemeTokens.cards.hoverBackground)),
     },
   }) as BuilderThemeTokens;
 }

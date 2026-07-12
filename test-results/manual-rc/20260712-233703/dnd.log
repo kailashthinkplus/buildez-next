@@ -1,0 +1,48 @@
+$ playwright test --project=builder-chromium --grep @dnd
+[WebServer] $ next dev
+
+Running 2 tests using 1 worker
+
+  ✘  1 [setup] › playwright/tests/auth.setup.ts:7:6 › authenticate Builder RC user (197ms)
+
+
+  1) [setup] › playwright/tests/auth.setup.ts:7:6 › authenticate Builder RC user ───────────────────
+
+    Error: E2E_USER_EMAIL and E2E_USER_PASSWORD must be set in the local environment.
+
+      10 |
+      11 |   if (!email || !password) {
+    > 12 |     throw new Error(
+         |           ^
+      13 |       "E2E_USER_EMAIL and E2E_USER_PASSWORD must be set in the local environment."
+      14 |     );
+      15 |   }
+        at /Users/kailash/buildez/apps/web-app/playwright/tests/auth.setup.ts:12:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth.setup.ts-authenticate-Builder-RC-user-setup/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth.setup.ts-authenticate-Builder-RC-user-setup/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth.setup.ts-authenticate-Builder-RC-user-setup/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth.setup.ts-authenticate-Builder-RC-user-setup/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/auth.setup.ts-authenticate-Builder-RC-user-setup/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [setup] › playwright/tests/auth.setup.ts:7:6 › authenticate Builder RC user ────────────────────
+  1 did not run
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m
+[ELIFECYCLE] Command failed with exit code 1.

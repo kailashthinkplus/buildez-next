@@ -42,6 +42,24 @@ export type RegressionSpec = {
   runnerRequirement?: string;
 };
 
+const registeredSpecIds = new Set<string>();
+
 export function createRegressionSpec(spec: RegressionSpec): RegressionSpec {
+  if (registeredSpecIds.has(spec.id)) {
+    throw new Error(`Duplicate Builder regression specification id: ${spec.id}`);
+  }
+  if (spec.assertions.length === 0) {
+    throw new Error(`Builder regression specification has no executable assertions: ${spec.id}`);
+  }
+  registeredSpecIds.add(spec.id);
+
+  for (const assertion of spec.assertions) {
+    test(`${spec.id} > ${assertion.name}`, () => {
+      assert.equal(assertion.passed, true, assertion.message ?? assertion.name);
+    });
+  }
+
   return spec;
 }
+import assert from "node:assert/strict";
+import { test } from "node:test";

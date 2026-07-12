@@ -34,6 +34,8 @@ import {
   getResponsiveResolution,
   setResponsiveStyleValue,
   setStyleValue,
+  clearResponsiveStyleValue,
+  removeStyleProperty,
   type InspectorDevice,
 } from "./InspectorControls";
 
@@ -49,6 +51,14 @@ const TEXT_TYPES = new Set(["heading", "text", "button"]);
 const LAYOUT_TYPES = new Set(["page", "section", "container", "column", "grid", "footer"]);
 const PARENT_CONTAINER_TYPES = new Set(["page", "section", "container"]);
 const MEDIA_TYPES = new Set(["image", "video"]);
+const PREMIUM_TYPES = new Set([
+  "smartHeader", "hero", "leadForm", "contactForm", "cardGrid", "featureGrid",
+  "features", "galleryLightbox", "gallery", "masonryGallery", "faq", "accordion",
+  "testimonials", "pricing", "offerGrid", "floatingWhatsApp", "locationMap",
+  "smartFooter", "cta", "tabs", "statsCounter", "logoCloud", "team", "portfolio",
+  "timeline", "socialLinks", "carousel", "beforeAfter", "table", "countdown",
+  "codeBlock", "embed", "blogGrid", "postList", "categoryList", "popupModal",
+]);
 const SIZE_UNITS = [
   "px",
   "%",
@@ -117,6 +127,8 @@ const defaultColumnWidth = `${100 / siblingColumnCount}%`;
 
   const setResponsive = (key: string, value: unknown) =>
     setResponsiveStyleValue(node, key, value, device, onUpdateNode);
+  const clearResponsive = (key: string) =>
+    clearResponsiveStyleValue(node, key, device, onUpdateNode);
 
   const setResponsiveValues = (values: Record<string, unknown>) => {
     const nextStyle: Record<string, unknown> = { ...node.style };
@@ -142,6 +154,8 @@ const defaultColumnWidth = `${100 / siblingColumnCount}%`;
 
   const setGlobal = (key: string, value: unknown) =>
     setStyleValue(node, key, value, onUpdateNode);
+  const setGlobalValues = (values: Record<string, unknown>) =>
+    onUpdateNode(node.id, { style: { ...node.style, ...values } });
 
   const setBackgroundUrl = (url: string) =>
     setGlobal("backgroundImage", url ? `url("${url}")` : "");
@@ -266,6 +280,13 @@ const defaultColumnWidth = `${100 / siblingColumnCount}%`;
 
   return (
     <div className="space-y-3 pb-8">
+      {PREMIUM_TYPES.has(node.type) && (
+        <PremiumElementDesign
+          node={node}
+          siteId={siteId}
+          onUpdateNode={onUpdateNode}
+        />
+      )}
       {isLayout && (
         <Section title="Layout" description="Structure and alignment" defaultOpen>
           {isParentContainer && (
@@ -550,7 +571,7 @@ const defaultColumnWidth = `${100 / siblingColumnCount}%`;
   <ColorPicker
     value={String(responsive("color", style.color ?? "#0f172a"))}
     onChange={(color) => setResponsive("color", color)}
-    onClear={() => setResponsive("color", undefined)}
+    onClear={() => clearResponsive("color")}
   />
 </Field>
 
@@ -682,14 +703,14 @@ const defaultColumnWidth = `${100 / siblingColumnCount}%`;
             <ColorPicker
               value={String(responsive("color", style.color ?? "#0f172a"))}
               onChange={(color) => setResponsive("color", color)}
-              onClear={() => setResponsive("color", undefined)}
+              onClear={() => clearResponsive("color")}
             />
           </Field>
           <Field label="Background">
             <ColorPicker
               value={String(responsive("backgroundColor", style.backgroundColor ?? "transparent"))}
               onChange={(color) => setResponsive("backgroundColor", color)}
-              onClear={() => setResponsive("backgroundColor", undefined)}
+              onClear={() => clearResponsive("backgroundColor")}
             />
           </Field>
         </Section>
@@ -902,7 +923,7 @@ const defaultColumnWidth = `${100 / siblingColumnCount}%`;
           <ColorPicker
             value={String(responsive("backgroundColor", style.backgroundColor ?? "transparent"))}
             onChange={(color) => setResponsive("backgroundColor", color)}
-            onClear={() => setResponsive("backgroundColor", undefined)}
+            onClear={() => clearResponsive("backgroundColor")}
           />
         </Field>
         <Field label="Background image">
@@ -946,7 +967,7 @@ const defaultColumnWidth = `${100 / siblingColumnCount}%`;
           className="flex w-full items-center justify-center gap-2 rounded-md border border-blue-400/30 bg-blue-500/10 px-3 py-2 text-sm font-medium text-blue-100 transition hover:bg-blue-500/20 disabled:opacity-50"
         >
           <Sparkles size={16} aria-hidden />
-          {backgroundBusy ? "Generating..." : "Generate background with AI"}
+          {backgroundBusy ? "Generating..." : "Generate AI Background"}
         </button>
         {backgroundError && <p className="text-xs text-red-300">{backgroundError}</p>}
         <div className="grid grid-cols-2 gap-3">
@@ -1004,20 +1025,43 @@ const defaultColumnWidth = `${100 / siblingColumnCount}%`;
       </Section>
 
       <Section title="Border & Shadow">
-        <Field label="Border">
-          <TextInput
-            value={style.border ?? ""}
-            onChange={(value) => setGlobal("border", value)}
-            placeholder="1px solid #e5e7eb"
-          />
+        <Field label="Border direction">
+          <div className="grid grid-cols-5 gap-1 rounded-md border border-white/10 bg-black/20 p-1">
+            {[
+              { key: "all", label: "All" },
+              { key: "Top", label: "T" },
+              { key: "Right", label: "R" },
+              { key: "Bottom", label: "B" },
+              { key: "Left", label: "L" },
+            ].map((direction) => (
+              <button
+                key={direction.key}
+                type="button"
+                title={direction.key === "all" ? "All sides" : `${direction.key} border`}
+                onClick={() => {
+                  const parts = borderParts(style.border);
+                  const sides = direction.key === "all" ? ["Top", "Right", "Bottom", "Left"] : [direction.key];
+                  const next: Record<string, unknown> = { border: undefined };
+                  sides.forEach((side) => {
+                    next[`border${side}Width`] = style[`border${side}Width`] ?? parts.width;
+                    next[`border${side}Style`] = style[`border${side}Style`] ?? (parts.style === "none" ? "solid" : parts.style);
+                    next[`border${side}Color`] = style[`border${side}Color`] ?? parts.color;
+                  });
+                  setGlobalValues(next);
+                }}
+                className="rounded px-2 py-1.5 text-[11px] text-white/60 transition hover:bg-blue-500/20 hover:text-blue-200"
+              >
+                {direction.label}
+              </button>
+            ))}
+          </div>
         </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Border style">
             <SelectInput
-              value={borderParts(style.border).style}
+              value={String(style.borderTopStyle ?? borderParts(style.border).style)}
               onChange={(value) => {
-                const current = borderParts(style.border);
-                setGlobal("border", value === "none" ? "none" : `${current.width} ${value} ${current.color}`);
+                setGlobalValues({ border: undefined, borderTopStyle: value, borderRightStyle: value, borderBottomStyle: value, borderLeftStyle: value });
               }}
               options={[
                 { value: "none", label: "None" },
@@ -1031,10 +1075,9 @@ const defaultColumnWidth = `${100 / siblingColumnCount}%`;
           </Field>
           <Field label="Border width">
             <UnitInput
-              value={borderParts(style.border).width}
+              value={style.borderTopWidth ?? borderParts(style.border).width}
               onChange={(value) => {
-                const current = borderParts(style.border);
-                setGlobal("border", `${value} ${current.style === "none" ? "solid" : current.style} ${current.color}`);
+                setGlobalValues({ border: undefined, borderTopWidth: value, borderRightWidth: value, borderBottomWidth: value, borderLeftWidth: value });
               }}
               min={0}
               max={40}
@@ -1044,10 +1087,9 @@ const defaultColumnWidth = `${100 / siblingColumnCount}%`;
         </div>
         <Field label="Border color">
           <ColorPicker
-            value={borderParts(style.border).color}
+            value={String(style.borderTopColor ?? borderParts(style.border).color)}
             onChange={(color) => {
-              const current = borderParts(style.border);
-              setGlobal("border", `${current.width} ${current.style === "none" ? "solid" : current.style} ${color}`);
+              setGlobalValues({ border: undefined, borderTopColor: color, borderRightColor: color, borderBottomColor: color, borderLeftColor: color });
             }}
           />
         </Field>
@@ -1165,6 +1207,92 @@ const defaultColumnWidth = `${100 / siblingColumnCount}%`;
         }}
       />
     </div>
+  );
+}
+
+function PremiumElementDesign({
+  node,
+  siteId,
+  onUpdateNode,
+}: {
+  node: BuilderNode;
+  siteId: string;
+  onUpdateNode(id: string, patch: Partial<BuilderNode>): void;
+}) {
+  const style = node.style ?? {};
+  const set = (key: string, value: unknown) =>
+    setStyleValue(node, key, value, onUpdateNode);
+  const unset = (key: string) =>
+    removeStyleProperty(node, key, onUpdateNode);
+  const color = (key: string, fallback: string) => String(style[key] ?? fallback);
+  const value = (key: string, fallback: string | number) => style[key] ?? fallback;
+  const hasMedia = ["hero", "features", "galleryLightbox", "gallery", "masonryGallery", "offerGrid", "team", "portfolio", "carousel", "blogGrid", "postList"].includes(node.type);
+  const hasCards = ["cardGrid", "featureGrid", "testimonials", "pricing", "offerGrid", "statsCounter", "logoCloud", "team", "portfolio", "timeline", "blogGrid", "postList", "categoryList"].includes(node.type);
+
+  return (
+    <>
+      <Section title="Widget surface" description="Background, border and overall treatment" defaultOpen>
+        <Field label="Background"><ColorPicker value={color("backgroundColor", "theme.colors.surface")} onChange={(v) => set("backgroundColor", v)} onClear={() => unset("backgroundColor")} /></Field>
+        <Field label="Text color"><ColorPicker value={color("color", "theme.colors.textPrimary")} onChange={(v) => set("color", v)} onClear={() => unset("color")} /></Field>
+        <Field label="Border color"><ColorPicker value={color("elementBorderColor", "theme.colors.border")} onChange={(v) => set("elementBorderColor", v)} onClear={() => unset("elementBorderColor")} /></Field>
+      </Section>
+
+      <Section title="Eyebrow" description="Label typography and color">
+        <Field label="Font"><GoogleFontsPicker value={String(value("eyebrowFontFamily", "Inter"))} onChange={(v) => set("eyebrowFontFamily", v)} /></Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Size"><SliderWithInput value={value("eyebrowFontSize", 12)} onChange={(v) => set("eyebrowFontSize", v)} min={9} max={32} unit="px" /></Field>
+          <Field label="Weight"><SelectInput value={value("eyebrowFontWeight", 700)} onChange={(v) => set("eyebrowFontWeight", Number(v))} options={[{value:"400",label:"Regular"},{value:"500",label:"Medium"},{value:"600",label:"Semibold"},{value:"700",label:"Bold"},{value:"800",label:"Extra bold"}]} /></Field>
+        </div>
+        <Field label="Color"><ColorPicker value={color("eyebrowColor", "theme.colors.primary")} onChange={(v) => set("eyebrowColor", v)} onClear={() => unset("eyebrowColor")} /></Field>
+      </Section>
+
+      <Section title="Title" description="Headline typography and color">
+        <Field label="Font"><GoogleFontsPicker value={String(value("titleFontFamily", "Inter"))} onChange={(v) => set("titleFontFamily", v)} /></Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Size"><SliderWithInput value={value("titleFontSize", 30)} onChange={(v) => set("titleFontSize", v)} min={18} max={88} unit="px" /></Field>
+          <Field label="Weight"><SelectInput value={value("titleFontWeight", 600)} onChange={(v) => set("titleFontWeight", Number(v))} options={[{value:"400",label:"Regular"},{value:"500",label:"Medium"},{value:"600",label:"Semibold"},{value:"700",label:"Bold"},{value:"800",label:"Extra bold"}]} /></Field>
+        </div>
+        <Field label="Color"><ColorPicker value={color("titleColor", "theme.colors.textPrimary")} onChange={(v) => set("titleColor", v)} onClear={() => unset("titleColor")} /></Field>
+      </Section>
+
+      <Section title="Body text" description="Supporting copy typography">
+        <Field label="Font"><GoogleFontsPicker value={String(value("bodyFontFamily", "Inter"))} onChange={(v) => set("bodyFontFamily", v)} /></Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Size"><SliderWithInput value={value("bodyFontSize", 16)} onChange={(v) => set("bodyFontSize", v)} min={12} max={36} unit="px" /></Field>
+          <Field label="Line height"><SliderWithInput value={value("bodyLineHeight", 1.6)} onChange={(v) => set("bodyLineHeight", v)} min={1} max={2.2} step={0.1} /></Field>
+        </div>
+        <Field label="Color"><ColorPicker value={color("bodyColor", "theme.colors.textSecondary")} onChange={(v) => set("bodyColor", v)} onClear={() => unset("bodyColor")} /></Field>
+      </Section>
+
+      <Section title="Primary CTA" description="Button typography, colors and shape">
+        <Field label="Font"><GoogleFontsPicker value={String(value("ctaFontFamily", "Inter"))} onChange={(v) => set("ctaFontFamily", v)} /></Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Font size"><SliderWithInput value={value("ctaFontSize", 14)} onChange={(v) => set("ctaFontSize", v)} min={11} max={28} unit="px" /></Field>
+          <Field label="Radius"><SliderWithInput value={value("ctaBorderRadius", 10)} onChange={(v) => set("ctaBorderRadius", v)} min={0} max={40} unit="px" /></Field>
+        </div>
+        <Field label="Background"><ColorPicker value={color("ctaBackgroundColor", "theme.colors.primary")} onChange={(v) => set("ctaBackgroundColor", v)} onClear={() => unset("ctaBackgroundColor")} /></Field>
+        <Field label="Text color"><ColorPicker value={color("ctaColor", "theme.colors.primaryContrast")} onChange={(v) => set("ctaColor", v)} onClear={() => unset("ctaColor")} /></Field>
+      </Section>
+
+      {hasMedia && (
+        <Section title="Featured media" description="Default image and image treatment">
+          <MediaPicker siteId={siteId} label="Image" value={String(value("mediaUrl", ""))} onChange={(asset) => set("mediaUrl", asset.url)} />
+          <Field label="Image URL"><TextInput value={value("mediaUrl", "")} onChange={(v) => set("mediaUrl", v)} placeholder="https://..." /></Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Position"><SelectInput value={value("mediaObjectPosition", "center center")} onChange={(v) => set("mediaObjectPosition", v)} options={[{value:"center center",label:"Center"},{value:"top center",label:"Top"},{value:"bottom center",label:"Bottom"},{value:"center left",label:"Left"},{value:"center right",label:"Right"}]} /></Field>
+            <Field label="Radius"><SliderWithInput value={value("mediaBorderRadius", 12)} onChange={(v) => set("mediaBorderRadius", v)} min={0} max={48} unit="px" /></Field>
+          </div>
+        </Section>
+      )}
+
+      {hasCards && (
+        <Section title="Cards" description="Repeated item appearance">
+          <Field label="Background"><ColorPicker value={color("cardBackgroundColor", "theme.colors.surfaceAlt")} onChange={(v) => set("cardBackgroundColor", v)} onClear={() => unset("cardBackgroundColor")} /></Field>
+          <Field label="Text color"><ColorPicker value={color("cardTextColor", "theme.colors.textPrimary")} onChange={(v) => set("cardTextColor", v)} onClear={() => unset("cardTextColor")} /></Field>
+          <Field label="Icon color"><ColorPicker value={color("cardIconColor", "theme.colors.primary")} onChange={(v) => set("cardIconColor", v)} onClear={() => unset("cardIconColor")} /></Field>
+        </Section>
+      )}
+    </>
   );
 }
 

@@ -4,6 +4,34 @@ import { NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { getCurrentUser } from "@/lib/auth/session";
 
+function onboardingBrand(onboarding: {
+  businessName: string | null; profession: string | null; primaryUseCase: string | null;
+  website: string | null; city: string | null; country: string | null;
+}) {
+  return {
+    brandIntelligence: {
+      companyName: onboarding.businessName || "My First Site",
+      industry: onboarding.profession || "",
+      audience: "",
+      offer: onboarding.primaryUseCase?.replaceAll("_", " ") || "",
+      tone: "",
+      websiteUrl: onboarding.website || "",
+      location: [onboarding.city, onboarding.country].filter(Boolean).join(", "),
+      source: "onboarding",
+    },
+  };
+}
+
+async function syncOnboardingBrand(siteId: string | undefined, onboarding: Parameters<typeof onboardingBrand>[0]) {
+  if (!siteId) return;
+  const site = await prisma.site.findUnique({ where: { id: siteId }, select: { designTokens: true } });
+  const current = site?.designTokens && typeof site.designTokens === "object" ? site.designTokens as Record<string, unknown> : {};
+  await prisma.site.update({ where: { id: siteId }, data: {
+    name: onboarding.businessName || "My First Site",
+    designTokens: { ...current, ...onboardingBrand(onboarding) },
+  }});
+}
+
 export async function POST(req: Request) {
   console.log("🚀 [finish] START");
 
@@ -103,6 +131,7 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
           },
         });
 
+        await syncOnboardingBrand(existingTenant.sites[0]?.id, onboarding);
         return NextResponse.json({
           ok: true,
           tenantId: existingTenant.id,
@@ -135,8 +164,9 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
 
           sites: {
             create: [{
-              name: "My First Site",
+              name: onboarding.businessName || "My First Site",
               slug: "home",
+              designTokens: onboardingBrand(onboarding),
             }],
           },
         },
@@ -274,6 +304,8 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
       finalSiteId = newSite.id;
       console.log("✅ Default site created:", finalSiteId);
     }
+
+    await syncOnboardingBrand(finalSiteId, onboarding);
 
     console.log("✅ Trial onboarding completed");
 

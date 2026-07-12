@@ -12,6 +12,8 @@ import type { BuilderCommand } from "./BuilderCommand";
 export class DuplicateNodeCommand
   implements BuilderCommand
 {
+  private duplicatedRootId: string | null = null;
+
   readonly id = crypto.randomUUID();
 
   readonly name = "Duplicate Node";
@@ -20,9 +22,15 @@ export class DuplicateNodeCommand
     private readonly nodeId: string
   ) {}
 
+  getCreatedNodeId(): string | null {
+    return this.duplicatedRootId;
+  }
+
   execute(
     blueprint: BuilderBlueprint
   ): BuilderBlueprint {
+
+    this.duplicatedRootId = null;
 
     const source =
       blueprint.nodes[this.nodeId];
@@ -68,6 +76,7 @@ export class DuplicateNodeCommand
         source.id,
         source.parentId
       );
+    this.duplicatedRootId = duplicatedId;
 
     if (source.parentId) {
 

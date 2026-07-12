@@ -1,0 +1,119 @@
+$ node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/commands modules/builder-v2/__tests__/rc-t1/commands modules/builder-v2/__tests__/rc-t3 -name '*.test.ts' -print)
+(node:68676) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ commands/clipboard > copy/paste node duplicates with a new id (0.588375ms)
+✔ commands/clipboard > pasted node parent is compatible target (0.049375ms)
+✔ commands/clipboard > invalid parent paste is rejected (0.036917ms)
+✔ commands/clipboard > paste creates undo point (0.031417ms)
+✔ commands/clipboard > undo removes pasted node (0.03325ms)
+✔ commands/clipboard > redo restores pasted node (0.030458ms)
+(node:68677) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ commands/color-clear-removal > clear removes backgroundColor (0.669ms)
+✔ commands/color-clear-removal > clear preserves sibling color (0.046875ms)
+✔ commands/color-clear-removal > undo restores cleared color (0.036125ms)
+✔ commands/color-clear-removal > redo clears color again (0.032916ms)
+✔ commands/color-clear-removal > Update Node result contains no undefined (0.043084ms)
+✔ commands/color-clear-removal > save serialization succeeds without undefined (0.030083ms)
+✔ commands/color-clear-removal > save/load keeps cleared property absent (0.040084ms)
+✔ commands/color-clear-removal > nested hover color is removed (0.03ms)
+✔ commands/color-clear-removal > nested hover sibling remains (0.060417ms)
+✔ commands/color-clear-removal > responsive color is removed (0.067917ms)
+✔ commands/color-clear-removal > responsive sibling remains (0.036875ms)
+✔ commands/color-clear-removal > generic sanitizer removes undefined leaves (0.027459ms)
+✔ commands/color-clear-removal > generic sanitizer preserves false/zero/empty/null (0.029334ms)
+✔ commands/color-clear-removal > undefined structural array entry is not silently removed (0.02325ms)
+✔ commands/color-clear-removal > validator still rejects manually constructed undefined (0.022209ms)
+[Builder] InsertNodeCommand rejected invalid hierarchy {
+  parentId: 'test-page',
+  parentType: 'page',
+  childId: 'invalid-root-heading',
+  childType: 'heading'
+}
+(node:68678) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ commands/hierarchy-insertion > every registered native node insertion from page root validates (0.89325ms)
+✔ commands/hierarchy-insertion > every native widget insertion from page root validates (0.073458ms)
+✔ commands/hierarchy-insertion > section insertion validates (0.0395ms)
+✔ commands/hierarchy-insertion > container insertion validates (0.033125ms)
+✔ commands/hierarchy-insertion > column insertion validates (0.037458ms)
+✔ commands/hierarchy-insertion > direct invalid InsertNodeCommand is rejected without corrupting tree (0.083125ms)
+✔ commands/hierarchy-insertion > widgets inserted into an explicit empty Container keep that Container as parent without wrappers (0.045167ms)
+✔ commands/hierarchy-insertion > explicit Container insertion at index zero preserves exact order (0.032291ms)
+✔ commands/hierarchy-insertion > invalid child relationship diagnostic includes parent child expected received and insertion (0.077667ms)
+(node:68679) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ commands/history-transactions > executing a command creates an undo point (0.578542ms)
+✔ commands/history-transactions > single command updates target node (0.045667ms)
+✔ commands/history-transactions > multi-command transaction undo restores original tree (0.034375ms)
+✔ commands/history-transactions > redo restores the transaction (0.031916ms)
+✔ commands/history-transactions > redo restores transaction style (0.03475ms)
+✔ commands/history-transactions > failed command does not corrupt tree (0.027292ms)
+✔ commands/history-transactions > failed command does not create history entry (0.030042ms)
+(node:68680) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ commands/layers-reorder > layers reorder changes sibling order (0.590458ms)
+✔ commands/layers-reorder > layers reorder creates undo point (0.051083ms)
+✔ commands/layers-reorder > invalid layer move is rejected (0.0395ms)
+✔ commands/layers-reorder > undo restores sibling order (0.032ms)
+✔ commands/layers-reorder > redo restores reordered sibling order (0.036916ms)
+(node:68681) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ commands/style-clipboard > copy style/paste style is compatible for text nodes (0.5785ms)
+✔ commands/style-clipboard > allowed style field is copied (0.046458ms)
+✔ commands/style-clipboard > style paste creates undo point (0.040125ms)
+✔ commands/style-clipboard > incompatible style paste is rejected safely (0.032875ms)
+✔ commands/style-clipboard > incompatible style paste does not apply layout width (0.03675ms)
+[Builder] Initial CommandBus blueprint validation failed [ 'child-parent-mismatch:test-heading', 'missing-parent:test-heading' ]
+[Builder] InsertNodeCommand rejected invalid hierarchy {
+  parentId: 'test-heading',
+  parentType: 'heading',
+  childId: 'bad-child',
+  childType: 'text'
+}
+(node:68683) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ RC-T1 CommandBus rejects invalid initialization and resets history (5.986708ms)
+✔ RC-T1 insert executes, validates, undoes, and redoes exactly (2.82025ms)
+✔ RC-T1 invalid and duplicate inserts are atomic and do not pollute history (1.746542ms)
+✔ RC-T1 delete subtree preserves unaffected nodes and round-trips through history (1.260791ms)
+✔ RC-T1 duplicate regenerates every subtree id and is undoable (1.660208ms)
+✔ RC-T1 move and reparent reject cycles and preserve valid ordering (1.269625ms)
+✔ RC-T1 reorder, update, and wrap remain valid and undoable (2.218625ms)
+✔ RC-T1 failed transaction rolls back completely and leaves history clean (1.230667ms)
+✔ RC-T1 redo is invalidated by a new command (0.854333ms)
+✔ RC-T1 seeded command sequence stays valid after every operation (19.925667ms)
+(node:68690) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ RC-T3 active Builder store exposes no direct Blueprint replacement action (0.670333ms)
+(node:68693) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ rc-t3/operations/drop-commit-safety > current valid drop commits (0.648375ms)
+✔ rc-t3/operations/drop-commit-safety > cancelled drop cannot commit (0.0515ms)
+✔ rc-t3/operations/drop-commit-safety > consumed token cannot commit twice (0.038292ms)
+✔ rc-t3/operations/drop-commit-safety > inactive drag cannot commit (0.034625ms)
+✔ rc-t3/operations/drop-commit-safety > stale over target cannot commit (0.035708ms)
+✔ rc-t3/operations/drop-commit-safety > stale intent cannot commit (0.031625ms)
+✔ rc-t3/operations/drop-commit-safety > payload mismatch cannot commit (0.032042ms)
+✔ rc-t3/operations/drop-commit-safety > Builder chrome cannot commit (0.032875ms)
+✔ rc-t3/operations/drop-commit-safety > self or descendant pointer cannot commit (0.047917ms)
+(node:68694) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ rc-t3/operations/inline-text-noop > unchanged button text produces no patch (0.658917ms)
+✔ rc-t3/operations/inline-text-noop > unchanged heading text produces no patch (0.052958ms)
+✔ rc-t3/operations/inline-text-noop > changed button updates label and text (0.042166ms)
+✔ rc-t3/operations/inline-text-noop > changed button preserves sibling props (0.034875ms)
+(node:68695) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ RC-T3 duplicate exposes the new root and preserves an independent semantic subtree (5.479625ms)
+✔ RC-T3 paste exposes its independent root and invalid paste leaves history unchanged (3.232417ms)
+✔ RC-T3 delete, wrap, and reparent round-trip exact operation state (3.330917ms)
+✔ RC-T3 rejected cycle and protected delete are exact no-ops without history (0.501667ms)
+ℹ tests 75
+ℹ suites 0
+ℹ pass 75
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2186.676709

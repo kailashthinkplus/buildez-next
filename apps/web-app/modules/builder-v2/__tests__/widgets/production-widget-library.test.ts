@@ -36,6 +36,7 @@ const productionWidgetTypes: NodeType[] = [
 
 const definitions = new Map(PremiumWidgetDefinitions.map((definition) => [definition.type, definition]));
 const readiness = new Map(buildWidgetAiReadiness().map((entry) => [entry.type, entry]));
+const runtimeGatedTypes = new Set<NodeType>();
 
 export const productionWidgetLibrarySpec = createRegressionSpec({
   id: "widgets/production-widget-library",
@@ -78,6 +79,29 @@ export const productionWidgetLibrarySpec = createRegressionSpec({
       productionWidgetTypes.every((type) => (getWidgetCapability(type)?.editableStyles.length ?? 0) > 0)
     ),
     assertCondition(
+      "every premium widget exposes element-level typography controls",
+      productionWidgetTypes.every((type) => {
+        const styles = new Set(getWidgetCapability(type)?.editableStyles ?? []);
+        return ["eyebrowFontFamily", "titleFontFamily", "titleFontSize", "bodyFontFamily", "bodyFontSize"]
+          .every((field) => styles.has(field));
+      })
+    ),
+    assertCondition(
+      "every premium widget exposes CTA and card design controls",
+      productionWidgetTypes.every((type) => {
+        const styles = new Set(getWidgetCapability(type)?.editableStyles ?? []);
+        return ["ctaBackgroundColor", "ctaColor", "ctaFontFamily", "cardBackgroundColor", "cardTextColor"]
+          .every((field) => styles.has(field));
+      })
+    ),
+    assertCondition(
+      "every premium widget exposes featured media treatment metadata",
+      productionWidgetTypes.every((type) => {
+        const styles = new Set(getWidgetCapability(type)?.editableStyles ?? []);
+        return ["mediaUrl", "mediaObjectPosition", "mediaBorderRadius"].every((field) => styles.has(field));
+      })
+    ),
+    assertCondition(
       "clipboard support is enabled through native node commands",
       productionWidgetTypes.every((type) => getWidgetCapability(type)?.clipboardSupport)
     ),
@@ -90,10 +114,10 @@ export const productionWidgetLibrarySpec = createRegressionSpec({
       productionWidgetTypes.every((type) => (getWidgetCapability(type)?.serializationRequirements.length ?? 0) >= 5)
     ),
     assertCondition(
-      "runtime parity is production-ready except metadata-only popup",
+      "incomplete interactions are runtime-gated rather than reported production-ready",
       productionWidgetTypes.every((type) => {
         const capability = getWidgetCapability(type);
-        if (type === "popupModal") return capability?.runtimeParityStatus === "gated";
+        if (runtimeGatedTypes.has(type)) return capability?.runtimeParityStatus === "gated";
         return capability?.runtimeParityStatus === "production-ready";
       })
     ),

@@ -47,7 +47,7 @@ export function SidebarShell({ mobileOpen, setMobileOpen }: Props) {
       </AnimatePresence>
 
       {/* DESKTOP */}
-      <aside className="hidden lg:block h-full w-[250px] shrink-0 dashboard-panel border-r dashboard-border">
+      <aside className="hidden lg:block h-full w-[248px] shrink-0">
         <Sidebar setMobileOpen={setMobileOpen} />
       </aside>
     </>

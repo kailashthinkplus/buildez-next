@@ -1,0 +1,13 @@
+$ playwright test --project=builder-chromium --grep @dnd
+
+Running 2 tests using 1 worker
+
+  ✓  1 [setup] › playwright/tests/auth.setup.ts:7:6 › authenticate Builder RC user (1.7s)
+  ✓  2 [builder-chromium] › playwright/tests/builder/operations/cross-container.spec.ts:35:5 › @operations @dnd cross-container drag persists and remains selected (4.0s)
+
+  2 passed (6.6s)
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m

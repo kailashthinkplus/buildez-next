@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { requireTenantEditor } from "@/lib/preview/auth";
 import { generatePreviewToken } from "@/lib/preview/token";
+import { prisma } from "@buildez/db";
 
 export async function POST(
   req: Request,
@@ -11,16 +12,17 @@ export async function POST(
     const { siteId } = params;
     const { tenantId } = await requireTenantEditor(siteId);
 
-    const pages = await db.page.findMany({
-      where: { siteId, deletedAt: null },
+    const pages = await prisma.page.findMany({
+      where: { siteId, deletedAt: null, deleted: false },
+      include: { blueprint: { select: { data: true } } },
     });
 
-    const latest = await db.siteSnapshot.findFirst({
+    const latest = await prisma.siteSnapshot.findFirst({
       where: { siteId },
       orderBy: { version: "desc" },
     });
 
-    const snapshot = await db.siteSnapshot.create({
+    const snapshot = await prisma.siteSnapshot.create({
       data: {
         siteId,
         tenantId,
@@ -31,7 +33,7 @@ export async function POST(
             pageId: p.id,
             title: p.title,
             slug: p.slug,
-            content: {}, // editor JSON here
+            content: p.blueprint?.data ?? {},
           })),
         },
       },
@@ -39,7 +41,7 @@ export async function POST(
 
     const previewId = generatePreviewToken();
 
-    await db.tenantEvent.create({
+    await prisma.tenantEvent.create({
       data: {
         tenantId,
         type: "SITE_PREVIEW_CREATED",

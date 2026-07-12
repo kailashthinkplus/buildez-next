@@ -87,6 +87,7 @@ class MediaService {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        siteId: request.siteId,
         prompts: [request.prompt],
         industry: request.industry ?? "GENERIC",
         size: request.size ?? "landscape",

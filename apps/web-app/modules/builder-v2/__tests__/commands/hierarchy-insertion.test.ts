@@ -48,6 +48,10 @@ const invalidDiagnostic = validateBlueprint({
     },
   },
 });
+const emptyContainerInsertions = (["heading", "button", "text"] as NodeType[]).map((type) =>
+  executeDirectContainerInsertion(type, [])
+);
+const indexedContainerInsertion = executeDirectContainerInsertion("heading", [TEST_NODE_IDS.text], 0);
 
 export const hierarchyInsertionSpec = createRegressionSpec({
   id: "commands/hierarchy-insertion",
@@ -72,6 +76,18 @@ export const hierarchyInsertionSpec = createRegressionSpec({
     assertCondition("column insertion validates", columnInsertion.valid),
     assertCondition("direct invalid InsertNodeCommand is rejected without corrupting tree", directInvalidInsert.valid),
     assertCondition(
+      "widgets inserted into an explicit empty Container keep that Container as parent without wrappers",
+      emptyContainerInsertions.every((result) =>
+        result.valid && result.parentId === TEST_NODE_IDS.container && result.planStepCount === 1 && result.parentChildren.length === 1
+      )
+    ),
+    assertCondition(
+      "explicit Container insertion at index zero preserves exact order",
+      indexedContainerInsertion.valid &&
+        indexedContainerInsertion.parentChildren[0] === indexedContainerInsertion.insertedId &&
+        indexedContainerInsertion.parentChildren[1] === TEST_NODE_IDS.text
+    ),
+    assertCondition(
       "invalid child relationship diagnostic includes parent child expected received and insertion",
       invalidDiagnostic.issues.some(
         (issue) =>
@@ -85,6 +101,45 @@ export const hierarchyInsertionSpec = createRegressionSpec({
     ),
   ],
 });
+
+function executeDirectContainerInsertion(type: NodeType, existingChildren: string[], index?: number) {
+  const blueprint = createPrimitiveBlueprint();
+  blueprint.nodes[TEST_NODE_IDS.container].children = [...existingChildren];
+  for (const nodeId of Object.keys(blueprint.nodes)) {
+    if (![TEST_NODE_IDS.root, TEST_NODE_IDS.section, TEST_NODE_IDS.container, ...existingChildren].includes(nodeId as any)) {
+      delete blueprint.nodes[nodeId];
+    }
+  }
+  for (const childId of existingChildren) blueprint.nodes[childId].parentId = TEST_NODE_IDS.container;
+  const insertedId = `direct-${type}`;
+  const plan = buildNativeInsertionPlan(
+    blueprint,
+    type,
+    TEST_NODE_IDS.container,
+    (nodeType, parentId) => createTestBuilderNode(nodeType, parentId, { id: insertedId }),
+    index,
+  );
+  if (!plan) return { valid: false, parentId: null, planStepCount: 0, parentChildren: [], insertedId };
+  const bus = new CommandBus();
+  bus.initialize(blueprint);
+  const initialized = JSON.stringify(bus.getBlueprint());
+  for (const step of plan.steps) bus.execute(new InsertNodeCommand(step.parentId, step.node, step.index));
+  const result = bus.getBlueprint();
+  const valid = validateBlueprint(result).valid;
+  const parentId = result.nodes[insertedId]?.parentId ?? null;
+  const parentChildren = [...result.nodes[TEST_NODE_IDS.container].children];
+  const serialized = JSON.stringify(result);
+  bus.undo();
+  const undoExact = JSON.stringify(bus.getBlueprint()) === initialized;
+  bus.redo();
+  return {
+    valid: valid && undoExact && JSON.stringify(bus.getBlueprint()) === serialized,
+    parentId,
+    planStepCount: plan.steps.length,
+    parentChildren,
+    insertedId,
+  };
+}
 
 function executePlannedInsertion(
   blueprint: BuilderBlueprint,

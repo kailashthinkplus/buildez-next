@@ -5,7 +5,10 @@ const VideoDefaults = {
     mimeType: "video/mp4",
   },
   style: {
-    borderRadius: 12,
+    width: "100%",
+    aspectRatio: "16 / 9",
+    borderRadius: "theme.radius.media",
+    backgroundColor: "theme.colors.surfaceAlt",
   },
 };
 

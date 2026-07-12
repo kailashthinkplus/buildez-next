@@ -1,6 +1,9 @@
 // /Users/kailash/buildez/apps/web-app/app/api/ai-v8/generate-images/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/auth/session";
+import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
+import { persistGeneratedImage } from "@/modules/builder-v2/media/server/persistGeneratedImage";
 
 const MAGNIFIC_API_KEY =
   process.env.MAGNIFIC_API_KEY?.trim() || process.env.FREEPIK_API_KEY?.trim() || "";
@@ -192,7 +195,7 @@ async function generateSingleImage(
 export async function POST(req: NextRequest) {
   try {
     const body: ImageGenerationRequest = await req.json();
-    const { prompts, industry, size = "landscape" } = body;
+    const { prompts, industry, size = "landscape", siteId } = body;
 
     // Validation
     if (!prompts || !Array.isArray(prompts) || prompts.length === 0) {
@@ -208,6 +211,10 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    const user = siteId ? await getCurrentUser(req) : null;
+    const tenant = siteId ? await verifyTenantAccess(req) : null;
+    if (siteId && (!user || !tenant)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     if (!MAGNIFIC_API_KEY) {
       console.error("[Magnific] ❌ MAGNIFIC_API_KEY or FREEPIK_API_KEY not configured");
@@ -240,6 +247,14 @@ export async function POST(req: NextRequest) {
     }
 
     const generationTime = Date.now() - startTime;
+    if (siteId && user && tenant) {
+      await Promise.all(results.map(async (result) => {
+        if (!result.url) return;
+        const asset = await persistGeneratedImage({ sourceUrl: result.url, siteId, userId: user.id, tenantId: tenant.id, prompt: result.prompt, provider: "freepik" });
+        result.url = asset.url;
+        (result as typeof result & { asset: typeof asset }).asset = asset;
+      }));
+    }
     const successCount = results.filter((r) => r.url).length;
     const failedCount = results.length - successCount;
 

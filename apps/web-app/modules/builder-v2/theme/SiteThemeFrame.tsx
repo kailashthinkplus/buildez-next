@@ -106,7 +106,7 @@ export function ThemeHeader({
               {getInitials(header.brandLabel)}
             </span>
           )}
-          {header.brandLabel}
+          {!header.logoUrl ? header.brandLabel : null}
         </a>
 
         <nav
@@ -202,8 +202,9 @@ export function ThemeFooter({
                   width: "auto",
                 }}
               />
-            ) : null}
-            {footer.brandLabel}
+            ) : (
+              footer.brandLabel
+            )}
           </div>
           <p
             style={{

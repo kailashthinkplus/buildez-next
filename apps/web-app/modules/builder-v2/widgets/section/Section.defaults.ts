@@ -4,13 +4,13 @@ const SectionDefaults = {
   },
 
   style: {
-    paddingTop: 80,
-    paddingBottom: 80,
-    backgroundColor: "surface",
+    paddingTop: { desktop: 88, tablet: 72, mobile: 56 },
+    paddingBottom: { desktop: 88, tablet: 72, mobile: 56 },
+    backgroundColor: "theme.colors.surface",
     backgroundImage: "",
     backgroundVideo: "",
     overlay: "",
-    gap: 32,
+    gap: { desktop: 32, tablet: 28, mobile: 24 },
   },
 };
 

@@ -1,0 +1,6 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@buildez/db";
+import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
+async function owned(req: NextRequest, id: string) { const tenant = await verifyTenantAccess(req); if (!tenant) return null; return prisma.cmsEntry.findFirst({ where: { id, collection: { site: { tenantId: tenant.id } } } }); }
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ entryId: string }> }) { const { entryId } = await params; if (!await owned(req, entryId)) return NextResponse.json({ error: "Not found" }, { status: 404 }); const b = await req.json(); const entry = await prisma.cmsEntry.update({ where: { id: entryId }, data: { ...(b.data && { data: b.data }), ...(b.status && { status: b.status === "PUBLISHED" ? "PUBLISHED" : "DRAFT" }) } }); return NextResponse.json({ entry }); }
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ entryId: string }> }) { const { entryId } = await params; if (!await owned(req, entryId)) return NextResponse.json({ error: "Not found" }, { status: 404 }); await prisma.cmsEntry.delete({ where: { id: entryId } }); return NextResponse.json({ success: true }); }

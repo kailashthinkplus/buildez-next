@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+/apps/web-app/playwright/.auth/
+/apps/web-app/playwright-report/
+/apps/web-app/test-results/
 
 # next.js
 /.next/

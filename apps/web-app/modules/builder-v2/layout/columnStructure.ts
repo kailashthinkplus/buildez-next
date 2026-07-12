@@ -27,7 +27,9 @@ export function getColumnStructurePreset(id: string): ColumnStructurePreset | un
 
 export function normalizeColumnWidths(widths: readonly number[] | number): number[] {
   if (typeof widths === "number") {
-    return Array.from({ length: Math.max(1, Math.floor(widths)) }, () => 100 / Math.max(1, Math.floor(widths)));
+    const count = Math.max(1, Math.floor(widths));
+    const width = Math.round((100 / count) * 1000) / 1000;
+    return Array.from({ length: count }, () => width);
   }
 
   return widths

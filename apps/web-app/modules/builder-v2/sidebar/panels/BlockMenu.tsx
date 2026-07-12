@@ -269,6 +269,7 @@ function BlockCategory({
           return (
             <button
               key={block.type}
+              data-testid={`palette-widget-${block.type}`}
               type="button"
               draggable
               onDragStart={(e) => handleDragStart(e, block)}

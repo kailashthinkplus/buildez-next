@@ -1,0 +1,61 @@
+$ playwright test --project=builder-chromium --grep @scroll
+
+Running 2 tests using 1 worker
+
+  ✓  1 [setup] › playwright/tests/auth.setup.ts:7:6 › authenticate Builder RC user (2.0s)
+  ✘  2 [builder-chromium] › playwright/tests/builder/operations/scroll-targeting.spec.ts:53:5 › @operations @scroll palette insertion targets the lower canvas after scrolling and survives reload (12.0s)
+
+
+  1) [builder-chromium] › playwright/tests/builder/operations/scroll-targeting.spec.ts:53:5 › @operations @scroll palette insertion targets the lower canvas after scrolling and survives reload 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('palette-widget-heading')
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 10000ms
+      - waiting for getByTestId('palette-widget-heading')
+
+
+       at ../helpers/builderDrag.ts:141
+
+      139 |   const source = page.getByTestId(`palette-widget-${widgetType}`);
+      140 |   const shell = page.getByTestId("builder-shell");
+    > 141 |   await expect(source).toBeVisible();
+          |                        ^
+      142 |   await expect(target).toBeVisible();
+      143 |   const sourceBox = await source.boundingBox();
+      144 |   const targetBox = await target.boundingBox();
+        at dragPaletteWidgetInside (/Users/kailash/buildez/apps/web-app/playwright/helpers/builderDrag.ts:141:24)
+        at /Users/kailash/buildez/apps/web-app/playwright/tests/builder/operations/scroll-targeting.spec.ts:138:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/builder-operations-scroll--75c8e-rolling-and-survives-reload-builder-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/builder-operations-scroll--75c8e-rolling-and-survives-reload-builder-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/builder-operations-scroll--75c8e-rolling-and-survives-reload-builder-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/builder-operations-scroll--75c8e-rolling-and-survives-reload-builder-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/builder-operations-scroll--75c8e-rolling-and-survives-reload-builder-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [builder-chromium] › playwright/tests/builder/operations/scroll-targeting.spec.ts:53:5 › @operations @scroll palette insertion targets the lower canvas after scrolling and survives reload 
+  1 passed (15.2s)
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m
+[ELIFECYCLE] Command failed with exit code 1.

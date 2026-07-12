@@ -7,7 +7,9 @@ const pasteResult = copyPasteNodeForSpec(blueprint, TEST_NODE_IDS.heading, TEST_
 const beforeIds = new Set(Object.keys(blueprint.nodes));
 const addedIds = Object.keys(pasteResult.after.nodes).filter((id) => !beforeIds.has(id));
 const pastedHeading = addedIds.map((id) => pasteResult.after.nodes[id]).find((node) => node.type === "heading");
-const invalidPaste = copyPasteNodeForSpec(blueprint, TEST_NODE_IDS.section, TEST_NODE_IDS.heading);
+// A section targeted at a heading legitimately resolves to the page as a
+// sibling insertion. A copied page has no compatible paste parent anywhere.
+const invalidPaste = copyPasteNodeForSpec(blueprint, TEST_NODE_IDS.root, TEST_NODE_IDS.heading);
 const undoRedo = copyPasteNodeUndoRedoForSpec(blueprint, TEST_NODE_IDS.heading, TEST_NODE_IDS.columnB);
 
 export const clipboardSpec = createRegressionSpec({

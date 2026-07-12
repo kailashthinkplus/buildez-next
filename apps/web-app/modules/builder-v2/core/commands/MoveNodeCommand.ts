@@ -45,15 +45,15 @@ export class UpdateNodeCommand implements BuilderCommand {
 
       ...this.patch,
 
-      props: {
+      props: sanitizeUndefinedObjectProperties({
         ...node.props,
         ...(this.patch.props ?? {}),
-      },
+      }),
 
-      style: {
+      style: sanitizeUndefinedObjectProperties({
         ...node.style,
         ...(this.patch.style ?? {}),
-      },
+      }),
 
     };
 
@@ -84,4 +84,28 @@ export class UpdateNodeCommand implements BuilderCommand {
     };
 
   }
+}
+
+export function sanitizeUndefinedObjectProperties<T extends Record<string, unknown>>(
+  value: T
+): T {
+  const next: Record<string, unknown> = {};
+  for (const [key, entry] of Object.entries(value)) {
+    if (entry === undefined) continue;
+    if (Array.isArray(entry)) {
+      // Arrays are structural. Preserve them exactly so validation can reject
+      // undefined entries without shifting ordering or indexes.
+      next[key] = [...entry];
+      continue;
+    }
+    if (entry !== null && typeof entry === "object") {
+      const cleaned = sanitizeUndefinedObjectProperties(
+        entry as Record<string, unknown>
+      );
+      if (Object.keys(cleaned).length > 0) next[key] = cleaned;
+      continue;
+    }
+    next[key] = entry;
+  }
+  return next as T;
 }

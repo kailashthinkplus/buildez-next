@@ -41,7 +41,7 @@ export const IconDefinition: WidgetDefinition = {
       type: "color",
       target: "style",
       category: "style",
-      defaultValue: "#0f172a",
+      defaultValue: "theme.colors.primary",
     },
     {
       id: "backgroundColor",
@@ -49,7 +49,7 @@ export const IconDefinition: WidgetDefinition = {
       type: "color",
       target: "style",
       category: "style",
-      defaultValue: "#e2e8f0",
+      defaultValue: "theme.colors.surfaceAlt",
     },
   ],
 };

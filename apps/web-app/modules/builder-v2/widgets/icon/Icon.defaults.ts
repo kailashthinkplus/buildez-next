@@ -7,8 +7,8 @@ const IconDefaults = {
     height: 32,
     fontSize: 16,
     borderRadius: 8,
-    backgroundColor: "#e2e8f0",
-    color: "#0f172a",
+    backgroundColor: "theme.colors.surfaceAlt",
+    color: "theme.colors.primary",
   },
 };
 

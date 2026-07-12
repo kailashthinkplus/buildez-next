@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, ExternalLink, Loader2 } from "lucide-react";
 
 interface PublishModalProps {
@@ -25,6 +25,17 @@ export default function PublishModal({
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) {
+      setPublished(false);
+      setError(null);
+      return;
+    }
+    if (!published) return;
+    const timeout = window.setTimeout(onClose, 5000);
+    return () => window.clearTimeout(timeout);
+  }, [open, published]);
 
   if (!open) return null;
 

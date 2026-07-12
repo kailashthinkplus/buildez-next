@@ -19,13 +19,13 @@ export function createTestBuilderNode(
   return {
     id: overrides.id ?? createDeterministicNodeId(type),
     type,
-    name: overrides.name,
+    ...(overrides.name !== undefined ? { name: overrides.name } : {}),
     parentId,
     children: overrides.children ?? [],
     props: overrides.props ?? {},
     style: overrides.style ?? {},
-    locked: overrides.locked,
-    hidden: overrides.hidden,
+    ...(overrides.locked !== undefined ? { locked: overrides.locked } : {}),
+    ...(overrides.hidden !== undefined ? { hidden: overrides.hidden } : {}),
   };
 }
 

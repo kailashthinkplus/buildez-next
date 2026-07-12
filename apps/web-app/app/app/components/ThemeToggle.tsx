@@ -17,28 +17,26 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="
-        relative inline-flex h-10 w-10 items-center justify-center
-        rounded-full border border-blue-200/80 dark:border-white/10
-        bg-white/85 text-blue-700
+      className="theme-toggle-button
+        relative inline-flex h-9 w-9 items-center justify-center
+        rounded-xl border border-slate-200/80 dark:border-white/10
+        bg-[#f7fafa] text-slate-500
         backdrop-blur-xl
-        shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_10px_24px_rgba(29,78,216,0.16)]
-        transition hover:scale-105 hover:bg-white
-        dark:bg-slate-950/70 dark:text-amber-300
-        dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_12px_28px_rgba(0,0,0,0.36)]
+        shadow-none
+        transition hover:-translate-y-0.5 hover:bg-white hover:text-amber-500
+        dark:bg-white/[0.045] dark:text-slate-400 dark:hover:text-amber-300
+        dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_10px_24px_rgba(0,0,0,0.28)]
       "
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
       {isDark ? (
         <SunMedium
-          className="h-5 w-5 drop-shadow-[0_0_10px_rgba(251,191,36,0.55)]"
-          fill="currentColor"
+          className="h-[18px] w-[18px]"
         />
       ) : (
         <MoonStar
-          className="h-5 w-5 drop-shadow-[0_0_10px_rgba(37,99,235,0.36)]"
-          fill="currentColor"
+          className="h-[18px] w-[18px]"
         />
       )}
     </button>

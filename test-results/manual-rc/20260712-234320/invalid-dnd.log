@@ -1,0 +1,17 @@
+$ playwright test --project=builder-chromium --grep @invalid-dnd
+
+Running 6 tests using 1 worker
+
+  ✓  1 [setup] › playwright/tests/auth.setup.ts:7:6 › authenticate Builder RC user (4.9s)
+  ✓  2 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:45:5 › @operations @invalid-dnd Escape cancels active native drag without mutation (5.4s)
+  ✓  3 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:55:5 › @operations @invalid-dnd release over Builder header leaves structure unchanged (2.4s)
+  ✓  4 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:69:5 › @operations @invalid-dnd drop onto self is an atomic no-op (2.2s)
+  ✓  5 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:77:5 › @operations @invalid-dnd parent into descendant is rejected without history (3.5s)
+  ✓  6 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:88:5 › @operations @invalid-dnd Section cannot be reparented under a widget parent (2.3s)
+
+  6 passed (21.8s)
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m

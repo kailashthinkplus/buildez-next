@@ -1,0 +1,238 @@
+import { expect, request, test } from "@playwright/test";
+import { authFile } from "../../../../playwright.config";
+import {
+  builderNode,
+  expectNodeParent,
+  expectSelectedNode,
+  saveBuilderNow,
+} from "../../../helpers/builderAssertions";
+import { dragPaletteWidgetInside } from "../../../helpers/builderDrag";
+import {
+  FIXTURE_IDS,
+  createDisposableBuilderPage,
+  deleteDisposableBuilderPage,
+  openDisposableBuilder,
+  readDisposableBlueprint,
+} from "../../../helpers/builderFixture";
+
+let disposablePageId: string | null = null;
+
+test.afterEach(async () => {
+  test.setTimeout(20_000);
+
+  if (!disposablePageId) {
+    return;
+  }
+
+  const cleanupRequest = await request.newContext({
+    baseURL:
+      process.env.PLAYWRIGHT_BASE_URL ??
+      "http://127.0.0.1:3000",
+    storageState: authFile,
+  });
+
+
+async function openBlocks(page: Parameters<typeof openDisposableBuilder>[0]) {
+  await page.getByRole("button", { name: "Blocks" }).click();
+  await expect(page.getByTestId("palette-widget-heading")).toBeVisible();
+}
+
+
+
+  try {
+    await deleteDisposableBuilderPage(
+      cleanupRequest,
+      disposablePageId,
+    );
+    disposablePageId = null;
+  } finally {
+    await cleanupRequest.dispose();
+  }
+});
+
+test(
+  "@operations @scroll palette insertion targets the lower canvas after scrolling and survives reload",
+  async ({ page }) => {
+    test.setTimeout(45_000);
+
+    const fixture = await createDisposableBuilderPage(page.request);
+    disposablePageId = fixture.id;
+
+    const initialBlueprint = await readDisposableBlueprint(
+      page.request,
+      fixture.id,
+    );
+
+    const initialNestedChildren = [
+      ...initialBlueprint.nodes[FIXTURE_IDS.nested].children,
+    ];
+
+    expect(initialNestedChildren).toEqual([
+      FIXTURE_IDS.textC,
+    ]);
+
+    await openDisposableBuilder(page, fixture);
+
+    const canvasScroll = page.locator(
+      "[data-builder-canvas-scroll='true']",
+    );
+
+    await expect(canvasScroll).toBeVisible();
+
+    const scrollMetrics = await canvasScroll.evaluate(
+      (element) => ({
+        scrollHeight: element.scrollHeight,
+        clientHeight: element.clientHeight,
+        maxScrollTop:
+          element.scrollHeight - element.clientHeight,
+      }),
+    );
+
+    expect(
+      scrollMetrics.maxScrollTop,
+      "fixture must require real Builder-canvas scrolling",
+    ).toBeGreaterThan(300);
+
+    await canvasScroll.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => resolve());
+          });
+        }),
+    );
+
+    const scrollTopBeforeDrag = await canvasScroll.evaluate(
+      (element) => element.scrollTop,
+    );
+
+    expect(
+      scrollTopBeforeDrag,
+      "Builder canvas should be scrolled before starting DnD",
+    ).toBeGreaterThan(300);
+
+    const target = builderNode(page, FIXTURE_IDS.nested);
+    await expect(target).toBeVisible();
+
+    const childrenBefore = await page
+      .locator(
+        `.builder-canvas-sandbox [data-node-parent-id='${FIXTURE_IDS.nested}']`,
+      )
+      .evaluateAll((elements) =>
+        elements
+          .map((element) =>
+            element.getAttribute("data-node-id"),
+          )
+          .filter(
+            (id): id is string =>
+              typeof id === "string" && id.length > 0,
+          ),
+
+
+    await openBlocks(page);
+      );
+
+    await dragPaletteWidgetInside(page, "heading", target);
+
+    const childrenAfter = await page
+      .locator(
+        `.builder-canvas-sandbox [data-node-parent-id='${FIXTURE_IDS.nested}']`,
+      )
+      .evaluateAll((elements) =>
+        elements
+          .map((element) =>
+            element.getAttribute("data-node-id"),
+          )
+          .filter(
+            (id): id is string =>
+              typeof id === "string" && id.length > 0,
+          ),
+      );
+
+    const insertedIds = childrenAfter.filter(
+      (id) => !childrenBefore.includes(id),
+    );
+
+    expect(
+      insertedIds,
+      "exactly one Heading should be inserted into the scrolled target",
+    ).toHaveLength(1);
+
+    const insertedHeadingId = insertedIds[0];
+
+    expect(insertedHeadingId).toBeTruthy();
+
+    await expectNodeParent(
+      page,
+      insertedHeadingId,
+      FIXTURE_IDS.nested,
+    );
+
+    await expectSelectedNode(page, insertedHeadingId);
+
+    const scrollTopAfterDrag = await canvasScroll.evaluate(
+      (element) => element.scrollTop,
+    );
+
+    expect(
+      scrollTopAfterDrag,
+      "canvas should remain in the lower-page region after the drop",
+    ).toBeGreaterThan(100);
+
+    await saveBuilderNow(page, fixture.id);
+
+    const persisted = await readDisposableBlueprint(
+      page.request,
+      fixture.id,
+    );
+
+    expect(
+      persisted.nodes[insertedHeadingId]?.parentId,
+    ).toBe(FIXTURE_IDS.nested);
+
+    expect(
+      persisted.nodes[FIXTURE_IDS.nested].children,
+    ).toContain(insertedHeadingId);
+
+    const persistedOccurrences = Object.values(
+      persisted.nodes,
+    )
+      .flatMap((node: any) => node.children ?? [])
+      .filter((id) => id === insertedHeadingId);
+
+    expect(persistedOccurrences).toHaveLength(1);
+
+    await page.reload({
+      waitUntil: "domcontentloaded",
+      timeout: 15_000,
+    });
+
+    await expect(
+      page.locator("[data-builder-canvas-scroll='true']"),
+    ).toBeVisible();
+
+    await expectNodeParent(
+      page,
+      insertedHeadingId,
+      FIXTURE_IDS.nested,
+    );
+
+    const reloadedBlueprint =
+      await readDisposableBlueprint(
+        page.request,
+        fixture.id,
+      );
+
+    expect(
+      reloadedBlueprint.nodes[insertedHeadingId]?.parentId,
+    ).toBe(FIXTURE_IDS.nested);
+
+    expect(
+      reloadedBlueprint.nodes[FIXTURE_IDS.nested].children,
+    ).toContain(insertedHeadingId);
+  },
+);

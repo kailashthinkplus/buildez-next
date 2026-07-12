@@ -21,6 +21,7 @@ import {
   Search,
   Square,
   Type,
+  Database,
 } from "lucide-react";
 
 import type { BuilderBlueprint, BuilderNode } from "../types/blueprint";
@@ -35,6 +36,7 @@ import { buildThemeTokenMetadata, type ThemeTokenMetadata } from "../theme/theme
 import { HEADER_FOOTER_EDITABLE_POLICY } from "../theme/globalSectionPolicy";
 import ColorPicker from "../inspector/components/ColorPicker";
 import { LAYERS_MODERNIZATION_METADATA } from "../layers/layersMetadata";
+import BrandIntelligenceSettings from "../brand/BrandIntelligenceSettings";
 
 const LayersPanel = ({ blueprint, selectedId, onSelect }: any) => {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -247,7 +249,7 @@ const ColorsPanel = ({ blueprint }: { blueprint: BuilderBlueprint }) => {
   );
 };
 
-const PageSettingsPanel = ({ blueprint }: { blueprint: BuilderBlueprint }) => {
+const PageSettingsPanel = ({ blueprint, siteId }: { blueprint: BuilderBlueprint; siteId: string }) => {
   const sections = buildThemeTokenMetadata(getBlueprintThemeTokens(blueprint)).filter(
     (section) => section.id !== "colors"
   );
@@ -255,6 +257,9 @@ const PageSettingsPanel = ({ blueprint }: { blueprint: BuilderBlueprint }) => {
   return (
     <div className="h-full overflow-y-auto p-4">
       <div className="space-y-5">
+        <div className="rounded-lg border border-blue-400/20 bg-blue-500/[0.05] p-3">
+          <BrandIntelligenceSettings siteId={siteId} compact />
+        </div>
         <PanelIntro title="Theme settings" body="Global Builder tokens for fonts, spacing, radius, shadows, buttons, and section/container defaults." />
         {sections.map((section) => (
           <div key={section.id} className="rounded-lg border border-white/10 bg-white/[0.04] p-3">
@@ -394,11 +399,27 @@ function coerceTokenValue(value: string, current: unknown): unknown {
    PANEL CONFIGURATION
 ============================================================ */
 
+function CmsPanel({ siteId }: { siteId: string }) {
+  const [collections, setCollections] = useState<any[]>([]);
+  const [selected, setSelected] = useState("");
+  const [entries, setEntries] = useState<any[]>([]);
+  useEffect(() => { fetch(`/api/cms/collections?siteId=${siteId}`).then(r => r.json()).then(b => { setCollections(b.collections || []); setSelected(b.collections?.[0]?.id || ""); }); }, [siteId]);
+  useEffect(() => { if (!selected) return; fetch(`/api/cms/entries?collectionId=${selected}`).then(r => r.json()).then(b => setEntries(b.entries || [])); }, [selected]);
+  const collection = collections.find(c => c.id === selected);
+  return <div className="h-full overflow-y-auto p-4">
+    <PanelIntro title="CMS content" body="Browse structured content. Bind a widget in its Content inspector under CMS data." />
+    <select value={selected} onChange={(e) => setSelected(e.target.value)} className="mt-4 w-full rounded-md border border-white/10 bg-[#181b22] px-2 py-2 text-xs text-white">{collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+    <div className="mt-3 space-y-2">{entries.map(entry => <div key={entry.id} className="rounded-lg border border-white/10 bg-white/[0.04] p-3"><div className="truncate text-xs font-medium text-white">{String(entry.data?.[collection?.fields?.[0]?.key] || "Untitled entry")}</div><div className="mt-1 flex items-center justify-between text-[10px] text-white/40"><span>{collection?.fields?.length || 0} properties</span><span className={entry.status === "PUBLISHED" ? "text-emerald-400" : "text-amber-400"}>{entry.status}</span></div></div>)}</div>
+    {!entries.length && <div className="mt-8 text-center text-xs text-white/40">No content entries yet. Add them from Dashboard → CMS.</div>}
+  </div>;
+}
+
 const PANELS = [
   { id: "ai", icon: Wand2, label: "AI" },
   { id: "blocks", icon: Blocks, label: "Blocks" },
   { id: "layers", icon: Layers, label: "Layers" },
   { id: "media", icon: ImageIcon, label: "Media" },
+  { id: "cms", icon: Database, label: "CMS" },
   { id: "colors", icon: Droplet, label: "Colors" },
   { id: "settings", icon: Settings, label: "Settings" },
 ] as const;
@@ -557,9 +578,8 @@ export default function IntegratedLeftSidebar({
       ============================================================ */}
       <div
         className={`
-          builder-chrome
+          bg-[rgb(15_17_24/82%)]
           flex h-full min-h-0 flex-col
-          bg-black/75
           backdrop-blur-2xl
           border-r border-white/10
           shadow-xl shadow-black/50
@@ -571,7 +591,7 @@ export default function IntegratedLeftSidebar({
         {activePanel && (
           <>
             {/* PANEL HEADER */}
-            <div className="builder-chrome h-12 px-4 flex items-center justify-between border-b border-white/10 bg-black/45 backdrop-blur-xl">
+            <div className="bg-[rgb(15_17_24/82%)] h-12 px-4 flex items-center justify-between border-b border-white/10 bg-black/45 backdrop-blur-xl">
               <span className="capitalize text-sm font-medium">
                 {PANELS.find((p) => p.id === activePanel)?.label}
               </span>
@@ -624,8 +644,13 @@ export default function IntegratedLeftSidebar({
                     title="Media"
                     description="Upload and manage this site's assets."
                     pickerMode
+                    compact
                   />
                 </div>
+              )}
+
+              {activePanel === "cms" && (
+                <CmsPanel siteId={siteId} />
               )}
 
               {activePanel === "colors" && <ColorsPanel blueprint={blueprint} />}
@@ -633,6 +658,7 @@ export default function IntegratedLeftSidebar({
               {activePanel === "settings" && (
                 <PageSettingsPanel
                   blueprint={blueprint}
+                  siteId={siteId}
                 />
               )}
             </div>

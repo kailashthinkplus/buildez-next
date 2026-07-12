@@ -368,6 +368,8 @@ export default function SelectionToolbar({
 
   return (
     <div
+      data-testid="builder-selection-toolbar"
+      data-selected-node-id={selectedId}
       className="absolute z-[10020] pointer-events-auto"
       style={{
         top: position.top,
@@ -379,11 +381,13 @@ export default function SelectionToolbar({
     >
       <div
         ref={toolbarRef}
-        className="relative flex items-center gap-1 rounded-full bg-[#0A0B0F]/95 text-white border border-white/15 backdrop-blur-xl px-2 py-1.5 shadow-2xl"
+        className="relative flex items-center gap-1 rounded-full bg-[rgb(15_17_24/82%)] text-white border border-white/15 backdrop-blur-xl px-2 py-1.5 shadow-2xl"
       >
         {/* Primary 7 actions */}
         <button
           type="button"
+          data-testid="builder-node-drag-handle"
+          data-drag-node-id={selectedId ?? undefined}
           draggable={!elementLocked}
           onDragStart={(e) => {
             if (!selectedId || elementLocked) {

@@ -17,11 +17,24 @@ export class CopyElementCommand implements BuilderCommand {
 export class PasteElementCommand implements BuilderCommand {
   readonly id = crypto.randomUUID();
   readonly name = "Paste Element";
+  private pastedRootId: string | null = null;
 
   constructor(private readonly targetNodeId: string) {}
 
+  getCreatedNodeId(): string | null {
+    return this.pastedRootId;
+  }
+
   execute(blueprint: BuilderBlueprint): BuilderBlueprint {
+    this.pastedRootId = null;
     const result = pasteNodeFromClipboard(blueprint, this.targetNodeId);
-    return result.ok ? result.value : blueprint;
+    if (!result.ok) return blueprint;
+
+    const createdIds = Object.keys(result.value.nodes).filter(
+      (nodeId) => !(nodeId in blueprint.nodes)
+    );
+    this.pastedRootId =
+      createdIds.find((nodeId) => result.value.nodes[nodeId]?.parentId !== null) ?? null;
+    return result.value;
   }
 }

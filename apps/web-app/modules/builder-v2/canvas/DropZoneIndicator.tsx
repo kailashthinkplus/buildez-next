@@ -68,6 +68,7 @@ export default function DropZoneIndicator() {
     const isVertical = height > width; // vertical bar = horizontal container
     return createPortal(
       <div
+        data-testid="builder-drop-indicator"
         className="fixed pointer-events-none"
         style={{
           zIndex: 10050,
@@ -99,6 +100,7 @@ export default function DropZoneIndicator() {
     // Empty container: fill with dashed border + label
     return createPortal(
       <div
+        data-testid="builder-drop-indicator"
         className="fixed pointer-events-none flex items-center justify-center"
         style={{
           zIndex: 10050,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@buildez/db";
+import { Prisma, prisma } from "@buildez/db";
 import { getAuthContext } from "@/lib/auth/getAuthContext";
 
 import { uploadToR2 } from "@/lib/storage/uploadToR2";
@@ -83,6 +83,20 @@ export async function POST(
     await prisma.site.update({
       where: { id: siteId },
       data: { logoUrl },
+    });
+
+    // Header and footer are stored independently from the Site record. Keep
+    // their logo binding synchronized so canvas, preview and published pages
+    // all switch to the new brand asset immediately on their next load.
+    const existingLayout = await prisma.siteLayout.findUnique({ where: { siteId } });
+    const header = existingLayout?.header && typeof existingLayout.header === "object" && !Array.isArray(existingLayout.header)
+      ? existingLayout.header as Record<string, unknown> : {};
+    const footer = existingLayout?.footer && typeof existingLayout.footer === "object" && !Array.isArray(existingLayout.footer)
+      ? existingLayout.footer as Record<string, unknown> : {};
+    await prisma.siteLayout.upsert({
+      where: { siteId },
+      create: { siteId, header: { ...header, logoUrl } as Prisma.InputJsonValue, footer: { ...footer, logoUrl } as Prisma.InputJsonValue },
+      update: { header: { ...header, logoUrl } as Prisma.InputJsonValue, footer: { ...footer, logoUrl } as Prisma.InputJsonValue },
     });
 
     /* ----------------------------------------------------------

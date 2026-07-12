@@ -35,12 +35,14 @@ import { WidgetRegistry } from "../core/registry/WidgetRegistry";
 import { Copy, Maximize2, Minimize2, Package, Palette, Sparkles, Trash2 } from "lucide-react";
 import { applyColumnStructureToBlueprint } from "../layout/columnStructure";
 import { setResponsiveOverride } from "../core/responsive";
+import { RESPONSIVE_BREAKPOINTS } from "../core/responsive/responsiveBreakpoints";
 import ColumnStructurePicker from "../layout/ColumnStructurePicker";
 import {
   buildFullscreenBuilderState,
   readFullscreenPreference,
   writeFullscreenPreference,
 } from "./fullscreenBuilder";
+import { canCommitDrop } from "../core/dnd/dropCommitSafety";
 
 import type { BuilderBlueprint } from "../types/blueprint";
 import type { SiteThemeLayout } from "../theme/siteLayout";
@@ -262,9 +264,22 @@ const canvasViewportRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     setCurrentSiteLayout(siteLayout ?? null);
   }, [siteLayout]);
+
+  useEffect(() => {
+    const refreshBrandLayout = async () => {
+      const response = await fetch(`/api/sites/${siteId}/layout`, { credentials: "include" });
+      const payload = await response.json().catch(() => null);
+      if (response.ok && payload?.data) {
+        setCurrentSiteLayout(payload.data);
+      }
+    };
+    window.addEventListener("brand:updated", refreshBrandLayout);
+    return () => window.removeEventListener("brand:updated", refreshBrandLayout);
+  }, [siteId]);
   /* Call all hooks at the top, before any conditionals */
   const [isInspectorCollapsed, setIsInspectorCollapsed] = useState(false);
   const [isFullscreenBuilder, setIsFullscreenBuilder] = useState(false);
+  const [canvasContentWidth, setCanvasContentWidth] = useState(0);
   const [canvasContentHeight, setCanvasContentHeight] = useState(0);
   const [leftChromeWidth, setLeftChromeWidth] = useState(LEFT_TOOLBAR_WIDTH + LEFT_PANEL_WIDTH);
   const [pendingColumnTargetId, setPendingColumnTargetId] = useState<string | null>(null);
@@ -275,17 +290,27 @@ const canvasViewportRef = useRef<HTMLDivElement | null>(null);
     y: number;
     source?: string;
   } | null>(null);
+  const [dndObservation, setDndObservation] = useState({
+    activeId: "",
+    overId: "",
+    intent: "",
+    valid: false,
+  });
   const [canPasteStyle, setCanPasteStyle] = useState(false);
   const [canPasteElement, setCanPasteElement] = useState(false);
   const dragRafRef = useRef<number | null>(null);
   const canvasSandboxRef = useRef<HTMLDivElement | null>(null);
   const dragPosRef = useRef<{ x: number; y: number } | null>(null);
   const pendingDropRef = useRef<{
+    overId: string;
+    pointerX: number;
+    pointerY: number;
     targetParentId: string;
     targetIndex?: number;
     referenceNodeId?: string;
     intent: "before" | "after" | "inside";
   } | null>(null);
+  const dragSessionRef = useRef({ activeId: null as string | null, cancelled: true, committed: false });
 
   const isDarkMode = useCanvasStore((s) => s.isDarkMode);
   const zoom = useCanvasStore((s) => s.zoom);
@@ -410,7 +435,10 @@ const onDuplicateNode = (id: string) => {
     return;
   }
 
-  commandBus.execute(new DuplicateNodeCommand(id));
+  const command = new DuplicateNodeCommand(id);
+  commandBus.execute(command);
+  const createdNodeId = command.getCreatedNodeId();
+  if (createdNodeId) select(createdNodeId);
 };
 
 const onMoveNodeUp = (id: string) => {
@@ -487,8 +515,46 @@ const onPasteNode = (id: string) => {
     return;
   }
 
-  commandBus.execute(new PasteElementCommand(id));
+  const command = new PasteElementCommand(id);
+  commandBus.execute(command);
+  const createdNodeId = command.getCreatedNodeId();
+  if (createdNodeId) select(createdNodeId);
 };
+
+useEffect(() => {
+  const onOperationShortcut = (event: KeyboardEvent) => {
+    const target = event.target as HTMLElement | null;
+    const isEditable = Boolean(
+      target?.closest("input, textarea, select, [contenteditable='true'], [role='textbox']"),
+    );
+    if (isEditable) return;
+
+    const modifier = event.metaKey || event.ctrlKey;
+    const key = event.key.toLowerCase();
+    if (modifier && key === "z") {
+      event.preventDefault();
+      event.shiftKey ? onRedo() : onUndo();
+      return;
+    }
+    if (!selectedId) return;
+    if (event.key === "Delete" || event.key === "Backspace") {
+      event.preventDefault();
+      onDeleteNode(selectedId);
+    } else if (modifier && key === "d") {
+      event.preventDefault();
+      onDuplicateNode(selectedId);
+    } else if (modifier && key === "c") {
+      event.preventDefault();
+      onCopyNode(selectedId);
+    } else if (modifier && key === "v") {
+      event.preventDefault();
+      onPasteNode(selectedId);
+    }
+  };
+
+  window.addEventListener("keydown", onOperationShortcut);
+  return () => window.removeEventListener("keydown", onOperationShortcut);
+}, [selectedId]);
 
 const onToggleNodeVisibility = (id: string) => {
   commandBus.execute(new ToggleNodeHiddenCommand(id));
@@ -784,11 +850,14 @@ const onCanvasClick = () => {
     const onStart = (e: Event) => {
       const detail = (e as CustomEvent<DragGhostDetail>).detail;
       if (!detail) return;
+      dragSessionRef.current = { activeId: detail.id, cancelled: false, committed: false };
+      setDndObservation({ activeId: detail.id, overId: "", intent: "", valid: false });
       document.body.classList.add("builder-dragging");
       setDragGhost(detail);
     };
 
     const onEnd = () => {
+      setDndObservation({ activeId: "", overId: "", intent: "", valid: false });
       document.body.classList.remove("builder-dragging");
       (window as any).__builderDragId = null;
       (window as any).__builderDragType = null;
@@ -842,13 +911,11 @@ const onCanvasClick = () => {
     window.addEventListener("builder:start-drag", onStart);
     window.addEventListener("builder:end-drag", onEnd);
     window.addEventListener("builder:reparent", onReparent);
-    window.addEventListener("pointerup", onEnd);
     window.addEventListener("blur", onEnd);
     return () => {
       window.removeEventListener("builder:start-drag", onStart);
       window.removeEventListener("builder:end-drag", onEnd);
       window.removeEventListener("builder:reparent", onReparent);
-      window.removeEventListener("pointerup", onEnd);
       window.removeEventListener("blur", onEnd);
     };
   }, [blueprint]);
@@ -914,6 +981,7 @@ const onCanvasClick = () => {
       const stack = document.elementsFromPoint(x, y);
       for (const hit of stack) {
         if (!(hit instanceof HTMLElement)) continue;
+        if (hit.closest(".builder-chrome")) return null;
         const nodeEl = hit.closest("[data-node-id]") as HTMLElement | null;
         if (!nodeEl) continue;
         const nodeId = nodeEl.getAttribute("data-node-id");
@@ -1027,6 +1095,7 @@ const onCanvasClick = () => {
       const targetEl = findTargetNodeElement(e.clientX, e.clientY, dragId);
       if (!targetEl) {
         pendingDropRef.current = null;
+        setDndObservation((current) => ({ ...current, overId: "", intent: "", valid: false }));
         window.dispatchEvent(new CustomEvent("builder:drop-clear"));
         return;
       }
@@ -1034,13 +1103,33 @@ const onCanvasClick = () => {
       const computed = computeDrop(targetEl, e.clientX, e.clientY, dragType);
       if (!computed) {
         pendingDropRef.current = null;
+        setDndObservation((current) => ({ ...current, overId: "", intent: "", valid: false }));
         window.dispatchEvent(new CustomEvent("builder:drop-clear"));
         return;
       }
 
-      pendingDropRef.current = computed.drop;
+      const overId = targetEl.getAttribute("data-node-id") ?? "";
+      pendingDropRef.current = computed.drop
+        ? { ...computed.drop, overId, pointerX: e.clientX, pointerY: e.clientY }
+        : null;
+      setDndObservation((current) => {
+        const next = {
+          activeId: dragId,
+          overId,
+          intent: computed.indicator.type,
+          valid: Boolean(computed.drop),
+        };
+        return current.activeId === next.activeId &&
+          current.overId === next.overId &&
+          current.intent === next.intent &&
+          current.valid === next.valid
+          ? current
+          : next;
+      });
       window.dispatchEvent(
-        new CustomEvent("builder:drop-intent", { detail: computed.indicator })
+        new CustomEvent("builder:drop-intent", {
+          detail: { ...computed.indicator, targetId: overId, valid: Boolean(computed.drop) },
+        })
       );
       window.dispatchEvent(
         new CustomEvent("builder:drag-move", {
@@ -1051,6 +1140,12 @@ const onCanvasClick = () => {
 
     const onDropCapture = (e: DragEvent) => {
       e.preventDefault();
+
+      const session = dragSessionRef.current;
+      if (session.cancelled || session.committed || !session.activeId) {
+        pendingDropRef.current = null;
+        return;
+      }
 
       const payload = e.dataTransfer?.getData("application/json");
       let payloadId: string | null = null;
@@ -1067,20 +1162,59 @@ const onCanvasClick = () => {
         }
       }
 
-      const dragId = payloadId ?? (((window as any).__builderDragId as string | null) ?? null);
+      const dragId = session.activeId;
       const dragType =
         payloadType ?? (((window as any).__builderDragType as string | null) ?? null);
       const dragSource =
         payloadSource ?? (((window as any).__builderDragSource as string | null) ?? null);
-      if (!dragId) return;
+      if (payloadId && payloadId !== dragId) return;
 
       const drop = pendingDropRef.current;
       pendingDropRef.current = null;
 
+      const eventTarget = e.target as HTMLElement | null;
+      const draggedElement = document.querySelector(`[data-node-id='${dragId}']`);
+      const overDraggedSubtree = Boolean(
+        draggedElement &&
+        document.elementsFromPoint(e.clientX, e.clientY).some((hit) =>
+          hit === draggedElement || draggedElement.contains(hit)
+        )
+      );
+      const currentTarget = findTargetNodeElement(e.clientX, e.clientY, dragId);
+      const currentOverId = currentTarget?.getAttribute("data-node-id") ?? null;
+      const currentComputed = currentTarget
+        ? computeDrop(currentTarget, e.clientX, e.clientY, dragType)
+        : null;
+      const finalValid = canCommitDrop({
+        activeId: session.activeId,
+        payloadId,
+        cancelled: session.cancelled,
+        committed: session.committed,
+        overChrome: Boolean(eventTarget?.closest(".builder-chrome")),
+        overDraggedSubtree,
+        pendingOverId: drop?.overId ?? null,
+        currentOverId,
+        pendingIntent: drop?.intent ?? null,
+        currentIntent: currentComputed?.drop?.intent ?? null,
+        pendingParentId: drop?.targetParentId ?? null,
+        currentParentId: currentComputed?.drop?.targetParentId ?? null,
+      });
+
       window.dispatchEvent(new CustomEvent("builder:drop-clear"));
       window.dispatchEvent(new CustomEvent("builder:end-drag"));
 
-      if (!drop) return;
+      if (!drop || !finalValid) return;
+      dragSessionRef.current.committed = true;
+
+      window.dispatchEvent(new CustomEvent("builder:drop-commit", {
+        detail: {
+          dragId,
+          targetParentId: drop.targetParentId,
+          targetIndex: drop.targetIndex,
+          referenceNodeId: drop.referenceNodeId,
+          intent: drop.intent,
+        },
+      }));
 
       const isNewBlockDrag = dragSource === "block-menu" || dragId.startsWith("new:");
       if (isNewBlockDrag) {
@@ -1134,30 +1268,56 @@ const onCanvasClick = () => {
     };
 
     const onEndCapture = () => {
+      if (!dragSessionRef.current.committed) dragSessionRef.current.cancelled = true;
+      dragSessionRef.current.activeId = null;
       pendingDropRef.current = null;
       window.dispatchEvent(new CustomEvent("builder:drop-clear"));
     };
 
+    const onNativeStartCapture = () => {
+      dragSessionRef.current = {
+        activeId: ((window as any).__builderDragId as string | null) ?? null,
+        cancelled: false,
+        committed: false,
+      };
+    };
+
+    const onCancelCapture = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      dragSessionRef.current.cancelled = true;
+      dragSessionRef.current.activeId = null;
+      pendingDropRef.current = null;
+      (window as any).__builderDragId = null;
+      (window as any).__builderDragType = null;
+      (window as any).__builderDragSource = null;
+      window.dispatchEvent(new CustomEvent("builder:drop-clear"));
+      window.dispatchEvent(new CustomEvent("builder:end-drag"));
+    };
+
+    window.addEventListener("dragstart", onNativeStartCapture, true);
     window.addEventListener("dragover", onDragOverCapture, true);
     window.addEventListener("drop", onDropCapture, true);
     window.addEventListener("dragend", onEndCapture, true);
+    window.addEventListener("keydown", onCancelCapture, true);
 
     return () => {
+      window.removeEventListener("dragstart", onNativeStartCapture, true);
       window.removeEventListener("dragover", onDragOverCapture, true);
       window.removeEventListener("drop", onDropCapture, true);
       window.removeEventListener("dragend", onEndCapture, true);
+      window.removeEventListener("keydown", onCancelCapture, true);
     };
   }, [blueprint]);
 
 const fixedDeviceWidth =
   device === "mobile"
-    ? 390
+    ? RESPONSIVE_BREAKPOINTS.mobile
     : device === "tablet"
-      ? 768
+      ? RESPONSIVE_BREAKPOINTS.tablet
       : null;
 
 const canvasScale = zoom / 100;
-const canvasWidth = fixedDeviceWidth ?? 1200;
+const canvasWidth = fixedDeviceWidth ?? RESPONSIVE_BREAKPOINTS.desktop;
 const rightChromeWidth =
   fullscreenState.sidebarsCollapsed || isInspectorCollapsed
     ? 0
@@ -1166,7 +1326,8 @@ const canvasChromeLeftInset =
   fullscreenState.sidebarsCollapsed ? 0 : leftChromeWidth;
 const canvasChromeRightInset =
   fullscreenState.sidebarsCollapsed ? 0 : rightChromeWidth;
-const scaledCanvasWidth = canvasWidth * canvasScale;
+const measuredCanvasWidth = Math.max(canvasWidth, canvasContentWidth);
+const scaledCanvasWidth = measuredCanvasWidth * canvasScale;
 const scaledCanvasHeight = canvasContentHeight * canvasScale;
 const canvasScrollWidth =
   canvasChromeLeftInset + scaledCanvasWidth + canvasChromeRightInset + CANVAS_EDGE_GUTTER * 2;
@@ -1178,11 +1339,18 @@ useEffect(() => {
   const canvas = canvasSandboxRef.current;
   if (!canvas) return;
 
-  const measure = () => setCanvasContentHeight(canvas.scrollHeight);
+  const measure = () => {
+    setCanvasContentWidth(canvas.scrollWidth);
+    setCanvasContentHeight(canvas.scrollHeight);
+  };
   measure();
+  const frame = window.requestAnimationFrame(measure);
   const observer = new ResizeObserver(measure);
   observer.observe(canvas);
-  return () => observer.disconnect();
+  return () => {
+    window.cancelAnimationFrame(frame);
+    observer.disconnect();
+  };
 }, [blueprint, device]);
 
 useEffect(() => {
@@ -1216,6 +1384,11 @@ useEffect(() => {
     <>
     <div
       ref={shellRef}
+      data-testid="builder-shell"
+      data-dnd-active-id={dndObservation.activeId}
+      data-dnd-over-id={dndObservation.overId}
+      data-dnd-intent={dndObservation.intent}
+      data-dnd-valid={dndObservation.valid ? "true" : "false"}
       data-builder-fullscreen={fullscreenState.enabled ? "true" : "false"}
       data-builder-focus-mode={fullscreenState.focusMode ? "true" : "false"}
       className="builder-shell h-screen w-full bg-[var(--dashboard-bg)] text-[var(--dashboard-text)] dark:bg-[#0F1118] dark:text-white overflow-hidden"
@@ -1295,6 +1468,13 @@ onToggleFullscreenBuilder={toggleFullscreenBuilder}
           height: canvasContentHeight ? `${scaledCanvasHeight}px` : undefined,
         }}
       >
+        <div
+          className="relative shrink-0"
+          style={{
+            width: `${scaledCanvasWidth}px`,
+            height: canvasContentHeight ? `${scaledCanvasHeight}px` : undefined,
+          }}
+        >
           <div
             ref={canvasSandboxRef}
             className="relative builder-canvas-sandbox"
@@ -1364,6 +1544,7 @@ onToggleFullscreenBuilder={toggleFullscreenBuilder}
               }}
             />
           </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1372,14 +1553,14 @@ onToggleFullscreenBuilder={toggleFullscreenBuilder}
         {/* INSPECTOR */}
 {!fullscreenState.sidebarsCollapsed && (
   <aside
-    className="builder-chrome absolute inset-y-0 right-0 z-[110] overflow-visible border-l border-white/10 bg-[#121418]/90 shadow-2xl shadow-black/50 backdrop-blur-2xl"
+    className="absolute inset-y-0 right-0 z-[110] overflow-visible border-l border-white/10 bg-[rgb(15_17_24/82%)] backdrop-blur-2xl shadow-2xl shadow-black/50"
     style={{
       width: isInspectorCollapsed ? 0 : INSPECTOR_WIDTH,
       pointerEvents: isInspectorCollapsed ? "none" : "auto",
     }}
   >
     {!isInspectorCollapsed && (
-      <div className="h-full overflow-hidden bg-[#121418]/90 backdrop-blur-2xl">
+      <div className="h-full overflow-hidden backdrop-blur-2xl">
         <InspectorPanel
           selectedId={selectedId}
           blueprint={blueprint}
@@ -1409,11 +1590,11 @@ onToggleFullscreenBuilder={toggleFullscreenBuilder}
       </div>
 
       {dragGhost && <DragGhost drag={dragGhost} />}
+      <DropZoneIndicator />
 
       <style>{`
         .builder-canvas-sandbox {
           isolation: isolate;
-          contain: layout style paint;
           background: ${isDarkMode ? "#0f1118" : "#ffffff"};
           color: ${isDarkMode ? "#e5e7eb" : "#0f172a"};
           font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",

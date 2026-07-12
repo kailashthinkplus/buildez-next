@@ -16,8 +16,9 @@ type PremiumWidgetProps = {
 };
 
 export default function PremiumWidget({ node }: { node: BuilderNode }) {
-  const { props, style } = useWidget<PremiumWidgetProps>(node);
+  const { blueprint, props, style } = useWidget<PremiumWidgetProps>(node);
   const normalizedStyle = normalizeBoxShorthand(style);
+  const tokens = blueprint?.theme?.tokens as Record<string, any> | undefined;
 
   return (
     <WidgetFrame nodeId={node.id}>
@@ -30,6 +31,19 @@ export default function PremiumWidget({ node }: { node: BuilderNode }) {
         secondaryCta={props.secondaryCta}
         items={props.items}
         style={normalizedStyle}
+        theme={{
+          primary: tokens?.colors?.primary ?? "#2563eb",
+          primaryContrast: tokens?.colors?.primaryContrast ?? "#ffffff",
+          surface: tokens?.colors?.surface ?? "#ffffff",
+          surfaceAlt: tokens?.colors?.surfaceAlt ?? "#f1f5f9",
+          textPrimary: tokens?.colors?.textPrimary ?? "#0f172a",
+          textSecondary: tokens?.colors?.textSecondary ?? "#475569",
+          border: tokens?.colors?.border ?? "#dbe3ef",
+          accent: tokens?.colors?.accent ?? "#f97316",
+          cardRadius: tokens?.radius?.card ?? 12,
+          buttonRadius: tokens?.radius?.button ?? 10,
+          cardShadow: tokens?.shadow?.card ?? "0 16px 42px rgba(15, 23, 42, 0.08)",
+        }}
       />
     </WidgetFrame>
   );

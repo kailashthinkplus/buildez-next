@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-10T20:22:11.412Z",
+  "timestamp": "2026-07-12T18:18:21.298Z",
   "label": "published-render:input",
   "payload": {
     "summary": {
@@ -9,16 +9,19 @@
         "title": "Home",
         "version": 2,
         "createdAt": "2026-07-09T11:28:43.786Z",
-        "updatedAt": "2026-07-10T20:22:07.930Z"
+        "updatedAt": "2026-07-12T18:18:02.479Z"
       },
       "theme": {
         "id": "default",
         "name": "Default",
         "preset": "default",
         "tokenKeys": [
+          "cards",
+          "forms",
           "colors",
           "radius",
           "shadow",
+          "states",
           "buttons",
           "spacing",
           "defaults",
@@ -31,11 +34,13 @@
       "backgroundPromptCount": 0,
       "headings": [],
       "textSamples": [
-        "The light, The air &The sounds of a Bengaluru morning",
-        "Here, your home is not just a dwelling. It’s a habitat. One for your family. Pne for the birds. Make it feel alive. You pay for one. We build both.",
-        "Nestled in nature"
+        "The Light, The Air, and The Sounds of a Morning in Bengaluru",
+        "Here, your home is more than just a place to live. It’s a habitat—for your family and for the birds. Create a space that feels vibrant and alive. You invest in one; we build both.",
+        "Surrounded by nature"
       ],
       "colors": [
+        "theme.colors.primary",
+        "theme.colors.surfaceAlt",
         "transparent",
         "text.secondary"
       ],
@@ -44,9 +49,9 @@
           "id": "49d3d0e9-eb52-43ad-92a7-ea40fb3eacb4",
           "type": "image",
           "hidden": false,
-          "src": "https://assets.getbuildez.com/stores/kailash-rao-k5akog2y/websites/home-w8mira4q/users/kailash-addanki-4ok82j1m/media/1783697177243-59f499b4...",
+          "src": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zN...",
           "backgroundImage": "",
-          "aiImagePrompt": "",
+          "aiImagePrompt": "change the bird in this image",
           "backgroundPrompt": ""
         },
         {
@@ -73,7 +78,7 @@
         {
           "id": "f31d52b3-e753-48e3-8c53-9531e3a2fb59",
           "type": "section",
-          "children": 2,
+          "children": 1,
           "backgroundColor": {
             "base": "surface",
             "desktop": "transparent"

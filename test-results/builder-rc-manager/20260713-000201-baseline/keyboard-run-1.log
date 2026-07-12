@@ -1,0 +1,13 @@
+$ playwright test --project=builder-chromium --grep @keyboard
+
+Running 2 tests using 1 worker
+
+  ✓  1 [setup] › playwright/tests/auth.setup.ts:7:6 › authenticate Builder RC user (1.6s)
+  ✓  2 [builder-chromium] › playwright/tests/builder/operations/keyboard-focus.spec.ts:16:5 › @operations @keyboard shortcuts work from chrome and remain safe in editors (2.4s)
+
+  2 passed (4.9s)
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m

@@ -6,6 +6,7 @@ import type React from "react";
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight, ChevronDown, RotateCcw } from "lucide-react";
 import {
   getResponsiveValue as resolveResponsiveValueForDevice,
+  isResponsiveValue,
   resetResponsiveOverride,
   resolveResponsiveValue,
   setResponsiveOverride,
@@ -113,6 +114,10 @@ export function setResponsiveStyleValue(
   onUpdateNode: (id: string, patch: Partial<BuilderNode>) => void
 ) {
   const current = node.style?.[key] as unknown;
+  if (value === undefined) {
+    clearResponsiveStyleValue(node, key, device, onUpdateNode);
+    return;
+  }
   const next = setResponsiveOverride(current, device, value);
 
   onUpdateNode(node.id, {
@@ -120,6 +125,20 @@ export function setResponsiveStyleValue(
       normalizeBoxStyleUpdate(node.style, String(key), next)
     ),
   });
+}
+
+export function clearResponsiveStyleValue(
+  node: BuilderNode,
+  key: keyof BuilderStyle | string,
+  device: InspectorDevice,
+  onUpdateNode: (id: string, patch: Partial<BuilderNode>) => void
+) {
+  const current = node.style?.[key] as unknown;
+  if (isResponsiveValue(current)) {
+    resetResponsiveStyleValue(node, key, device, onUpdateNode);
+  } else {
+    removeStyleProperty(node, String(key), onUpdateNode);
+  }
 }
 
 export function resetResponsiveStyleValue(
@@ -144,11 +163,44 @@ export function setStyleValue(
   value: unknown,
   onUpdateNode: (id: string, patch: Partial<BuilderNode>) => void
 ) {
+  if (value === undefined) {
+    removeStyleProperty(node, String(key), onUpdateNode);
+    return;
+  }
     onUpdateNode(node.id, {
     style: removeUndefinedDeep(
       normalizeBoxStyleUpdate(node.style, String(key), value)
     ),
   });
+}
+
+export function removeStyleProperty(
+  node: BuilderNode,
+  key: keyof BuilderStyle | string,
+  onUpdateNode: (id: string, patch: Partial<BuilderNode>) => void
+) {
+  const nextStyle = { ...(node.style ?? {}) } as Record<string, unknown>;
+  delete nextStyle[String(key)];
+  onUpdateNode(node.id, { style: nextStyle as BuilderStyle });
+}
+
+export function removeNestedProperty<T extends Record<string, unknown>>(
+  source: T,
+  path: readonly string[]
+): T {
+  if (path.length === 0) return { ...source };
+  const [head, ...tail] = path;
+  const next = { ...source } as Record<string, unknown>;
+  if (tail.length === 0) {
+    delete next[head];
+    return next as T;
+  }
+  const child = next[head];
+  if (!child || typeof child !== "object" || Array.isArray(child)) return next as T;
+  const cleaned = removeNestedProperty(child as Record<string, unknown>, tail);
+  if (Object.keys(cleaned).length === 0) delete next[head];
+  else next[head] = cleaned;
+  return next as T;
 }
 
 export function setPropValue(
@@ -157,6 +209,12 @@ export function setPropValue(
   value: unknown,
   onUpdateNode: (id: string, patch: Partial<BuilderNode>) => void
 ) {
+  if (value === undefined) {
+    const nextProps = { ...node.props };
+    delete nextProps[key];
+    onUpdateNode(node.id, { props: nextProps });
+    return;
+  }
     onUpdateNode(node.id, {
     props: removeUndefinedDeep({
       ...node.props,
@@ -171,6 +229,14 @@ export function setAdvancedValue(
   value: unknown,
   onUpdateNode: (id: string, patch: Partial<BuilderNode>) => void
 ) {
+  if (value === undefined) {
+    const nextProps = removeNestedProperty(
+      node.props,
+      ["advanced", key]
+    );
+    onUpdateNode(node.id, { props: nextProps });
+    return;
+  }
   onUpdateNode(node.id, {
     props: {
       ...node.props,
@@ -189,6 +255,14 @@ export function setAdvancedGroupValue(
   value: unknown,
   onUpdateNode: (id: string, patch: Partial<BuilderNode>) => void
 ) {
+  if (value === undefined) {
+    const nextProps = removeNestedProperty(
+      node.props,
+      ["advanced", group, key]
+    );
+    onUpdateNode(node.id, { props: nextProps });
+    return;
+  }
   const advanced = getAdvanced(node);
   const current = advanced[group];
   const groupValue =

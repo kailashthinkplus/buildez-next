@@ -19,21 +19,23 @@ export async function renderPage({
   /* ----------------------------------------------------------
      1️⃣ RESOLVE SITE CANDIDATES (BY SLUG ONLY)
   ---------------------------------------------------------- */
-  const sites = await prisma.site.findMany({
+  const site = await prisma.site.findFirst({
     where: {
       slug: siteSlug,
+      status: "PUBLISHED",
     },
     orderBy: {
-      createdAt: "desc",
+      updatedAt: "desc",
     },
+    include: { layout: true },
   });
 
   console.log(
     "🏢 SITE CANDIDATES:",
-    sites.map((s) => `${s.id}:${s.status}`)
+    site ? [`${site.id}:${site.status}`] : []
   );
 
-  if (!sites.length) {
+  if (!site) {
     console.log("❌ NO SITE WITH THIS SLUG");
     return null;
   }
@@ -45,10 +47,11 @@ export async function renderPage({
     where: {
       slug: pageSlug,
       status: "PUBLISHED",
-      siteId: {
-        in: sites.map((s) => s.id),
-      },
+      deletedAt: null,
+      deleted: false,
+      siteId: site.id,
     },
+    orderBy: [{ publishedAt: "desc" }, { updatedAt: "desc" }],
     include: {
       blueprint: true,
       site: {

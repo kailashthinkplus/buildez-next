@@ -1,0 +1,7 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@buildez/db";
+import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
+
+async function owned(req: NextRequest, collectionId: string) { const tenant = await verifyTenantAccess(req); if (!tenant) return null; return prisma.cmsCollection.findFirst({ where: { id: collectionId, site: { tenantId: tenant.id } } }); }
+export async function GET(req: NextRequest) { const collectionId = req.nextUrl.searchParams.get("collectionId") || ""; if (!await owned(req, collectionId)) return NextResponse.json({ error: "Not found" }, { status: 404 }); const entries = await prisma.cmsEntry.findMany({ where: { collectionId }, orderBy: { updatedAt: "desc" } }); return NextResponse.json({ entries }); }
+export async function POST(req: NextRequest) { const b = await req.json(); const collection = await owned(req, b.collectionId); if (!collection) return NextResponse.json({ error: "Not found" }, { status: 404 }); const fields = collection.fields as any[]; const missing = fields.filter((f) => f.required && (b.data?.[f.key] === undefined || b.data?.[f.key] === "")); if (missing.length) return NextResponse.json({ error: `Required: ${missing.map((f) => f.name).join(", ")}` }, { status: 400 }); const entry = await prisma.cmsEntry.create({ data: { collectionId: b.collectionId, data: b.data || {}, status: b.status === "PUBLISHED" ? "PUBLISHED" : "DRAFT" } }); return NextResponse.json({ entry }, { status: 201 }); }

@@ -162,8 +162,14 @@ export default function MediaCard({
               text-white
             "
           >
-            AI
+            AI generated
           </span>
+        </div>
+      )}
+
+      {asset.source === "UPLOAD" && (
+        <div className="absolute left-2 top-2 rounded-lg bg-black/70 px-2 py-1 text-[10px] font-medium text-white backdrop-blur">
+          User
         </div>
       )}
 

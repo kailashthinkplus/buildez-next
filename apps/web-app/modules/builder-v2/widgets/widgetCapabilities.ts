@@ -85,7 +85,7 @@ function capabilityFromDefinition(definition: WidgetDefinition): WidgetCapabilit
     .filter((property) => property.type === "color" || ["fontFamily", "backgroundColor", "color", "borderRadius", "boxShadow"].includes(property.id))
     .map((property) => property.id);
   const productionWidget = isProductionWidget(definition.type);
-  const metadataOnlyWidget = isMetadataOnlyWidget(definition.type);
+  const metadataOnlyWidget = isRuntimeGatedWidget(definition.type);
   const restrictedWidget = isRestrictedWidget(definition.type);
 
   return {
@@ -175,8 +175,8 @@ function isProductionWidget(type: NodeType) {
   return PremiumWidgetDefinitions.some((definition) => definition.type === type);
 }
 
-function isMetadataOnlyWidget(type: NodeType) {
-  return type === "popupModal";
+function isRuntimeGatedWidget(type: NodeType) {
+  return false;
 }
 
 function isRestrictedWidget(type: NodeType) {
@@ -184,12 +184,6 @@ function isRestrictedWidget(type: NodeType) {
 }
 
 function widgetSafetyWarnings(type: NodeType) {
-  if (isMetadataOnlyWidget(type)) {
-    return [
-      "Popup is metadata-only in BSP-15. Runtime triggers, focus trap, and production modal execution remain gated.",
-    ];
-  }
-
   if (isRestrictedWidget(type)) {
     return [
       "Restricted embed stores safe provider metadata only. Opaque HTML and script execution are blocked.",

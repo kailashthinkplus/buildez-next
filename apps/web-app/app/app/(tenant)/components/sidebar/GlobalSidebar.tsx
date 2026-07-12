@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { DashboardLogo } from "../DashboardLogo";
 import {
   LayoutDashboard,
   FolderTree,
@@ -9,6 +9,8 @@ import {
   CreditCard,
   Settings,
   X,
+  Sparkles,
+  CircleHelp,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -53,23 +55,10 @@ export function GlobalSidebar({ setMobileOpen }: GlobalSidebarProps) {
   ];
 
   return (
-    <div className="h-full px-4 py-6 flex flex-col gap-8">
+    <div className="h-full px-3 py-4 flex flex-col">
       {/* LOGO */}
-      <div className="flex items-center justify-between">
-        <Image
-          src="/buildez-logo-light.svg"
-          alt="BuildEZ"
-          width={148}
-          height={72}
-          className="block h-11 w-[148px] object-contain object-left dark:hidden"
-        />
-        <Image
-          src="/buildez-logo-dark.svg"
-          alt="BuildEZ"
-          width={148}
-          height={72}
-          className="hidden h-11 w-[148px] object-contain object-left dark:block"
-        />
+      <div className="flex items-center justify-between px-2">
+        <DashboardLogo />
 
         <button
           onClick={() => setMobileOpen(false)}
@@ -80,6 +69,10 @@ export function GlobalSidebar({ setMobileOpen }: GlobalSidebarProps) {
       </div>
 
       {/* NAV */}
+      <div className="relative mt-5 mb-5">
+        <SearchBox />
+      </div>
+      <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[.14em] dashboard-faint">Workspace</p>
       <nav className="flex flex-col gap-1">
         {links.map(({ id, name, href, icon: Icon }) => {
           const active =
@@ -90,7 +83,7 @@ export function GlobalSidebar({ setMobileOpen }: GlobalSidebarProps) {
               key={id}
               href={href}
               className={`
-                flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition
+                flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition
                 ${
                   active
                     ? "dashboard-nav-active"
@@ -104,6 +97,19 @@ export function GlobalSidebar({ setMobileOpen }: GlobalSidebarProps) {
           );
         })}
       </nav>
+      <div className="mt-auto space-y-3">
+        <Link href="/app/ai" className="block rounded-2xl border dashboard-border bg-[var(--dashboard-surface)] p-4 dashboard-hover">
+          <Sparkles className="h-5 w-5" />
+          <p className="mt-3 text-sm font-semibold">Build with AI</p>
+          <p className="mt-1 text-[11px] leading-4 dashboard-muted">Turn an idea into a polished website in minutes.</p>
+          <span className="mt-3 inline-block text-xs font-semibold text-blue-600 dark:text-blue-400">Start creating</span>
+        </Link>
+        <Link href="/app/help" className="flex items-center gap-3 px-3 py-2 text-sm dashboard-muted"><CircleHelp size={17}/> Help center</Link>
+      </div>
     </div>
   );
+}
+
+function SearchBox() {
+  return <div className="dashboard-input flex h-10 items-center gap-2 rounded-xl px-3 text-xs dashboard-muted"><span className="text-base">⌕</span><span>Search</span><kbd className="ml-auto rounded border dashboard-border px-1.5 py-0.5 text-[10px]">⌘K</kbd></div>;
 }

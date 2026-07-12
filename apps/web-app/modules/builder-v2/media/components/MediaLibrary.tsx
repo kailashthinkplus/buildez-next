@@ -20,6 +20,7 @@ interface MediaLibraryProps {
   description?: string;
   pickerMode?: boolean;
   onSelect?(asset: MediaAsset): void;
+  compact?: boolean;
 }
 
 export default function MediaLibrary({
@@ -28,6 +29,7 @@ export default function MediaLibrary({
   description = "Upload, search, select and manage optimized WebP assets.",
   pickerMode = false,
   onSelect,
+  compact = false,
 }: MediaLibraryProps) {
   const [tab, setTab] = useState<MediaLibraryTab>("library");
   const [selectedAsset, setSelectedAsset] = useState<MediaAsset | null>(null);
@@ -120,6 +122,7 @@ export default function MediaLibrary({
               selectedAsset={selectedAsset}
               onSelect={handleSelect}
               onDelete={handleDelete}
+              columns={compact ? "two" : "responsive"}
             />
           )}
 

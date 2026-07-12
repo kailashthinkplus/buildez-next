@@ -7,6 +7,7 @@ import {
   validateBlueprint,
 } from "../validation";
 import type { BuilderCommand } from "./BuilderCommand";
+import { sanitizeUndefinedObjectProperties } from "./MoveNodeCommand";
 
 type Listener = (blueprint: BuilderBlueprint) => void;
 
@@ -69,8 +70,16 @@ export class CommandBus {
     const before = structuredClone(current);
 
     try {
-      const next = command.execute(structuredClone(current));
+      const commandResult = command.execute(structuredClone(current));
+      const next = sanitizeCommandPatchObjects(commandResult);
       assertValidBlueprint(next, `Command "${command.name}" result`);
+
+      // Rejected commands conventionally return the input Blueprint. Do not
+      // turn those no-op results into phantom undo entries.
+      if (JSON.stringify(next) === JSON.stringify(before)) {
+        this.blueprint = before;
+        return;
+      }
 
       if (this.activeTransaction) {
         this.activeTransaction.commandIds.push(command.id);
@@ -242,6 +251,24 @@ export class CommandBus {
       listener(snapshot);
     }
   }
+}
+
+export function sanitizeCommandPatchObjects(
+  blueprint: BuilderBlueprint
+): BuilderBlueprint {
+  return {
+    ...blueprint,
+    nodes: Object.fromEntries(
+      Object.entries(blueprint.nodes).map(([nodeId, node]) => [
+        nodeId,
+        {
+          ...node,
+          props: sanitizeUndefinedObjectProperties(node.props),
+          style: sanitizeUndefinedObjectProperties(node.style),
+        },
+      ])
+    ),
+  };
 }
 
 function createHistoryMetadata(

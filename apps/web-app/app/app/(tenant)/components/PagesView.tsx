@@ -164,17 +164,18 @@ export default function PagesView({ siteSlug }: Props) {
   };
 
   return (
-    <div className="p-6 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">
+    <div className="relative px-1 py-2 md:px-2">
+      <div className="pointer-events-none absolute right-[8%] top-0 h-64 w-64 rounded-full bg-violet-500/10 blur-[90px]" />
+      <div className="relative max-w-[1400px] mx-auto space-y-6">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div><p className="mb-1 text-xs font-semibold uppercase tracking-[.14em] dashboard-faint">Website content</p><h1 className="text-2xl font-semibold">
             Pages {siteSlug && <span className="opacity-60">- {siteSlug}</span>}
-          </h1>
+          </h1><p className="mt-2 text-sm dashboard-muted">Create, organize, preview, and publish every page in one place.</p></div>
 
           {!showTrash && (
             <button
               onClick={() => setCreatePageOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--brand)] text-white font-medium hover:brightness-110"
+              className="dashboard-primary-button flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-medium"
             >
               <Plus className="w-4 h-4" />
               Add Page
@@ -182,7 +183,7 @@ export default function PagesView({ siteSlug }: Props) {
           )}
         </div>
 
-        <div className="relative max-w-sm">
+        <div className="dashboard-card-strong flex flex-wrap items-center gap-3 rounded-2xl p-3"><div className="relative min-w-[240px] flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-50" />
           <input
             value={search}
@@ -193,9 +194,7 @@ export default function PagesView({ siteSlug }: Props) {
             placeholder={showTrash ? "Search trash…" : "Search pages…"}
             className="w-full pl-9 pr-3 py-2 rounded-xl dashboard-input backdrop-blur-xl text-sm"
           />
-        </div>
-
-        <div className="flex items-center gap-2">
+        </div><div className="flex items-center gap-2 ml-auto">
           <button
             onClick={() => {
               setShowTrash(false);
@@ -204,7 +203,7 @@ export default function PagesView({ siteSlug }: Props) {
             }}
             className={`rounded-xl px-4 py-2 text-sm font-medium ${
               !showTrash
-                ? "bg-[var(--brand)] text-white"
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                 : "dashboard-card dashboard-muted"
             }`}
           >
@@ -224,8 +223,7 @@ export default function PagesView({ siteSlug }: Props) {
             }`}
           >
             Trash
-          </button>
-        </div>
+          </button></div></div>
 
         {isLoading && (
           <div className="overflow-hidden rounded-2xl dashboard-card backdrop-blur-xl">
@@ -245,9 +243,9 @@ export default function PagesView({ siteSlug }: Props) {
         )}
 
         {!isLoading && sortedPages.length > 0 && (
-          <div className="overflow-x-auto rounded-2xl dashboard-card backdrop-blur-xl">
+          <div className="overflow-x-auto rounded-[22px] dashboard-card backdrop-blur-xl">
             <table className="w-full min-w-[900px] text-sm">
-              <thead className="border-b dashboard-border">
+              <thead className="border-b dashboard-border bg-black/[.025] dark:bg-white/[.025]">
                 {showTrash ? (
                   <tr className="text-left">
                     <th className="p-3">Title</th>

@@ -130,6 +130,7 @@ export default function AdvancedTab({
             }}
             options={[
               { value: "css", label: "CSS motion" },
+              { value: "parallax", label: "Scroll parallax" },
               { value: "none", label: "Disabled" },
             ]}
           />
@@ -165,6 +166,77 @@ export default function AdvancedTab({
           </Field>
         </div>
 
+        <Field label="Entrance trigger">
+          <SelectInput
+            value={motion.trigger ?? "viewport"}
+            onChange={(value) => setAdvancedGroupValue(node, "motion", "trigger", value, onUpdateNode)}
+            options={[
+              { value: "viewport", label: "When entering viewport" },
+              { value: "load", label: "On page load" },
+            ]}
+          />
+        </Field>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Hover lift">
+            <SliderWithInput
+              value={motion.hoverTranslateY ?? 0}
+              onChange={(value) => setAdvancedGroupValue(node, "motion", "hoverTranslateY", value, onUpdateNode)}
+              min={-40}
+              max={40}
+              step={1}
+              unit="px"
+            />
+          </Field>
+          <Field label="Hover scale">
+            <SliderWithInput
+              value={motion.hoverScale ?? 1}
+              onChange={(value) => setAdvancedGroupValue(node, "motion", "hoverScale", value, onUpdateNode)}
+              min={0.8}
+              max={1.2}
+              step={0.01}
+            />
+          </Field>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Hover opacity">
+            <SliderWithInput
+              value={motion.hoverOpacity ?? 1}
+              onChange={(value) => setAdvancedGroupValue(node, "motion", "hoverOpacity", value, onUpdateNode)}
+              min={0}
+              max={1}
+              step={0.05}
+            />
+          </Field>
+          <Field label="Mouse follow">
+            <SliderWithInput
+              value={motion.mouseStrength ?? 0}
+              onChange={(value) => setAdvancedGroupValue(node, "motion", "mouseStrength", value, onUpdateNode)}
+              min={0}
+              max={40}
+              step={1}
+              unit="px"
+            />
+          </Field>
+        </div>
+        <ToggleInput
+          label="Pin while scrolling"
+          checked={Boolean(motion.pin ?? motion.preset === "pin")}
+          onChange={(value) => setAdvancedGroupValue(node, "motion", "pin", value, onUpdateNode)}
+        />
+        {Boolean(motion.pin ?? motion.preset === "pin") && (
+          <Field label="Pinned top offset">
+            <SliderWithInput
+              value={motion.pinTop ?? 0}
+              onChange={(value) => setAdvancedGroupValue(node, "motion", "pinTop", value, onUpdateNode)}
+              min={0}
+              max={240}
+              step={1}
+              unit="px"
+            />
+          </Field>
+        )}
+
         <div className="grid grid-cols-1 gap-3">
           <Field label="Duration">
             <SliderWithInput
@@ -189,36 +261,80 @@ export default function AdvancedTab({
         </div>
 
         <div className="grid grid-cols-1 gap-3">
-          <Field label="Parallax speed">
+
+          <Field label="Horizontal distance">
             <SliderWithInput
-              value={motion.parallaxSpeed ?? 0}
-              onChange={(value) => setAdvancedGroupValue(node, "motion", "parallaxSpeed", value, onUpdateNode)}
-              min={-2}
-              max={2}
-              step={0.1}
-              unit=""
+              value={motion.parallaxHorizontalDistance ?? 0}
+              onChange={(value) =>
+                setAdvancedGroupValue(
+                  node,
+                  "motion",
+                  "parallaxHorizontalDistance",
+                  value,
+                  onUpdateNode
+                )
+              }
+              min={0}
+              max={500}
+              step={5}
+              unit="px"
             />
           </Field>
-          <Field label="Horizontal parallax">
+          <Field label="Horizontal direction">
+  <SelectInput
+    value={motion.parallaxHorizontalDirection ?? "left"}
+    options={[
+      {label:"Left",value:"left"},
+      {label:"Right",value:"right"},
+    ]}
+    onChange={(value)=>
+      setAdvancedGroupValue(
+        node,
+        "motion",
+        "parallaxHorizontalDirection",
+        value,
+        onUpdateNode
+      )
+    }
+  />
+</Field>
+          <Field label="Vertical distance">
             <SliderWithInput
-              value={motion.parallaxHorizontal ?? 0}
-              onChange={(value) => setAdvancedGroupValue(node, "motion", "parallaxHorizontal", value, onUpdateNode)}
-              min={-2}
-              max={2}
-              step={0.1}
-              unit=""
+              value={motion.parallaxVerticalDistance ?? 0}
+              onChange={(value) =>
+                setAdvancedGroupValue(
+                  node,
+                  "motion",
+                  "parallaxVerticalDistance",
+                  value,
+                  onUpdateNode
+                )
+              }
+              min={0}
+              max={500}
+              step={5}
+              unit="px"
             />
           </Field>
-          <Field label="Vertical parallax">
-            <SliderWithInput
-              value={motion.parallaxVertical ?? motion.parallaxSpeed ?? 0}
-              onChange={(value) => setAdvancedGroupValue(node, "motion", "parallaxVertical", value, onUpdateNode)}
-              min={-2}
-              max={2}
-              step={0.1}
-              unit=""
-            />
-          </Field>
+          <Field label="Vertical direction">
+  <SelectInput
+    value={motion.parallaxVerticalDirection ?? "up"}
+    options={[
+      {label:"Up",value:"up"},
+      {label:"Down",value:"down"},
+    ]}
+    onChange={(value)=>
+      setAdvancedGroupValue(
+        node,
+        "motion",
+        "parallaxVerticalDirection",
+        value,
+        onUpdateNode
+      )
+    }
+  />
+</Field>
+
           <Field label="Stagger">
             <SliderWithInput
               value={motion.stagger ?? 0}

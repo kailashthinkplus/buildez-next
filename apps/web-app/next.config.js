@@ -10,11 +10,6 @@ const nextConfig = {
     "@buildez/billing-core",
   ],
 
-  // 🚨 CRITICAL: Disable Next 15 experimental compiler (fixes './...' CSS bug)
-  experimental: {
-    turbo: false,
-  },
-
   // Disable webpack cache (safe, keeps your earlier intent)
   webpack: (config, { isServer }) => {
     config.cache = false;

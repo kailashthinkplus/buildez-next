@@ -2,12 +2,14 @@ import type { BuilderStyle } from "../../types/blueprint";
 
 const ImageDefaults = {
   props: {
-    src: "https://placehold.co/1200x800/e2e8f0/64748b?text=Image",
-    alt: "Image",
+    src: "",
+    alt: "Describe this image",
   },
   style: {
     maxWidth: "100%",
-    borderRadius: 12,
+    width: "100%",
+    aspectRatio: "3 / 2",
+    borderRadius: "theme.radius.media",
     objectFit: "cover",
   } satisfies BuilderStyle,
 };

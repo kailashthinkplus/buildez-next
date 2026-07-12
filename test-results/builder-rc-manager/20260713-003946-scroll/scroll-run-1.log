@@ -1,0 +1,63 @@
+$ playwright test --project=builder-chromium --grep @scroll
+
+Running 2 tests using 1 worker
+
+  ✓  1 [setup] › playwright/tests/auth.setup.ts:7:6 › authenticate Builder RC user (1.9s)
+  ✘  2 [builder-chromium] › playwright/tests/builder/operations/scroll-targeting.spec.ts:56:5 › @operations @scroll palette insertion targets the lower canvas after scrolling and survives reload (12.3s)
+
+
+  1) [builder-chromium] › playwright/tests/builder/operations/scroll-targeting.spec.ts:56:5 › @operations @scroll palette insertion targets the lower canvas after scrolling and survives reload 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByTestId('builder-shell')
+    Expected: "rc-t3b-container-nested"
+    Received: ""
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 10000ms
+      - waiting for getByTestId('builder-shell')
+        23 × locator resolved to <div data-dnd-intent="" data-dnd-over-id="" data-dnd-valid="false" data-testid="builder-shell" data-builder-fullscreen="false" data-builder-focus-mode="false" data-dnd-active-id="new:heading:e9d71240-bc75-4d62-b7c7-4d31de2f46fb" class="builder-shell h-screen w-full bg-[var(--dashboard-bg)] text-[var(--dashboard-text)] dark:bg-[#0F1118] dark:text-white overflow-hidden">…</div>
+           - unexpected value ""
+
+
+       at ../helpers/builderDrag.ts:182
+
+      180 |     await page.mouse.move(targetLaneX(live), safeY, { steps: 8 });
+      181 |   }
+    > 182 |   await expect(shell).toHaveAttribute("data-dnd-over-id", targetId);
+          |                       ^
+      183 |   await expect(shell).toHaveAttribute("data-dnd-intent", "inside");
+      184 |   await expect(shell).toHaveAttribute("data-dnd-valid", "true");
+      185 |   const releaseBox = await target.boundingBox();
+        at dragPaletteWidgetInside (/Users/kailash/buildez/apps/web-app/playwright/helpers/builderDrag.ts:182:23)
+        at /Users/kailash/buildez/apps/web-app/playwright/tests/builder/operations/scroll-targeting.spec.ts:143:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/builder-operations-scroll--75c8e-rolling-and-survives-reload-builder-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/builder-operations-scroll--75c8e-rolling-and-survives-reload-builder-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/builder-operations-scroll--75c8e-rolling-and-survives-reload-builder-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/builder-operations-scroll--75c8e-rolling-and-survives-reload-builder-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/builder-operations-scroll--75c8e-rolling-and-survives-reload-builder-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [builder-chromium] › playwright/tests/builder/operations/scroll-targeting.spec.ts:56:5 › @operations @scroll palette insertion targets the lower canvas after scrolling and survives reload 
+  1 passed (15.4s)
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m
+[ELIFECYCLE] Command failed with exit code 1.

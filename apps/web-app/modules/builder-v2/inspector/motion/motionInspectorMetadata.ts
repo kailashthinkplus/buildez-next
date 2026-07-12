@@ -13,7 +13,7 @@ export type MotionInspectorField = Readonly<{
   id: string;
   label: string;
   type: "select" | "number" | "text" | "toggle";
-  metadataOnly: true;
+  metadataOnly: false;
 }>;
 
 export type MotionInspectorGroupMetadata = Readonly<{
@@ -23,10 +23,10 @@ export type MotionInspectorGroupMetadata = Readonly<{
 }>;
 
 const COMMON_FIELDS: readonly MotionInspectorField[] = [
-  { id: "preset", label: "Preset", type: "select", metadataOnly: true },
-  { id: "duration", label: "Duration", type: "number", metadataOnly: true },
-  { id: "delay", label: "Delay", type: "number", metadataOnly: true },
-  { id: "ease", label: "Ease", type: "select", metadataOnly: true },
+  { id: "preset", label: "Preset", type: "select", metadataOnly: false },
+  { id: "duration", label: "Duration", type: "number", metadataOnly: false },
+  { id: "delay", label: "Delay", type: "number", metadataOnly: false },
+  { id: "ease", label: "Ease", type: "select", metadataOnly: false },
 ];
 
 export const MOTION_INSPECTOR_GROUPS: readonly MotionInspectorGroupMetadata[] = [
@@ -34,29 +34,31 @@ export const MOTION_INSPECTOR_GROUPS: readonly MotionInspectorGroupMetadata[] = 
   group("exit", "Exit", COMMON_FIELDS),
   group("hover", "Hover", [
     ...COMMON_FIELDS,
-    { id: "trigger", label: "Trigger", type: "select", metadataOnly: true },
+    { id: "trigger", label: "Trigger", type: "select", metadataOnly: false },
   ]),
   group("scroll", "Scroll", [
     ...COMMON_FIELDS,
-    { id: "start", label: "Start", type: "text", metadataOnly: true },
-    { id: "end", label: "End", type: "text", metadataOnly: true },
+    { id: "start", label: "Start", type: "text", metadataOnly: false },
+    { id: "end", label: "End", type: "text", metadataOnly: false },
   ]),
   group("parallax", "Parallax", [
-    { id: "speed", label: "Speed", type: "number", metadataOnly: true },
-    { id: "axis", label: "Axis", type: "select", metadataOnly: true },
+    { id: "parallaxHorizontalDirection", label: "Horizontal direction", type: "select", metadataOnly: false },
+    { id: "parallaxHorizontalDistance", label: "Horizontal distance", type: "number", metadataOnly: false },
+    { id: "parallaxVerticalDirection", label: "Vertical direction", type: "select", metadataOnly: false },
+    { id: "parallaxVerticalDistance", label: "Vertical distance", type: "number", metadataOnly: false },
   ]),
   group("pin", "Pin", [
-    { id: "enabled", label: "Enabled", type: "toggle", metadataOnly: true },
-    { id: "duration", label: "Duration", type: "number", metadataOnly: true },
+    { id: "enabled", label: "Enabled", type: "toggle", metadataOnly: false },
+    { id: "duration", label: "Duration", type: "number", metadataOnly: false },
   ]),
   group("reveal", "Reveal", COMMON_FIELDS),
   group("mouse", "Mouse", [
-    { id: "follow", label: "Follow", type: "toggle", metadataOnly: true },
-    { id: "strength", label: "Strength", type: "number", metadataOnly: true },
+    { id: "follow", label: "Follow", type: "toggle", metadataOnly: false },
+    { id: "strength", label: "Strength", type: "number", metadataOnly: false },
   ]),
   group("timeline", "Timeline", [
-    { id: "name", label: "Name", type: "text", metadataOnly: true },
-    { id: "sequence", label: "Sequence", type: "text", metadataOnly: true },
+    { id: "name", label: "Name", type: "text", metadataOnly: false },
+    { id: "sequence", label: "Sequence", type: "text", metadataOnly: false },
   ]),
 ] as const;
 

@@ -11,6 +11,8 @@ import { SiteThemeFrame } from "../theme/SiteThemeFrame";
 import type { SiteThemeLayout } from "../theme/siteLayout";
 import type { BuilderThemeTokens } from "../theme/theme.types";
 import ProductionWidgetView from "../widgets/premium/ProductionWidgetView";
+import MotionRuntimeEffects from "../motion/MotionRuntimeEffects";
+import { buildRuntimeMotionEntries } from "../motion/runtimeMotionEntries";
 import {
   getRenderContainerWidthStyle,
   getRenderSectionContentWidthStyle,
@@ -144,6 +146,25 @@ const MOTION_KEYFRAMES = `
   from { opacity: 0; transform: translateY(14px); filter: saturate(0.92); }
   to { opacity: 1; transform: translateY(0); filter: saturate(1); }
 }
+@keyframes builder-rotate-in {
+  from { opacity: 0; transform: rotate(-4deg) scale(.98); }
+  to { opacity: 1; transform: rotate(0) scale(1); }
+}
+@keyframes builder-blur-in {
+  from { opacity: 0; filter: blur(12px); }
+  to { opacity: 1; filter: blur(0); }
+}
+@keyframes builder-zoom-in {
+  from { opacity: 0; transform: scale(.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes builder-luxury-in {
+  from { opacity: 0; transform: translateY(32px); filter: blur(8px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-buildez-node-id] { animation: none !important; transition: none !important; transform: none !important; }
+}
 #buildez-preview-root,
 #buildez-preview-root * {
   box-sizing: border-box;
@@ -239,6 +260,10 @@ export function PublishedPageRenderer({
 
   return (
     <div id="buildez-preview-root">
+      <MotionRuntimeEffects
+        entries={buildRuntimeMotionEntries(blueprint)}
+        rootId="buildez-preview-root"
+      />
       {collectGoogleFontFamilies(blueprint).map((family) => (
         <link
           key={family}
@@ -655,7 +680,13 @@ function getRenderStyle(
   blueprint: BuilderBlueprint
 ): React.CSSProperties {
   const advanced = asRecord(node.props?.advanced);
-  const motion = asRecord(advanced.motion);
+  const storedMotion = asRecord(advanced.motion);
+  const motion: Record<string, unknown> = {
+    ...storedMotion,
+    ...(storedMotion.preset === undefined && typeof node.props?.motionPreset === "string"
+      ? { preset: node.props.motionPreset }
+      : {}),
+  };
   const shouldUseFixedBackground =
     motion.engine === "parallax" ||
     Number(motion.parallaxSpeed ?? 0) !== 0 ||

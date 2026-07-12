@@ -2,7 +2,9 @@ const PageDefaults = {
   props: {},
 
   style: {
-    backgroundColor: "surface",
+    backgroundColor: "theme.colors.background",
+    color: "theme.colors.textPrimary",
+    fontFamily: "theme.typography.bodyFont",
     width: "100%",
     minHeight: "100vh",
   },

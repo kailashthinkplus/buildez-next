@@ -175,6 +175,7 @@ const clearDirty = useBuilderStore(
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const saveDropdownRef = useRef<HTMLDivElement | null>(null);
+  const saveInFlightRef = useRef<Promise<boolean> | null>(null);
   const revisionRef = useRef(revision);
   const loadedPageIdRef = useRef(pageId);
 
@@ -328,7 +329,7 @@ const statusTitle =
       ? "This page is live"
       : "This page has not been published yet";
 const publishButtonLabel =
-  savedPageStatus === "PUBLISHED" ? "Publish changes" : "Publish";
+  savedPageStatus === "PUBLISHED" ? "Save changes" : "Publish";
 const pageSlug = currentPage?.slug ?? stripPageIdFromSlug(pageSlugWithId ?? "", pageId);
 const previewSlugWithId = currentPage
   ? `${currentPage.slug}-${currentPage.id}`
@@ -346,64 +347,70 @@ const currentPageTitle = currentPage?.title ?? pageTitle ?? "Untitled page";
   ------------------------------------------------------------- */
 
 const saveBlueprint = useCallback(async (showToast: boolean) => {
-  if (!blueprint || !pageId) return false;
+  const persistLatest = async () => {
+    setSaving(true);
+    setSaveError(false);
 
-  const savingRevision = revision;
-  setSaving(true);
-  setSaveError(false);
+    try {
+      // Serialize saves and keep going when a mutation lands during a request.
+      // Reading Zustand here avoids persisting a Blueprint captured by a stale
+      // render closure.
+      while (true) {
+        const state = useBuilderStore.getState();
+        if (!state.blueprint || !pageId) return false;
+        const savingBlueprint = state.blueprint;
+        const savingRevision = state.revision;
+        const response = await fetch(`/api/builder-v2/blueprints/${pageId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ blueprint: savingBlueprint }),
+          credentials: "include",
+        });
 
-  try {
-    const response = await fetch(
-      `/api/builder-v2/blueprints/${pageId}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blueprint }),
-        credentials: "include",
+        if (!response.ok) throw new Error(`Failed to save (HTTP ${response.status})`);
+
+        const payload = await response.json().catch(() => null);
+        const savedAt = payload?.updatedAt ? new Date(payload.updatedAt) : new Date();
+        if (payload?.pageStatus === "PUBLISHED") {
+          setCurrentPageStatus("PUBLISHED");
+          setPublishedRevision((current) => current ?? savingRevision);
+        }
+        clearDirty(savingRevision);
+        setLastSavedAt(savedAt);
+        setNow(new Date());
+
+        if (useBuilderStore.getState().revision === savingRevision) break;
       }
-    );
 
-    if (!response.ok) {
-      throw new Error("Failed to save");
+      setShowAutoSavePulse(true);
+      window.setTimeout(() => setShowAutoSavePulse(false), 1400);
+      return true;
+    } catch (error) {
+      console.error("Save error:", error);
+      setSaveError(true);
+      return false;
+    } finally {
+      setSaving(false);
     }
+  };
 
-    const payload = await response.json().catch(() => null);
-    const savedAt = payload?.updatedAt ? new Date(payload.updatedAt) : new Date();
-    if (payload?.pageStatus === "PUBLISHED") {
-      setCurrentPageStatus("PUBLISHED");
-      setPublishedRevision((current) => current ?? revisionRef.current);
-    }
-
-    clearDirty(savingRevision);
-    setLastSavedAt(savedAt);
-    setNow(new Date());
-    setShowAutoSavePulse(true);
-    window.setTimeout(() => setShowAutoSavePulse(false), 1400);
-
-    if (showToast) {
-      setToast({
-        message: "Page saved successfully",
-        type: "success",
-      });
-    }
-
-    return true;
-  } catch (error) {
-    console.error("Save error:", error);
-    setSaveError(true);
-
-    if (showToast) {
-      setToast({
-        message: "Failed to save page",
-        type: "error",
-      });
-    }
-
-    return false;
-  } finally {
-    setSaving(false);
+  if (!saveInFlightRef.current) {
+    const pending = persistLatest();
+    saveInFlightRef.current = pending;
+    void pending.finally(() => {
+      if (saveInFlightRef.current === pending) saveInFlightRef.current = null;
+    });
   }
-}, [blueprint, clearDirty, pageId, revision]);
+
+  const saved = await saveInFlightRef.current;
+  if (showToast) {
+    setToast({
+      message: saved ? "Page saved successfully" : "Failed to save page",
+      type: saved ? "success" : "error",
+    });
+  }
+  return saved;
+}, [clearDirty, pageId]);
 
 function handleSave() {
   void saveBlueprint(true);
@@ -431,6 +438,26 @@ async function handlePublish() {
   }
 
   setShowPublishModal(true);
+}
+
+async function handlePageStateChange(nextStatus: PagePublishStatus) {
+  if (nextStatus === currentPageStatus) return;
+  if (nextStatus === "PUBLISHED") {
+    setSaveMenuOpen(false);
+    await handlePublish();
+    return;
+  }
+  const response = await fetch(`/api/pages/${pageId}/unpublish`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    setToast({ message: "Failed to move page to draft", type: "error" });
+    return;
+  }
+  setCurrentPageStatus("DRAFT");
+  setPublishedRevision(null);
+  setToast({ message: "Page moved to draft", type: "success" });
 }
 
 async function handlePreview() {
@@ -625,6 +652,7 @@ const fullLastSavedAt = formatFullDate(lastSavedAt);
             return (
               <button
                 key={d}
+                aria-label={`${d} viewport`}
                 onClick={() => setDevice(d)}
                 className={`p-2 rounded-xl ${
                   device === d
@@ -638,6 +666,7 @@ const fullLastSavedAt = formatFullDate(lastSavedAt);
           })}
 
           <select
+            aria-label="Builder zoom"
             value={zoom}
             onChange={(e) => setZoom(Number(e.target.value))}
             className="px-2 py-1 rounded-xl bg-white/[0.08] text-sm border border-white/10"
@@ -665,6 +694,7 @@ const fullLastSavedAt = formatFullDate(lastSavedAt);
           <button
             onClick={() => commandBus.undo()}
             disabled={!canUndo}
+            aria-label="Undo last Builder operation"
             className={`p-2 rounded-xl ${
               canUndo ? "bg-white/[0.08]" : "opacity-40"
             }`}
@@ -675,6 +705,7 @@ const fullLastSavedAt = formatFullDate(lastSavedAt);
           <button
             onClick={() => commandBus.redo()}
             disabled={!canRedo}
+            aria-label="Redo last Builder operation"
             className={`p-2 rounded-xl ${
               canRedo ? "bg-white/[0.08]" : "opacity-40"
             }`}
@@ -700,6 +731,8 @@ const fullLastSavedAt = formatFullDate(lastSavedAt);
           <div className="relative" ref={saveDropdownRef}>
             <button
               type="button"
+              data-testid="builder-save-status"
+              data-save-state={saving ? "saving" : saveError ? "error" : dirty ? "dirty" : lastSavedAt ? "saved" : "clean"}
               onClick={() => setSaveMenuOpen((open) => !open)}
               className={`flex items-center gap-2 px-1.5 py-1 text-sm transition ${
                 saveError
@@ -774,11 +807,24 @@ const fullLastSavedAt = formatFullDate(lastSavedAt);
                   </span>
                 </button>
 
+                <label className="mt-3 block border-t border-white/10 pt-3">
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/45">Page state</span>
+                  <select
+                    value={currentPageStatus}
+                    onChange={(event) => void handlePageStateChange(event.target.value as PagePublishStatus)}
+                    className="h-10 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3 text-sm text-white outline-none focus:border-blue-400/60"
+                  >
+                    <option value="DRAFT">Draft</option>
+                    <option value="PUBLISHED">Published</option>
+                  </select>
+                </label>
+
                 <button
                   type="button"
                   onClick={handleSave}
-                  disabled={saving || !blueprint}
-                  className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-white/[0.06] px-3 py-2 text-white/80 transition hover:bg-white/[0.1] disabled:opacity-50"
+                  disabled={!blueprint}
+                  data-testid="builder-save-now"
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-white/[0.06] px-3 py-2 text-white/80 transition hover:bg-white/[0.1] disabled:opacity-50"
                 >
                   {saving ? <Loader2 size={15} className="animate-spin" /> : <Cloud size={15} />}
                   Save now

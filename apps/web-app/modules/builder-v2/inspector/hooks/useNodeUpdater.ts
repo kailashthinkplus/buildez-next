@@ -1,7 +1,7 @@
 "use client";
 
 import { commandBus } from "../../core/commands/CommandBus";
-import { UpdateNodeCommand } from "../../core/commands/UpdateNodeCommand";
+import { UpdateNodeCommand } from "../../core/commands/MoveNodeCommand";
 
 /* ==========================================================
    Node Updater
@@ -53,9 +53,21 @@ export function useNodeUpdater() {
     });
   }
 
+  function removeStyle(
+    nodeId: string,
+    property: string
+  ) {
+    updateNode(nodeId, {
+      style: {
+        [property]: undefined,
+      },
+    });
+  }
+
   return {
     updateNode,
     updateProp,
     updateStyle,
+    removeStyle,
   };
 }

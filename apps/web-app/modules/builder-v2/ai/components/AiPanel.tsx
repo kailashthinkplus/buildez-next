@@ -733,7 +733,7 @@ export default function AiPanel({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col border-white/10 bg-[#121418]/90 text-[13px] text-white shadow-2xl shadow-black/50 backdrop-blur-2xl">
+    <div className="flex h-full min-h-0 flex-col border-white/10 bg-[rgb(15_17_24/82%)] text-[13px] text-white shadow-2xl shadow-black/50 backdrop-blur-2xl">
       <style>{`
         @keyframes buildez-ai-scan {
           0% { transform: translateX(-120%); opacity: 0; }
@@ -768,14 +768,14 @@ export default function AiPanel({
         }
       `}</style>
 
-      <div className="border-b border-white/10 bg-[#0f1118]/80 px-4 py-3 backdrop-blur-xl">
+      <div className="border-b border-white/10 px-4 py-3 backdrop-blur-xl">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-sm font-semibold">
               <span className="flex h-7 w-7 items-center justify-center rounded-xl border border-sky-500/25 bg-sky-500/10 text-sky-200">
                 <Sparkles className="h-4 w-4" />
               </span>
-              <span>BuildEZ Copilot</span>
+              <span>BuildEZ Autopilot</span>
             </div>
             <p className="mt-1 truncate text-xs text-neutral-500">
               Website generation, review, and polish
@@ -997,7 +997,7 @@ export default function AiPanel({
         <div ref={bottomRef} />
       </div>
 
-      <div className="shrink-0 border-t border-white/10 bg-[#0f1118]/80 p-3 pb-[max(12px,env(safe-area-inset-bottom))] backdrop-blur-xl">
+      <div className="shrink-0 border-t border-white/10 p-3 pb-[max(12px,env(safe-area-inset-bottom))] backdrop-blur-xl">
         {!lastUserPrompt && !isRunning ? (
           <div className="mb-2 flex gap-2 overflow-x-auto pb-1">
             {SUGGESTIONS.map((item) => (

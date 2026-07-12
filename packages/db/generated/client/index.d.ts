@@ -104,6 +104,16 @@ export type MediaAsset = $Result.DefaultSelection<Prisma.$MediaAssetPayload>
  */
 export type Site = $Result.DefaultSelection<Prisma.$SitePayload>
 /**
+ * Model CmsCollection
+ * 
+ */
+export type CmsCollection = $Result.DefaultSelection<Prisma.$CmsCollectionPayload>
+/**
+ * Model CmsEntry
+ * 
+ */
+export type CmsEntry = $Result.DefaultSelection<Prisma.$CmsEntryPayload>
+/**
  * Model SiteLayout
  * 
  */
@@ -798,6 +808,26 @@ export class PrismaClient<
     * ```
     */
   get site(): Prisma.SiteDelegate<ExtArgs>;
+
+  /**
+   * `prisma.cmsCollection`: Exposes CRUD operations for the **CmsCollection** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CmsCollections
+    * const cmsCollections = await prisma.cmsCollection.findMany()
+    * ```
+    */
+  get cmsCollection(): Prisma.CmsCollectionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.cmsEntry`: Exposes CRUD operations for the **CmsEntry** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CmsEntries
+    * const cmsEntries = await prisma.cmsEntry.findMany()
+    * ```
+    */
+  get cmsEntry(): Prisma.CmsEntryDelegate<ExtArgs>;
 
   /**
    * `prisma.siteLayout`: Exposes CRUD operations for the **SiteLayout** model.
@@ -1547,6 +1577,8 @@ export namespace Prisma {
     ThemeAsset: 'ThemeAsset',
     MediaAsset: 'MediaAsset',
     Site: 'Site',
+    CmsCollection: 'CmsCollection',
+    CmsEntry: 'CmsEntry',
     SiteLayout: 'SiteLayout',
     Domain: 'Domain',
     Page: 'Page',
@@ -1591,7 +1623,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "userOnboarding" | "session" | "otp" | "authLog" | "verificationToken" | "refreshToken" | "loginAttempt" | "tenant" | "tenantEvent" | "team" | "teamMember" | "teamInvite" | "theme" | "themeVersion" | "themeAsset" | "mediaAsset" | "site" | "siteLayout" | "domain" | "page" | "previewToken" | "aIBlueprintSnapshot" | "blueprint" | "blueprintHistory" | "plan" | "planPricing" | "planFeature" | "planUsage" | "subscription" | "siteSubscription" | "complianceAudit" | "systemNotification" | "siteSnapshot" | "pageSnapshot" | "siteRender" | "renderedPage" | "siteDomain" | "sslCertificate" | "trafficEvent" | "trafficRollupHourly" | "aiEvent" | "rateLimit" | "workspace" | "workspaceMember" | "aIMessage" | "aIConversation"
+      modelProps: "user" | "userOnboarding" | "session" | "otp" | "authLog" | "verificationToken" | "refreshToken" | "loginAttempt" | "tenant" | "tenantEvent" | "team" | "teamMember" | "teamInvite" | "theme" | "themeVersion" | "themeAsset" | "mediaAsset" | "site" | "cmsCollection" | "cmsEntry" | "siteLayout" | "domain" | "page" | "previewToken" | "aIBlueprintSnapshot" | "blueprint" | "blueprintHistory" | "plan" | "planPricing" | "planFeature" | "planUsage" | "subscription" | "siteSubscription" | "complianceAudit" | "systemNotification" | "siteSnapshot" | "pageSnapshot" | "siteRender" | "renderedPage" | "siteDomain" | "sslCertificate" | "trafficEvent" | "trafficRollupHourly" | "aiEvent" | "rateLimit" | "workspace" | "workspaceMember" | "aIMessage" | "aIConversation"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2852,6 +2884,146 @@ export namespace Prisma {
           count: {
             args: Prisma.SiteCountArgs<ExtArgs>
             result: $Utils.Optional<SiteCountAggregateOutputType> | number
+          }
+        }
+      }
+      CmsCollection: {
+        payload: Prisma.$CmsCollectionPayload<ExtArgs>
+        fields: Prisma.CmsCollectionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CmsCollectionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsCollectionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CmsCollectionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsCollectionPayload>
+          }
+          findFirst: {
+            args: Prisma.CmsCollectionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsCollectionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CmsCollectionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsCollectionPayload>
+          }
+          findMany: {
+            args: Prisma.CmsCollectionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsCollectionPayload>[]
+          }
+          create: {
+            args: Prisma.CmsCollectionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsCollectionPayload>
+          }
+          createMany: {
+            args: Prisma.CmsCollectionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CmsCollectionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsCollectionPayload>[]
+          }
+          delete: {
+            args: Prisma.CmsCollectionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsCollectionPayload>
+          }
+          update: {
+            args: Prisma.CmsCollectionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsCollectionPayload>
+          }
+          deleteMany: {
+            args: Prisma.CmsCollectionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CmsCollectionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CmsCollectionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsCollectionPayload>
+          }
+          aggregate: {
+            args: Prisma.CmsCollectionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCmsCollection>
+          }
+          groupBy: {
+            args: Prisma.CmsCollectionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CmsCollectionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CmsCollectionCountArgs<ExtArgs>
+            result: $Utils.Optional<CmsCollectionCountAggregateOutputType> | number
+          }
+        }
+      }
+      CmsEntry: {
+        payload: Prisma.$CmsEntryPayload<ExtArgs>
+        fields: Prisma.CmsEntryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CmsEntryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsEntryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CmsEntryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsEntryPayload>
+          }
+          findFirst: {
+            args: Prisma.CmsEntryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsEntryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CmsEntryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsEntryPayload>
+          }
+          findMany: {
+            args: Prisma.CmsEntryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsEntryPayload>[]
+          }
+          create: {
+            args: Prisma.CmsEntryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsEntryPayload>
+          }
+          createMany: {
+            args: Prisma.CmsEntryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CmsEntryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsEntryPayload>[]
+          }
+          delete: {
+            args: Prisma.CmsEntryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsEntryPayload>
+          }
+          update: {
+            args: Prisma.CmsEntryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsEntryPayload>
+          }
+          deleteMany: {
+            args: Prisma.CmsEntryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CmsEntryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CmsEntryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CmsEntryPayload>
+          }
+          aggregate: {
+            args: Prisma.CmsEntryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCmsEntry>
+          }
+          groupBy: {
+            args: Prisma.CmsEntryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CmsEntryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CmsEntryCountArgs<ExtArgs>
+            result: $Utils.Optional<CmsEntryCountAggregateOutputType> | number
           }
         }
       }
@@ -5454,6 +5626,7 @@ export namespace Prisma {
     legacyDomains: number
     mediaAssets: number
     aiSnapshots: number
+    cmsCollections: number
   }
 
   export type SiteCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5467,6 +5640,7 @@ export namespace Prisma {
     legacyDomains?: boolean | SiteCountOutputTypeCountLegacyDomainsArgs
     mediaAssets?: boolean | SiteCountOutputTypeCountMediaAssetsArgs
     aiSnapshots?: boolean | SiteCountOutputTypeCountAiSnapshotsArgs
+    cmsCollections?: boolean | SiteCountOutputTypeCountCmsCollectionsArgs
   }
 
   // Custom InputTypes
@@ -5548,6 +5722,44 @@ export namespace Prisma {
    */
   export type SiteCountOutputTypeCountAiSnapshotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AIBlueprintSnapshotWhereInput
+  }
+
+  /**
+   * SiteCountOutputType without action
+   */
+  export type SiteCountOutputTypeCountCmsCollectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CmsCollectionWhereInput
+  }
+
+
+  /**
+   * Count Type CmsCollectionCountOutputType
+   */
+
+  export type CmsCollectionCountOutputType = {
+    entries: number
+  }
+
+  export type CmsCollectionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    entries?: boolean | CmsCollectionCountOutputTypeCountEntriesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * CmsCollectionCountOutputType without action
+   */
+  export type CmsCollectionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollectionCountOutputType
+     */
+    select?: CmsCollectionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * CmsCollectionCountOutputType without action
+   */
+  export type CmsCollectionCountOutputTypeCountEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CmsEntryWhereInput
   }
 
 
@@ -5833,6 +6045,13 @@ export namespace Prisma {
     phone: string | null
     name: string | null
     avatarUrl: string | null
+    bio: string | null
+    jobTitle: string | null
+    company: string | null
+    website: string | null
+    city: string | null
+    country: string | null
+    timezone: string | null
     passwordHash: string | null
     googleId: string | null
     role: $Enums.UserRole | null
@@ -5853,6 +6072,13 @@ export namespace Prisma {
     phone: string | null
     name: string | null
     avatarUrl: string | null
+    bio: string | null
+    jobTitle: string | null
+    company: string | null
+    website: string | null
+    city: string | null
+    country: string | null
+    timezone: string | null
     passwordHash: string | null
     googleId: string | null
     role: $Enums.UserRole | null
@@ -5873,6 +6099,13 @@ export namespace Prisma {
     phone: number
     name: number
     avatarUrl: number
+    bio: number
+    jobTitle: number
+    company: number
+    website: number
+    city: number
+    country: number
+    timezone: number
     passwordHash: number
     googleId: number
     role: number
@@ -5896,6 +6129,13 @@ export namespace Prisma {
     phone?: true
     name?: true
     avatarUrl?: true
+    bio?: true
+    jobTitle?: true
+    company?: true
+    website?: true
+    city?: true
+    country?: true
+    timezone?: true
     passwordHash?: true
     googleId?: true
     role?: true
@@ -5916,6 +6156,13 @@ export namespace Prisma {
     phone?: true
     name?: true
     avatarUrl?: true
+    bio?: true
+    jobTitle?: true
+    company?: true
+    website?: true
+    city?: true
+    country?: true
+    timezone?: true
     passwordHash?: true
     googleId?: true
     role?: true
@@ -5936,6 +6183,13 @@ export namespace Prisma {
     phone?: true
     name?: true
     avatarUrl?: true
+    bio?: true
+    jobTitle?: true
+    company?: true
+    website?: true
+    city?: true
+    country?: true
+    timezone?: true
     passwordHash?: true
     googleId?: true
     role?: true
@@ -6030,6 +6284,13 @@ export namespace Prisma {
     phone: string | null
     name: string | null
     avatarUrl: string | null
+    bio: string | null
+    jobTitle: string | null
+    company: string | null
+    website: string | null
+    city: string | null
+    country: string | null
+    timezone: string | null
     passwordHash: string | null
     googleId: string | null
     role: $Enums.UserRole
@@ -6068,6 +6329,13 @@ export namespace Prisma {
     phone?: boolean
     name?: boolean
     avatarUrl?: boolean
+    bio?: boolean
+    jobTitle?: boolean
+    company?: boolean
+    website?: boolean
+    city?: boolean
+    country?: boolean
+    timezone?: boolean
     passwordHash?: boolean
     googleId?: boolean
     role?: boolean
@@ -6103,6 +6371,13 @@ export namespace Prisma {
     phone?: boolean
     name?: boolean
     avatarUrl?: boolean
+    bio?: boolean
+    jobTitle?: boolean
+    company?: boolean
+    website?: boolean
+    city?: boolean
+    country?: boolean
+    timezone?: boolean
     passwordHash?: boolean
     googleId?: boolean
     role?: boolean
@@ -6124,6 +6399,13 @@ export namespace Prisma {
     phone?: boolean
     name?: boolean
     avatarUrl?: boolean
+    bio?: boolean
+    jobTitle?: boolean
+    company?: boolean
+    website?: boolean
+    city?: boolean
+    country?: boolean
+    timezone?: boolean
     passwordHash?: boolean
     googleId?: boolean
     role?: boolean
@@ -6180,6 +6462,13 @@ export namespace Prisma {
       phone: string | null
       name: string | null
       avatarUrl: string | null
+      bio: string | null
+      jobTitle: string | null
+      company: string | null
+      website: string | null
+      city: string | null
+      country: string | null
+      timezone: string | null
       passwordHash: string | null
       googleId: string | null
       role: $Enums.UserRole
@@ -6604,6 +6893,13 @@ export namespace Prisma {
     readonly phone: FieldRef<"User", 'String'>
     readonly name: FieldRef<"User", 'String'>
     readonly avatarUrl: FieldRef<"User", 'String'>
+    readonly bio: FieldRef<"User", 'String'>
+    readonly jobTitle: FieldRef<"User", 'String'>
+    readonly company: FieldRef<"User", 'String'>
+    readonly website: FieldRef<"User", 'String'>
+    readonly city: FieldRef<"User", 'String'>
+    readonly country: FieldRef<"User", 'String'>
+    readonly timezone: FieldRef<"User", 'String'>
     readonly passwordHash: FieldRef<"User", 'String'>
     readonly googleId: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'UserRole'>
@@ -23962,6 +24258,7 @@ export namespace Prisma {
     mediaAssets?: boolean | Site$mediaAssetsArgs<ExtArgs>
     layout?: boolean | Site$layoutArgs<ExtArgs>
     aiSnapshots?: boolean | Site$aiSnapshotsArgs<ExtArgs>
+    cmsCollections?: boolean | Site$cmsCollectionsArgs<ExtArgs>
     _count?: boolean | SiteCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["site"]>
 
@@ -24005,6 +24302,7 @@ export namespace Prisma {
     mediaAssets?: boolean | Site$mediaAssetsArgs<ExtArgs>
     layout?: boolean | Site$layoutArgs<ExtArgs>
     aiSnapshots?: boolean | Site$aiSnapshotsArgs<ExtArgs>
+    cmsCollections?: boolean | Site$cmsCollectionsArgs<ExtArgs>
     _count?: boolean | SiteCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SiteIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -24026,6 +24324,7 @@ export namespace Prisma {
       mediaAssets: Prisma.$MediaAssetPayload<ExtArgs>[]
       layout: Prisma.$SiteLayoutPayload<ExtArgs> | null
       aiSnapshots: Prisma.$AIBlueprintSnapshotPayload<ExtArgs>[]
+      cmsCollections: Prisma.$CmsCollectionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -24414,6 +24713,7 @@ export namespace Prisma {
     mediaAssets<T extends Site$mediaAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Site$mediaAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findMany"> | Null>
     layout<T extends Site$layoutArgs<ExtArgs> = {}>(args?: Subset<T, Site$layoutArgs<ExtArgs>>): Prisma__SiteLayoutClient<$Result.GetResult<Prisma.$SiteLayoutPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     aiSnapshots<T extends Site$aiSnapshotsArgs<ExtArgs> = {}>(args?: Subset<T, Site$aiSnapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIBlueprintSnapshotPayload<ExtArgs>, T, "findMany"> | Null>
+    cmsCollections<T extends Site$cmsCollectionsArgs<ExtArgs> = {}>(args?: Subset<T, Site$cmsCollectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -24986,6 +25286,26 @@ export namespace Prisma {
   }
 
   /**
+   * Site.cmsCollections
+   */
+  export type Site$cmsCollectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollection
+     */
+    select?: CmsCollectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsCollectionInclude<ExtArgs> | null
+    where?: CmsCollectionWhereInput
+    orderBy?: CmsCollectionOrderByWithRelationInput | CmsCollectionOrderByWithRelationInput[]
+    cursor?: CmsCollectionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CmsCollectionScalarFieldEnum | CmsCollectionScalarFieldEnum[]
+  }
+
+  /**
    * Site without action
    */
   export type SiteDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -24997,6 +25317,1950 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: SiteInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CmsCollection
+   */
+
+  export type AggregateCmsCollection = {
+    _count: CmsCollectionCountAggregateOutputType | null
+    _min: CmsCollectionMinAggregateOutputType | null
+    _max: CmsCollectionMaxAggregateOutputType | null
+  }
+
+  export type CmsCollectionMinAggregateOutputType = {
+    id: string | null
+    siteId: string | null
+    name: string | null
+    slug: string | null
+    description: string | null
+    icon: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CmsCollectionMaxAggregateOutputType = {
+    id: string | null
+    siteId: string | null
+    name: string | null
+    slug: string | null
+    description: string | null
+    icon: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CmsCollectionCountAggregateOutputType = {
+    id: number
+    siteId: number
+    name: number
+    slug: number
+    description: number
+    icon: number
+    fields: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CmsCollectionMinAggregateInputType = {
+    id?: true
+    siteId?: true
+    name?: true
+    slug?: true
+    description?: true
+    icon?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CmsCollectionMaxAggregateInputType = {
+    id?: true
+    siteId?: true
+    name?: true
+    slug?: true
+    description?: true
+    icon?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CmsCollectionCountAggregateInputType = {
+    id?: true
+    siteId?: true
+    name?: true
+    slug?: true
+    description?: true
+    icon?: true
+    fields?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CmsCollectionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CmsCollection to aggregate.
+     */
+    where?: CmsCollectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CmsCollections to fetch.
+     */
+    orderBy?: CmsCollectionOrderByWithRelationInput | CmsCollectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CmsCollectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CmsCollections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CmsCollections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CmsCollections
+    **/
+    _count?: true | CmsCollectionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CmsCollectionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CmsCollectionMaxAggregateInputType
+  }
+
+  export type GetCmsCollectionAggregateType<T extends CmsCollectionAggregateArgs> = {
+        [P in keyof T & keyof AggregateCmsCollection]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCmsCollection[P]>
+      : GetScalarType<T[P], AggregateCmsCollection[P]>
+  }
+
+
+
+
+  export type CmsCollectionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CmsCollectionWhereInput
+    orderBy?: CmsCollectionOrderByWithAggregationInput | CmsCollectionOrderByWithAggregationInput[]
+    by: CmsCollectionScalarFieldEnum[] | CmsCollectionScalarFieldEnum
+    having?: CmsCollectionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CmsCollectionCountAggregateInputType | true
+    _min?: CmsCollectionMinAggregateInputType
+    _max?: CmsCollectionMaxAggregateInputType
+  }
+
+  export type CmsCollectionGroupByOutputType = {
+    id: string
+    siteId: string
+    name: string
+    slug: string
+    description: string | null
+    icon: string | null
+    fields: JsonValue
+    createdAt: Date
+    updatedAt: Date
+    _count: CmsCollectionCountAggregateOutputType | null
+    _min: CmsCollectionMinAggregateOutputType | null
+    _max: CmsCollectionMaxAggregateOutputType | null
+  }
+
+  type GetCmsCollectionGroupByPayload<T extends CmsCollectionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CmsCollectionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CmsCollectionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CmsCollectionGroupByOutputType[P]>
+            : GetScalarType<T[P], CmsCollectionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CmsCollectionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    siteId?: boolean
+    name?: boolean
+    slug?: boolean
+    description?: boolean
+    icon?: boolean
+    fields?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+    entries?: boolean | CmsCollection$entriesArgs<ExtArgs>
+    _count?: boolean | CmsCollectionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["cmsCollection"]>
+
+  export type CmsCollectionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    siteId?: boolean
+    name?: boolean
+    slug?: boolean
+    description?: boolean
+    icon?: boolean
+    fields?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["cmsCollection"]>
+
+  export type CmsCollectionSelectScalar = {
+    id?: boolean
+    siteId?: boolean
+    name?: boolean
+    slug?: boolean
+    description?: boolean
+    icon?: boolean
+    fields?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CmsCollectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+    entries?: boolean | CmsCollection$entriesArgs<ExtArgs>
+    _count?: boolean | CmsCollectionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type CmsCollectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+  }
+
+  export type $CmsCollectionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CmsCollection"
+    objects: {
+      site: Prisma.$SitePayload<ExtArgs>
+      entries: Prisma.$CmsEntryPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      siteId: string
+      name: string
+      slug: string
+      description: string | null
+      icon: string | null
+      fields: Prisma.JsonValue
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["cmsCollection"]>
+    composites: {}
+  }
+
+  type CmsCollectionGetPayload<S extends boolean | null | undefined | CmsCollectionDefaultArgs> = $Result.GetResult<Prisma.$CmsCollectionPayload, S>
+
+  type CmsCollectionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<CmsCollectionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: CmsCollectionCountAggregateInputType | true
+    }
+
+  export interface CmsCollectionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CmsCollection'], meta: { name: 'CmsCollection' } }
+    /**
+     * Find zero or one CmsCollection that matches the filter.
+     * @param {CmsCollectionFindUniqueArgs} args - Arguments to find a CmsCollection
+     * @example
+     * // Get one CmsCollection
+     * const cmsCollection = await prisma.cmsCollection.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CmsCollectionFindUniqueArgs>(args: SelectSubset<T, CmsCollectionFindUniqueArgs<ExtArgs>>): Prisma__CmsCollectionClient<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one CmsCollection that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {CmsCollectionFindUniqueOrThrowArgs} args - Arguments to find a CmsCollection
+     * @example
+     * // Get one CmsCollection
+     * const cmsCollection = await prisma.cmsCollection.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CmsCollectionFindUniqueOrThrowArgs>(args: SelectSubset<T, CmsCollectionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CmsCollectionClient<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first CmsCollection that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsCollectionFindFirstArgs} args - Arguments to find a CmsCollection
+     * @example
+     * // Get one CmsCollection
+     * const cmsCollection = await prisma.cmsCollection.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CmsCollectionFindFirstArgs>(args?: SelectSubset<T, CmsCollectionFindFirstArgs<ExtArgs>>): Prisma__CmsCollectionClient<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first CmsCollection that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsCollectionFindFirstOrThrowArgs} args - Arguments to find a CmsCollection
+     * @example
+     * // Get one CmsCollection
+     * const cmsCollection = await prisma.cmsCollection.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CmsCollectionFindFirstOrThrowArgs>(args?: SelectSubset<T, CmsCollectionFindFirstOrThrowArgs<ExtArgs>>): Prisma__CmsCollectionClient<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more CmsCollections that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsCollectionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CmsCollections
+     * const cmsCollections = await prisma.cmsCollection.findMany()
+     * 
+     * // Get first 10 CmsCollections
+     * const cmsCollections = await prisma.cmsCollection.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const cmsCollectionWithIdOnly = await prisma.cmsCollection.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CmsCollectionFindManyArgs>(args?: SelectSubset<T, CmsCollectionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a CmsCollection.
+     * @param {CmsCollectionCreateArgs} args - Arguments to create a CmsCollection.
+     * @example
+     * // Create one CmsCollection
+     * const CmsCollection = await prisma.cmsCollection.create({
+     *   data: {
+     *     // ... data to create a CmsCollection
+     *   }
+     * })
+     * 
+     */
+    create<T extends CmsCollectionCreateArgs>(args: SelectSubset<T, CmsCollectionCreateArgs<ExtArgs>>): Prisma__CmsCollectionClient<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many CmsCollections.
+     * @param {CmsCollectionCreateManyArgs} args - Arguments to create many CmsCollections.
+     * @example
+     * // Create many CmsCollections
+     * const cmsCollection = await prisma.cmsCollection.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CmsCollectionCreateManyArgs>(args?: SelectSubset<T, CmsCollectionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CmsCollections and returns the data saved in the database.
+     * @param {CmsCollectionCreateManyAndReturnArgs} args - Arguments to create many CmsCollections.
+     * @example
+     * // Create many CmsCollections
+     * const cmsCollection = await prisma.cmsCollection.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CmsCollections and only return the `id`
+     * const cmsCollectionWithIdOnly = await prisma.cmsCollection.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CmsCollectionCreateManyAndReturnArgs>(args?: SelectSubset<T, CmsCollectionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a CmsCollection.
+     * @param {CmsCollectionDeleteArgs} args - Arguments to delete one CmsCollection.
+     * @example
+     * // Delete one CmsCollection
+     * const CmsCollection = await prisma.cmsCollection.delete({
+     *   where: {
+     *     // ... filter to delete one CmsCollection
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CmsCollectionDeleteArgs>(args: SelectSubset<T, CmsCollectionDeleteArgs<ExtArgs>>): Prisma__CmsCollectionClient<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one CmsCollection.
+     * @param {CmsCollectionUpdateArgs} args - Arguments to update one CmsCollection.
+     * @example
+     * // Update one CmsCollection
+     * const cmsCollection = await prisma.cmsCollection.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CmsCollectionUpdateArgs>(args: SelectSubset<T, CmsCollectionUpdateArgs<ExtArgs>>): Prisma__CmsCollectionClient<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more CmsCollections.
+     * @param {CmsCollectionDeleteManyArgs} args - Arguments to filter CmsCollections to delete.
+     * @example
+     * // Delete a few CmsCollections
+     * const { count } = await prisma.cmsCollection.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CmsCollectionDeleteManyArgs>(args?: SelectSubset<T, CmsCollectionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CmsCollections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsCollectionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CmsCollections
+     * const cmsCollection = await prisma.cmsCollection.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CmsCollectionUpdateManyArgs>(args: SelectSubset<T, CmsCollectionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CmsCollection.
+     * @param {CmsCollectionUpsertArgs} args - Arguments to update or create a CmsCollection.
+     * @example
+     * // Update or create a CmsCollection
+     * const cmsCollection = await prisma.cmsCollection.upsert({
+     *   create: {
+     *     // ... data to create a CmsCollection
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CmsCollection we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CmsCollectionUpsertArgs>(args: SelectSubset<T, CmsCollectionUpsertArgs<ExtArgs>>): Prisma__CmsCollectionClient<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of CmsCollections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsCollectionCountArgs} args - Arguments to filter CmsCollections to count.
+     * @example
+     * // Count the number of CmsCollections
+     * const count = await prisma.cmsCollection.count({
+     *   where: {
+     *     // ... the filter for the CmsCollections we want to count
+     *   }
+     * })
+    **/
+    count<T extends CmsCollectionCountArgs>(
+      args?: Subset<T, CmsCollectionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CmsCollectionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CmsCollection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsCollectionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CmsCollectionAggregateArgs>(args: Subset<T, CmsCollectionAggregateArgs>): Prisma.PrismaPromise<GetCmsCollectionAggregateType<T>>
+
+    /**
+     * Group by CmsCollection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsCollectionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CmsCollectionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CmsCollectionGroupByArgs['orderBy'] }
+        : { orderBy?: CmsCollectionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CmsCollectionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCmsCollectionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CmsCollection model
+   */
+  readonly fields: CmsCollectionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CmsCollection.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CmsCollectionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    site<T extends SiteDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SiteDefaultArgs<ExtArgs>>): Prisma__SiteClient<$Result.GetResult<Prisma.$SitePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    entries<T extends CmsCollection$entriesArgs<ExtArgs> = {}>(args?: Subset<T, CmsCollection$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CmsEntryPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CmsCollection model
+   */ 
+  interface CmsCollectionFieldRefs {
+    readonly id: FieldRef<"CmsCollection", 'String'>
+    readonly siteId: FieldRef<"CmsCollection", 'String'>
+    readonly name: FieldRef<"CmsCollection", 'String'>
+    readonly slug: FieldRef<"CmsCollection", 'String'>
+    readonly description: FieldRef<"CmsCollection", 'String'>
+    readonly icon: FieldRef<"CmsCollection", 'String'>
+    readonly fields: FieldRef<"CmsCollection", 'Json'>
+    readonly createdAt: FieldRef<"CmsCollection", 'DateTime'>
+    readonly updatedAt: FieldRef<"CmsCollection", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CmsCollection findUnique
+   */
+  export type CmsCollectionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollection
+     */
+    select?: CmsCollectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsCollectionInclude<ExtArgs> | null
+    /**
+     * Filter, which CmsCollection to fetch.
+     */
+    where: CmsCollectionWhereUniqueInput
+  }
+
+  /**
+   * CmsCollection findUniqueOrThrow
+   */
+  export type CmsCollectionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollection
+     */
+    select?: CmsCollectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsCollectionInclude<ExtArgs> | null
+    /**
+     * Filter, which CmsCollection to fetch.
+     */
+    where: CmsCollectionWhereUniqueInput
+  }
+
+  /**
+   * CmsCollection findFirst
+   */
+  export type CmsCollectionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollection
+     */
+    select?: CmsCollectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsCollectionInclude<ExtArgs> | null
+    /**
+     * Filter, which CmsCollection to fetch.
+     */
+    where?: CmsCollectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CmsCollections to fetch.
+     */
+    orderBy?: CmsCollectionOrderByWithRelationInput | CmsCollectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CmsCollections.
+     */
+    cursor?: CmsCollectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CmsCollections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CmsCollections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CmsCollections.
+     */
+    distinct?: CmsCollectionScalarFieldEnum | CmsCollectionScalarFieldEnum[]
+  }
+
+  /**
+   * CmsCollection findFirstOrThrow
+   */
+  export type CmsCollectionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollection
+     */
+    select?: CmsCollectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsCollectionInclude<ExtArgs> | null
+    /**
+     * Filter, which CmsCollection to fetch.
+     */
+    where?: CmsCollectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CmsCollections to fetch.
+     */
+    orderBy?: CmsCollectionOrderByWithRelationInput | CmsCollectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CmsCollections.
+     */
+    cursor?: CmsCollectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CmsCollections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CmsCollections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CmsCollections.
+     */
+    distinct?: CmsCollectionScalarFieldEnum | CmsCollectionScalarFieldEnum[]
+  }
+
+  /**
+   * CmsCollection findMany
+   */
+  export type CmsCollectionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollection
+     */
+    select?: CmsCollectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsCollectionInclude<ExtArgs> | null
+    /**
+     * Filter, which CmsCollections to fetch.
+     */
+    where?: CmsCollectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CmsCollections to fetch.
+     */
+    orderBy?: CmsCollectionOrderByWithRelationInput | CmsCollectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CmsCollections.
+     */
+    cursor?: CmsCollectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CmsCollections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CmsCollections.
+     */
+    skip?: number
+    distinct?: CmsCollectionScalarFieldEnum | CmsCollectionScalarFieldEnum[]
+  }
+
+  /**
+   * CmsCollection create
+   */
+  export type CmsCollectionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollection
+     */
+    select?: CmsCollectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsCollectionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CmsCollection.
+     */
+    data: XOR<CmsCollectionCreateInput, CmsCollectionUncheckedCreateInput>
+  }
+
+  /**
+   * CmsCollection createMany
+   */
+  export type CmsCollectionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CmsCollections.
+     */
+    data: CmsCollectionCreateManyInput | CmsCollectionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CmsCollection createManyAndReturn
+   */
+  export type CmsCollectionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollection
+     */
+    select?: CmsCollectionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many CmsCollections.
+     */
+    data: CmsCollectionCreateManyInput | CmsCollectionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsCollectionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CmsCollection update
+   */
+  export type CmsCollectionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollection
+     */
+    select?: CmsCollectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsCollectionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CmsCollection.
+     */
+    data: XOR<CmsCollectionUpdateInput, CmsCollectionUncheckedUpdateInput>
+    /**
+     * Choose, which CmsCollection to update.
+     */
+    where: CmsCollectionWhereUniqueInput
+  }
+
+  /**
+   * CmsCollection updateMany
+   */
+  export type CmsCollectionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CmsCollections.
+     */
+    data: XOR<CmsCollectionUpdateManyMutationInput, CmsCollectionUncheckedUpdateManyInput>
+    /**
+     * Filter which CmsCollections to update
+     */
+    where?: CmsCollectionWhereInput
+  }
+
+  /**
+   * CmsCollection upsert
+   */
+  export type CmsCollectionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollection
+     */
+    select?: CmsCollectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsCollectionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CmsCollection to update in case it exists.
+     */
+    where: CmsCollectionWhereUniqueInput
+    /**
+     * In case the CmsCollection found by the `where` argument doesn't exist, create a new CmsCollection with this data.
+     */
+    create: XOR<CmsCollectionCreateInput, CmsCollectionUncheckedCreateInput>
+    /**
+     * In case the CmsCollection was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CmsCollectionUpdateInput, CmsCollectionUncheckedUpdateInput>
+  }
+
+  /**
+   * CmsCollection delete
+   */
+  export type CmsCollectionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollection
+     */
+    select?: CmsCollectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsCollectionInclude<ExtArgs> | null
+    /**
+     * Filter which CmsCollection to delete.
+     */
+    where: CmsCollectionWhereUniqueInput
+  }
+
+  /**
+   * CmsCollection deleteMany
+   */
+  export type CmsCollectionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CmsCollections to delete
+     */
+    where?: CmsCollectionWhereInput
+  }
+
+  /**
+   * CmsCollection.entries
+   */
+  export type CmsCollection$entriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsEntry
+     */
+    select?: CmsEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsEntryInclude<ExtArgs> | null
+    where?: CmsEntryWhereInput
+    orderBy?: CmsEntryOrderByWithRelationInput | CmsEntryOrderByWithRelationInput[]
+    cursor?: CmsEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CmsEntryScalarFieldEnum | CmsEntryScalarFieldEnum[]
+  }
+
+  /**
+   * CmsCollection without action
+   */
+  export type CmsCollectionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsCollection
+     */
+    select?: CmsCollectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsCollectionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CmsEntry
+   */
+
+  export type AggregateCmsEntry = {
+    _count: CmsEntryCountAggregateOutputType | null
+    _min: CmsEntryMinAggregateOutputType | null
+    _max: CmsEntryMaxAggregateOutputType | null
+  }
+
+  export type CmsEntryMinAggregateOutputType = {
+    id: string | null
+    collectionId: string | null
+    status: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CmsEntryMaxAggregateOutputType = {
+    id: string | null
+    collectionId: string | null
+    status: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CmsEntryCountAggregateOutputType = {
+    id: number
+    collectionId: number
+    data: number
+    status: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CmsEntryMinAggregateInputType = {
+    id?: true
+    collectionId?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CmsEntryMaxAggregateInputType = {
+    id?: true
+    collectionId?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CmsEntryCountAggregateInputType = {
+    id?: true
+    collectionId?: true
+    data?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CmsEntryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CmsEntry to aggregate.
+     */
+    where?: CmsEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CmsEntries to fetch.
+     */
+    orderBy?: CmsEntryOrderByWithRelationInput | CmsEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CmsEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CmsEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CmsEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CmsEntries
+    **/
+    _count?: true | CmsEntryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CmsEntryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CmsEntryMaxAggregateInputType
+  }
+
+  export type GetCmsEntryAggregateType<T extends CmsEntryAggregateArgs> = {
+        [P in keyof T & keyof AggregateCmsEntry]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCmsEntry[P]>
+      : GetScalarType<T[P], AggregateCmsEntry[P]>
+  }
+
+
+
+
+  export type CmsEntryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CmsEntryWhereInput
+    orderBy?: CmsEntryOrderByWithAggregationInput | CmsEntryOrderByWithAggregationInput[]
+    by: CmsEntryScalarFieldEnum[] | CmsEntryScalarFieldEnum
+    having?: CmsEntryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CmsEntryCountAggregateInputType | true
+    _min?: CmsEntryMinAggregateInputType
+    _max?: CmsEntryMaxAggregateInputType
+  }
+
+  export type CmsEntryGroupByOutputType = {
+    id: string
+    collectionId: string
+    data: JsonValue
+    status: string
+    createdAt: Date
+    updatedAt: Date
+    _count: CmsEntryCountAggregateOutputType | null
+    _min: CmsEntryMinAggregateOutputType | null
+    _max: CmsEntryMaxAggregateOutputType | null
+  }
+
+  type GetCmsEntryGroupByPayload<T extends CmsEntryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CmsEntryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CmsEntryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CmsEntryGroupByOutputType[P]>
+            : GetScalarType<T[P], CmsEntryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CmsEntrySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    collectionId?: boolean
+    data?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    collection?: boolean | CmsCollectionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["cmsEntry"]>
+
+  export type CmsEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    collectionId?: boolean
+    data?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    collection?: boolean | CmsCollectionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["cmsEntry"]>
+
+  export type CmsEntrySelectScalar = {
+    id?: boolean
+    collectionId?: boolean
+    data?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CmsEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    collection?: boolean | CmsCollectionDefaultArgs<ExtArgs>
+  }
+  export type CmsEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    collection?: boolean | CmsCollectionDefaultArgs<ExtArgs>
+  }
+
+  export type $CmsEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CmsEntry"
+    objects: {
+      collection: Prisma.$CmsCollectionPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      collectionId: string
+      data: Prisma.JsonValue
+      status: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["cmsEntry"]>
+    composites: {}
+  }
+
+  type CmsEntryGetPayload<S extends boolean | null | undefined | CmsEntryDefaultArgs> = $Result.GetResult<Prisma.$CmsEntryPayload, S>
+
+  type CmsEntryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<CmsEntryFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: CmsEntryCountAggregateInputType | true
+    }
+
+  export interface CmsEntryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CmsEntry'], meta: { name: 'CmsEntry' } }
+    /**
+     * Find zero or one CmsEntry that matches the filter.
+     * @param {CmsEntryFindUniqueArgs} args - Arguments to find a CmsEntry
+     * @example
+     * // Get one CmsEntry
+     * const cmsEntry = await prisma.cmsEntry.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CmsEntryFindUniqueArgs>(args: SelectSubset<T, CmsEntryFindUniqueArgs<ExtArgs>>): Prisma__CmsEntryClient<$Result.GetResult<Prisma.$CmsEntryPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one CmsEntry that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {CmsEntryFindUniqueOrThrowArgs} args - Arguments to find a CmsEntry
+     * @example
+     * // Get one CmsEntry
+     * const cmsEntry = await prisma.cmsEntry.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CmsEntryFindUniqueOrThrowArgs>(args: SelectSubset<T, CmsEntryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CmsEntryClient<$Result.GetResult<Prisma.$CmsEntryPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first CmsEntry that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsEntryFindFirstArgs} args - Arguments to find a CmsEntry
+     * @example
+     * // Get one CmsEntry
+     * const cmsEntry = await prisma.cmsEntry.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CmsEntryFindFirstArgs>(args?: SelectSubset<T, CmsEntryFindFirstArgs<ExtArgs>>): Prisma__CmsEntryClient<$Result.GetResult<Prisma.$CmsEntryPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first CmsEntry that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsEntryFindFirstOrThrowArgs} args - Arguments to find a CmsEntry
+     * @example
+     * // Get one CmsEntry
+     * const cmsEntry = await prisma.cmsEntry.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CmsEntryFindFirstOrThrowArgs>(args?: SelectSubset<T, CmsEntryFindFirstOrThrowArgs<ExtArgs>>): Prisma__CmsEntryClient<$Result.GetResult<Prisma.$CmsEntryPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more CmsEntries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsEntryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CmsEntries
+     * const cmsEntries = await prisma.cmsEntry.findMany()
+     * 
+     * // Get first 10 CmsEntries
+     * const cmsEntries = await prisma.cmsEntry.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const cmsEntryWithIdOnly = await prisma.cmsEntry.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CmsEntryFindManyArgs>(args?: SelectSubset<T, CmsEntryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CmsEntryPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a CmsEntry.
+     * @param {CmsEntryCreateArgs} args - Arguments to create a CmsEntry.
+     * @example
+     * // Create one CmsEntry
+     * const CmsEntry = await prisma.cmsEntry.create({
+     *   data: {
+     *     // ... data to create a CmsEntry
+     *   }
+     * })
+     * 
+     */
+    create<T extends CmsEntryCreateArgs>(args: SelectSubset<T, CmsEntryCreateArgs<ExtArgs>>): Prisma__CmsEntryClient<$Result.GetResult<Prisma.$CmsEntryPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many CmsEntries.
+     * @param {CmsEntryCreateManyArgs} args - Arguments to create many CmsEntries.
+     * @example
+     * // Create many CmsEntries
+     * const cmsEntry = await prisma.cmsEntry.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CmsEntryCreateManyArgs>(args?: SelectSubset<T, CmsEntryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CmsEntries and returns the data saved in the database.
+     * @param {CmsEntryCreateManyAndReturnArgs} args - Arguments to create many CmsEntries.
+     * @example
+     * // Create many CmsEntries
+     * const cmsEntry = await prisma.cmsEntry.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CmsEntries and only return the `id`
+     * const cmsEntryWithIdOnly = await prisma.cmsEntry.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CmsEntryCreateManyAndReturnArgs>(args?: SelectSubset<T, CmsEntryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CmsEntryPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a CmsEntry.
+     * @param {CmsEntryDeleteArgs} args - Arguments to delete one CmsEntry.
+     * @example
+     * // Delete one CmsEntry
+     * const CmsEntry = await prisma.cmsEntry.delete({
+     *   where: {
+     *     // ... filter to delete one CmsEntry
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CmsEntryDeleteArgs>(args: SelectSubset<T, CmsEntryDeleteArgs<ExtArgs>>): Prisma__CmsEntryClient<$Result.GetResult<Prisma.$CmsEntryPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one CmsEntry.
+     * @param {CmsEntryUpdateArgs} args - Arguments to update one CmsEntry.
+     * @example
+     * // Update one CmsEntry
+     * const cmsEntry = await prisma.cmsEntry.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CmsEntryUpdateArgs>(args: SelectSubset<T, CmsEntryUpdateArgs<ExtArgs>>): Prisma__CmsEntryClient<$Result.GetResult<Prisma.$CmsEntryPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more CmsEntries.
+     * @param {CmsEntryDeleteManyArgs} args - Arguments to filter CmsEntries to delete.
+     * @example
+     * // Delete a few CmsEntries
+     * const { count } = await prisma.cmsEntry.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CmsEntryDeleteManyArgs>(args?: SelectSubset<T, CmsEntryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CmsEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsEntryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CmsEntries
+     * const cmsEntry = await prisma.cmsEntry.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CmsEntryUpdateManyArgs>(args: SelectSubset<T, CmsEntryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CmsEntry.
+     * @param {CmsEntryUpsertArgs} args - Arguments to update or create a CmsEntry.
+     * @example
+     * // Update or create a CmsEntry
+     * const cmsEntry = await prisma.cmsEntry.upsert({
+     *   create: {
+     *     // ... data to create a CmsEntry
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CmsEntry we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CmsEntryUpsertArgs>(args: SelectSubset<T, CmsEntryUpsertArgs<ExtArgs>>): Prisma__CmsEntryClient<$Result.GetResult<Prisma.$CmsEntryPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of CmsEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsEntryCountArgs} args - Arguments to filter CmsEntries to count.
+     * @example
+     * // Count the number of CmsEntries
+     * const count = await prisma.cmsEntry.count({
+     *   where: {
+     *     // ... the filter for the CmsEntries we want to count
+     *   }
+     * })
+    **/
+    count<T extends CmsEntryCountArgs>(
+      args?: Subset<T, CmsEntryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CmsEntryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CmsEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsEntryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CmsEntryAggregateArgs>(args: Subset<T, CmsEntryAggregateArgs>): Prisma.PrismaPromise<GetCmsEntryAggregateType<T>>
+
+    /**
+     * Group by CmsEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CmsEntryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CmsEntryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CmsEntryGroupByArgs['orderBy'] }
+        : { orderBy?: CmsEntryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CmsEntryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCmsEntryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CmsEntry model
+   */
+  readonly fields: CmsEntryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CmsEntry.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CmsEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    collection<T extends CmsCollectionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CmsCollectionDefaultArgs<ExtArgs>>): Prisma__CmsCollectionClient<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CmsEntry model
+   */ 
+  interface CmsEntryFieldRefs {
+    readonly id: FieldRef<"CmsEntry", 'String'>
+    readonly collectionId: FieldRef<"CmsEntry", 'String'>
+    readonly data: FieldRef<"CmsEntry", 'Json'>
+    readonly status: FieldRef<"CmsEntry", 'String'>
+    readonly createdAt: FieldRef<"CmsEntry", 'DateTime'>
+    readonly updatedAt: FieldRef<"CmsEntry", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CmsEntry findUnique
+   */
+  export type CmsEntryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsEntry
+     */
+    select?: CmsEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which CmsEntry to fetch.
+     */
+    where: CmsEntryWhereUniqueInput
+  }
+
+  /**
+   * CmsEntry findUniqueOrThrow
+   */
+  export type CmsEntryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsEntry
+     */
+    select?: CmsEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which CmsEntry to fetch.
+     */
+    where: CmsEntryWhereUniqueInput
+  }
+
+  /**
+   * CmsEntry findFirst
+   */
+  export type CmsEntryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsEntry
+     */
+    select?: CmsEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which CmsEntry to fetch.
+     */
+    where?: CmsEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CmsEntries to fetch.
+     */
+    orderBy?: CmsEntryOrderByWithRelationInput | CmsEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CmsEntries.
+     */
+    cursor?: CmsEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CmsEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CmsEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CmsEntries.
+     */
+    distinct?: CmsEntryScalarFieldEnum | CmsEntryScalarFieldEnum[]
+  }
+
+  /**
+   * CmsEntry findFirstOrThrow
+   */
+  export type CmsEntryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsEntry
+     */
+    select?: CmsEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which CmsEntry to fetch.
+     */
+    where?: CmsEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CmsEntries to fetch.
+     */
+    orderBy?: CmsEntryOrderByWithRelationInput | CmsEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CmsEntries.
+     */
+    cursor?: CmsEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CmsEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CmsEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CmsEntries.
+     */
+    distinct?: CmsEntryScalarFieldEnum | CmsEntryScalarFieldEnum[]
+  }
+
+  /**
+   * CmsEntry findMany
+   */
+  export type CmsEntryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsEntry
+     */
+    select?: CmsEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which CmsEntries to fetch.
+     */
+    where?: CmsEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CmsEntries to fetch.
+     */
+    orderBy?: CmsEntryOrderByWithRelationInput | CmsEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CmsEntries.
+     */
+    cursor?: CmsEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CmsEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CmsEntries.
+     */
+    skip?: number
+    distinct?: CmsEntryScalarFieldEnum | CmsEntryScalarFieldEnum[]
+  }
+
+  /**
+   * CmsEntry create
+   */
+  export type CmsEntryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsEntry
+     */
+    select?: CmsEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CmsEntry.
+     */
+    data: XOR<CmsEntryCreateInput, CmsEntryUncheckedCreateInput>
+  }
+
+  /**
+   * CmsEntry createMany
+   */
+  export type CmsEntryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CmsEntries.
+     */
+    data: CmsEntryCreateManyInput | CmsEntryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CmsEntry createManyAndReturn
+   */
+  export type CmsEntryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsEntry
+     */
+    select?: CmsEntrySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many CmsEntries.
+     */
+    data: CmsEntryCreateManyInput | CmsEntryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsEntryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CmsEntry update
+   */
+  export type CmsEntryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsEntry
+     */
+    select?: CmsEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CmsEntry.
+     */
+    data: XOR<CmsEntryUpdateInput, CmsEntryUncheckedUpdateInput>
+    /**
+     * Choose, which CmsEntry to update.
+     */
+    where: CmsEntryWhereUniqueInput
+  }
+
+  /**
+   * CmsEntry updateMany
+   */
+  export type CmsEntryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CmsEntries.
+     */
+    data: XOR<CmsEntryUpdateManyMutationInput, CmsEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which CmsEntries to update
+     */
+    where?: CmsEntryWhereInput
+  }
+
+  /**
+   * CmsEntry upsert
+   */
+  export type CmsEntryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsEntry
+     */
+    select?: CmsEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsEntryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CmsEntry to update in case it exists.
+     */
+    where: CmsEntryWhereUniqueInput
+    /**
+     * In case the CmsEntry found by the `where` argument doesn't exist, create a new CmsEntry with this data.
+     */
+    create: XOR<CmsEntryCreateInput, CmsEntryUncheckedCreateInput>
+    /**
+     * In case the CmsEntry was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CmsEntryUpdateInput, CmsEntryUncheckedUpdateInput>
+  }
+
+  /**
+   * CmsEntry delete
+   */
+  export type CmsEntryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsEntry
+     */
+    select?: CmsEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsEntryInclude<ExtArgs> | null
+    /**
+     * Filter which CmsEntry to delete.
+     */
+    where: CmsEntryWhereUniqueInput
+  }
+
+  /**
+   * CmsEntry deleteMany
+   */
+  export type CmsEntryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CmsEntries to delete
+     */
+    where?: CmsEntryWhereInput
+  }
+
+  /**
+   * CmsEntry without action
+   */
+  export type CmsEntryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CmsEntry
+     */
+    select?: CmsEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CmsEntryInclude<ExtArgs> | null
   }
 
 
@@ -53767,6 +56031,13 @@ export namespace Prisma {
     phone: 'phone',
     name: 'name',
     avatarUrl: 'avatarUrl',
+    bio: 'bio',
+    jobTitle: 'jobTitle',
+    company: 'company',
+    website: 'website',
+    city: 'city',
+    country: 'country',
+    timezone: 'timezone',
     passwordHash: 'passwordHash',
     googleId: 'googleId',
     role: 'role',
@@ -54056,6 +56327,33 @@ export namespace Prisma {
   };
 
   export type SiteScalarFieldEnum = (typeof SiteScalarFieldEnum)[keyof typeof SiteScalarFieldEnum]
+
+
+  export const CmsCollectionScalarFieldEnum: {
+    id: 'id',
+    siteId: 'siteId',
+    name: 'name',
+    slug: 'slug',
+    description: 'description',
+    icon: 'icon',
+    fields: 'fields',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CmsCollectionScalarFieldEnum = (typeof CmsCollectionScalarFieldEnum)[keyof typeof CmsCollectionScalarFieldEnum]
+
+
+  export const CmsEntryScalarFieldEnum: {
+    id: 'id',
+    collectionId: 'collectionId',
+    data: 'data',
+    status: 'status',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CmsEntryScalarFieldEnum = (typeof CmsEntryScalarFieldEnum)[keyof typeof CmsEntryScalarFieldEnum]
 
 
   export const SiteLayoutScalarFieldEnum: {
@@ -54854,6 +57152,13 @@ export namespace Prisma {
     phone?: StringNullableFilter<"User"> | string | null
     name?: StringNullableFilter<"User"> | string | null
     avatarUrl?: StringNullableFilter<"User"> | string | null
+    bio?: StringNullableFilter<"User"> | string | null
+    jobTitle?: StringNullableFilter<"User"> | string | null
+    company?: StringNullableFilter<"User"> | string | null
+    website?: StringNullableFilter<"User"> | string | null
+    city?: StringNullableFilter<"User"> | string | null
+    country?: StringNullableFilter<"User"> | string | null
+    timezone?: StringNullableFilter<"User"> | string | null
     passwordHash?: StringNullableFilter<"User"> | string | null
     googleId?: StringNullableFilter<"User"> | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
@@ -54888,6 +57193,13 @@ export namespace Prisma {
     phone?: SortOrderInput | SortOrder
     name?: SortOrderInput | SortOrder
     avatarUrl?: SortOrderInput | SortOrder
+    bio?: SortOrderInput | SortOrder
+    jobTitle?: SortOrderInput | SortOrder
+    company?: SortOrderInput | SortOrder
+    website?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    country?: SortOrderInput | SortOrder
+    timezone?: SortOrderInput | SortOrder
     passwordHash?: SortOrderInput | SortOrder
     googleId?: SortOrderInput | SortOrder
     role?: SortOrder
@@ -54926,6 +57238,13 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     name?: StringNullableFilter<"User"> | string | null
     avatarUrl?: StringNullableFilter<"User"> | string | null
+    bio?: StringNullableFilter<"User"> | string | null
+    jobTitle?: StringNullableFilter<"User"> | string | null
+    company?: StringNullableFilter<"User"> | string | null
+    website?: StringNullableFilter<"User"> | string | null
+    city?: StringNullableFilter<"User"> | string | null
+    country?: StringNullableFilter<"User"> | string | null
+    timezone?: StringNullableFilter<"User"> | string | null
     passwordHash?: StringNullableFilter<"User"> | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     isEmailVerified?: BoolFilter<"User"> | boolean
@@ -54959,6 +57278,13 @@ export namespace Prisma {
     phone?: SortOrderInput | SortOrder
     name?: SortOrderInput | SortOrder
     avatarUrl?: SortOrderInput | SortOrder
+    bio?: SortOrderInput | SortOrder
+    jobTitle?: SortOrderInput | SortOrder
+    company?: SortOrderInput | SortOrder
+    website?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    country?: SortOrderInput | SortOrder
+    timezone?: SortOrderInput | SortOrder
     passwordHash?: SortOrderInput | SortOrder
     googleId?: SortOrderInput | SortOrder
     role?: SortOrder
@@ -54986,6 +57312,13 @@ export namespace Prisma {
     phone?: StringNullableWithAggregatesFilter<"User"> | string | null
     name?: StringNullableWithAggregatesFilter<"User"> | string | null
     avatarUrl?: StringNullableWithAggregatesFilter<"User"> | string | null
+    bio?: StringNullableWithAggregatesFilter<"User"> | string | null
+    jobTitle?: StringNullableWithAggregatesFilter<"User"> | string | null
+    company?: StringNullableWithAggregatesFilter<"User"> | string | null
+    website?: StringNullableWithAggregatesFilter<"User"> | string | null
+    city?: StringNullableWithAggregatesFilter<"User"> | string | null
+    country?: StringNullableWithAggregatesFilter<"User"> | string | null
+    timezone?: StringNullableWithAggregatesFilter<"User"> | string | null
     passwordHash?: StringNullableWithAggregatesFilter<"User"> | string | null
     googleId?: StringNullableWithAggregatesFilter<"User"> | string | null
     role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
@@ -56389,6 +58722,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetListRelationFilter
     layout?: XOR<SiteLayoutNullableRelationFilter, SiteLayoutWhereInput> | null
     aiSnapshots?: AIBlueprintSnapshotListRelationFilter
+    cmsCollections?: CmsCollectionListRelationFilter
   }
 
   export type SiteOrderByWithRelationInput = {
@@ -56414,6 +58748,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetOrderByRelationAggregateInput
     layout?: SiteLayoutOrderByWithRelationInput
     aiSnapshots?: AIBlueprintSnapshotOrderByRelationAggregateInput
+    cmsCollections?: CmsCollectionOrderByRelationAggregateInput
   }
 
   export type SiteWhereUniqueInput = Prisma.AtLeast<{
@@ -56443,6 +58778,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetListRelationFilter
     layout?: XOR<SiteLayoutNullableRelationFilter, SiteLayoutWhereInput> | null
     aiSnapshots?: AIBlueprintSnapshotListRelationFilter
+    cmsCollections?: CmsCollectionListRelationFilter
   }, "id" | "tenantId_slug">
 
   export type SiteOrderByWithAggregationInput = {
@@ -56475,6 +58811,145 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Site"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Site"> | Date | string
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Site"> | Date | string | null
+  }
+
+  export type CmsCollectionWhereInput = {
+    AND?: CmsCollectionWhereInput | CmsCollectionWhereInput[]
+    OR?: CmsCollectionWhereInput[]
+    NOT?: CmsCollectionWhereInput | CmsCollectionWhereInput[]
+    id?: StringFilter<"CmsCollection"> | string
+    siteId?: StringFilter<"CmsCollection"> | string
+    name?: StringFilter<"CmsCollection"> | string
+    slug?: StringFilter<"CmsCollection"> | string
+    description?: StringNullableFilter<"CmsCollection"> | string | null
+    icon?: StringNullableFilter<"CmsCollection"> | string | null
+    fields?: JsonFilter<"CmsCollection">
+    createdAt?: DateTimeFilter<"CmsCollection"> | Date | string
+    updatedAt?: DateTimeFilter<"CmsCollection"> | Date | string
+    site?: XOR<SiteRelationFilter, SiteWhereInput>
+    entries?: CmsEntryListRelationFilter
+  }
+
+  export type CmsCollectionOrderByWithRelationInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    description?: SortOrderInput | SortOrder
+    icon?: SortOrderInput | SortOrder
+    fields?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    site?: SiteOrderByWithRelationInput
+    entries?: CmsEntryOrderByRelationAggregateInput
+  }
+
+  export type CmsCollectionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    siteId_slug?: CmsCollectionSiteIdSlugCompoundUniqueInput
+    AND?: CmsCollectionWhereInput | CmsCollectionWhereInput[]
+    OR?: CmsCollectionWhereInput[]
+    NOT?: CmsCollectionWhereInput | CmsCollectionWhereInput[]
+    siteId?: StringFilter<"CmsCollection"> | string
+    name?: StringFilter<"CmsCollection"> | string
+    slug?: StringFilter<"CmsCollection"> | string
+    description?: StringNullableFilter<"CmsCollection"> | string | null
+    icon?: StringNullableFilter<"CmsCollection"> | string | null
+    fields?: JsonFilter<"CmsCollection">
+    createdAt?: DateTimeFilter<"CmsCollection"> | Date | string
+    updatedAt?: DateTimeFilter<"CmsCollection"> | Date | string
+    site?: XOR<SiteRelationFilter, SiteWhereInput>
+    entries?: CmsEntryListRelationFilter
+  }, "id" | "siteId_slug">
+
+  export type CmsCollectionOrderByWithAggregationInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    description?: SortOrderInput | SortOrder
+    icon?: SortOrderInput | SortOrder
+    fields?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CmsCollectionCountOrderByAggregateInput
+    _max?: CmsCollectionMaxOrderByAggregateInput
+    _min?: CmsCollectionMinOrderByAggregateInput
+  }
+
+  export type CmsCollectionScalarWhereWithAggregatesInput = {
+    AND?: CmsCollectionScalarWhereWithAggregatesInput | CmsCollectionScalarWhereWithAggregatesInput[]
+    OR?: CmsCollectionScalarWhereWithAggregatesInput[]
+    NOT?: CmsCollectionScalarWhereWithAggregatesInput | CmsCollectionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CmsCollection"> | string
+    siteId?: StringWithAggregatesFilter<"CmsCollection"> | string
+    name?: StringWithAggregatesFilter<"CmsCollection"> | string
+    slug?: StringWithAggregatesFilter<"CmsCollection"> | string
+    description?: StringNullableWithAggregatesFilter<"CmsCollection"> | string | null
+    icon?: StringNullableWithAggregatesFilter<"CmsCollection"> | string | null
+    fields?: JsonWithAggregatesFilter<"CmsCollection">
+    createdAt?: DateTimeWithAggregatesFilter<"CmsCollection"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CmsCollection"> | Date | string
+  }
+
+  export type CmsEntryWhereInput = {
+    AND?: CmsEntryWhereInput | CmsEntryWhereInput[]
+    OR?: CmsEntryWhereInput[]
+    NOT?: CmsEntryWhereInput | CmsEntryWhereInput[]
+    id?: StringFilter<"CmsEntry"> | string
+    collectionId?: StringFilter<"CmsEntry"> | string
+    data?: JsonFilter<"CmsEntry">
+    status?: StringFilter<"CmsEntry"> | string
+    createdAt?: DateTimeFilter<"CmsEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"CmsEntry"> | Date | string
+    collection?: XOR<CmsCollectionRelationFilter, CmsCollectionWhereInput>
+  }
+
+  export type CmsEntryOrderByWithRelationInput = {
+    id?: SortOrder
+    collectionId?: SortOrder
+    data?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    collection?: CmsCollectionOrderByWithRelationInput
+  }
+
+  export type CmsEntryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: CmsEntryWhereInput | CmsEntryWhereInput[]
+    OR?: CmsEntryWhereInput[]
+    NOT?: CmsEntryWhereInput | CmsEntryWhereInput[]
+    collectionId?: StringFilter<"CmsEntry"> | string
+    data?: JsonFilter<"CmsEntry">
+    status?: StringFilter<"CmsEntry"> | string
+    createdAt?: DateTimeFilter<"CmsEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"CmsEntry"> | Date | string
+    collection?: XOR<CmsCollectionRelationFilter, CmsCollectionWhereInput>
+  }, "id">
+
+  export type CmsEntryOrderByWithAggregationInput = {
+    id?: SortOrder
+    collectionId?: SortOrder
+    data?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CmsEntryCountOrderByAggregateInput
+    _max?: CmsEntryMaxOrderByAggregateInput
+    _min?: CmsEntryMinOrderByAggregateInput
+  }
+
+  export type CmsEntryScalarWhereWithAggregatesInput = {
+    AND?: CmsEntryScalarWhereWithAggregatesInput | CmsEntryScalarWhereWithAggregatesInput[]
+    OR?: CmsEntryScalarWhereWithAggregatesInput[]
+    NOT?: CmsEntryScalarWhereWithAggregatesInput | CmsEntryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CmsEntry"> | string
+    collectionId?: StringWithAggregatesFilter<"CmsEntry"> | string
+    data?: JsonWithAggregatesFilter<"CmsEntry">
+    status?: StringWithAggregatesFilter<"CmsEntry"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"CmsEntry"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CmsEntry"> | Date | string
   }
 
   export type SiteLayoutWhereInput = {
@@ -58626,6 +61101,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -58660,6 +61142,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -58694,6 +61183,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -58728,6 +61224,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -58762,6 +61265,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -58783,6 +61293,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -58804,6 +61321,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -60370,6 +62894,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateInput = {
@@ -60394,6 +62919,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUpdateInput = {
@@ -60418,6 +62944,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateInput = {
@@ -60442,6 +62969,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteCreateManyInput = {
@@ -60480,6 +63008,155 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type CmsCollectionCreateInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    icon?: string | null
+    fields: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    site: SiteCreateNestedOneWithoutCmsCollectionsInput
+    entries?: CmsEntryCreateNestedManyWithoutCollectionInput
+  }
+
+  export type CmsCollectionUncheckedCreateInput = {
+    id?: string
+    siteId: string
+    name: string
+    slug: string
+    description?: string | null
+    icon?: string | null
+    fields: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    entries?: CmsEntryUncheckedCreateNestedManyWithoutCollectionInput
+  }
+
+  export type CmsCollectionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    fields?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    site?: SiteUpdateOneRequiredWithoutCmsCollectionsNestedInput
+    entries?: CmsEntryUpdateManyWithoutCollectionNestedInput
+  }
+
+  export type CmsCollectionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    fields?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: CmsEntryUncheckedUpdateManyWithoutCollectionNestedInput
+  }
+
+  export type CmsCollectionCreateManyInput = {
+    id?: string
+    siteId: string
+    name: string
+    slug: string
+    description?: string | null
+    icon?: string | null
+    fields: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CmsCollectionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    fields?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CmsCollectionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    fields?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CmsEntryCreateInput = {
+    id?: string
+    data: JsonNullValueInput | InputJsonValue
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    collection: CmsCollectionCreateNestedOneWithoutEntriesInput
+  }
+
+  export type CmsEntryUncheckedCreateInput = {
+    id?: string
+    collectionId: string
+    data: JsonNullValueInput | InputJsonValue
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CmsEntryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    collection?: CmsCollectionUpdateOneRequiredWithoutEntriesNestedInput
+  }
+
+  export type CmsEntryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    collectionId?: StringFieldUpdateOperationsInput | string
+    data?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CmsEntryCreateManyInput = {
+    id?: string
+    collectionId: string
+    data: JsonNullValueInput | InputJsonValue
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CmsEntryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CmsEntryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    collectionId?: StringFieldUpdateOperationsInput | string
+    data?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SiteLayoutCreateInput = {
@@ -62949,6 +65626,13 @@ export namespace Prisma {
     phone?: SortOrder
     name?: SortOrder
     avatarUrl?: SortOrder
+    bio?: SortOrder
+    jobTitle?: SortOrder
+    company?: SortOrder
+    website?: SortOrder
+    city?: SortOrder
+    country?: SortOrder
+    timezone?: SortOrder
     passwordHash?: SortOrder
     googleId?: SortOrder
     role?: SortOrder
@@ -62970,6 +65654,13 @@ export namespace Prisma {
     phone?: SortOrder
     name?: SortOrder
     avatarUrl?: SortOrder
+    bio?: SortOrder
+    jobTitle?: SortOrder
+    company?: SortOrder
+    website?: SortOrder
+    city?: SortOrder
+    country?: SortOrder
+    timezone?: SortOrder
     passwordHash?: SortOrder
     googleId?: SortOrder
     role?: SortOrder
@@ -62990,6 +65681,13 @@ export namespace Prisma {
     phone?: SortOrder
     name?: SortOrder
     avatarUrl?: SortOrder
+    bio?: SortOrder
+    jobTitle?: SortOrder
+    company?: SortOrder
+    website?: SortOrder
+    city?: SortOrder
+    country?: SortOrder
+    timezone?: SortOrder
     passwordHash?: SortOrder
     googleId?: SortOrder
     role?: SortOrder
@@ -64241,11 +66939,21 @@ export namespace Prisma {
     isNot?: SiteLayoutWhereInput | null
   }
 
+  export type CmsCollectionListRelationFilter = {
+    every?: CmsCollectionWhereInput
+    some?: CmsCollectionWhereInput
+    none?: CmsCollectionWhereInput
+  }
+
   export type PageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type DomainOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CmsCollectionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -64299,6 +67007,132 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumSiteStatusFilter<$PrismaModel>
     _max?: NestedEnumSiteStatusFilter<$PrismaModel>
+  }
+  export type JsonFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type CmsEntryListRelationFilter = {
+    every?: CmsEntryWhereInput
+    some?: CmsEntryWhereInput
+    none?: CmsEntryWhereInput
+  }
+
+  export type CmsEntryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CmsCollectionSiteIdSlugCompoundUniqueInput = {
+    siteId: string
+    slug: string
+  }
+
+  export type CmsCollectionCountOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    description?: SortOrder
+    icon?: SortOrder
+    fields?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CmsCollectionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    description?: SortOrder
+    icon?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CmsCollectionMinOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    description?: SortOrder
+    icon?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type CmsCollectionRelationFilter = {
+    is?: CmsCollectionWhereInput
+    isNot?: CmsCollectionWhereInput
+  }
+
+  export type CmsEntryCountOrderByAggregateInput = {
+    id?: SortOrder
+    collectionId?: SortOrder
+    data?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CmsEntryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    collectionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CmsEntryMinOrderByAggregateInput = {
+    id?: SortOrder
+    collectionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type SiteLayoutCountOrderByAggregateInput = {
@@ -64467,28 +67301,6 @@ export namespace Prisma {
     pageId?: SortOrder
     expiresAt?: SortOrder
   }
-  export type JsonFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type AIBlueprintSnapshotCountOrderByAggregateInput = {
     id?: SortOrder
@@ -64513,31 +67325,6 @@ export namespace Prisma {
     siteId?: SortOrder
     tenantId?: SortOrder
     createdAt?: SortOrder
-  }
-  export type JsonWithAggregatesFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedJsonFilter<$PrismaModel>
-    _max?: NestedJsonFilter<$PrismaModel>
   }
 
   export type BlueprintHistoryListRelationFilter = {
@@ -67518,6 +70305,13 @@ export namespace Prisma {
     connect?: AIBlueprintSnapshotWhereUniqueInput | AIBlueprintSnapshotWhereUniqueInput[]
   }
 
+  export type CmsCollectionCreateNestedManyWithoutSiteInput = {
+    create?: XOR<CmsCollectionCreateWithoutSiteInput, CmsCollectionUncheckedCreateWithoutSiteInput> | CmsCollectionCreateWithoutSiteInput[] | CmsCollectionUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: CmsCollectionCreateOrConnectWithoutSiteInput | CmsCollectionCreateOrConnectWithoutSiteInput[]
+    createMany?: CmsCollectionCreateManySiteInputEnvelope
+    connect?: CmsCollectionWhereUniqueInput | CmsCollectionWhereUniqueInput[]
+  }
+
   export type SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput = {
     create?: XOR<SiteSubscriptionCreateWithoutSiteInput, SiteSubscriptionUncheckedCreateWithoutSiteInput> | SiteSubscriptionCreateWithoutSiteInput[] | SiteSubscriptionUncheckedCreateWithoutSiteInput[]
     connectOrCreate?: SiteSubscriptionCreateOrConnectWithoutSiteInput | SiteSubscriptionCreateOrConnectWithoutSiteInput[]
@@ -67592,6 +70386,13 @@ export namespace Prisma {
     connectOrCreate?: AIBlueprintSnapshotCreateOrConnectWithoutSiteInput | AIBlueprintSnapshotCreateOrConnectWithoutSiteInput[]
     createMany?: AIBlueprintSnapshotCreateManySiteInputEnvelope
     connect?: AIBlueprintSnapshotWhereUniqueInput | AIBlueprintSnapshotWhereUniqueInput[]
+  }
+
+  export type CmsCollectionUncheckedCreateNestedManyWithoutSiteInput = {
+    create?: XOR<CmsCollectionCreateWithoutSiteInput, CmsCollectionUncheckedCreateWithoutSiteInput> | CmsCollectionCreateWithoutSiteInput[] | CmsCollectionUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: CmsCollectionCreateOrConnectWithoutSiteInput | CmsCollectionCreateOrConnectWithoutSiteInput[]
+    createMany?: CmsCollectionCreateManySiteInputEnvelope
+    connect?: CmsCollectionWhereUniqueInput | CmsCollectionWhereUniqueInput[]
   }
 
   export type EnumSiteStatusFieldUpdateOperationsInput = {
@@ -67756,6 +70557,20 @@ export namespace Prisma {
     deleteMany?: AIBlueprintSnapshotScalarWhereInput | AIBlueprintSnapshotScalarWhereInput[]
   }
 
+  export type CmsCollectionUpdateManyWithoutSiteNestedInput = {
+    create?: XOR<CmsCollectionCreateWithoutSiteInput, CmsCollectionUncheckedCreateWithoutSiteInput> | CmsCollectionCreateWithoutSiteInput[] | CmsCollectionUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: CmsCollectionCreateOrConnectWithoutSiteInput | CmsCollectionCreateOrConnectWithoutSiteInput[]
+    upsert?: CmsCollectionUpsertWithWhereUniqueWithoutSiteInput | CmsCollectionUpsertWithWhereUniqueWithoutSiteInput[]
+    createMany?: CmsCollectionCreateManySiteInputEnvelope
+    set?: CmsCollectionWhereUniqueInput | CmsCollectionWhereUniqueInput[]
+    disconnect?: CmsCollectionWhereUniqueInput | CmsCollectionWhereUniqueInput[]
+    delete?: CmsCollectionWhereUniqueInput | CmsCollectionWhereUniqueInput[]
+    connect?: CmsCollectionWhereUniqueInput | CmsCollectionWhereUniqueInput[]
+    update?: CmsCollectionUpdateWithWhereUniqueWithoutSiteInput | CmsCollectionUpdateWithWhereUniqueWithoutSiteInput[]
+    updateMany?: CmsCollectionUpdateManyWithWhereWithoutSiteInput | CmsCollectionUpdateManyWithWhereWithoutSiteInput[]
+    deleteMany?: CmsCollectionScalarWhereInput | CmsCollectionScalarWhereInput[]
+  }
+
   export type SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput = {
     create?: XOR<SiteSubscriptionCreateWithoutSiteInput, SiteSubscriptionUncheckedCreateWithoutSiteInput> | SiteSubscriptionCreateWithoutSiteInput[] | SiteSubscriptionUncheckedCreateWithoutSiteInput[]
     connectOrCreate?: SiteSubscriptionCreateOrConnectWithoutSiteInput | SiteSubscriptionCreateOrConnectWithoutSiteInput[]
@@ -67904,6 +70719,90 @@ export namespace Prisma {
     update?: AIBlueprintSnapshotUpdateWithWhereUniqueWithoutSiteInput | AIBlueprintSnapshotUpdateWithWhereUniqueWithoutSiteInput[]
     updateMany?: AIBlueprintSnapshotUpdateManyWithWhereWithoutSiteInput | AIBlueprintSnapshotUpdateManyWithWhereWithoutSiteInput[]
     deleteMany?: AIBlueprintSnapshotScalarWhereInput | AIBlueprintSnapshotScalarWhereInput[]
+  }
+
+  export type CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput = {
+    create?: XOR<CmsCollectionCreateWithoutSiteInput, CmsCollectionUncheckedCreateWithoutSiteInput> | CmsCollectionCreateWithoutSiteInput[] | CmsCollectionUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: CmsCollectionCreateOrConnectWithoutSiteInput | CmsCollectionCreateOrConnectWithoutSiteInput[]
+    upsert?: CmsCollectionUpsertWithWhereUniqueWithoutSiteInput | CmsCollectionUpsertWithWhereUniqueWithoutSiteInput[]
+    createMany?: CmsCollectionCreateManySiteInputEnvelope
+    set?: CmsCollectionWhereUniqueInput | CmsCollectionWhereUniqueInput[]
+    disconnect?: CmsCollectionWhereUniqueInput | CmsCollectionWhereUniqueInput[]
+    delete?: CmsCollectionWhereUniqueInput | CmsCollectionWhereUniqueInput[]
+    connect?: CmsCollectionWhereUniqueInput | CmsCollectionWhereUniqueInput[]
+    update?: CmsCollectionUpdateWithWhereUniqueWithoutSiteInput | CmsCollectionUpdateWithWhereUniqueWithoutSiteInput[]
+    updateMany?: CmsCollectionUpdateManyWithWhereWithoutSiteInput | CmsCollectionUpdateManyWithWhereWithoutSiteInput[]
+    deleteMany?: CmsCollectionScalarWhereInput | CmsCollectionScalarWhereInput[]
+  }
+
+  export type SiteCreateNestedOneWithoutCmsCollectionsInput = {
+    create?: XOR<SiteCreateWithoutCmsCollectionsInput, SiteUncheckedCreateWithoutCmsCollectionsInput>
+    connectOrCreate?: SiteCreateOrConnectWithoutCmsCollectionsInput
+    connect?: SiteWhereUniqueInput
+  }
+
+  export type CmsEntryCreateNestedManyWithoutCollectionInput = {
+    create?: XOR<CmsEntryCreateWithoutCollectionInput, CmsEntryUncheckedCreateWithoutCollectionInput> | CmsEntryCreateWithoutCollectionInput[] | CmsEntryUncheckedCreateWithoutCollectionInput[]
+    connectOrCreate?: CmsEntryCreateOrConnectWithoutCollectionInput | CmsEntryCreateOrConnectWithoutCollectionInput[]
+    createMany?: CmsEntryCreateManyCollectionInputEnvelope
+    connect?: CmsEntryWhereUniqueInput | CmsEntryWhereUniqueInput[]
+  }
+
+  export type CmsEntryUncheckedCreateNestedManyWithoutCollectionInput = {
+    create?: XOR<CmsEntryCreateWithoutCollectionInput, CmsEntryUncheckedCreateWithoutCollectionInput> | CmsEntryCreateWithoutCollectionInput[] | CmsEntryUncheckedCreateWithoutCollectionInput[]
+    connectOrCreate?: CmsEntryCreateOrConnectWithoutCollectionInput | CmsEntryCreateOrConnectWithoutCollectionInput[]
+    createMany?: CmsEntryCreateManyCollectionInputEnvelope
+    connect?: CmsEntryWhereUniqueInput | CmsEntryWhereUniqueInput[]
+  }
+
+  export type SiteUpdateOneRequiredWithoutCmsCollectionsNestedInput = {
+    create?: XOR<SiteCreateWithoutCmsCollectionsInput, SiteUncheckedCreateWithoutCmsCollectionsInput>
+    connectOrCreate?: SiteCreateOrConnectWithoutCmsCollectionsInput
+    upsert?: SiteUpsertWithoutCmsCollectionsInput
+    connect?: SiteWhereUniqueInput
+    update?: XOR<XOR<SiteUpdateToOneWithWhereWithoutCmsCollectionsInput, SiteUpdateWithoutCmsCollectionsInput>, SiteUncheckedUpdateWithoutCmsCollectionsInput>
+  }
+
+  export type CmsEntryUpdateManyWithoutCollectionNestedInput = {
+    create?: XOR<CmsEntryCreateWithoutCollectionInput, CmsEntryUncheckedCreateWithoutCollectionInput> | CmsEntryCreateWithoutCollectionInput[] | CmsEntryUncheckedCreateWithoutCollectionInput[]
+    connectOrCreate?: CmsEntryCreateOrConnectWithoutCollectionInput | CmsEntryCreateOrConnectWithoutCollectionInput[]
+    upsert?: CmsEntryUpsertWithWhereUniqueWithoutCollectionInput | CmsEntryUpsertWithWhereUniqueWithoutCollectionInput[]
+    createMany?: CmsEntryCreateManyCollectionInputEnvelope
+    set?: CmsEntryWhereUniqueInput | CmsEntryWhereUniqueInput[]
+    disconnect?: CmsEntryWhereUniqueInput | CmsEntryWhereUniqueInput[]
+    delete?: CmsEntryWhereUniqueInput | CmsEntryWhereUniqueInput[]
+    connect?: CmsEntryWhereUniqueInput | CmsEntryWhereUniqueInput[]
+    update?: CmsEntryUpdateWithWhereUniqueWithoutCollectionInput | CmsEntryUpdateWithWhereUniqueWithoutCollectionInput[]
+    updateMany?: CmsEntryUpdateManyWithWhereWithoutCollectionInput | CmsEntryUpdateManyWithWhereWithoutCollectionInput[]
+    deleteMany?: CmsEntryScalarWhereInput | CmsEntryScalarWhereInput[]
+  }
+
+  export type CmsEntryUncheckedUpdateManyWithoutCollectionNestedInput = {
+    create?: XOR<CmsEntryCreateWithoutCollectionInput, CmsEntryUncheckedCreateWithoutCollectionInput> | CmsEntryCreateWithoutCollectionInput[] | CmsEntryUncheckedCreateWithoutCollectionInput[]
+    connectOrCreate?: CmsEntryCreateOrConnectWithoutCollectionInput | CmsEntryCreateOrConnectWithoutCollectionInput[]
+    upsert?: CmsEntryUpsertWithWhereUniqueWithoutCollectionInput | CmsEntryUpsertWithWhereUniqueWithoutCollectionInput[]
+    createMany?: CmsEntryCreateManyCollectionInputEnvelope
+    set?: CmsEntryWhereUniqueInput | CmsEntryWhereUniqueInput[]
+    disconnect?: CmsEntryWhereUniqueInput | CmsEntryWhereUniqueInput[]
+    delete?: CmsEntryWhereUniqueInput | CmsEntryWhereUniqueInput[]
+    connect?: CmsEntryWhereUniqueInput | CmsEntryWhereUniqueInput[]
+    update?: CmsEntryUpdateWithWhereUniqueWithoutCollectionInput | CmsEntryUpdateWithWhereUniqueWithoutCollectionInput[]
+    updateMany?: CmsEntryUpdateManyWithWhereWithoutCollectionInput | CmsEntryUpdateManyWithWhereWithoutCollectionInput[]
+    deleteMany?: CmsEntryScalarWhereInput | CmsEntryScalarWhereInput[]
+  }
+
+  export type CmsCollectionCreateNestedOneWithoutEntriesInput = {
+    create?: XOR<CmsCollectionCreateWithoutEntriesInput, CmsCollectionUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: CmsCollectionCreateOrConnectWithoutEntriesInput
+    connect?: CmsCollectionWhereUniqueInput
+  }
+
+  export type CmsCollectionUpdateOneRequiredWithoutEntriesNestedInput = {
+    create?: XOR<CmsCollectionCreateWithoutEntriesInput, CmsCollectionUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: CmsCollectionCreateOrConnectWithoutEntriesInput
+    upsert?: CmsCollectionUpsertWithoutEntriesInput
+    connect?: CmsCollectionWhereUniqueInput
+    update?: XOR<XOR<CmsCollectionUpdateToOneWithWhereWithoutEntriesInput, CmsCollectionUpdateWithoutEntriesInput>, CmsCollectionUncheckedUpdateWithoutEntriesInput>
   }
 
   export type SiteCreateNestedOneWithoutLayoutInput = {
@@ -69429,6 +72328,28 @@ export namespace Prisma {
     _min?: NestedEnumSiteStatusFilter<$PrismaModel>
     _max?: NestedEnumSiteStatusFilter<$PrismaModel>
   }
+  export type NestedJsonFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedEnumPageStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.PageStatus | EnumPageStatusFieldRefInput<$PrismaModel>
@@ -69462,28 +72383,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumRenderModeFilter<$PrismaModel>
     _max?: NestedEnumRenderModeFilter<$PrismaModel>
-  }
-  export type NestedJsonFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type NestedEnumComplianceLevelFilter<$PrismaModel = never> = {
@@ -70531,6 +73430,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -70564,6 +73470,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -70613,6 +73526,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -70646,6 +73566,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -70679,6 +73606,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -70712,6 +73646,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -70761,6 +73702,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -70794,6 +73742,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -70827,6 +73782,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -70860,6 +73822,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -70909,6 +73878,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -70942,6 +73918,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -70975,6 +73958,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -71008,6 +73998,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -71057,6 +74054,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -71090,6 +74094,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -71123,6 +74134,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -71156,6 +74174,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -71205,6 +74230,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -71238,6 +74270,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -71271,6 +74310,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -71304,6 +74350,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -71353,6 +74406,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -71386,6 +74446,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -71419,6 +74486,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -71452,6 +74526,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -71490,6 +74571,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -71523,6 +74611,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -71737,6 +74832,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutTenantInput = {
@@ -71760,6 +74856,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutTenantInput = {
@@ -72097,6 +75194,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -72130,6 +75234,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -72182,6 +75293,13 @@ export namespace Prisma {
     phone?: StringNullableFilter<"User"> | string | null
     name?: StringNullableFilter<"User"> | string | null
     avatarUrl?: StringNullableFilter<"User"> | string | null
+    bio?: StringNullableFilter<"User"> | string | null
+    jobTitle?: StringNullableFilter<"User"> | string | null
+    company?: StringNullableFilter<"User"> | string | null
+    website?: StringNullableFilter<"User"> | string | null
+    city?: StringNullableFilter<"User"> | string | null
+    country?: StringNullableFilter<"User"> | string | null
+    timezone?: StringNullableFilter<"User"> | string | null
     passwordHash?: StringNullableFilter<"User"> | string | null
     googleId?: StringNullableFilter<"User"> | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
@@ -73019,6 +76137,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -73052,6 +76177,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -73132,6 +76264,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -73165,6 +76304,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -73776,6 +76922,7 @@ export namespace Prisma {
     legacyDomains?: DomainCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutMediaAssetsInput = {
@@ -73799,6 +76946,7 @@ export namespace Prisma {
     legacyDomains?: DomainUncheckedCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutMediaAssetsInput = {
@@ -73812,6 +76960,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -73845,6 +77000,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -73909,6 +77071,7 @@ export namespace Prisma {
     legacyDomains?: DomainUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutMediaAssetsInput = {
@@ -73932,6 +77095,7 @@ export namespace Prisma {
     legacyDomains?: DomainUncheckedUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type UserUpsertWithoutMediaAssetsInput = {
@@ -73951,6 +77115,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -73984,6 +77155,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -74445,6 +77623,40 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CmsCollectionCreateWithoutSiteInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    icon?: string | null
+    fields: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    entries?: CmsEntryCreateNestedManyWithoutCollectionInput
+  }
+
+  export type CmsCollectionUncheckedCreateWithoutSiteInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    icon?: string | null
+    fields: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    entries?: CmsEntryUncheckedCreateNestedManyWithoutCollectionInput
+  }
+
+  export type CmsCollectionCreateOrConnectWithoutSiteInput = {
+    where: CmsCollectionWhereUniqueInput
+    create: XOR<CmsCollectionCreateWithoutSiteInput, CmsCollectionUncheckedCreateWithoutSiteInput>
+  }
+
+  export type CmsCollectionCreateManySiteInputEnvelope = {
+    data: CmsCollectionCreateManySiteInput | CmsCollectionCreateManySiteInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutSitesInput = {
     update: XOR<TenantUpdateWithoutSitesInput, TenantUncheckedUpdateWithoutSitesInput>
     create: XOR<TenantCreateWithoutSitesInput, TenantUncheckedCreateWithoutSitesInput>
@@ -74726,6 +77938,267 @@ export namespace Prisma {
     data: XOR<AIBlueprintSnapshotUpdateManyMutationInput, AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteInput>
   }
 
+  export type CmsCollectionUpsertWithWhereUniqueWithoutSiteInput = {
+    where: CmsCollectionWhereUniqueInput
+    update: XOR<CmsCollectionUpdateWithoutSiteInput, CmsCollectionUncheckedUpdateWithoutSiteInput>
+    create: XOR<CmsCollectionCreateWithoutSiteInput, CmsCollectionUncheckedCreateWithoutSiteInput>
+  }
+
+  export type CmsCollectionUpdateWithWhereUniqueWithoutSiteInput = {
+    where: CmsCollectionWhereUniqueInput
+    data: XOR<CmsCollectionUpdateWithoutSiteInput, CmsCollectionUncheckedUpdateWithoutSiteInput>
+  }
+
+  export type CmsCollectionUpdateManyWithWhereWithoutSiteInput = {
+    where: CmsCollectionScalarWhereInput
+    data: XOR<CmsCollectionUpdateManyMutationInput, CmsCollectionUncheckedUpdateManyWithoutSiteInput>
+  }
+
+  export type CmsCollectionScalarWhereInput = {
+    AND?: CmsCollectionScalarWhereInput | CmsCollectionScalarWhereInput[]
+    OR?: CmsCollectionScalarWhereInput[]
+    NOT?: CmsCollectionScalarWhereInput | CmsCollectionScalarWhereInput[]
+    id?: StringFilter<"CmsCollection"> | string
+    siteId?: StringFilter<"CmsCollection"> | string
+    name?: StringFilter<"CmsCollection"> | string
+    slug?: StringFilter<"CmsCollection"> | string
+    description?: StringNullableFilter<"CmsCollection"> | string | null
+    icon?: StringNullableFilter<"CmsCollection"> | string | null
+    fields?: JsonFilter<"CmsCollection">
+    createdAt?: DateTimeFilter<"CmsCollection"> | Date | string
+    updatedAt?: DateTimeFilter<"CmsCollection"> | Date | string
+  }
+
+  export type SiteCreateWithoutCmsCollectionsInput = {
+    id?: string
+    logoUrl?: string | null
+    name: string
+    slug: string
+    status?: $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutSitesInput
+    subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
+    pages?: PageCreateNestedManyWithoutSiteInput
+    complianceAudits?: ComplianceAuditCreateNestedManyWithoutSiteInput
+    snapshots?: SiteSnapshotCreateNestedManyWithoutSiteInput
+    renders?: SiteRenderCreateNestedManyWithoutSiteInput
+    domains?: SiteDomainCreateNestedManyWithoutSiteInput
+    blueprints?: BlueprintCreateNestedManyWithoutSiteInput
+    legacyDomains?: DomainCreateNestedManyWithoutSiteInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
+    layout?: SiteLayoutCreateNestedOneWithoutSiteInput
+    aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+  }
+
+  export type SiteUncheckedCreateWithoutCmsCollectionsInput = {
+    id?: string
+    tenantId: string
+    logoUrl?: string | null
+    name: string
+    slug: string
+    status?: $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
+    pages?: PageUncheckedCreateNestedManyWithoutSiteInput
+    complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
+    snapshots?: SiteSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    renders?: SiteRenderUncheckedCreateNestedManyWithoutSiteInput
+    domains?: SiteDomainUncheckedCreateNestedManyWithoutSiteInput
+    blueprints?: BlueprintUncheckedCreateNestedManyWithoutSiteInput
+    legacyDomains?: DomainUncheckedCreateNestedManyWithoutSiteInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
+    layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+  }
+
+  export type SiteCreateOrConnectWithoutCmsCollectionsInput = {
+    where: SiteWhereUniqueInput
+    create: XOR<SiteCreateWithoutCmsCollectionsInput, SiteUncheckedCreateWithoutCmsCollectionsInput>
+  }
+
+  export type CmsEntryCreateWithoutCollectionInput = {
+    id?: string
+    data: JsonNullValueInput | InputJsonValue
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CmsEntryUncheckedCreateWithoutCollectionInput = {
+    id?: string
+    data: JsonNullValueInput | InputJsonValue
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CmsEntryCreateOrConnectWithoutCollectionInput = {
+    where: CmsEntryWhereUniqueInput
+    create: XOR<CmsEntryCreateWithoutCollectionInput, CmsEntryUncheckedCreateWithoutCollectionInput>
+  }
+
+  export type CmsEntryCreateManyCollectionInputEnvelope = {
+    data: CmsEntryCreateManyCollectionInput | CmsEntryCreateManyCollectionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SiteUpsertWithoutCmsCollectionsInput = {
+    update: XOR<SiteUpdateWithoutCmsCollectionsInput, SiteUncheckedUpdateWithoutCmsCollectionsInput>
+    create: XOR<SiteCreateWithoutCmsCollectionsInput, SiteUncheckedCreateWithoutCmsCollectionsInput>
+    where?: SiteWhereInput
+  }
+
+  export type SiteUpdateToOneWithWhereWithoutCmsCollectionsInput = {
+    where?: SiteWhereInput
+    data: XOR<SiteUpdateWithoutCmsCollectionsInput, SiteUncheckedUpdateWithoutCmsCollectionsInput>
+  }
+
+  export type SiteUpdateWithoutCmsCollectionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
+    subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
+    pages?: PageUpdateManyWithoutSiteNestedInput
+    complianceAudits?: ComplianceAuditUpdateManyWithoutSiteNestedInput
+    snapshots?: SiteSnapshotUpdateManyWithoutSiteNestedInput
+    renders?: SiteRenderUpdateManyWithoutSiteNestedInput
+    domains?: SiteDomainUpdateManyWithoutSiteNestedInput
+    blueprints?: BlueprintUpdateManyWithoutSiteNestedInput
+    legacyDomains?: DomainUpdateManyWithoutSiteNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
+    layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+  }
+
+  export type SiteUncheckedUpdateWithoutCmsCollectionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
+    pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
+    complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
+    snapshots?: SiteSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    renders?: SiteRenderUncheckedUpdateManyWithoutSiteNestedInput
+    domains?: SiteDomainUncheckedUpdateManyWithoutSiteNestedInput
+    blueprints?: BlueprintUncheckedUpdateManyWithoutSiteNestedInput
+    legacyDomains?: DomainUncheckedUpdateManyWithoutSiteNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
+    layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+  }
+
+  export type CmsEntryUpsertWithWhereUniqueWithoutCollectionInput = {
+    where: CmsEntryWhereUniqueInput
+    update: XOR<CmsEntryUpdateWithoutCollectionInput, CmsEntryUncheckedUpdateWithoutCollectionInput>
+    create: XOR<CmsEntryCreateWithoutCollectionInput, CmsEntryUncheckedCreateWithoutCollectionInput>
+  }
+
+  export type CmsEntryUpdateWithWhereUniqueWithoutCollectionInput = {
+    where: CmsEntryWhereUniqueInput
+    data: XOR<CmsEntryUpdateWithoutCollectionInput, CmsEntryUncheckedUpdateWithoutCollectionInput>
+  }
+
+  export type CmsEntryUpdateManyWithWhereWithoutCollectionInput = {
+    where: CmsEntryScalarWhereInput
+    data: XOR<CmsEntryUpdateManyMutationInput, CmsEntryUncheckedUpdateManyWithoutCollectionInput>
+  }
+
+  export type CmsEntryScalarWhereInput = {
+    AND?: CmsEntryScalarWhereInput | CmsEntryScalarWhereInput[]
+    OR?: CmsEntryScalarWhereInput[]
+    NOT?: CmsEntryScalarWhereInput | CmsEntryScalarWhereInput[]
+    id?: StringFilter<"CmsEntry"> | string
+    collectionId?: StringFilter<"CmsEntry"> | string
+    data?: JsonFilter<"CmsEntry">
+    status?: StringFilter<"CmsEntry"> | string
+    createdAt?: DateTimeFilter<"CmsEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"CmsEntry"> | Date | string
+  }
+
+  export type CmsCollectionCreateWithoutEntriesInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    icon?: string | null
+    fields: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    site: SiteCreateNestedOneWithoutCmsCollectionsInput
+  }
+
+  export type CmsCollectionUncheckedCreateWithoutEntriesInput = {
+    id?: string
+    siteId: string
+    name: string
+    slug: string
+    description?: string | null
+    icon?: string | null
+    fields: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CmsCollectionCreateOrConnectWithoutEntriesInput = {
+    where: CmsCollectionWhereUniqueInput
+    create: XOR<CmsCollectionCreateWithoutEntriesInput, CmsCollectionUncheckedCreateWithoutEntriesInput>
+  }
+
+  export type CmsCollectionUpsertWithoutEntriesInput = {
+    update: XOR<CmsCollectionUpdateWithoutEntriesInput, CmsCollectionUncheckedUpdateWithoutEntriesInput>
+    create: XOR<CmsCollectionCreateWithoutEntriesInput, CmsCollectionUncheckedCreateWithoutEntriesInput>
+    where?: CmsCollectionWhereInput
+  }
+
+  export type CmsCollectionUpdateToOneWithWhereWithoutEntriesInput = {
+    where?: CmsCollectionWhereInput
+    data: XOR<CmsCollectionUpdateWithoutEntriesInput, CmsCollectionUncheckedUpdateWithoutEntriesInput>
+  }
+
+  export type CmsCollectionUpdateWithoutEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    fields?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    site?: SiteUpdateOneRequiredWithoutCmsCollectionsNestedInput
+  }
+
+  export type CmsCollectionUncheckedUpdateWithoutEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    fields?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SiteCreateWithoutLayoutInput = {
     id?: string
     logoUrl?: string | null
@@ -74747,6 +78220,7 @@ export namespace Prisma {
     legacyDomains?: DomainCreateNestedManyWithoutSiteInput
     mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutLayoutInput = {
@@ -74770,6 +78244,7 @@ export namespace Prisma {
     legacyDomains?: DomainUncheckedCreateNestedManyWithoutSiteInput
     mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutLayoutInput = {
@@ -74809,6 +78284,7 @@ export namespace Prisma {
     legacyDomains?: DomainUpdateManyWithoutSiteNestedInput
     mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutLayoutInput = {
@@ -74832,6 +78308,7 @@ export namespace Prisma {
     legacyDomains?: DomainUncheckedUpdateManyWithoutSiteNestedInput
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteCreateWithoutLegacyDomainsInput = {
@@ -74855,6 +78332,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutLegacyDomainsInput = {
@@ -74878,6 +78356,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutLegacyDomainsInput = {
@@ -74917,6 +78396,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutLegacyDomainsInput = {
@@ -74940,6 +78420,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteCreateWithoutPagesInput = {
@@ -74963,6 +78444,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutPagesInput = {
@@ -74986,6 +78468,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutPagesInput = {
@@ -75100,6 +78583,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutPagesInput = {
@@ -75123,6 +78607,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type BlueprintUpsertWithoutPageInput = {
@@ -75357,6 +78842,7 @@ export namespace Prisma {
     legacyDomains?: DomainCreateNestedManyWithoutSiteInput
     mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutCreateNestedOneWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutAiSnapshotsInput = {
@@ -75380,6 +78866,7 @@ export namespace Prisma {
     legacyDomains?: DomainUncheckedCreateNestedManyWithoutSiteInput
     mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutAiSnapshotsInput = {
@@ -75527,6 +79014,7 @@ export namespace Prisma {
     legacyDomains?: DomainUpdateManyWithoutSiteNestedInput
     mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutAiSnapshotsInput = {
@@ -75550,6 +79038,7 @@ export namespace Prisma {
     legacyDomains?: DomainUncheckedUpdateManyWithoutSiteNestedInput
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutAiSnapshotsInput = {
@@ -75681,6 +79170,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutBlueprintsInput = {
@@ -75704,6 +79194,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutBlueprintsInput = {
@@ -75883,6 +79374,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutBlueprintsInput = {
@@ -75906,6 +79398,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutBlueprintsInput = {
@@ -76701,6 +80194,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -76734,6 +80234,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -76948,6 +80455,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -76981,6 +80495,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -77070,6 +80591,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutSubscriptionsInput = {
@@ -77093,6 +80615,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutSubscriptionsInput = {
@@ -77226,6 +80749,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutSubscriptionsInput = {
@@ -77249,6 +80773,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutSiteSubscriptionsInput = {
@@ -77378,6 +80903,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutComplianceAuditsInput = {
@@ -77401,6 +80927,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutComplianceAuditsInput = {
@@ -77499,6 +81026,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutComplianceAuditsInput = {
@@ -77522,6 +81050,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutComplianceAuditsInput = {
@@ -77610,6 +81139,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutSnapshotsInput = {
@@ -77633,6 +81163,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutSnapshotsInput = {
@@ -77789,6 +81320,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutSnapshotsInput = {
@@ -77812,6 +81344,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutSiteSnapshotsInput = {
@@ -78005,6 +81538,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutRendersInput = {
@@ -78028,6 +81562,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutRendersInput = {
@@ -78185,6 +81720,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutRendersInput = {
@@ -78208,6 +81744,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutSiteRendersInput = {
@@ -78416,6 +81953,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutDomainsInput = {
@@ -78439,6 +81977,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
     layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutDomainsInput = {
@@ -78537,6 +82076,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutDomainsInput = {
@@ -78560,6 +82100,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutSiteDomainsInput = {
@@ -78692,6 +82233,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -78725,6 +82273,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -78839,6 +82394,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -78872,6 +82434,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -78966,6 +82535,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -78999,6 +82575,13 @@ export namespace Prisma {
     phone?: string | null
     name?: string | null
     avatarUrl?: string | null
+    bio?: string | null
+    jobTitle?: string | null
+    company?: string | null
+    website?: string | null
+    city?: string | null
+    country?: string | null
+    timezone?: string | null
     passwordHash?: string | null
     googleId?: string | null
     role?: $Enums.UserRole
@@ -79075,6 +82658,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -79108,6 +82698,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -80092,6 +83689,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -80125,6 +83729,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -80158,6 +83769,13 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -80319,6 +83937,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutTenantInput = {
@@ -80342,6 +83961,7 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
     layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateManyWithoutTenantInput = {
@@ -80998,6 +84618,17 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type CmsCollectionCreateManySiteInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    icon?: string | null
+    fields: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type SiteSubscriptionUpdateWithoutSiteInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -81370,6 +85001,73 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     blueprint?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CmsCollectionUpdateWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    fields?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: CmsEntryUpdateManyWithoutCollectionNestedInput
+  }
+
+  export type CmsCollectionUncheckedUpdateWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    fields?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: CmsEntryUncheckedUpdateManyWithoutCollectionNestedInput
+  }
+
+  export type CmsCollectionUncheckedUpdateManyWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    fields?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CmsEntryCreateManyCollectionInput = {
+    id?: string
+    data: JsonNullValueInput | InputJsonValue
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CmsEntryUpdateWithoutCollectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CmsEntryUncheckedUpdateWithoutCollectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CmsEntryUncheckedUpdateManyWithoutCollectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PreviewTokenCreateManyPageInput = {
@@ -81876,6 +85574,10 @@ export namespace Prisma {
      */
     export type SiteCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SiteCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use CmsCollectionCountOutputTypeDefaultArgs instead
+     */
+    export type CmsCollectionCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CmsCollectionCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use PageCountOutputTypeDefaultArgs instead
      */
     export type PageCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PageCountOutputTypeDefaultArgs<ExtArgs>
@@ -81975,6 +85677,14 @@ export namespace Prisma {
      * @deprecated Use SiteDefaultArgs instead
      */
     export type SiteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SiteDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CmsCollectionDefaultArgs instead
+     */
+    export type CmsCollectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CmsCollectionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CmsEntryDefaultArgs instead
+     */
+    export type CmsEntryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CmsEntryDefaultArgs<ExtArgs>
     /**
      * @deprecated Use SiteLayoutDefaultArgs instead
      */

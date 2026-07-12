@@ -1,0 +1,12 @@
+$ tsx playwright/scripts/cleanupDisposablePages.ts
+(node:66531) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+apiRequestContext.get: connect ECONNREFUSED 127.0.0.1:3000
+Call log:
+[2m  - → GET http://127.0.0.1:3000/api/pages?take=200&siteSlug=home[22m
+[2m    - user-agent: Playwright/1.61.1 (arm64; macOS 15.7) node/26.0[22m
+[2m    - accept: */*[22m
+[2m    - accept-encoding: gzip,deflate,br[22m
+[2m    - cookie: session=cmrhu98rj0001tyk5jmavxw6r; onboarding=completed; tenant-id=cmqnpozay000cvcj7k5akog2y[22m
+
+[ELIFECYCLE] Command failed with exit code 1.

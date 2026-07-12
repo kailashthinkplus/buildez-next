@@ -32,15 +32,6 @@ export function resolveRenderStyle(
   );
   const hasBackgroundImage = Boolean(backgroundImage && backgroundImage !== "none");
 
-  const clampWidth = (value: unknown) => {
-    const computed = toCss(value, { scale: false });
-    const px = toNumber(computed);
-    if (options.canvasWidth && px !== null && px > options.canvasWidth) {
-      return "100%";
-    }
-    return computed;
-  };
-
   return cleanRenderStyle({
    color: resolveRenderColor(
   resolveRenderStyleValue(style.color, blueprint, options.device),
@@ -88,28 +79,51 @@ textDecoration: pick(style.textDecoration, options.device) as React.CSSPropertie
     marginLeft: toCss(style.marginLeft),
     borderRadius: toCss(style.borderRadius),
     border: stringOrUndefined(resolveRenderStyleValue(style.border, blueprint, options.device)),
+    borderTopWidth: toCss(style.borderTopWidth),
+    borderRightWidth: toCss(style.borderRightWidth),
+    borderBottomWidth: toCss(style.borderBottomWidth),
+    borderLeftWidth: toCss(style.borderLeftWidth),
+    borderTopStyle: pick(style.borderTopStyle, options.device) as React.CSSProperties["borderTopStyle"],
+    borderRightStyle: pick(style.borderRightStyle, options.device) as React.CSSProperties["borderRightStyle"],
+    borderBottomStyle: pick(style.borderBottomStyle, options.device) as React.CSSProperties["borderBottomStyle"],
+    borderLeftStyle: pick(style.borderLeftStyle, options.device) as React.CSSProperties["borderLeftStyle"],
+    borderTopColor: style.borderTopColor ? resolveRenderColor(resolveRenderStyleValue(style.borderTopColor, blueprint, options.device), "transparent", blueprint) : undefined,
+    borderRightColor: style.borderRightColor ? resolveRenderColor(resolveRenderStyleValue(style.borderRightColor, blueprint, options.device), "transparent", blueprint) : undefined,
+    borderBottomColor: style.borderBottomColor ? resolveRenderColor(resolveRenderStyleValue(style.borderBottomColor, blueprint, options.device), "transparent", blueprint) : undefined,
+    borderLeftColor: style.borderLeftColor ? resolveRenderColor(resolveRenderStyleValue(style.borderLeftColor, blueprint, options.device), "transparent", blueprint) : undefined,
     boxShadow: stringOrUndefined(resolveRenderStyleValue(style.boxShadow, blueprint, options.device)),
-    width: clampWidth(style.width),
+    width: toCss(style.width, { scale: false }),
     height: toCss(style.height),
-    minWidth: clampWidth(style.minWidth),
+    minWidth: toCss(style.minWidth, { scale: false }),
     minHeight: toCss(style.minHeight),
     // Let CSS constrain max-width naturally. Canvas dimensions must not rewrite
     // semantic values (for example 72rem, 90vw, or a site token) into 100%.
     maxWidth: toCss(style.maxWidth, { scale: false }),
     maxHeight: toCss(style.maxHeight),
     gap: toCss(style.gap),
+    rowGap: toCss(style.rowGap),
+    columnGap: toCss(style.columnGap),
     flex: pick(style.flex, options.device) as React.CSSProperties["flex"],
+    flexGrow: pick(style.flexGrow, options.device) as React.CSSProperties["flexGrow"],
+    flexShrink: pick(style.flexShrink, options.device) as React.CSSProperties["flexShrink"],
+    flexBasis: toCss(style.flexBasis),
+    order: pick(style.order, options.device) as React.CSSProperties["order"],
     flexWrap: pick(style.flexWrap, options.device) as React.CSSProperties["flexWrap"],
     flexDirection: pick(style.flexDirection, options.device) as React.CSSProperties["flexDirection"],
     justifyContent: pick(style.justifyContent, options.device) as React.CSSProperties["justifyContent"],
     alignItems: pick(style.alignItems, options.device) as React.CSSProperties["alignItems"],
     gridTemplateColumns: stringOrUndefined(resolveRenderStyleValue(style.gridTemplateColumns, blueprint, options.device)),
+    gridTemplateRows: stringOrUndefined(resolveRenderStyleValue(style.gridTemplateRows, blueprint, options.device)),
+    gridColumn: stringOrUndefined(resolveRenderStyleValue(style.gridColumn, blueprint, options.device)),
+    gridRow: stringOrUndefined(resolveRenderStyleValue(style.gridRow, blueprint, options.device)),
     position: style.position,
     top: toCss(style.top),
     right: toCss(style.right),
     bottom: toCss(style.bottom),
     left: toCss(style.left),
     overflow: pick(style.overflow, options.device) as React.CSSProperties["overflow"],
+    overflowX: pick(style.overflowX, options.device) as React.CSSProperties["overflowX"],
+    overflowY: pick(style.overflowY, options.device) as React.CSSProperties["overflowY"],
     objectFit: pick(style.objectFit, options.device) as React.CSSProperties["objectFit"],
     objectPosition: pick(style.objectPosition, options.device) as React.CSSProperties["objectPosition"],
     aspectRatio: pick(style.aspectRatio, options.device) as React.CSSProperties["aspectRatio"],

@@ -38,8 +38,6 @@ interface BuilderState {
 
   initialize(blueprint: BuilderBlueprint): void;
 
-  setBlueprint(blueprint: BuilderBlueprint): void;
-
   setClipboard(node: BuilderNode | null): void;
 
   markDirty(): void;
@@ -107,17 +105,6 @@ export const useBuilderStore = create<BuilderState>((set) => ({
         }));
       }
     );
-  },
-
-  /* --------------------------------------------------------
-     Internal Blueprint Update
-     (Prefer CommandBus for mutations)
-  -------------------------------------------------------- */
-
-  setBlueprint(blueprint) {
-    set({
-      blueprint,
-    });
   },
 
   /* --------------------------------------------------------

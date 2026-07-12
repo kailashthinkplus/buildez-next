@@ -33,4 +33,6 @@ export interface ElementCatalogItem {
     canGenerate: boolean;
     guidance: string;
   };
+  launchStatus?: "available" | "preview" | "gated";
+  launchNote?: string;
 }

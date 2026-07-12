@@ -48,8 +48,8 @@ export default function MediaTabs({
         flex
         items-center
         gap-2
-        rounded-xl
-        bg-[#0F172A]
+        rounded-lg
+        bg-white/[0.04]
         border
         border-white/10
         p-1
@@ -79,8 +79,8 @@ export default function MediaTabs({
               transition-all
               ${
                 active
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+                  ? "bg-white/15 text-white shadow-sm"
+                  : "text-white/60 hover:text-white hover:bg-white/[0.08]"
               }
             `}
           >

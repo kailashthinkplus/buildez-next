@@ -1,291 +1,212 @@
+"use client";
+
 import {
+  ArrowLeft,
   ArrowRight,
+  BadgeCheck,
+  Building2,
   Check,
-  Clock,
   Code2,
   ExternalLink,
-  Image as ImageIcon,
   MapPin,
+  Menu,
   MessageCircle,
-  Star,
-  Users,
+  HeartHandshake,
+  Play,
+  Quote,
+  Sparkles,
+  ShieldCheck,
+  Zap,
+  X,
 } from "lucide-react";
-import type React from "react";
-import type { CSSProperties } from "react";
+import { useEffect, useId, useState } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
-type ProductionWidgetViewProps = {
-  type: string;
-  eyebrow?: unknown;
-  title?: unknown;
-  body?: unknown;
-  primaryCta?: unknown;
-  secondaryCta?: unknown;
-  items?: unknown;
-  style?: CSSProperties;
+type WidgetTheme = {
+  primary: string; primaryContrast: string; surface: string; surfaceAlt: string;
+  textPrimary: string; textSecondary: string; border: string; accent: string;
+  cardRadius: number; buttonRadius: number; cardShadow: string;
 };
-
-type ViewData = {
-  eyebrow: string;
-  title: string;
-  body: string;
-  primaryCta: string;
-  secondaryCta: string;
-  items: string[];
+type Props = {
+  type: string; eyebrow?: unknown; title?: unknown; body?: unknown; primaryCta?: unknown;
+  secondaryCta?: unknown; items?: unknown; style?: CSSProperties; theme?: WidgetTheme;
 };
+type Data = { eyebrow: string; title: string; body: string; primaryCta: string; secondaryCta: string; items: string[] };
 
-export default function ProductionWidgetView({
-  type,
-  eyebrow,
-  title,
-  body,
-  primaryCta,
-  secondaryCta,
-  items,
-  style,
-}: ProductionWidgetViewProps) {
-  const data = normalizeData(type, {
-    eyebrow: toText(eyebrow),
-    title: toText(title),
-    body: toText(body),
-    primaryCta: toText(primaryCta),
-    secondaryCta: toText(secondaryCta),
-    items: toItems(items),
-  });
+const DEFAULT_MEDIA = [
+  "/theme-previews/demo-images/premium-studio.jpg",
+  "/theme-previews/demo-images/modern-saas.jpg",
+  "/theme-previews/demo-images/local-business.jpg",
+  "/theme-previews/demo-images/editorial-minimal.jpg",
+  "/theme-previews/demo-images/buildez-default.jpg",
+  "/theme-previews/demo-images/bold-launch.jpg",
+];
+const FEATURE_ICONS = [Sparkles, ShieldCheck, Zap, HeartHandshake, BadgeCheck, Building2];
 
-  if (type === "smartHeader") return <HeaderView data={data} style={style} />;
-  if (type === "smartFooter") return <FooterView data={data} style={style} />;
-  if (type === "floatingWhatsApp" || type === "socialLinks") return <SocialView data={data} style={style} />;
-  if (type === "locationMap") return <MapView data={data} style={style} />;
-  if (type === "leadForm" || type === "contactForm" || type === "form") return <FormView data={data} style={style} />;
-  if (type === "galleryLightbox" || type === "gallery" || type === "masonryGallery" || type === "portfolio") return <GalleryView data={data} style={style} />;
-  if (type === "faq" || type === "accordion") return <AccordionView data={data} style={style} />;
-  if (type === "pricing") return <PricingView data={data} style={style} />;
-  if (type === "testimonials" || type === "testimonial") return <TestimonialsView data={data} style={style} />;
-  if (type === "timeline") return <TimelineView data={data} style={style} />;
-  if (type === "statsCounter") return <StatsView data={data} style={style} />;
-  if (type === "logoCloud") return <LogoCloudView data={data} style={style} />;
-  if (type === "team") return <TeamView data={data} style={style} />;
-  if (type === "tabs") return <TabsView data={data} style={style} />;
-  if (type === "carousel") return <CarouselView data={data} style={style} />;
-  if (type === "beforeAfter") return <BeforeAfterView data={data} style={style} />;
-  if (type === "table") return <TableView data={data} style={style} />;
-  if (type === "countdown") return <CountdownView data={data} style={style} />;
-  if (type === "codeBlock" || type === "embed") return <SafeCodeView data={data} style={style} restricted={type === "embed"} />;
-  if (type === "blogGrid" || type === "postList" || type === "categoryList") return <PostListView data={data} style={style} />;
-
-  return <FeatureGridView data={data} style={style} />;
-}
-
-function HeaderView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return (
-    <header className="flex w-full items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-slate-950 shadow-sm" style={style}>
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white">BZ</div>
-        <div>
-          <div className="text-sm font-semibold">{data.title}</div>
-          <div className="text-xs text-slate-500">{data.eyebrow}</div>
-        </div>
-      </div>
-      <nav className="hidden items-center gap-5 text-sm font-medium text-slate-600 md:flex">
-        {data.items.slice(0, 4).map((item) => <span key={item}>{item}</span>)}
-      </nav>
-      <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white">{data.primaryCta}</button>
-    </header>
-  );
-}
-
-function FooterView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return (
-    <footer className="rounded-2xl border border-slate-200 bg-slate-950 p-6 text-white shadow-sm" style={style}>
-      <div className="grid gap-6 md:grid-cols-[1.2fr_0.8fr_0.8fr]">
-        <div>
-          <div className="text-lg font-semibold">{data.title}</div>
-          <p className="mt-2 max-w-md text-sm leading-6 text-slate-300">{data.body}</p>
-        </div>
-        <LinkColumn title="Company" links={data.items.slice(0, 4)} />
-        <LinkColumn title="Contact" links={["Email", "LinkedIn", "Privacy"]} />
-      </div>
-    </footer>
-  );
-}
-
-function Shell({ data, style, children }: { data: ViewData; style?: CSSProperties; children: React.ReactNode }) {
-  return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-950 shadow-sm" style={style}>
-      <div className="mb-5 max-w-2xl">
-        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">{data.eyebrow}</div>
-        <h3 className="mt-2 text-2xl font-semibold tracking-tight">{data.title}</h3>
-        <p className="mt-2 text-sm leading-6 text-slate-600">{data.body}</p>
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function FeatureGridView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return (
-    <Shell data={data} style={style}>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {data.items.slice(0, 6).map((item) => <Card key={item} title={item} />)}
-      </div>
-    </Shell>
-  );
-}
-
-function AccordionView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return (
-    <Shell data={data} style={style}>
-      <div className="space-y-3">
-        {data.items.slice(0, 6).map((item, index) => (
-          <details key={`${item}-${index}`} className="rounded-xl border border-slate-200 bg-slate-50 p-4" open={index === 0}>
-            <summary className="cursor-pointer text-sm font-semibold text-slate-900">{item}</summary>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Editable answer content for {item.toLowerCase()}.</p>
-          </details>
-        ))}
-      </div>
-    </Shell>
-  );
-}
-
-function TabsView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  const tabs = data.items.slice(0, 4);
-  return (
-    <Shell data={data} style={style}>
-      <div className="flex flex-wrap gap-2">
-        {tabs.map((item, index) => <span key={item} className={`rounded-full px-4 py-2 text-sm font-medium ${index === 0 ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}>{item}</span>)}
-      </div>
-      <div className="mt-4 rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-600">Editable tab panel content.</div>
-    </Shell>
-  );
-}
-
-function TestimonialsView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return (
-    <Shell data={data} style={style}>
-      <div className="grid gap-3 md:grid-cols-3">
-        {data.items.slice(0, 3).map((item) => (
-          <div key={item} className="rounded-xl bg-slate-50 p-4">
-            <div className="flex gap-1 text-amber-400">{[0, 1, 2, 3, 4].map((star) => <Star key={star} className="h-3.5 w-3.5 fill-current" />)}</div>
-            <p className="mt-3 text-sm text-slate-600">&ldquo;{item}&rdquo;</p>
-          </div>
-        ))}
-      </div>
-    </Shell>
-  );
-}
-
-function PricingView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return (
-    <Shell data={data} style={style}>
-      <div className="grid gap-3 md:grid-cols-3">
-        {data.items.slice(0, 3).map((item, index) => (
-          <div key={item} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <div className="text-sm font-semibold text-slate-900">{item}</div>
-            <div className="mt-2 text-3xl font-bold">${[19, 49, 99][index]}</div>
-            <button className="mt-4 w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white">{data.primaryCta}</button>
-          </div>
-        ))}
-      </div>
-    </Shell>
-  );
-}
-
-function StatsView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return (
-    <Shell data={data} style={style}>
-      <div className="grid gap-3 sm:grid-cols-3">
-        {data.items.slice(0, 3).map((item, index) => <div key={item} className="rounded-xl bg-blue-50 p-5 text-center"><div className="text-3xl font-bold text-blue-700">{[120, 48, 96][index]}+</div><div className="mt-1 text-sm text-slate-600">{item}</div></div>)}
-      </div>
-    </Shell>
-  );
-}
-
-function LogoCloudView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return <Shell data={data} style={style}><div className="grid gap-3 sm:grid-cols-3 md:grid-cols-5">{data.items.slice(0, 5).map((item) => <div key={item} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-5 text-center text-sm font-semibold text-slate-500">{item}</div>)}</div></Shell>;
-}
-
-function GalleryView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return <Shell data={data} style={style}><div className="grid grid-cols-2 gap-3 md:grid-cols-3">{data.items.slice(0, 6).map((item, index) => <div key={item} className={`flex aspect-[4/3] items-end rounded-xl bg-gradient-to-br ${index % 2 ? "from-emerald-100" : "from-blue-100"} to-white p-3 text-xs font-semibold text-slate-700 ring-1 ring-slate-200`}>{item}</div>)}</div></Shell>;
-}
-
-function TeamView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return <Shell data={data} style={style}><div className="grid gap-3 md:grid-cols-3">{data.items.slice(0, 3).map((item) => <div key={item} className="rounded-xl bg-slate-50 p-4 text-center"><div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 text-blue-700"><Users className="h-5 w-5" /></div><div className="font-semibold">{item}</div><div className="text-xs text-slate-500">Editable role</div></div>)}</div></Shell>;
-}
-
-function TimelineView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return <Shell data={data} style={style}><div className="space-y-3">{data.items.slice(0, 5).map((item, index) => <div key={item} className="flex gap-3"><div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">{index + 1}</div><div><div className="text-sm font-semibold">{item}</div><p className="text-xs text-slate-500">Editable process description.</p></div></div>)}</div></Shell>;
-}
-
-function FormView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return <Shell data={data} style={style}><div className="grid gap-3 rounded-2xl bg-slate-50 p-4">{["Name", "Email", "Message"].map((label) => <div key={label} className="rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm text-slate-500">{label}</div>)}<button className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white">{data.primaryCta}</button></div></Shell>;
-}
-
-function MapView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return <Shell data={data} style={style}><div className="relative flex min-h-56 items-center justify-center rounded-xl bg-slate-100"><MapPin className="h-8 w-8 text-blue-600" /><span className="ml-2 text-sm text-slate-500">{data.items[0] ?? "Editable address"}</span></div></Shell>;
-}
-
-function SocialView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return <div className="inline-flex flex-wrap items-center gap-3 rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-lg" style={style}>{data.items.slice(0, 4).map((item) => <span key={item} className="inline-flex items-center gap-2"><MessageCircle className="h-4 w-4" />{item}</span>)}</div>;
-}
-
-function CarouselView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return <Shell data={data} style={style}><div className="overflow-hidden rounded-xl bg-slate-50 p-3"><div className="flex gap-3">{data.items.slice(0, 3).map((item) => <div key={item} className="min-w-48 rounded-lg bg-white p-4 shadow-sm"><ImageIcon className="mb-3 h-5 w-5 text-blue-600" />{item}</div>)}</div></div></Shell>;
-}
-
-function BeforeAfterView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return <Shell data={data} style={style}><div className="grid overflow-hidden rounded-xl border border-slate-200 md:grid-cols-2"><div className="bg-slate-100 p-8 text-center text-sm text-slate-500">Before</div><div className="bg-blue-50 p-8 text-center text-sm text-blue-700">After</div></div></Shell>;
-}
-
-function TableView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return <Shell data={data} style={style}><div className="overflow-hidden rounded-xl border border-slate-200"><table className="w-full text-left text-sm"><tbody>{data.items.slice(0, 4).map((item) => <tr key={item} className="border-t border-slate-200"><th className="p-3 font-semibold">{item}</th><td className="p-3 text-slate-500">Editable value</td></tr>)}</tbody></table></div></Shell>;
-}
-
-function CountdownView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return <Shell data={data} style={style}><div className="grid grid-cols-4 gap-2">{["Days", "Hours", "Min", "Sec"].map((item, index) => <div key={item} className="rounded-xl bg-slate-950 p-4 text-center text-white"><Clock className="mx-auto mb-2 h-4 w-4" /><div className="text-2xl font-bold">{[12, 8, 44, 20][index]}</div><div className="text-xs text-white/50">{item}</div></div>)}</div></Shell>;
-}
-
-function SafeCodeView({ data, style, restricted }: { data: ViewData; style?: CSSProperties; restricted?: boolean }) {
-  return <Shell data={data} style={style}><pre className="overflow-auto rounded-xl bg-slate-950 p-4 text-xs leading-6 text-slate-100"><Code2 className="mb-3 h-4 w-4 text-blue-300" />{restricted ? "Restricted embed preview. Scripts do not execute in Builder." : data.body}</pre></Shell>;
-}
-
-function PostListView({ data, style }: { data: ViewData; style?: CSSProperties }) {
-  return <Shell data={data} style={style}><div className="grid gap-3 md:grid-cols-3">{data.items.slice(0, 3).map((item) => <Card key={item} title={item} />)}</div></Shell>;
-}
-
-function Card({ title }: { title: string }) {
-  return <div className="rounded-xl border border-slate-200 bg-slate-50 p-4"><div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white"><Check className="h-4 w-4" /></div><div className="text-sm font-semibold text-slate-950">{title}</div><p className="mt-1 text-xs leading-5 text-slate-500">Editable native content region.</p></div>;
-}
-
-function LinkColumn({ title, links }: { title: string; links: string[] }) {
-  return <div><div className="text-sm font-semibold">{title}</div><div className="mt-3 grid gap-2 text-sm text-slate-300">{links.map((link) => <span key={link}>{link}</span>)}</div></div>;
-}
-
-function normalizeData(type: string, data: ViewData): ViewData {
-  return {
-    eyebrow: data.eyebrow || defaultText(type, "eyebrow"),
-    title: data.title || defaultText(type, "title"),
-    body: data.body || defaultText(type, "body"),
-    primaryCta: data.primaryCta || "Get started",
-    secondaryCta: data.secondaryCta || "Learn more",
-    items: data.items.length ? data.items : ["First item", "Second item", "Third item", "Fourth item"],
+export default function ProductionWidgetView(props: Props) {
+  const data = normalizeData(props.type, props);
+  const style = themeStyle(props.style, props.theme);
+  const views: Record<string, ReactNode> = {
+    smartHeader: <Header data={data} style={style} />,
+    hero: <Hero data={data} style={style} />,
+    leadForm: <Form data={data} style={style} lead />,
+    contactForm: <Form data={data} style={style} />,
+    cardGrid: <FeatureGrid data={data} style={style} variant="cards" />,
+    featureGrid: <FeatureGrid data={data} style={style} variant="icons" />,
+    features: <FeatureStory data={data} style={style} />,
+    galleryLightbox: <Gallery data={data} style={style} lightbox />,
+    gallery: <Gallery data={data} style={style} />,
+    masonryGallery: <Gallery data={data} style={style} masonry />,
+    faq: <Accordion data={data} style={style} />,
+    accordion: <Accordion data={data} style={style} />,
+    testimonials: <Testimonials data={data} style={style} />,
+    pricing: <Pricing data={data} style={style} />,
+    offerGrid: <OfferGrid data={data} style={style} />,
+    floatingWhatsApp: <FloatingContact data={data} style={style} />,
+    locationMap: <Location data={data} style={style} />,
+    smartFooter: <Footer data={data} style={style} />,
+    cta: <Cta data={data} style={style} />,
+    tabs: <Tabs data={data} style={style} />,
+    statsCounter: <Stats data={data} style={style} />,
+    logoCloud: <LogoCloud data={data} style={style} />,
+    team: <Team data={data} style={style} />,
+    portfolio: <Portfolio data={data} style={style} />,
+    timeline: <Timeline data={data} style={style} />,
+    socialLinks: <SocialLinks data={data} style={style} />,
+    carousel: <Carousel data={data} style={style} />,
+    beforeAfter: <BeforeAfter data={data} style={style} />,
+    table: <ComparisonTable data={data} style={style} />,
+    countdown: <Countdown data={data} style={style} />,
+    codeBlock: <SafeCode data={data} style={style} />,
+    embed: <SafeCode data={data} style={style} restricted />,
+    blogGrid: <Editorial data={data} style={style} mode="grid" />,
+    postList: <Editorial data={data} style={style} mode="list" />,
+    categoryList: <Categories data={data} style={style} />,
+    popupModal: <Popup data={data} style={style} />,
   };
+  return <>{views[props.type] ?? <FeatureGrid data={data} style={style} variant="cards" />}</>;
 }
 
-function defaultText(type: string, field: "eyebrow" | "title" | "body") {
-  const label = type.replace(/([A-Z])/g, " $1").replace(/^./, (char) => char.toUpperCase());
-  if (field === "eyebrow") return label;
-  if (field === "title") return `${label} section`;
-  return "A fully editable native Builder widget with content, design, responsive, theme, and advanced controls.";
+function Shell({ data, style, children, center = false }: { data: Data; style?: CSSProperties; children: ReactNode; center?: boolean }) {
+  return <section style={{ border: "1px solid var(--w-border)", background: "var(--w-surface)", color: "var(--w-text)", borderRadius: "var(--w-card-radius)", boxShadow: "var(--w-card-shadow)", ...style }} className="w-full p-5 sm:p-7 lg:p-8">
+    <div className={center ? "mx-auto mb-7 max-w-2xl text-center" : "mb-7 max-w-2xl"}>
+      <div className="uppercase tracking-[.18em]" style={{ color: "var(--w-eyebrow-color)", fontFamily: "var(--w-eyebrow-font)", fontSize: "var(--w-eyebrow-size)", fontWeight: "var(--w-eyebrow-weight)" }}>{data.eyebrow}</div>
+      <h2 className="mt-2 tracking-tight" style={{ color: "var(--w-title-color)", fontFamily: "var(--w-title-font)", fontSize: "var(--w-title-size)", fontWeight: "var(--w-title-weight)", lineHeight: 1.15 }}>{data.title}</h2>
+      <p className="mt-3" style={{ color: "var(--w-body-color)", fontFamily: "var(--w-body-font)", fontSize: "var(--w-body-size)", lineHeight: "var(--w-body-line-height)" }}>{data.body}</p>
+    </div>{children}
+  </section>;
+}
+function Button({ children, secondary = false }: { children: ReactNode; secondary?: boolean }) {
+  return <button type="button" className="inline-flex min-h-11 items-center justify-center gap-2 px-5 font-semibold transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" style={{ borderRadius: "var(--w-cta-radius)", background: secondary ? "transparent" : "var(--w-cta-background)", color: secondary ? "var(--w-text)" : "var(--w-cta-color)", border: secondary ? "1px solid var(--w-border)" : "1px solid transparent", outlineColor: "var(--w-primary)", fontFamily: "var(--w-cta-font)", fontSize: "var(--w-cta-size)" }}>{children}</button>;
+}
+function Card({ title, index = 0 }: { title: string; index?: number }) {
+  const Icon = FEATURE_ICONS[index % FEATURE_ICONS.length];
+  return <article className="p-5 transition hover:-translate-y-1" style={{ border: "1px solid var(--w-element-border)", background: "var(--w-card-background)", color: "var(--w-card-text)", borderRadius: "var(--w-card-radius)" }}>
+    <div className="mb-4 flex h-11 w-11 items-center justify-center" style={{ background: "color-mix(in srgb, var(--w-card-icon) 15%, var(--w-surface))", color: "var(--w-card-icon)", borderRadius: "var(--w-button-radius)" }}><Icon size={21} strokeWidth={1.8}/></div>
+    <h3 className="font-semibold">{title}</h3><p className="mt-2 text-sm leading-6" style={{ color: "var(--w-body-color)" }}>Add a clear, specific supporting detail that helps visitors make a decision.</p>
+  </article>;
 }
 
-function toText(value: unknown): string {
-  if (typeof value === "string" || typeof value === "number") return String(value).trim();
-  if (Array.isArray(value)) return value.map(toText).filter(Boolean).join(", ");
-  return "";
+function Header({ data, style }: ViewProps) {
+  const [open, setOpen] = useState(false);
+  return <header style={{ background: "var(--w-surface)", color: "var(--w-text)", border: "1px solid var(--w-border)", borderRadius: "var(--w-card-radius)", ...style }} className="w-full px-4 py-3 sm:px-5">
+    <div className="flex items-center justify-between gap-4"><a href="#" className="flex items-center gap-3 font-bold" onClick={prevent}><span className="flex h-10 w-10 items-center justify-center" style={{ background: "var(--w-primary)", color: "var(--w-primary-contrast)", borderRadius: "var(--w-button-radius)" }}>BZ</span>{data.title}</a>
+      <nav aria-label="Primary navigation" className="hidden items-center gap-6 md:flex">{data.items.slice(0, 4).map(i => <a key={i} href="#" onClick={prevent} className="text-sm font-medium hover:opacity-70">{i}</a>)}</nav>
+      <div className="hidden md:block"><Button>{data.primaryCta}</Button></div><button type="button" aria-label="Toggle navigation" aria-expanded={open} onClick={() => setOpen(v => !v)} className="p-2 md:hidden">{open ? <X /> : <Menu />}</button>
+    </div>{open && <nav aria-label="Mobile navigation" className="mt-4 grid gap-2 border-t pt-4 md:hidden" style={{ borderColor: "var(--w-border)" }}>{data.items.slice(0, 4).map(i => <a key={i} href="#" onClick={prevent} className="rounded-lg px-3 py-2 text-sm">{i}</a>)}<Button>{data.primaryCta}</Button></nav>}
+  </header>;
 }
+function Hero({ data, style }: ViewProps) {
+  return <section style={{ background: "linear-gradient(135deg, var(--w-surface), var(--w-surface-alt))", color: "var(--w-text)", borderRadius: "var(--w-card-radius)", ...style }} className="grid min-h-[430px] items-center gap-8 overflow-hidden p-6 sm:p-10 lg:grid-cols-2 lg:p-14">
+    <div><div className="uppercase tracking-[.2em]" style={{ color: "var(--w-eyebrow-color)", fontFamily: "var(--w-eyebrow-font)", fontSize: "var(--w-eyebrow-size)", fontWeight: "var(--w-eyebrow-weight)" }}>{data.eyebrow}</div><h1 className="mt-4 leading-tight tracking-[-.035em]" style={{ color: "var(--w-title-color)", fontFamily: "var(--w-title-font)", fontSize: "var(--w-title-size)", fontWeight: "var(--w-title-weight)" }}>{data.title}</h1><p className="mt-5 max-w-xl" style={{ color: "var(--w-body-color)", fontFamily: "var(--w-body-font)", fontSize: "var(--w-body-size)", lineHeight: "var(--w-body-line-height)" }}>{data.body}</p><div className="mt-7 flex flex-wrap gap-3"><Button>{data.primaryCta}<ArrowRight size={16} /></Button><Button secondary>{data.secondaryCta}</Button></div><div className="mt-7 flex flex-wrap gap-4 text-xs font-semibold" style={{ color: "var(--w-body-color)" }}>{data.items.slice(0, 3).map(i => <span key={i} className="flex items-center gap-1.5"><Check size={14} style={{ color: "var(--w-primary)" }} />{i}</span>)}</div></div>
+    <div className="relative aspect-[4/3] overflow-hidden" style={{ borderRadius: "var(--w-media-radius)" }}><MediaImage src={mediaSource(style, 1)} alt="Modern product workspace preview"/><div className="absolute inset-x-5 bottom-5 flex items-center gap-3 p-4 backdrop-blur-md" style={{ borderRadius: "var(--w-card-radius)", background: "color-mix(in srgb, var(--w-surface) 88%, transparent)", color: "var(--w-text)" }}><span className="grid h-10 w-10 place-items-center rounded-full" style={{background:"var(--w-primary)",color:"var(--w-primary-contrast)"}}><Play size={17} fill="currentColor"/></span><div><p className="text-xs font-bold uppercase" style={{color:"var(--w-primary)"}}>See it in action</p><p className="font-semibold">A polished visual story, ready to customize</p></div></div></div>
+  </section>;
+}
+function FeatureGrid({ data, style, variant }: ViewProps & { variant: "cards" | "icons" }) { return <Shell data={data} style={style}><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{data.items.slice(0, 6).map((i,n) => <Card key={i} title={i} index={variant === "icons" ? n : 0} />)}</div></Shell>; }
+function FeatureStory({ data, style }: ViewProps) { return <Shell data={data} style={style}><div className="grid gap-6 lg:grid-cols-[1.1fr_.9fr]"><div className="relative min-h-72 overflow-hidden" style={{ borderRadius: "var(--w-card-radius)" }}><MediaImage src={DEFAULT_MEDIA[0]} alt={data.items[0]}/><div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"/><h3 className="absolute bottom-0 p-6 text-2xl font-semibold text-white">{data.items[0]}</h3></div><div className="grid gap-3">{data.items.slice(1,5).map((i,n)=><Card key={i} title={i} index={n+1}/>)}</div></div></Shell>; }
+function Form({ data, style, lead = false }: ViewProps & { lead?: boolean }) {
+  const [sent,setSent]=useState(false);
+  return <Shell data={data} style={style}><form onSubmit={e=>{e.preventDefault();setSent(true)}} className="grid gap-4 p-5" style={{ background:"var(--w-surface-alt)",borderRadius:"var(--w-card-radius)" }}>{sent ? <div role="status" className="py-10 text-center"><Check className="mx-auto" size={32} style={{color:"var(--w-primary)"}}/><h3 className="mt-3 text-xl font-semibold">Thank you — your request is ready.</h3><p className="mt-2 text-sm" style={{color:"var(--w-muted)"}}>Connect this form to your approved submission workflow.</p><button type="button" onClick={()=>setSent(false)} className="mt-5 min-h-11 px-5 font-semibold" style={{background:"var(--w-primary)",color:"var(--w-primary-contrast)",borderRadius:"var(--w-button-radius)"}}>Send another</button></div> : <><div className="grid gap-4 sm:grid-cols-2"><Field label="Name" auto="name"/><Field label="Email" type="email" auto="email"/></div>{lead && <Field label="Phone" type="tel" auto="tel"/ >}<Field label={lead ? "What are you interested in?" : "Message"} area/><button type="submit" className="min-h-12 px-5 font-semibold" style={{background:"var(--w-primary)",color:"var(--w-primary-contrast)",borderRadius:"var(--w-button-radius)"}}>{data.primaryCta}</button></>}</form></Shell>;
+}
+function Field({label,type="text",auto,area=false}:{label:string;type?:string;auto?:string;area?:boolean}) { const cls="w-full border bg-[var(--w-surface)] px-3 py-2.5 outline-none focus:border-[var(--w-primary)]"; return <label className="grid gap-1.5 text-sm font-semibold"><span>{label}</span>{area?<textarea required rows={4} className={cls} style={{borderColor:"var(--w-border)",borderRadius:"var(--w-button-radius)"}}/>:<input required type={type} autoComplete={auto} className={cls} style={{borderColor:"var(--w-border)",borderRadius:"var(--w-button-radius)"}}/>}</label>; }
+function Accordion({data,style}:ViewProps){return <Shell data={data} style={style}>{data.items.slice(0,6).map((i,n)=><details key={i} open={n===0} className="mb-3 border p-4" style={{borderColor:"var(--w-border)",borderRadius:"var(--w-button-radius)",background:"var(--w-surface-alt)"}}><summary className="cursor-pointer font-semibold">{i}</summary><p className="mt-3 text-sm leading-6" style={{color:"var(--w-muted)"}}>Add a direct, helpful answer with the information visitors need to continue confidently.</p></details>)}</Shell>}
+function Tabs({data,style}:ViewProps){const [active,setActive]=useState(0);const id=useId();return <Shell data={data} style={style}><div role="tablist" aria-label={data.title} className="flex gap-2 overflow-x-auto">{data.items.slice(0,5).map((i,n)=><button key={i} role="tab" id={`${id}-tab-${n}`} aria-selected={active===n} aria-controls={`${id}-panel-${n}`} onClick={()=>setActive(n)} className="shrink-0 px-4 py-2 text-sm font-semibold" style={{background:active===n?"var(--w-primary)":"var(--w-surface-alt)",color:active===n?"var(--w-primary-contrast)":"var(--w-text)",borderRadius:"var(--w-button-radius)"}}>{i}</button>)}</div><div role="tabpanel" id={`${id}-panel-${active}`} aria-labelledby={`${id}-tab-${active}`} className="mt-4 p-5" style={{background:"var(--w-surface-alt)",borderRadius:"var(--w-card-radius)"}}><h3 className="font-semibold">{data.items[active]}</h3><p className="mt-2 text-sm leading-6" style={{color:"var(--w-muted)"}}>{data.body}</p></div></Shell>}
+function Gallery({data,style,lightbox=false,masonry=false}:ViewProps&{lightbox?:boolean;masonry?:boolean}){const [selected,setSelected]=useState<number|null>(null);return <Shell data={data} style={style}><div className={masonry?"columns-2 gap-3 md:columns-3":"grid grid-cols-2 gap-3 md:grid-cols-3"}>{data.items.slice(0,6).map((i,n)=><button type="button" key={i} onClick={()=>lightbox&&setSelected(n)} className={`group relative mb-3 w-full overflow-hidden text-left ${masonry&&n%2?"aspect-[3/4]":"aspect-[4/3]"}`} style={{borderRadius:"var(--w-card-radius)"}}><MediaImage src={DEFAULT_MEDIA[n%DEFAULT_MEDIA.length]} alt={i}/><span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4 pt-10 text-sm font-semibold text-white">{i}</span></button>)}</div>{selected!==null&&<div role="dialog" aria-modal="true" aria-label={data.items[selected]} className="fixed inset-0 z-[100] grid place-items-center bg-black/80 p-5" onClick={()=>setSelected(null)}><div className="relative aspect-video w-full max-w-4xl overflow-hidden" style={{background:"var(--w-surface)",color:"var(--w-text)",borderRadius:"var(--w-card-radius)"}} onClick={e=>e.stopPropagation()}><MediaImage src={DEFAULT_MEDIA[selected%DEFAULT_MEDIA.length]} alt={data.items[selected]}/><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-5 text-lg font-semibold text-white">{data.items[selected]}</div><button autoFocus aria-label="Close lightbox" onClick={()=>setSelected(null)} className="absolute right-3 top-3 rounded-full bg-black/60 p-2 text-white"><X/></button></div></div>}</Shell>}
+function Testimonials({data,style}:ViewProps){return <Shell data={data} style={style} center><div className="grid gap-4 md:grid-cols-3">{data.items.slice(0,3).map(i=><figure key={i} className="p-5 text-left" style={{background:"var(--w-surface-alt)",borderRadius:"var(--w-card-radius)"}}><Quote style={{color:"var(--w-primary)"}}/><blockquote className="mt-4 text-sm leading-6">“{i}”</blockquote><figcaption className="mt-5 text-xs font-semibold" style={{color:"var(--w-muted)"}}>Customer name · Verified client</figcaption></figure>)}</div></Shell>}
+function Pricing({data,style}:ViewProps){return <Shell data={data} style={style} center><div className="grid gap-4 md:grid-cols-3">{data.items.slice(0,3).map((i,n)=><article key={i} className="relative p-5 text-left" style={{border:n===1?"2px solid var(--w-primary)":"1px solid var(--w-border)",borderRadius:"var(--w-card-radius)",background:"var(--w-surface)"}}>{n===1&&<span className="absolute -top-3 left-4 px-2 py-1 text-xs font-bold" style={{background:"var(--w-primary)",color:"var(--w-primary-contrast)",borderRadius:"var(--w-button-radius)"}}>Most popular</span>}<h3 className="font-semibold">{i}</h3><p className="mt-2 text-sm" style={{color:"var(--w-muted)"}}>Add your price and billing period</p><ul className="my-5 grid gap-2 text-sm">{["Core features","Email support","Easy setup"].map(x=><li key={x} className="flex gap-2"><Check size={16} style={{color:"var(--w-primary)"}}/>{x}</li>)}</ul><Button>{data.primaryCta}</Button></article>)}</div></Shell>}
+function OfferGrid({data,style}:ViewProps){return <Shell data={data} style={style}><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{data.items.slice(0,6).map((i,n)=><article key={i} className="overflow-hidden border transition hover:-translate-y-1" style={{borderColor:"var(--w-border)",borderRadius:"var(--w-card-radius)",boxShadow:"var(--w-card-shadow)"}}><div className="aspect-[4/3] overflow-hidden"><MediaImage src={DEFAULT_MEDIA[(n+2)%DEFAULT_MEDIA.length]} alt={i}/></div><div className="p-4"><div className="text-xs font-bold uppercase" style={{color:"var(--w-primary)"}}>Featured option</div><h3 className="mt-1 font-semibold">{i}</h3><p className="mt-2 text-sm" style={{color:"var(--w-muted)"}}>Add key details, availability, and a clear next step.</p><a href="#" onClick={prevent} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold" style={{color:"var(--w-primary)"}}>View details <ArrowRight size={14}/></a></div></article>)}</div></Shell>}
+function Stats({data,style}:ViewProps){return <Shell data={data} style={style} center><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{data.items.slice(0,4).map((i,n)=><div key={i} className="p-5 text-center" style={{background:"var(--w-surface-alt)",borderRadius:"var(--w-card-radius)"}}><strong className="text-3xl" style={{color:"var(--w-primary)"}}>{["120+","48h","97%","12"][n]}</strong><div className="mt-2 text-sm" style={{color:"var(--w-muted)"}}>{i}</div></div>)}</div></Shell>}
+function LogoCloud({data,style}:ViewProps){return <Shell data={data} style={style} center><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{data.items.slice(0,6).map(i=><div key={i} className="grid min-h-20 place-items-center border px-3 text-sm font-bold" style={{borderColor:"var(--w-border)",borderRadius:"var(--w-button-radius)",color:"var(--w-muted)"}}>{i}</div>)}</div></Shell>}
+function Team({data,style}:ViewProps){return <Shell data={data} style={style}><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{data.items.slice(0,4).map((i,n)=><article key={i} className="overflow-hidden text-center" style={{background:"var(--w-surface-alt)",borderRadius:"var(--w-card-radius)"}}><div className="aspect-[4/3] overflow-hidden"><MediaImage src={DEFAULT_MEDIA[(n+3)%DEFAULT_MEDIA.length]} alt={i.split(" - ")[0]}/></div><div className="p-4"><h3 className="font-semibold">{i.split(" - ")[0]}</h3><p className="text-sm" style={{color:"var(--w-muted)"}}>{i.split(" - ")[1]||"Team member"}</p></div></article>)}</div></Shell>}
+function Portfolio({data,style}:ViewProps){return <Shell data={data} style={style}><div className="grid gap-4 md:grid-cols-2">{data.items.slice(0,4).map((i,n)=><article key={i} className="group relative aspect-[16/10] overflow-hidden" style={{borderRadius:"var(--w-card-radius)"}}><MediaImage src={DEFAULT_MEDIA[(n+1)%DEFAULT_MEDIA.length]} alt={i}/><div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"/><div className="absolute bottom-0 p-6 text-white"><span className="text-xs font-bold uppercase text-white/70">Case study</span><h3 className="mt-1 text-xl font-semibold">{i}</h3><a href="#" onClick={prevent} className="mt-3 inline-flex items-center gap-1 text-sm font-semibold">View project <ArrowRight size={14}/></a></div></article>)}</div></Shell>}
+function Timeline({data,style}:ViewProps){return <Shell data={data} style={style}><ol className="grid gap-4 lg:grid-cols-5">{data.items.slice(0,5).map((i,n)=><li key={i} className="relative p-4" style={{background:"var(--w-surface-alt)",borderRadius:"var(--w-card-radius)"}}><span className="grid h-9 w-9 place-items-center font-bold" style={{background:"var(--w-primary)",color:"var(--w-primary-contrast)",borderRadius:"50%"}}>{n+1}</span><h3 className="mt-4 font-semibold">{i}</h3><p className="mt-2 text-xs leading-5" style={{color:"var(--w-muted)"}}>Describe this step and the outcome visitors can expect.</p></li>)}</ol></Shell>}
+function Carousel({data,style}:ViewProps){const slides=data.items.slice(0,5);const [active,setActive]=useState(0);return <Shell data={data} style={style}><div aria-roledescription="carousel"><div className="relative min-h-64 overflow-hidden sm:min-h-80" style={{borderRadius:"var(--w-card-radius)"}}><MediaImage src={DEFAULT_MEDIA[active%DEFAULT_MEDIA.length]} alt={slides[active]}/><div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent"/><div className="absolute bottom-0 p-6 text-left text-white"><h3 className="text-2xl font-semibold">{slides[active]}</h3><p className="mt-2 text-sm text-white/75">Slide {active+1} of {slides.length}</p></div></div><div className="mt-4 flex items-center justify-between"><button aria-label="Previous slide" onClick={()=>setActive((active-1+slides.length)%slides.length)} className="p-2"><ArrowLeft/></button><div className="flex gap-2">{slides.map((_,n)=><button key={n} aria-label={`Go to slide ${n+1}`} onClick={()=>setActive(n)} className="h-2.5 w-2.5 rounded-full" style={{background:n===active?"var(--w-primary)":"var(--w-border)"}}/>)}</div><button aria-label="Next slide" onClick={()=>setActive((active+1)%slides.length)} className="p-2"><ArrowRight/></button></div></div></Shell>}
+function BeforeAfter({data,style}:ViewProps){const [value,setValue]=useState(50);return <Shell data={data} style={style}><div className="relative aspect-[16/9] overflow-hidden" style={{background:"var(--w-surface-alt)",borderRadius:"var(--w-card-radius)"}}><div className="absolute inset-0 grid place-items-center"><span className="font-semibold">{data.items[1]||"After"}</span></div><div className="absolute inset-y-0 left-0 grid place-items-center overflow-hidden" style={{width:`${value}%`,background:"color-mix(in srgb,var(--w-primary) 22%,var(--w-surface))"}}><span className="font-semibold">{data.items[0]||"Before"}</span></div><div className="absolute inset-y-0 w-0.5" style={{left:`${value}%`,background:"var(--w-primary)"}}/></div><label className="mt-4 block text-sm font-semibold">Comparison position<input aria-label="Before and after comparison" type="range" min="0" max="100" value={value} onChange={e=>setValue(Number(e.target.value))} className="mt-2 w-full" style={{accentColor:"var(--w-primary)"}}/></label></Shell>}
+function ComparisonTable({data,style}:ViewProps){return <Shell data={data} style={style}><div className="overflow-x-auto border" style={{borderColor:"var(--w-border)",borderRadius:"var(--w-card-radius)"}}><table className="w-full min-w-[560px] text-left text-sm"><caption className="sr-only">{data.title}</caption><thead style={{background:"var(--w-surface-alt)"}}><tr><th className="p-4">Feature</th><th className="p-4">Standard</th><th className="p-4">Premium</th></tr></thead><tbody>{data.items.slice(0,6).map(i=>{const [a,b,c]=i.split("|").map(x=>x.trim());return <tr key={i} className="border-t" style={{borderColor:"var(--w-border)"}}><th scope="row" className="p-4 font-semibold">{a}</th><td className="p-4" style={{color:"var(--w-muted)"}}>{b||"Included"}</td><td className="p-4">{c||<Check style={{color:"var(--w-primary)"}}/>}</td></tr>})}</tbody></table></div></Shell>}
+function Countdown({data,style}:ViewProps){const [remaining,setRemaining]=useState(3*86400+8*3600+44*60+20);useEffect(()=>{const id=setInterval(()=>setRemaining(v=>Math.max(0,v-1)),1000);return()=>clearInterval(id)},[]);const values=[Math.floor(remaining/86400),Math.floor(remaining%86400/3600),Math.floor(remaining%3600/60),remaining%60];return <Shell data={data} style={style} center><div className="grid grid-cols-4 gap-2">{["Days","Hours","Minutes","Seconds"].map((i,n)=><div key={i} className="p-3 text-center sm:p-5" style={{background:"var(--w-surface-alt)",borderRadius:"var(--w-card-radius)"}}><strong className="text-2xl sm:text-4xl">{String(values[n]).padStart(2,"0")}</strong><div className="mt-1 text-[10px] uppercase tracking-wide sm:text-xs" style={{color:"var(--w-muted)"}}>{i}</div></div>)}</div><div className="mt-6"><Button>{data.primaryCta}</Button></div></Shell>}
+function Location({data,style}:ViewProps){return <Shell data={data} style={style}><div className="grid overflow-hidden lg:grid-cols-[1.4fr_.6fr]" style={{borderRadius:"var(--w-card-radius)"}}><div className="grid min-h-72 place-items-center" style={{background:"var(--w-surface-alt)"}}><div className="text-center"><MapPin className="mx-auto" size={38} style={{color:"var(--w-primary)"}}/><p className="mt-3 text-sm">{data.items[0]||"Add your address"}</p></div></div><aside className="p-6" style={{background:"color-mix(in srgb,var(--w-primary) 10%,var(--w-surface))"}}><h3 className="font-semibold">Visit us</h3>{data.items.slice(0,4).map(i=><p key={i} className="mt-3 text-sm" style={{color:"var(--w-muted)"}}>{i}</p>)}<div className="mt-6"><Button>{data.primaryCta}<ExternalLink size={14}/></Button></div></aside></div></Shell>}
+function SocialLinks({data,style}:ViewProps){return <Shell data={data} style={style}><nav aria-label="Social profiles" className="flex flex-wrap gap-3">{data.items.slice(0,6).map(i=><a href="#" onClick={prevent} key={i} className="inline-flex min-h-11 items-center gap-2 border px-4 text-sm font-semibold" style={{borderColor:"var(--w-border)",borderRadius:"var(--w-button-radius)"}}><ExternalLink size={15}/>{i}</a>)}</nav></Shell>}
+function FloatingContact({data,style}:ViewProps){return <div style={{...style}} className="flex w-full justify-end"><a href="https://wa.me/" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center gap-3 px-5 font-semibold shadow-lg" style={{background:"var(--w-primary)",color:"var(--w-primary-contrast)",borderRadius:"999px"}} aria-label={data.primaryCta}><MessageCircle/>{data.primaryCta}</a></div>}
+function Cta({data,style}:ViewProps){return <section className="overflow-hidden p-7 text-center sm:p-10" style={{background:"var(--w-primary)",color:"var(--w-primary-contrast)",borderRadius:"var(--w-card-radius)",...style}}><div className="mx-auto max-w-2xl"><div className="text-xs font-bold uppercase tracking-[.2em] opacity-75">{data.eyebrow}</div><h2 className="mt-3 text-3xl font-semibold">{data.title}</h2><p className="mt-3 opacity-80">{data.body}</p><div className="mt-7 flex flex-wrap justify-center gap-3"><button className="min-h-11 px-5 font-semibold" style={{background:"var(--w-surface)",color:"var(--w-text)",borderRadius:"var(--w-button-radius)"}}>{data.primaryCta}</button><button className="min-h-11 border border-current px-5 font-semibold" style={{borderRadius:"var(--w-button-radius)"}}>{data.secondaryCta}</button></div></div></section>}
+function Footer({data,style}:ViewProps){return <footer className="relative overflow-hidden p-6 sm:p-9" style={{background:"color-mix(in srgb,var(--w-primary) 22%,var(--w-surface))",color:"var(--w-text)",border:"1px solid var(--w-border)",borderRadius:"var(--w-card-radius)",...style}}><div className="absolute -right-20 -top-20 h-56 w-56 rounded-full opacity-20 blur-3xl" style={{background:"var(--w-primary)"}}/><div className="relative grid gap-8 md:grid-cols-3"><div><div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center font-bold" style={{background:"var(--w-primary)",color:"var(--w-primary-contrast)",borderRadius:"var(--w-button-radius)"}}>BZ</span><h2 className="text-xl font-semibold">{data.title}</h2></div><p className="mt-3 text-sm leading-6" style={{color:"var(--w-muted)"}}>{data.body}</p></div><FooterLinks title="Explore" items={data.items.slice(0,4)}/><FooterLinks title="Company" items={["About","Contact","Privacy","Terms"]}/></div><div className="relative mt-8 border-t pt-5 text-xs" style={{borderColor:"var(--w-border)",color:"var(--w-muted)"}}>© {new Date().getFullYear()} Your company. All rights reserved.</div></footer>}
+function FooterLinks({title,items}:{title:string;items:string[]}){return <nav aria-label={title}><h3 className="font-semibold">{title}</h3><div className="mt-3 grid gap-2 text-sm opacity-70">{items.map(i=><a href="#" onClick={prevent} key={i}>{i}</a>)}</div></nav>}
+function SafeCode({data,style,restricted=false}:ViewProps&{restricted?:boolean}){return <Shell data={data} style={style}><div className="overflow-hidden" style={{borderRadius:"var(--w-card-radius)",background:"var(--w-text)",color:"var(--w-surface)"}}><div className="flex items-center gap-2 border-b px-4 py-3 text-xs opacity-70"><Code2 size={15}/>{restricted?"Restricted provider embed":"Code example"}</div><pre className="overflow-auto p-5 text-xs leading-6"><code>{restricted?"Safe provider URL and sandbox metadata only. Scripts and opaque HTML are blocked.":data.items.join("\n")}</code></pre></div></Shell>}
+function Editorial({data,style,mode}:ViewProps&{mode:"grid"|"list"}){return <Shell data={data} style={style}><div className={mode==="grid"?"grid gap-4 md:grid-cols-3":"grid gap-3"}>{data.items.slice(0,6).map((i,n)=><article key={i} className={mode==="list"?"flex items-center gap-4 border-b py-4":"overflow-hidden border"} style={{borderColor:"var(--w-border)",borderRadius:mode==="grid"?"var(--w-card-radius)":undefined}}><div className={mode==="grid"?"aspect-video overflow-hidden":"h-20 w-28 shrink-0 overflow-hidden"} style={{borderRadius:"var(--w-button-radius)"}}><MediaImage src={DEFAULT_MEDIA[(n+3)%DEFAULT_MEDIA.length]} alt={i}/></div><div className={mode==="grid"?"p-4":"flex-1"}><div className="text-xs font-bold uppercase" style={{color:"var(--w-primary)"}}>Article · {n+1}</div><h3 className="mt-1 font-semibold">{i}</h3><p className="mt-2 text-sm" style={{color:"var(--w-muted)"}}>Add a concise excerpt that earns the reader’s next click.</p></div><ArrowRight className="mr-4 shrink-0"/></article>)}</div></Shell>}
+function Categories({data,style}:ViewProps){return <Shell data={data} style={style}><nav aria-label="Content categories" className="grid gap-3 sm:grid-cols-2">{data.items.slice(0,8).map((i,n)=><a href="#" onClick={prevent} key={i} className="flex items-center justify-between border p-4 font-semibold transition hover:-translate-y-0.5" style={{borderColor:"var(--w-border)",borderRadius:"var(--w-button-radius)",background:"var(--w-surface-alt)"}}><span>{i}</span><span className="text-sm" style={{color:"var(--w-muted)"}}>{String((n+1)*6).padStart(2,"0")} <ArrowRight className="ml-2 inline" size={14}/></span></a>)}</nav></Shell>}
+function Popup({data,style}:ViewProps){const [open,setOpen]=useState(false);useEffect(()=>{if(!open)return;const onKey=(event:KeyboardEvent)=>{if(event.key==="Escape")setOpen(false)};window.addEventListener("keydown",onKey);return()=>window.removeEventListener("keydown",onKey)},[open]);return <Shell data={data} style={style}><button type="button" onClick={()=>setOpen(true)} className="inline-flex min-h-11 items-center px-5 font-semibold" style={{background:"var(--w-primary)",color:"var(--w-primary-contrast)",borderRadius:"var(--w-button-radius)"}}>Open {data.title}</button>{open&&<div className="fixed inset-0 z-[100] grid place-items-center bg-black/60 p-5" role="presentation" onMouseDown={()=>setOpen(false)}><div role="dialog" aria-modal="true" aria-labelledby="premium-popup-title" onMouseDown={e=>e.stopPropagation()} className="relative w-full max-w-lg p-7" style={{background:"var(--w-surface)",color:"var(--w-text)",borderRadius:"var(--w-card-radius)"}}><button autoFocus aria-label="Close dialog" onClick={()=>setOpen(false)} className="absolute right-3 top-3 p-2"><X/></button><div className="text-xs font-bold uppercase" style={{color:"var(--w-primary)"}}>{data.eyebrow}</div><h2 id="premium-popup-title" className="mt-2 text-2xl font-semibold">{data.title}</h2><p className="mt-3" style={{color:"var(--w-muted)"}}>{data.body}</p><div className="mt-6"><Button>{data.primaryCta}</Button></div></div></div>}</Shell>}
 
-function toItems(value: unknown): string[] {
-  if (Array.isArray(value)) return value.map(toText).filter(Boolean);
-  if (typeof value === "string") return value.split(/\n|,/).map((item) => item.trim()).filter(Boolean);
-  return [];
+type ViewProps={data:Data;style?:CSSProperties};
+function normalizeData(type:string,p:Props):Data{const items=toItems(p.items);const label=type.replace(/([A-Z])/g," $1").replace(/^./,c=>c.toUpperCase());return{eyebrow:toText(p.eyebrow)||label,title:toText(p.title)||`${label} section`,body:toText(p.body)||"Present useful information with a clear hierarchy and a confident next step.",primaryCta:toText(p.primaryCta)||"Get started",secondaryCta:toText(p.secondaryCta)||"Learn more",items:items.length?items:["First item","Second item","Third item","Fourth item"]}}
+function toText(v:unknown){if(typeof v==="string"||typeof v==="number")return String(v).trim();return""}
+function toItems(v:unknown){if(Array.isArray(v))return v.map(toText).filter(Boolean);if(typeof v==="string")return v.split(/\n|,/).map(x=>x.trim()).filter(Boolean);return[]}
+function themeStyle(style?:CSSProperties,t?:WidgetTheme):CSSProperties{
+  const source = { ...(style ?? {}) } as Record<string, unknown>;
+  const take = (key:string,fallback:unknown) => {
+    const next = source[key] ?? fallback;
+    delete source[key];
+    return next;
+  };
+  const primary=t?.primary??"#2563eb",surface=t?.surface??"#ffffff",text=t?.textPrimary??"#0f172a";
+  return {
+    ...source,
+    "--w-primary":primary,
+    "--w-primary-contrast":t?.primaryContrast??"#ffffff",
+    "--w-surface":surface,
+    "--w-surface-alt":t?.surfaceAlt??"#f1f5f9",
+    "--w-text":text,
+    "--w-muted":t?.textSecondary??"#475569",
+    "--w-border":t?.border??"#dbe3ef",
+    "--w-accent":t?.accent??"#f97316",
+    "--w-card-radius":`${t?.cardRadius??12}px`,
+    "--w-button-radius":`${t?.buttonRadius??10}px`,
+    "--w-card-shadow":t?.cardShadow??"0 16px 42px rgba(15,23,42,.08)",
+    "--w-element-border":take("elementBorderColor",t?.border??"#dbe3ef"),
+    "--w-eyebrow-color":take("eyebrowColor",primary),
+    "--w-eyebrow-font":take("eyebrowFontFamily","Inter"),
+    "--w-eyebrow-size":cssSize(take("eyebrowFontSize",12)),
+    "--w-eyebrow-weight":take("eyebrowFontWeight",700),
+    "--w-title-color":take("titleColor",text),
+    "--w-title-font":take("titleFontFamily","Inter"),
+    "--w-title-size":cssSize(take("titleFontSize",30)),
+    "--w-title-weight":take("titleFontWeight",600),
+    "--w-body-color":take("bodyColor",t?.textSecondary??"#475569"),
+    "--w-body-font":take("bodyFontFamily","Inter"),
+    "--w-body-size":cssSize(take("bodyFontSize",16)),
+    "--w-body-line-height":take("bodyLineHeight",1.6),
+    "--w-cta-background":take("ctaBackgroundColor",primary),
+    "--w-cta-color":take("ctaColor",t?.primaryContrast??"#ffffff"),
+    "--w-cta-font":take("ctaFontFamily","Inter"),
+    "--w-cta-size":cssSize(take("ctaFontSize",14)),
+    "--w-cta-radius":cssSize(take("ctaBorderRadius",t?.buttonRadius??10)),
+    "--w-media-url":take("mediaUrl",""),
+    "--w-media-position":take("mediaObjectPosition","center center"),
+    "--w-media-radius":cssSize(take("mediaBorderRadius",t?.cardRadius??12)),
+    "--w-card-background":take("cardBackgroundColor",t?.surfaceAlt??"#f1f5f9"),
+    "--w-card-text":take("cardTextColor",text),
+    "--w-card-icon":take("cardIconColor",primary),
+  } as CSSProperties;
 }
+function prevent(e:{preventDefault():void}){e.preventDefault()}
+function MediaImage({src,alt}:{src:string;alt:string}){return <img src={src} alt={alt} loading="lazy" className="h-full w-full object-cover transition duration-500 hover:scale-[1.03]" style={{objectPosition:"var(--w-media-position)"}}/>}
+function mediaSource(style:CSSProperties|undefined,index:number){const custom=(style as Record<string,unknown>|undefined)?.["--w-media-url"];return typeof custom==="string"&&custom.trim()?custom:DEFAULT_MEDIA[index%DEFAULT_MEDIA.length]}
+function cssSize(value:unknown){return typeof value==="number"?`${value}px`:String(value)}

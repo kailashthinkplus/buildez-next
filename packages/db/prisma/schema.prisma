@@ -110,6 +110,13 @@ model User {
   phone     String? @unique
   name      String?
   avatarUrl String?
+  bio       String?
+  jobTitle  String?
+  company   String?
+  website   String?
+  city      String?
+  country   String?
+  timezone  String?
 
   passwordHash String?
   googleId     String?  @unique
@@ -600,9 +607,42 @@ model Site {
   mediaAssets      MediaAsset[] // ✅ NEW: Media library per site
   layout           SiteLayout?
   aiSnapshots      AIBlueprintSnapshot[]
+  cmsCollections   CmsCollection[]
 
   @@unique([tenantId, slug])
   @@index([tenantId])
+}
+
+model CmsCollection {
+  id          String   @id @default(cuid())
+  siteId      String
+  name        String
+  slug        String
+  description String?
+  icon        String?  @default("database")
+  fields      Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  site    Site       @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  entries CmsEntry[]
+
+  @@unique([siteId, slug])
+  @@index([siteId])
+}
+
+model CmsEntry {
+  id           String   @id @default(cuid())
+  collectionId String
+  data         Json
+  status       String   @default("DRAFT")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  collection CmsCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@index([collectionId])
+  @@index([status])
 }
 
 model SiteLayout {
