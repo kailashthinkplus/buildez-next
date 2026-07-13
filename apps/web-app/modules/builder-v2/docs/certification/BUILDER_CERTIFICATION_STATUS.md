@@ -26,7 +26,7 @@
 
 ## RC-7 Regression & QA
 
-⬜ Pending
+🟡 Blocked (RC7-BLOCKER-001)
 
 ## Production Certification
 
