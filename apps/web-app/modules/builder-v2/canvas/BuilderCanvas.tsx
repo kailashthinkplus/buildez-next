@@ -17,6 +17,7 @@ import type { SiteThemeLayout } from "../theme/siteLayout";
 import type { BuilderThemeTokens } from "../theme/theme.types";
 import { Plus } from "lucide-react";
 
+import { resolveNonOverlappingDropEdge } from "../core/dnd/dropIntentGeometry";
 const CONTAINER_TYPES = new Set(["page", "section", "container", "column"]);
 
 type DropIntent = "before" | "after" | "inside";
@@ -123,7 +124,7 @@ export default function CanvasRoot({
 
     const lead = isHorizontal ? e.clientX - rect.left : e.clientY - rect.top;
     const span = isHorizontal ? rect.width : rect.height;
-    const edge = Math.max(12, Math.min(28, span * 0.2));
+    const edge = resolveNonOverlappingDropEdge(span);
 
     let intent: DropIntent = "before";
     if (targetNode.parentId === null || isGrid || (isContainer && !hasChildren)) {

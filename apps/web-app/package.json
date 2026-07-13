@@ -30,7 +30,10 @@
     "test:builder:browser:operations:cleanup": "tsx playwright/scripts/cleanupDisposablePages.ts",
     "test:builder:visual": "playwright test --project=setup && playwright test --project=builder-chromium --no-deps --grep @visual",
     "test:builder:visual:update": "playwright test --project=setup && playwright test --project=builder-chromium --no-deps --grep @visual --update-snapshots",
-    "test:builder:browser:operations:scroll": "playwright test --project=builder-chromium --grep @scroll"
+    "test:builder:browser:operations:scroll": "playwright test --project=builder-chromium --grep @scroll",
+    "test:builder:browser:operations:zoom": "playwright test --project=builder-chromium --grep @zoom",
+    "test:builder:browser:operations:responsive": "playwright test --project=builder-chromium --grep @responsive",
+    "test:builder:browser:operations:persistence": "playwright test --project=builder-chromium --grep @persistence"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1073.0",

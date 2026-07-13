@@ -200,35 +200,212 @@ export async function dragSelectedNodeRelativeToSibling(
   sibling: Locator,
   intent: "before" | "after",
 ) {
-  const handle = page.getByTestId("builder-node-drag-handle");
-  const shell = page.getByTestId("builder-shell");
-  await expect(handle).toHaveAttribute("data-drag-node-id", nodeId);
-  await handle.hover();
-  const sourceBox = await handle.boundingBox();
-  const targetBox = await sibling.boundingBox();
-  expect(sourceBox).not.toBeNull();
-  expect(targetBox).not.toBeNull();
-  if (!sourceBox || !targetBox) return;
-  const targetId = await sibling.getAttribute("data-node-id");
-  expect(targetId).toBeTruthy();
-  if (!targetId) return;
-
-  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2 + 10, { steps: 4 });
-  await expect(shell).toHaveAttribute("data-dnd-active-id", nodeId);
-  const liveTargetBox = await sibling.boundingBox();
-  expect(liveTargetBox).not.toBeNull();
-  if (!liveTargetBox) return;
-  await page.mouse.move(
-    liveTargetBox.x + Math.min(12, liveTargetBox.width / 2),
-    intent === "before" ? liveTargetBox.y + 3 : liveTargetBox.y + liveTargetBox.height - 3,
-    { steps: 18 },
+  const handle = page.getByTestId(
+    "builder-node-drag-handle",
   );
-  await expect(shell).toHaveAttribute("data-dnd-over-id", targetId);
-  await expect(shell).toHaveAttribute("data-dnd-intent", intent);
+  const shell = page.getByTestId("builder-shell");
+
+  await expect(handle).toHaveAttribute(
+    "data-drag-node-id",
+    nodeId,
+  );
+
+  await expect(sibling).toBeVisible();
+  await handle.hover();
+
+  const sourceBox = await handle.boundingBox();
+
+  expect(
+    sourceBox,
+    "drag handle must have a browser bounding box",
+  ).not.toBeNull();
+
+  if (!sourceBox) {
+    return;
+  }
+
+  const targetId = await sibling.getAttribute(
+    "data-node-id",
+  );
+
+  expect(
+    targetId,
+    "sibling target must expose its production node id",
+  ).toBeTruthy();
+
+  if (!targetId) {
+    return;
+  }
+
+  const startPoint = {
+    x: sourceBox.x + sourceBox.width / 2,
+    y: sourceBox.y + sourceBox.height / 2,
+  };
+
+  await page.mouse.move(
+    startPoint.x,
+    startPoint.y,
+  );
+
+  await page.mouse.down();
+
+  await page.mouse.move(
+    startPoint.x,
+    startPoint.y + 10,
+    { steps: 4 },
+  );
+
+  await expect(shell).toHaveAttribute(
+    "data-dnd-active-id",
+    nodeId,
+  );
+
+  /*
+   * Probe several live points near the requested sibling edge.
+   *
+   * Fixed 3px offsets become unreliable when the canvas is scaled.
+   * The production resolver remains the source of truth: the helper
+   * accepts a point only after Builder reports the requested target,
+   * intent and validity.
+   */
+  const edgeFractions =
+    intent === "before"
+      ? [0.02, 0.05, 0.08, 0.12, 0.18, 0.24, 0.3]
+      : [0.98, 0.95, 0.92, 0.88, 0.82, 0.76, 0.7];
+
+  let resolvedPoint:
+    | {
+        x: number;
+        y: number;
+      }
+    | null = null;
+
+  for (const fraction of edgeFractions) {
+    const liveTargetBox = await sibling.boundingBox();
+
+    expect(
+      liveTargetBox,
+      "sibling target must remain visible during drag",
+    ).not.toBeNull();
+
+    if (!liveTargetBox) {
+      break;
+    }
+
+    const candidate = {
+      x:
+        liveTargetBox.x +
+        Math.min(
+          Math.max(6, liveTargetBox.width * 0.08),
+          liveTargetBox.width / 2,
+        ),
+      y:
+        liveTargetBox.y +
+        liveTargetBox.height * fraction,
+    };
+
+    await page.mouse.move(
+      candidate.x,
+      candidate.y,
+      { steps: 6 },
+    );
+
+    const observation = await shell.evaluate(
+      (element) => ({
+        overId:
+          element.getAttribute("data-dnd-over-id") ??
+          "",
+        intent:
+          element.getAttribute("data-dnd-intent") ??
+          "",
+        valid:
+          element.getAttribute("data-dnd-valid") ===
+          "true",
+      }),
+    );
+
+    if (
+      observation.overId === targetId &&
+      observation.intent === intent &&
+      observation.valid
+    ) {
+      resolvedPoint = candidate;
+      break;
+    }
+  }
+
+  expect(
+    resolvedPoint,
+    `production DnD resolver must expose ${intent} ` +
+      `for sibling ${targetId}`,
+  ).not.toBeNull();
+
+  if (!resolvedPoint) {
+    await page.mouse.up();
+    return;
+  }
+
+  /*
+   * Re-read the live target and move to the equivalent verified
+   * fraction immediately before release. This protects against
+   * geometry changes caused by drag chrome or canvas transforms.
+   */
+  const releaseBox = await sibling.boundingBox();
+
+  expect(
+    releaseBox,
+    "sibling target must remain visible before release",
+  ).not.toBeNull();
+
+  if (!releaseBox) {
+    await page.mouse.up();
+    return;
+  }
+
+  const resolvedFraction =
+    (resolvedPoint.y - releaseBox.y) /
+    Math.max(releaseBox.height, 1);
+
+  const releasePoint = {
+    x:
+      releaseBox.x +
+      Math.min(
+        Math.max(6, releaseBox.width * 0.08),
+        releaseBox.width / 2,
+      ),
+    y:
+      releaseBox.y +
+      releaseBox.height *
+        Math.max(0.01, Math.min(0.99, resolvedFraction)),
+  };
+
+  await page.mouse.move(
+    releasePoint.x,
+    releasePoint.y,
+    { steps: 3 },
+  );
+
+  await expect(shell).toHaveAttribute(
+    "data-dnd-over-id",
+    targetId,
+  );
+
+  await expect(shell).toHaveAttribute(
+    "data-dnd-intent",
+    intent,
+  );
+
+  await expect(shell).toHaveAttribute(
+    "data-dnd-valid",
+    "true",
+  );
+
   await page.mouse.up();
-  await expect(shell).toHaveAttribute("data-dnd-active-id", "");
+
+  await expect(shell).toHaveAttribute(
+    "data-dnd-active-id",
+    "",
+  );
 }
 
 export async function dragPaletteWidgetRelativeToSibling(

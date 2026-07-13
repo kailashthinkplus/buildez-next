@@ -16,9 +16,11 @@ async function openBlocks(page: Parameters<typeof openDisposableBuilder>[0]) {
 import {
   FIXTURE_IDS,
   createDisposableBuilderPage,
+  createScrollOperationFixtureBlueprint,
   deleteDisposableBuilderPage,
   openDisposableBuilder,
   readDisposableBlueprint,
+  resetDisposableBuilderPageWithBlueprint,
 } from "../../../helpers/builderFixture";
 
 let disposablePageId: string | null = null;
@@ -61,17 +63,24 @@ test(
     const fixture = await createDisposableBuilderPage(page.request);
     disposablePageId = fixture.id;
 
+    await resetDisposableBuilderPageWithBlueprint(
+      page.request,
+      fixture.id,
+      createScrollOperationFixtureBlueprint(),
+    );
+
     const initialBlueprint = await readDisposableBlueprint(
       page.request,
       fixture.id,
     );
 
     const initialNestedChildren = [
-      ...initialBlueprint.nodes[FIXTURE_IDS.nested].children,
+      ...initialBlueprint.nodes[FIXTURE_IDS.containerC].children,
     ];
 
     expect(initialNestedChildren).toEqual([
-      FIXTURE_IDS.textC,
+      FIXTURE_IDS.nested,
+      FIXTURE_IDS.scrollTarget,
     ]);
 
     await openDisposableBuilder(page, fixture);
@@ -119,12 +128,12 @@ test(
       "Builder canvas should be scrolled before starting DnD",
     ).toBeGreaterThan(300);
 
-    const target = builderNode(page, FIXTURE_IDS.nested);
+    const target = builderNode(page, FIXTURE_IDS.containerC);
     await expect(target).toBeVisible();
 
     const childrenBefore = await page
       .locator(
-        `.builder-canvas-sandbox [data-node-parent-id='${FIXTURE_IDS.nested}']`,
+        `.builder-canvas-sandbox [data-node-parent-id='${FIXTURE_IDS.containerC}']`,
       )
       .evaluateAll((elements) =>
         elements
@@ -145,7 +154,7 @@ test(
 
     const childrenAfter = await page
       .locator(
-        `.builder-canvas-sandbox [data-node-parent-id='${FIXTURE_IDS.nested}']`,
+        `.builder-canvas-sandbox [data-node-parent-id='${FIXTURE_IDS.containerC}']`,
       )
       .evaluateAll((elements) =>
         elements
@@ -174,7 +183,7 @@ test(
     await expectNodeParent(
       page,
       insertedHeadingId,
-      FIXTURE_IDS.nested,
+      FIXTURE_IDS.containerC,
     );
 
     await expectSelectedNode(page, insertedHeadingId);
@@ -197,10 +206,10 @@ test(
 
     expect(
       persisted.nodes[insertedHeadingId]?.parentId,
-    ).toBe(FIXTURE_IDS.nested);
+    ).toBe(FIXTURE_IDS.containerC);
 
     expect(
-      persisted.nodes[FIXTURE_IDS.nested].children,
+      persisted.nodes[FIXTURE_IDS.containerC].children,
     ).toContain(insertedHeadingId);
 
     const persistedOccurrences = Object.values(
@@ -223,7 +232,7 @@ test(
     await expectNodeParent(
       page,
       insertedHeadingId,
-      FIXTURE_IDS.nested,
+      FIXTURE_IDS.containerC,
     );
 
     const reloadedBlueprint =
@@ -234,10 +243,10 @@ test(
 
     expect(
       reloadedBlueprint.nodes[insertedHeadingId]?.parentId,
-    ).toBe(FIXTURE_IDS.nested);
+    ).toBe(FIXTURE_IDS.containerC);
 
     expect(
-      reloadedBlueprint.nodes[FIXTURE_IDS.nested].children,
+      reloadedBlueprint.nodes[FIXTURE_IDS.containerC].children,
     ).toContain(insertedHeadingId);
   },
 );

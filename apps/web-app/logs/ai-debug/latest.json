@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-12T18:18:21.298Z",
+  "timestamp": "2026-07-13T08:12:31.826Z",
   "label": "published-render:input",
   "payload": {
     "summary": {
@@ -9,7 +9,7 @@
         "title": "Home",
         "version": 2,
         "createdAt": "2026-07-09T11:28:43.786Z",
-        "updatedAt": "2026-07-12T18:18:02.479Z"
+        "updatedAt": "2026-07-13T08:12:19.353Z"
       },
       "theme": {
         "id": "default",

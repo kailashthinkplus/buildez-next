@@ -123,6 +123,7 @@ TICKETS: dict[str, Ticket] = {
         commands=(
             "cleanup", "typecheck", "rc-t3-node", "operations-node",
             "invalid-dnd", "dnd", "palette", "reorder", "keyboard",
+            "scroll", "zoom", "responsive", "persistence",
             "scoped-diff-check",
         ),
         description="Runs all currently implemented RC-T3 certification gates.",

@@ -15,6 +15,7 @@ export const FIXTURE_IDS = {
   containerC: "rc-t3b-container-c",
   nested: "rc-t3b-container-nested",
   textC: "rc-t3b-text-c",
+  scrollTarget: "rc-t3b-scroll-target",
 } as const;
 
 type DisposablePage = { id: string; slug: string; siteSlug: string; builderPath: string };
@@ -46,6 +47,57 @@ export function createOperationFixtureBlueprint() {
       [FIXTURE_IDS.textC]: node(FIXTURE_IDS.textC, "text", FIXTURE_IDS.nested, [], { text: "RC Nested Text", html: "<p>RC Nested Text</p>" }),
     },
   };
+}
+
+
+export function createScrollOperationFixtureBlueprint() {
+  const blueprint: any = createOperationFixtureBlueprint();
+
+  blueprint.nodes[FIXTURE_IDS.scrollTarget] = {
+    id: FIXTURE_IDS.scrollTarget,
+    type: "container",
+    parentId: FIXTURE_IDS.containerC,
+    children: [],
+    props: {
+      layout: "flex",
+      direction: "column",
+    },
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 20,
+      minHeight: 260,
+      padding: 48,
+      marginTop: 40,
+    },
+    locked: false,
+    hidden: false,
+  };
+
+  blueprint.nodes[FIXTURE_IDS.containerC].children = [
+    ...blueprint.nodes[FIXTURE_IDS.containerC].children,
+    FIXTURE_IDS.scrollTarget,
+  ];
+
+  return blueprint;
+}
+
+export async function resetDisposableBuilderPageWithBlueprint(
+  request: APIRequestContext,
+  pageId: string,
+  blueprint: unknown,
+) {
+  const response = await request.post(
+    `/api/builder-v2/blueprints/${pageId}`,
+    {
+      data: { blueprint },
+    },
+  );
+
+  expect(
+    response.ok(),
+    await response.text(),
+  ).toBeTruthy();
 }
 
 export async function createDisposableBuilderPage(request: APIRequestContext): Promise<DisposablePage> {

@@ -47,6 +47,7 @@ import { canCommitDrop } from "../core/dnd/dropCommitSafety";
 import type { BuilderBlueprint } from "../types/blueprint";
 import type { SiteThemeLayout } from "../theme/siteLayout";
 
+import { resolveNonOverlappingDropEdge } from "../core/dnd/dropIntentGeometry";
 const HEADER_HEIGHT = 56;
 const LEFT_TOOLBAR_WIDTH = 60;
 const LEFT_PANEL_WIDTH = 360;
@@ -1020,7 +1021,7 @@ const onCanvasClick = () => {
         (isLayoutDrag ? canDropInsideLayoutTarget : isContainer);
       const lead = isHorizontal ? x - rect.left : y - rect.top;
       const span = isHorizontal ? rect.width : rect.height;
-      const edge = Math.max(12, Math.min(28, span * 0.2));
+      const edge = resolveNonOverlappingDropEdge(span);
 
       let intent: "before" | "after" | "inside" = "before";
       if (isGrid && canDropInside) {
