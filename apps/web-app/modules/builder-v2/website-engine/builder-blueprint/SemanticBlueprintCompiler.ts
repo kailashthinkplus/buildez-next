@@ -3,6 +3,8 @@ import { createBuilderTheme } from "../../theme/defaultTheme";
 import type { BuilderBlueprintInput } from "./builderBlueprint";
 import type { WidgetBlueprintSeed } from "./widgetBlueprint";
 import { RecipeRegistry, type SemanticSection } from "./recipes";
+import { ComponentVariantCompilerRegistry } from "./component-recipes";
+import { CompositionQualityEngine, type CompositionQualityScore } from "../composition-quality";
 
 function safeId(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "section";
@@ -46,10 +48,24 @@ export type SemanticBlueprintCompilation = Readonly<{
   seeds: WidgetBlueprintSeed[];
   sections: SemanticSection[];
   selectedRecipes: Array<{ sectionId: string; recipe: string }>;
+  compositionQuality: CompositionQualityScore;
 }>;
 
 export function compileSemanticBlueprint(input: BuilderBlueprintInput): SemanticBlueprintCompilation {
   const sections = orderedSections(input);
+  const compositionQuality = CompositionQualityEngine.evaluate({
+    sections: sections.map((section) => ({
+      id: section.id,
+      componentVariantId: section.componentVariantId,
+      category: section.componentCategory ?? section.type,
+      purpose: section.purpose,
+    })),
+    businessFamily: input.websiteSpec?.business.family,
+    archetype: input.websiteSpec?.archetype,
+    conversionGoal: input.websiteSpec?.goals.primaryGoal,
+    selectedComponents: input.componentResult?.recommendedSelections.map((selection) => selection.variant.id),
+    designIntent: input.designResult,
+  });
   const sectionNodeIds = sections.map((section, index) => `section.${safeId(section.id || `section_${index}`)}`);
   const page: WidgetBlueprintSeed = Object.freeze({
     id: "page.root", type: "page", name: "Page", parentId: null, children: sectionNodeIds,
@@ -58,11 +74,18 @@ export function compileSemanticBlueprint(input: BuilderBlueprintInput): Semantic
   const selectedRecipes: Array<{ sectionId: string; recipe: string }> = [];
   const seeds: WidgetBlueprintSeed[] = [page];
   sections.forEach((section, index) => {
-    const selected = RecipeRegistry.resolve(section);
-    selectedRecipes.push({ sectionId: section.id, recipe: selected.name });
-    seeds.push(...selected.recipe({ input, section, sectionNodeId: sectionNodeIds[index], key: safeId(section.id || `section_${index}`) }));
+    const context = { input, section, sectionNodeId: sectionNodeIds[index], key: safeId(section.id || `section_${index}`) };
+    const selectedCompiler = ComponentVariantCompilerRegistry.resolve(section);
+    if (selectedCompiler) {
+      selectedRecipes.push({ sectionId: section.id, recipe: selectedCompiler.name });
+      seeds.push(...selectedCompiler.compiler.compile(context));
+      return;
+    }
+    const selectedRecipe = RecipeRegistry.resolve(section);
+    selectedRecipes.push({ sectionId: section.id, recipe: selectedRecipe.name });
+    seeds.push(...selectedRecipe.recipe(context));
   });
-  return Object.freeze({ seeds, sections, selectedRecipes });
+  return Object.freeze({ seeds, sections, selectedRecipes, compositionQuality });
 }
 
 export function createSemanticBuilderTheme(input: BuilderBlueprintInput): BuilderTheme {

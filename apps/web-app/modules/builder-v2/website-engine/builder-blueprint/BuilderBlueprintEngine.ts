@@ -171,3 +171,4 @@ export function runBuilderBlueprintEngine(input: BuilderBlueprintInput = {}): En
 export { expandComponentRecipes, buildWidgetBlueprints, buildSectionBlueprints, validateBuilderBlueprint, validateNativeBlueprintCompatibility };
 export * from "./SemanticBlueprintCompiler";
 export * from "./recipes";
+export * from "./component-recipes";
