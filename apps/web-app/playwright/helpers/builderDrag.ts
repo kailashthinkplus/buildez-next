@@ -53,76 +53,659 @@ export async function dragSelectedNodeByHandle(
 ) {
   const shell = page.getByTestId("builder-shell");
   const handle = page.getByTestId("builder-node-drag-handle");
-  await expect(handle).toHaveAttribute("data-drag-node-id", nodeId);
+  const viewport = page.locator(
+    "[data-builder-canvas-scroll='true']",
+  );
+
+  await expect(handle).toHaveAttribute(
+    "data-drag-node-id",
+    nodeId,
+  );
   await expect(target).toBeVisible();
 
-  const viewport = page.locator("[data-builder-canvas-scroll='true']");
-  const sourceBeforeScroll = await handle.boundingBox();
   const viewportSize = page.viewportSize();
-  expect(sourceBeforeScroll, "drag handle must have a browser bounding box").not.toBeNull();
-  expect(viewportSize, "browser viewport must be available for native drag").not.toBeNull();
+  const sourceBeforeScroll = await handle.boundingBox();
+
+  expect(
+    sourceBeforeScroll,
+    "drag handle must have a browser bounding box",
+  ).not.toBeNull();
+  expect(
+    viewportSize,
+    "browser viewport must be available for native drag",
+  ).not.toBeNull();
+
   if (!sourceBeforeScroll || !viewportSize) return;
+
+  /*
+   * Position the source handle in a stable visible lane before beginning
+   * native drag. The target may subsequently require native autoscroll.
+   */
   await viewport.evaluate((element, sourceY) => {
     element.scrollTop += sourceY - 130;
   }, sourceBeforeScroll.y);
-  await page.evaluate(() => new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
-  ));
+
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => resolve()),
+        );
+      }),
+  );
+
   await handle.hover();
 
   const sourceBox = await handle.boundingBox();
-  const targetBox = await target.boundingBox();
-  expect(sourceBox, "drag handle must remain visible after canvas positioning").not.toBeNull();
-  expect(targetBox, "drop target must be visible after canvas positioning").not.toBeNull();
-  if (!sourceBox || !targetBox) return;
+
+  expect(
+    sourceBox,
+    "drag handle must remain visible after canvas positioning",
+  ).not.toBeNull();
+
+  if (!sourceBox) return;
 
   const targetId = await target.getAttribute("data-node-id");
-  expect(targetId, "drop target must expose its production node id").toBeTruthy();
+
+  expect(
+    targetId,
+    "drop target must expose its production node id",
+  ).toBeTruthy();
+
   if (!targetId) return;
-  const start = { x: sourceBox.x + sourceBox.width / 2, y: sourceBox.y + sourceBox.height / 2 };
-  const end = {
-    // Stay inside the visible canvas lane rather than fixed side chrome.
-    x: targetBox.x + Math.min(12, targetBox.width / 2),
-    y: Math.min(targetBox.y + targetBox.height - 56, viewportSize.height - 60),
+
+  /*
+   * Observe the authoritative production commit. The visual hit node may
+   * be a child widget, while the computed destination parent is still the
+   * requested Container.
+   */
+  await page.evaluate(() => {
+    (window as any).__builderLastDropCommit = null;
+
+    window.addEventListener(
+      "builder:drop-commit",
+      (event) => {
+        (window as any).__builderLastDropCommit =
+          (event as CustomEvent).detail;
+      },
+      { once: true },
+    );
+  });
+
+  const start = {
+    x: sourceBox.x + sourceBox.width / 2,
+    y: sourceBox.y + sourceBox.height / 2,
   };
 
   await page.mouse.move(start.x, start.y);
   await page.mouse.down();
-  await page.mouse.move(start.x, start.y + 10, { steps: 4 });
-  await expect(shell).toHaveAttribute("data-dnd-active-id", nodeId);
-  await page.mouse.move(end.x, end.y, { steps: 24 });
-  const safeY = viewportSize.height - Math.max(160, viewportSize.height * 0.2);
-  let targetSurroundsSafeLane = false;
-  for (let step = 0; step < 30; step += 1) {
-    const live = await target.boundingBox();
-    targetSurroundsSafeLane = Boolean(
-      live && live.y + 40 < safeY && live.y + live.height - 40 > safeY,
-    );
-    if (targetSurroundsSafeLane) break;
-    // Each native dragover event advances the production edge auto-scroll.
-    await page.mouse.move(end.x + (step % 2 === 0 ? 1 : -1), end.y);
-  }
-  expect(targetSurroundsSafeLane, "native auto-scroll should expose Container B's safe inside lane").toBe(true);
-  const liveTarget = await target.boundingBox();
-  expect(liveTarget).not.toBeNull();
-  if (!liveTarget) return;
-  await page.mouse.move(liveTarget.x + Math.min(12, liveTarget.width / 2), safeY, { steps: 8 });
-  await expect(shell).toHaveAttribute("data-dnd-over-id", targetId);
-  await expect(shell).toHaveAttribute("data-dnd-intent", "inside");
-  await expect(shell).toHaveAttribute("data-dnd-valid", "true");
-  // Assertions take time while the production edge auto-scroll remains live.
-  // Re-enter the target's current central padding lane immediately before
-  // release so the committed pending drop matches the observed contract.
-  const releaseBox = await target.boundingBox();
-  expect(releaseBox).not.toBeNull();
-  if (!releaseBox) return;
   await page.mouse.move(
-    releaseBox.x + Math.min(12, releaseBox.width / 2),
-    Math.max(60, releaseBox.y + 40),
-    { steps: 2 },
+    start.x,
+    start.y + 10,
+    { steps: 4 },
   );
+
+  await expect(shell).toHaveAttribute(
+    "data-dnd-active-id",
+    nodeId,
+  );
+
+  const readState = async () =>
+    shell.evaluate((element) => ({
+      overId: element.getAttribute("data-dnd-over-id"),
+      intent: element.getAttribute("data-dnd-intent"),
+      valid: element.getAttribute("data-dnd-valid"),
+    }));
+
+  let stablePoint:
+    | { x: number; y: number }
+    | null = null;
+
+  /*
+   * Recompute target geometry every round. Native drag movement may
+   * autoscroll the canvas, so stale bounding boxes are not trustworthy.
+   */
+  for (
+    let round = 0;
+    round < 12 && !stablePoint;
+    round += 1
+  ) {
+    const box = await target.boundingBox();
+
+    if (!box) {
+      await page.waitForTimeout(24);
+      continue;
+    }
+
+    const visibleLeft = Math.max(1, box.x + 4);
+    const visibleRight = Math.min(
+      viewportSize.width - 1,
+      box.x + box.width - 4,
+    );
+    const visibleTop = Math.max(58, box.y + 4);
+    const visibleBottom = Math.min(
+      viewportSize.height - 50,
+      box.y + box.height - 4,
+    );
+
+    if (
+      visibleRight > visibleLeft &&
+      visibleBottom > visibleTop
+    ) {
+      /*
+       * Nested containers may expose only a narrow padding lane around
+       * their child content. Fractional points can land entirely on the
+       * child widget, so probe absolute edge insets and corners first.
+       */
+      const width = visibleRight - visibleLeft;
+      const height = visibleBottom - visibleTop;
+
+      const clampX = (value: number) =>
+        Math.max(
+          visibleLeft + 1,
+          Math.min(visibleRight - 1, value),
+        );
+
+      const clampY = (value: number) =>
+        Math.max(
+          visibleTop + 1,
+          Math.min(visibleBottom - 1, value),
+        );
+
+      const edgeInsets = [2, 5, 9, 14, 20, 28];
+
+      const points: Array<{ x: number; y: number }> = [];
+
+      for (const inset of edgeInsets) {
+        const leftX = clampX(visibleLeft + inset);
+        const rightX = clampX(visibleRight - inset);
+        const topY = clampY(visibleTop + inset);
+        const bottomY = clampY(visibleBottom - inset);
+        const centreX = clampX(visibleLeft + width / 2);
+        const centreY = clampY(visibleTop + height / 2);
+
+        points.push(
+          { x: leftX, y: topY },
+          { x: rightX, y: topY },
+          { x: leftX, y: bottomY },
+          { x: rightX, y: bottomY },
+          { x: leftX, y: centreY },
+          { x: rightX, y: centreY },
+          { x: centreX, y: topY },
+          { x: centreX, y: bottomY },
+        );
+      }
+
+      points.push(
+        {
+          x: clampX(visibleLeft + width * 0.25),
+          y: clampY(visibleTop + height * 0.25),
+        },
+        {
+          x: clampX(visibleLeft + width * 0.75),
+          y: clampY(visibleTop + height * 0.25),
+        },
+        {
+          x: clampX(visibleLeft + width * 0.25),
+          y: clampY(visibleTop + height * 0.75),
+        },
+        {
+          x: clampX(visibleLeft + width * 0.75),
+          y: clampY(visibleTop + height * 0.75),
+        },
+        {
+          x: clampX(visibleLeft + width / 2),
+          y: clampY(visibleTop + height / 2),
+        },
+      );
+
+      const uniquePoints = points.filter(
+        (point, index, collection) =>
+          collection.findIndex(
+            (candidate) =>
+              Math.round(candidate.x) === Math.round(point.x) &&
+              Math.round(candidate.y) === Math.round(point.y),
+          ) === index,
+      );
+
+      for (const point of uniquePoints) {
+        await page.mouse.move(
+          point.x,
+          point.y,
+          { steps: round === 0 ? 3 : 1 },
+        );
+        await page.waitForTimeout(20);
+
+        const state = await readState();
+
+        if (
+          state.overId !== targetId ||
+          state.intent !== "inside" ||
+          state.valid !== "true"
+        ) {
+          continue;
+        }
+
+        await page.mouse.move(
+          point.x,
+          point.y,
+          { steps: 1 },
+        );
+        await page.waitForTimeout(24);
+
+        const confirmed = await readState();
+
+        if (
+          confirmed.overId === targetId &&
+          confirmed.intent === "inside" &&
+          confirmed.valid === "true"
+        ) {
+          stablePoint = point;
+          break;
+        }
+      }
+    }
+
+    if (stablePoint) break;
+
+    /*
+     * Keep native autoscroll active when the nested target has not yet
+     * entered a usable viewport lane.
+     */
+    const targetCentreY = box.y + box.height / 2;
+    const scrollY =
+      targetCentreY > viewportSize.height / 2
+        ? viewportSize.height - 62
+        : 66;
+
+    const scrollX = Math.max(
+      1,
+      Math.min(
+        viewportSize.width - 1,
+        box.x + Math.min(20, box.width / 2),
+      ),
+    );
+
+    await page.mouse.move(
+      scrollX + (round % 2 === 0 ? 1 : -1),
+      scrollY,
+      { steps: 2 },
+    );
+    await page.waitForTimeout(32);
+  }
+
+  expect(
+    stablePoint,
+    `production DnD must stabilize inside ${targetId}`,
+  ).not.toBeNull();
+
+  if (!stablePoint) {
+    await page.mouse.up();
+    return;
+  }
+
+  /*
+   * Native autoscroll can shift child content after the first stable
+   * point is found. Reacquire a direct lane belonging to the requested
+   * target immediately before release.
+   */
+  const resolveDirectTargetPoint = async () =>
+    target.evaluate((element, requestedTargetId) => {
+      const rect = element.getBoundingClientRect();
+
+      const left = Math.max(1, rect.left + 2);
+      const right = Math.min(
+        window.innerWidth - 1,
+        rect.right - 2,
+      );
+      const top = Math.max(58, rect.top + 2);
+      const bottom = Math.min(
+        window.innerHeight - 50,
+        rect.bottom - 2,
+      );
+
+      if (right <= left || bottom <= top) {
+        return null;
+      }
+
+      const insets = [3, 6, 10, 16, 24, 32];
+      const points: Array<{ x: number; y: number }> = [];
+
+      for (const inset of insets) {
+        const x1 = Math.min(right - 1, left + inset);
+        const x2 = Math.max(left + 1, right - inset);
+        const y1 = Math.min(bottom - 1, top + inset);
+        const y2 = Math.max(top + 1, bottom - inset);
+        const cx = (left + right) / 2;
+        const cy = (top + bottom) / 2;
+
+        points.push(
+          { x: x1, y: y1 },
+          { x: x2, y: y1 },
+          { x: x1, y: y2 },
+          { x: x2, y: y2 },
+          { x: x1, y: cy },
+          { x: x2, y: cy },
+          { x: cx, y: y1 },
+          { x: cx, y: y2 },
+        );
+      }
+
+      points.push({
+        x: (left + right) / 2,
+        y: (top + bottom) / 2,
+      });
+
+      for (const point of points) {
+        const stack = document.elementsFromPoint(
+          point.x,
+          point.y,
+        );
+
+        const topBuilderNode = stack.find(
+          (candidate) =>
+            candidate instanceof HTMLElement &&
+            candidate.hasAttribute("data-node-id") &&
+            candidate.closest(".builder-canvas-sandbox"),
+        );
+
+        if (
+          topBuilderNode?.getAttribute("data-node-id") ===
+          requestedTargetId
+        ) {
+          return point;
+        }
+      }
+
+      return null;
+    }, targetId);
+
+  /*
+   * A non-empty Container may have no exposed direct-hit lane because
+   * its children cover the rendered surface. In that case a child
+   * before/after target is valid when the child's parent is the requested
+   * Container. The production commit remains the final authority.
+   */
+  let releasePoint:
+    | { x: number; y: number }
+    | null = stablePoint;
+
+  let releaseStable = false;
+
+  const stateTargetsRequestedParent = async (
+    state: {
+      overId: string | null;
+      intent: string | null;
+      valid: string | null;
+    },
+  ) => {
+    if (
+      state.valid !== "true" ||
+      !state.overId
+    ) {
+      return false;
+    }
+
+    if (
+      state.overId === targetId &&
+      state.intent === "inside"
+    ) {
+      return true;
+    }
+
+    return page.evaluate(
+      ({ overId, requestedParentId }) => {
+        const escaped =
+          typeof CSS !== "undefined" &&
+          typeof CSS.escape === "function"
+            ? CSS.escape(overId)
+            : overId.replace(
+                /["\\]/g,
+                "\\$&",
+              );
+
+        const element =
+          document.querySelector<HTMLElement>(
+            `.builder-canvas-sandbox [data-node-id="${escaped}"]`,
+          );
+
+        return (
+          element?.getAttribute(
+            "data-node-parent-id",
+          ) === requestedParentId
+        );
+      },
+      {
+        overId: state.overId,
+        requestedParentId: targetId,
+      },
+    );
+  };
+
+  /*
+   * First try the point already stabilized by the earlier scan. If
+   * native autoscroll moved the layout, rescan the live target rectangle.
+   */
+  for (
+    let attempt = 0;
+    attempt < 20 && !releaseStable;
+    attempt += 1
+  ) {
+    const liveBox =
+      await target.boundingBox();
+
+    const candidates: Array<{
+      x: number;
+      y: number;
+    }> = [];
+
+    if (releasePoint) {
+      candidates.push(releasePoint);
+    }
+
+    if (liveBox) {
+      const left = Math.max(
+        1,
+        liveBox.x + 3,
+      );
+      const right = Math.min(
+        viewportSize.width - 1,
+        liveBox.x + liveBox.width - 3,
+      );
+      const top = Math.max(
+        58,
+        liveBox.y + 3,
+      );
+      const bottom = Math.min(
+        viewportSize.height - 50,
+        liveBox.y + liveBox.height - 3,
+      );
+
+      if (
+        right > left &&
+        bottom > top
+      ) {
+        const width = right - left;
+        const height = bottom - top;
+
+        candidates.push(
+          {
+            x: left + width * 0.05,
+            y: top + height * 0.5,
+          },
+          {
+            x: right - width * 0.05,
+            y: top + height * 0.5,
+          },
+          {
+            x: left + width * 0.5,
+            y: top + height * 0.15,
+          },
+          {
+            x: left + width * 0.5,
+            y: bottom - height * 0.15,
+          },
+          {
+            x: left + width * 0.5,
+            y: top + height * 0.5,
+          },
+        );
+      }
+    }
+
+    for (const candidate of candidates) {
+      await page.mouse.move(
+        candidate.x,
+        candidate.y,
+        {
+          steps:
+            attempt === 0 ? 2 : 1,
+        },
+      );
+
+      await page.waitForTimeout(20);
+
+      const firstState =
+        await readState();
+
+      if (
+        !(await stateTargetsRequestedParent(
+          firstState,
+        ))
+      ) {
+        continue;
+      }
+
+      await page.mouse.move(
+        candidate.x,
+        candidate.y,
+        { steps: 1 },
+      );
+
+      await page.waitForTimeout(20);
+
+      const confirmedState =
+        await readState();
+
+      if (
+        await stateTargetsRequestedParent(
+          confirmedState,
+        )
+      ) {
+        releasePoint = candidate;
+        releaseStable = true;
+        break;
+      }
+    }
+
+    if (!releaseStable) {
+      await page.waitForTimeout(24);
+    }
+  }
+
+  expect(
+    releaseStable,
+    `production DnD must stabilize on a destination owned by ${targetId}`,
+  ).toBe(true);
+
+  if (!releasePoint) {
+    await page.mouse.up();
+    return;
+  }
+
+  /*
+   * The point was already validated twice inside the stabilization loop.
+   * Release immediately at that exact point. Additional movement, waits,
+   * or DOM reads can allow native autoscroll to change the pending/current
+   * target pair before BuilderShell performs its final commit validation.
+   */
+  await page.mouse.move(
+    releasePoint.x,
+    releasePoint.y,
+    { steps: 1 },
+  );
+
+  const immediateState =
+    await readState();
+
+  expect(
+    await stateTargetsRequestedParent(
+      immediateState,
+    ),
+    `release target must resolve to parent ${targetId}`,
+  ).toBe(true);
+
   await page.mouse.up();
-  await expect(shell).toHaveAttribute("data-dnd-active-id", "");
+
+  await expect(shell).toHaveAttribute(
+    "data-dnd-active-id",
+    "",
+  );
+
+  /*
+   * Verify the observable production result first. The node-parent DOM
+   * relationship is the user-facing contract and may already reflect a
+   * successful reparent even if test instrumentation missed the custom
+   * drop-commit event.
+   */
+  const movedToRequestedParent = await expect
+    .poll(
+      async () =>
+        page
+          .locator(
+            `.builder-canvas-sandbox [data-node-id="${nodeId}"]`,
+          )
+          .first()
+          .getAttribute("data-node-parent-id"),
+      {
+        message:
+          `selected node must move under ${targetId}`,
+        timeout: 2_000,
+      },
+    )
+    .toBe(targetId)
+    .then(
+      () => true,
+      () => false,
+    );
+
+  if (movedToRequestedParent) {
+    return;
+  }
+
+  /*
+   * When the DOM has not reflected the move, require the authoritative
+   * production commit event so a genuine failed drag is still rejected.
+   */
+  await expect
+    .poll(
+      async () =>
+        page.evaluate(
+          () =>
+            (window as any)
+              .__builderLastDropCommit ??
+            null,
+        ),
+      {
+        message:
+          "selected-node drag must reach the production drop commit handler",
+        timeout: 5_000,
+      },
+    )
+    .not.toBeNull();
+
+  const commit =
+    await page.evaluate(
+      () =>
+        (window as any)
+          .__builderLastDropCommit ??
+        null,
+    );
+
+  expect(commit).toBeTruthy();
+  expect(commit.targetParentId).toBe(
+    targetId,
+  );
 }
 
 export async function dragPaletteWidgetInside(
@@ -161,9 +744,24 @@ export async function dragPaletteWidgetInside(
       ? Math.max(box.x + 40, Math.min(viewportSize.width / 2, box.x + box.width - 40))
       : box.x + Math.min(12, box.width / 2);
   const visibleCenter = targetBox.y + targetBox.height / 2;
-  const edgeY = Math.min(targetBox.y + targetBox.height - 56, viewportSize.height - 60);
-  await page.mouse.move(targetLaneX(targetBox),
-    visibleCenter < viewportSize.height - 100 ? visibleCenter : edgeY, { steps: 24 });
+  const edgeY = Math.min(
+    targetBox.y + targetBox.height - 56,
+    viewportSize.height - 60
+  );
+
+  let verifiedInsidePoint = {
+    x: targetLaneX(targetBox),
+    y:
+      visibleCenter < viewportSize.height - 100
+        ? visibleCenter
+        : edgeY,
+  };
+
+  await page.mouse.move(
+    verifiedInsidePoint.x,
+    verifiedInsidePoint.y,
+    { steps: 24 }
+  );
   if (visibleCenter >= viewportSize.height - 100) {
     const safeY = viewportSize.height - Math.max(160, viewportSize.height * 0.2);
     let exposed = false;
@@ -177,15 +775,184 @@ export async function dragPaletteWidgetInside(
     const live = await target.boundingBox();
     expect(live).not.toBeNull();
     if (!live) return;
-    await page.mouse.move(targetLaneX(live), safeY, { steps: 8 });
+    verifiedInsidePoint = {
+      x: targetLaneX(live),
+      y: safeY,
+    };
+
+    await page.mouse.move(
+      verifiedInsidePoint.x,
+      verifiedInsidePoint.y,
+      { steps: 8 }
+    );
   }
-  await expect(shell).toHaveAttribute("data-dnd-over-id", targetId);
-  await expect(shell).toHaveAttribute("data-dnd-intent", "inside");
-  await expect(shell).toHaveAttribute("data-dnd-valid", "true");
-  const releaseBox = await target.boundingBox();
-  expect(releaseBox).not.toBeNull();
-  if (!releaseBox) return;
-  await page.mouse.move(targetLaneX(releaseBox), Math.max(60, releaseBox.y + 40), { steps: 2 });
+  /*
+   * Use the production BuilderShell DnD state as the authority.
+   * Browser hit-stack inspection can disagree with BuilderShell because
+   * production deliberately resolves layout ancestors and nested wrappers.
+   */
+  const readDndState = async () =>
+    shell.evaluate((element) => ({
+      overId:
+        element.getAttribute("data-dnd-over-id"),
+      intent:
+        element.getAttribute("data-dnd-intent"),
+      valid:
+        element.getAttribute("data-dnd-valid"),
+    }));
+
+  let stablePoint:
+    | { x: number; y: number }
+    | null = null;
+
+  /*
+   * Recalculate the target rectangle on every round because moving a
+   * native drag can activate canvas autoscroll and shift the layout.
+   */
+  for (
+    let round = 0;
+    round < 5 && !stablePoint;
+    round += 1
+  ) {
+    const liveBox = await target.boundingBox();
+
+    if (!liveBox) {
+      await page.waitForTimeout(20);
+      continue;
+    }
+
+    const left = Math.max(
+      1,
+      liveBox.x + 4,
+    );
+    const right = Math.min(
+      viewportSize.width - 1,
+      liveBox.x + liveBox.width - 4,
+    );
+    const top = Math.max(
+      1,
+      liveBox.y + 4,
+    );
+    const bottom = Math.min(
+      viewportSize.height - 1,
+      liveBox.y + liveBox.height - 4,
+    );
+
+    if (right <= left || bottom <= top) {
+      await page.waitForTimeout(20);
+      continue;
+    }
+
+    /*
+     * Test centre and padding-like lanes first, followed by a denser grid.
+     */
+    const xFractions = [
+      0.08,
+      0.15,
+      0.5,
+      0.85,
+      0.92,
+      0.04,
+      0.25,
+      0.75,
+      0.96,
+    ];
+
+    const yFractions = [
+      0.5,
+      0.25,
+      0.75,
+      0.15,
+      0.85,
+      0.08,
+      0.92,
+    ];
+
+    for (const yFraction of yFractions) {
+      if (stablePoint) break;
+
+      for (const xFraction of xFractions) {
+        const point = {
+          x: left + (right - left) * xFraction,
+          y: top + (bottom - top) * yFraction,
+        };
+
+        await page.mouse.move(
+          point.x,
+          point.y,
+          { steps: round === 0 ? 3 : 1 },
+        );
+
+        await page.waitForTimeout(18);
+
+        const state = await readDndState();
+
+        if (
+          state.overId !== targetId ||
+          state.intent !== "inside" ||
+          state.valid !== "true"
+        ) {
+          continue;
+        }
+
+        /*
+         * Verify the same point twice so we do not release during a
+         * transient state caused by canvas movement.
+         */
+        await page.mouse.move(
+          point.x,
+          point.y,
+          { steps: 1 },
+        );
+
+        await page.waitForTimeout(18);
+
+        const confirmedState =
+          await readDndState();
+
+        if (
+          confirmedState.overId === targetId &&
+          confirmedState.intent === "inside" &&
+          confirmedState.valid === "true"
+        ) {
+          stablePoint = point;
+          break;
+        }
+      }
+    }
+  }
+
+  expect(
+    stablePoint,
+    `production DnD must stabilize inside ${targetId}`,
+  ).not.toBeNull();
+
+  if (!stablePoint) {
+    await page.mouse.up();
+    return;
+  }
+
+  await page.mouse.move(
+    stablePoint.x,
+    stablePoint.y,
+    { steps: 1 },
+  );
+
+  await page.waitForTimeout(12);
+
+  await expect(shell).toHaveAttribute(
+    "data-dnd-over-id",
+    targetId,
+  );
+  await expect(shell).toHaveAttribute(
+    "data-dnd-intent",
+    "inside",
+  );
+  await expect(shell).toHaveAttribute(
+    "data-dnd-valid",
+    "true",
+  );
+
   await page.mouse.up();
   await expect(shell).toHaveAttribute("data-dnd-active-id", "");
   const committed = await page.evaluate(() => (window as any).__builderLastDropCommit);
@@ -416,37 +1183,191 @@ export async function dragPaletteWidgetRelativeToSibling(
 ) {
   await page.evaluate(() => {
     (window as any).__builderLastDropCommit = null;
-    window.addEventListener("builder:drop-commit", (event) => {
-      (window as any).__builderLastDropCommit = (event as CustomEvent).detail;
-    }, { once: true });
+
+    window.addEventListener(
+      "builder:drop-commit",
+      (event) => {
+        (window as any).__builderLastDropCommit =
+          (event as CustomEvent).detail;
+      },
+      { once: true },
+    );
   });
-  const source = page.getByTestId(`palette-widget-${widgetType}`);
-  const shell = page.getByTestId("builder-shell");
-  const sourceBox = await source.boundingBox();
-  const siblingBox = await sibling.boundingBox();
-  expect(sourceBox).not.toBeNull();
-  expect(siblingBox).not.toBeNull();
-  if (!sourceBox || !siblingBox) return;
-  const siblingId = await sibling.getAttribute("data-node-id");
-  expect(siblingId).toBeTruthy();
-  if (!siblingId) return;
-  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(sourceBox.x + sourceBox.width / 2 + 10, sourceBox.y + sourceBox.height / 2, { steps: 4 });
-  await expect(shell).toHaveAttribute("data-dnd-active-id", new RegExp(`^new:${widgetType}:`));
-  const live = await sibling.boundingBox();
-  expect(live).not.toBeNull();
-  if (!live) return;
-  await page.mouse.move(
-    live.x + Math.min(100, live.width / 2),
-    intent === "before" ? live.y + 3 : live.y + live.height - 3,
-    { steps: 18 },
+
+  const source = page.getByTestId(
+    `palette-widget-${widgetType}`,
   );
-  await expect(shell).toHaveAttribute("data-dnd-over-id", siblingId);
-  await expect(shell).toHaveAttribute("data-dnd-intent", intent);
+  const shell = page.getByTestId("builder-shell");
+
+  await expect(source).toBeVisible();
+  await expect(sibling).toBeVisible();
+
+  const sourceBox = await source.boundingBox();
+  const siblingId = await sibling.getAttribute("data-node-id");
+
+  expect(sourceBox).not.toBeNull();
+  expect(siblingId).toBeTruthy();
+
+  if (!sourceBox || !siblingId) return;
+
+  await page.mouse.move(
+    sourceBox.x + sourceBox.width / 2,
+    sourceBox.y + sourceBox.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    sourceBox.x + sourceBox.width / 2 + 10,
+    sourceBox.y + sourceBox.height / 2,
+    { steps: 4 },
+  );
+
+  await expect(shell).toHaveAttribute(
+    "data-dnd-active-id",
+    new RegExp(`^new:${widgetType}:`),
+  );
+
+  const readState = async () =>
+    shell.evaluate((element) => ({
+      overId: element.getAttribute("data-dnd-over-id"),
+      intent: element.getAttribute("data-dnd-intent"),
+      valid: element.getAttribute("data-dnd-valid"),
+    }));
+
+  let stablePoint:
+    | { x: number; y: number }
+    | null = null;
+
+  /*
+   * Probe several horizontal positions along the requested sibling edge.
+   * The bounding box is recalculated because native drag movement can
+   * shift canvas geometry.
+   */
+  for (
+    let round = 0;
+    round < 8 && !stablePoint;
+    round += 1
+  ) {
+    const box = await sibling.boundingBox();
+
+    if (!box) {
+      await page.waitForTimeout(20);
+      continue;
+    }
+
+    const edgeInsetCandidates = [
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      12,
+    ];
+
+    const xFractions = [
+      0.5,
+      0.25,
+      0.75,
+      0.1,
+      0.9,
+    ];
+
+    for (const edgeInset of edgeInsetCandidates) {
+      if (stablePoint) break;
+
+      const y =
+        intent === "before"
+          ? box.y + Math.min(edgeInset, box.height / 3)
+          : box.y +
+            box.height -
+            Math.min(edgeInset, box.height / 3);
+
+      for (const xFraction of xFractions) {
+        const point = {
+          x: box.x + box.width * xFraction,
+          y,
+        };
+
+        await page.mouse.move(
+          point.x,
+          point.y,
+          { steps: round === 0 ? 3 : 1 },
+        );
+        await page.waitForTimeout(16);
+
+        const state = await readState();
+
+        if (
+          state.overId !== siblingId ||
+          state.intent !== intent ||
+          state.valid !== "true"
+        ) {
+          continue;
+        }
+
+        await page.mouse.move(
+          point.x,
+          point.y,
+          { steps: 1 },
+        );
+        await page.waitForTimeout(16);
+
+        const confirmed = await readState();
+
+        if (
+          confirmed.overId === siblingId &&
+          confirmed.intent === intent &&
+          confirmed.valid === "true"
+        ) {
+          stablePoint = point;
+          break;
+        }
+      }
+    }
+  }
+
+  expect(
+    stablePoint,
+    `production DnD must stabilize ${intent} ${siblingId}`,
+  ).not.toBeNull();
+
+  if (!stablePoint) {
+    await page.mouse.up();
+    return;
+  }
+
+  await page.mouse.move(
+    stablePoint.x,
+    stablePoint.y,
+    { steps: 1 },
+  );
+  await page.waitForTimeout(12);
+
+  await expect(shell).toHaveAttribute(
+    "data-dnd-over-id",
+    siblingId,
+  );
+  await expect(shell).toHaveAttribute(
+    "data-dnd-intent",
+    intent,
+  );
+  await expect(shell).toHaveAttribute(
+    "data-dnd-valid",
+    "true",
+  );
+
   await page.mouse.up();
-  const committed = await page.evaluate(() => (window as any).__builderLastDropCommit);
-  expect(committed).toBeTruthy();
+
+  const committed = await page.evaluate(
+    () => (window as any).__builderLastDropCommit,
+  );
+
+  expect(
+    committed,
+    "relative palette drop must reach the production commit handler",
+  ).toBeTruthy();
+
+  expect(committed.referenceNodeId).toBe(siblingId);
   expect(committed.intent).toBe(intent);
 }
 
@@ -690,11 +1611,49 @@ export async function dragPaletteWidgetIntoVisibleTarget(
     return;
   }
 
-  await page.mouse.move(
-    targetPoint.x,
-    targetPoint.y,
-    { steps: 6 },
-  );
+  /*
+   * Moving through a scrollable canvas can leave edge auto-scroll active.
+   * Re-resolve the requested target until the pointer and rendered target
+   * settle at the same direct-hit point.
+   */
+  let stabilized = false;
+
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    targetPoint = await resolveTargetPoint();
+
+    if (!targetPoint) {
+      await page.waitForTimeout(16);
+      continue;
+    }
+
+    await page.mouse.move(
+      targetPoint.x,
+      targetPoint.y,
+      { steps: attempt === 0 ? 6 : 2 },
+    );
+
+    await page.waitForTimeout(32);
+
+    const state = await shell.evaluate((element) => ({
+      overId: element.getAttribute("data-dnd-over-id"),
+      intent: element.getAttribute("data-dnd-intent"),
+      valid: element.getAttribute("data-dnd-valid"),
+    }));
+
+    if (
+      state.overId === targetId &&
+      state.intent === "inside" &&
+      state.valid === "true"
+    ) {
+      stabilized = true;
+      break;
+    }
+  }
+
+  expect(
+    stabilized,
+    `drag target ${targetId} must stabilize as a valid inside target`,
+  ).toBe(true);
 
   await expect(shell).toHaveAttribute(
     "data-dnd-over-id",

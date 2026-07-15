@@ -35,49 +35,39 @@ export default function MediaAssetDetailsModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[100001]">
-      <div
-        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
+    <div className="fixed inset-0 z-[100001] bg-black/45 backdrop-blur-sm">
       <div
         className="
           absolute
-          left-1/2
-          top-1/2
+          inset-0
           flex
-          h-[min(820px,calc(100vh-48px))]
-          w-[min(1180px,calc(100vw-32px))]
-          -translate-x-1/2
-          -translate-y-1/2
+          h-screen
+          w-screen
+          flex-col
           overflow-hidden
-          rounded-xl
-          border
-          border-white/10
-          bg-[#0B1120]
-          text-white
+          dashboard-card-strong
           shadow-2xl
+          lg:flex-row
         "
       >
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex h-14 items-center justify-between border-b border-white/10 px-4">
+          <div className="flex h-16 items-center justify-between border-b dashboard-border px-5">
             <div className="min-w-0">
               <div className="truncate text-sm font-semibold">{title}</div>
-              <div className="text-xs text-white/45">{asset.mimeType}</div>
+              <div className="text-xs dashboard-muted">{asset.mimeType}</div>
             </div>
 
             <button
               type="button"
               onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-white/65 hover:bg-white/10 hover:text-white"
+              className="flex h-10 w-10 items-center justify-center rounded-xl dashboard-muted dashboard-hover"
               aria-label="Close details"
             >
               <X size={18} aria-hidden />
             </button>
           </div>
 
-          <div className="flex min-h-0 flex-1 items-center justify-center bg-black/25 p-6">
+          <div className="flex min-h-[40vh] flex-1 items-center justify-center bg-slate-100/70 p-6 dark:bg-black/25 lg:min-h-0 lg:p-10">
             {asset.url ? (
               <img
                 src={asset.url}
@@ -85,23 +75,23 @@ export default function MediaAssetDetailsModal({
                 className="max-h-full max-w-full rounded-lg object-contain"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center rounded-lg border border-white/10 bg-white/[0.03]">
-                <ImageIcon size={48} className="text-white/25" aria-hidden />
+              <div className="flex h-full w-full items-center justify-center rounded-xl border dashboard-border dashboard-subtle">
+                <ImageIcon size={48} className="dashboard-faint" aria-hidden />
               </div>
             )}
           </div>
         </div>
 
-        <aside className="flex w-[340px] shrink-0 flex-col border-l border-white/10 bg-[#111827]">
-          <div className="border-b border-white/10 p-5">
-            <div className="text-xs font-medium uppercase text-white/40">
+        <aside className="flex max-h-[52vh] w-full shrink-0 flex-col border-t dashboard-border dashboard-card lg:max-h-none lg:w-[380px] lg:border-l lg:border-t-0">
+          <div className="border-b dashboard-border p-5">
+            <div className="text-xs font-medium uppercase dashboard-faint">
               Details
             </div>
             <h2 className="mt-2 break-words text-lg font-semibold leading-snug">
               {title}
             </h2>
             {asset.alt && (
-              <p className="mt-2 text-sm leading-5 text-white/55">{asset.alt}</p>
+              <p className="mt-2 text-sm leading-5 dashboard-muted">{asset.alt}</p>
             )}
           </div>
 
@@ -127,14 +117,14 @@ export default function MediaAssetDetailsModal({
 
             {asset.tags?.length > 0 && (
               <div>
-                <div className="mb-2 text-xs font-medium uppercase text-white/40">
+                <div className="mb-2 text-xs font-medium uppercase dashboard-faint">
                   Tags
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {asset.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-md border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-white/70"
+                      className="rounded-md border dashboard-border dashboard-subtle px-2 py-1 text-xs dashboard-muted"
                     >
                       {tag}
                     </span>
@@ -145,22 +135,22 @@ export default function MediaAssetDetailsModal({
 
             {asset.prompt && (
               <div>
-                <div className="mb-2 text-xs font-medium uppercase text-white/40">
+                <div className="mb-2 text-xs font-medium uppercase dashboard-faint">
                   Prompt
                 </div>
-                <p className="rounded-lg border border-white/10 bg-black/20 p-3 text-xs leading-5 text-white/65">
+                <p className="rounded-lg border dashboard-border dashboard-subtle p-3 text-xs leading-5 dashboard-muted">
                   {asset.prompt}
                 </p>
               </div>
             )}
           </div>
 
-          <div className="space-y-2 border-t border-white/10 p-4">
+          <div className="space-y-2 border-t dashboard-border p-4">
             {onUse && (
               <button
                 type="button"
                 onClick={() => onUse(asset)}
-                className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-blue-600 text-sm font-medium text-white hover:bg-blue-500"
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#1349A3] text-sm font-medium text-white hover:bg-[#1D5FC7]"
               >
                 <Check size={16} aria-hidden />
                 Use image
@@ -171,7 +161,7 @@ export default function MediaAssetDetailsModal({
               <button
                 type="button"
                 onClick={copyUrl}
-                className="flex h-10 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] text-sm text-white/75 hover:bg-white/[0.08] hover:text-white"
+                className="flex h-10 items-center justify-center gap-2 rounded-lg border dashboard-border dashboard-subtle text-sm dashboard-hover"
               >
                 <Copy size={15} aria-hidden />
                 Copy URL
@@ -180,7 +170,7 @@ export default function MediaAssetDetailsModal({
                 href={asset.url}
                 target="_blank"
                 rel="noreferrer"
-                className="flex h-10 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] text-sm text-white/75 hover:bg-white/[0.08] hover:text-white"
+                className="flex h-10 items-center justify-center gap-2 rounded-lg border dashboard-border dashboard-subtle text-sm dashboard-hover"
               >
                 <ExternalLink size={15} aria-hidden />
                 Open
@@ -191,7 +181,7 @@ export default function MediaAssetDetailsModal({
               <button
                 type="button"
                 onClick={() => onDelete(asset)}
-                className="flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-red-500/25 bg-red-500/10 text-sm font-medium text-red-200 hover:bg-red-500/20"
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-red-500/25 bg-red-500/10 text-sm font-medium text-red-600 hover:bg-red-500/20 dark:text-red-300"
               >
                 <Trash2 size={15} aria-hidden />
                 Delete
@@ -214,18 +204,18 @@ function DetailGroup({
   return (
     <div>
       {title && (
-        <div className="mb-2 text-xs font-medium uppercase text-white/40">
+        <div className="mb-2 text-xs font-medium uppercase dashboard-faint">
           {title}
         </div>
       )}
-      <div className="overflow-hidden rounded-lg border border-white/10">
+      <div className="overflow-hidden rounded-lg border dashboard-border">
         {rows.map(([label, value]) => (
           <div
             key={label}
-            className="grid grid-cols-[92px_minmax(0,1fr)] gap-3 border-b border-white/10 px-3 py-2 last:border-b-0"
+            className="grid grid-cols-[92px_minmax(0,1fr)] gap-3 border-b dashboard-border px-3 py-2 last:border-b-0"
           >
-            <div className="text-xs text-white/40">{label}</div>
-            <div className="break-words text-xs text-white/75">{value}</div>
+            <div className="text-xs dashboard-faint">{label}</div>
+            <div className="break-words text-xs dashboard-muted">{value}</div>
           </div>
         ))}
       </div>

@@ -16,7 +16,7 @@ export function buildInspectorBlueprint(
 ): InspectorBlueprint {
   return Object.freeze({
     widgetId,
-    tabs: ["content", "design", "advanced", "responsive", "ai"],
+    tabs: ["content", "design", "advanced", "responsive", "ai"] as const,
     groups: buildPropertyGroups(),
     propertyDefinitions: [...propertyDefinitions],
     propertyBindings: [...propertyBindings],

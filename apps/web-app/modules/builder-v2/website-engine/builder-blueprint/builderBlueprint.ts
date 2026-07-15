@@ -1,6 +1,6 @@
 import type { BuilderBlueprint as ExistingBuilderBlueprint, BuilderNode, BuilderStyle, NodeType } from "../../types/blueprint";
 import type { WidgetProperty } from "../../types/property";
-import type { WebsiteDNA, WebsiteSpec, EngineWarning, MissingFact } from "../sdk";
+import type { WebsiteDNA, WebsiteSpec, EngineWarning, MissingFact, PatternIntelligenceResult } from "../sdk";
 import type { ComponentResult } from "../components";
 import type { CompositionResult } from "../composition";
 import type { CompiledWebsitePlan } from "../compiler";
@@ -150,6 +150,7 @@ export type BuilderBlueprintInput = Readonly<{
   designResult?: DesignResult;
   componentResult?: ComponentResult;
   compositionResult?: CompositionResult;
+  patternIntelligence?: PatternIntelligenceResult;
   mediaStrategy?: MediaStrategy;
   motionStrategy?: MotionStrategy;
   knownAssets?: readonly string[];

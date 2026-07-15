@@ -11,7 +11,12 @@ import {
   ChevronRight,
   Search,
   ImageIcon,
+  FileText,
+  Globe2,
+  Clock3,
+  Layers3,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 import PageActionsMenu from "../pages/components/PageActionsMenu";
 import CreatePageModal from "../pages/components/CreatePageModal";
@@ -94,6 +99,8 @@ export default function PagesView({ siteSlug }: Props) {
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const pageStart = total === 0 ? 0 : (page - 1) * limit + 1;
   const pageEnd = Math.min(page * limit, total);
+  const publishedCount = pages.filter((item: PageRow) => item.status === "PUBLISHED").length;
+  const draftCount = pages.filter((item: PageRow) => item.status !== "PUBLISHED").length;
 
   const sortedPages = useMemo(() => {
     const copy = [...pages] as PageRow[];
@@ -165,25 +172,27 @@ export default function PagesView({ siteSlug }: Props) {
 
   return (
     <div className="relative px-1 py-2 md:px-2">
-      <div className="pointer-events-none absolute right-[8%] top-0 h-64 w-64 rounded-full bg-violet-500/10 blur-[90px]" />
+      <div className="pointer-events-none absolute left-[10%] top-0 h-80 w-80 rounded-full bg-[#1349A3]/10 blur-[110px]" />
+      <div className="pointer-events-none absolute right-[8%] top-40 h-64 w-64 rounded-full bg-cyan-400/10 blur-[100px]" />
       <div className="relative max-w-[1400px] mx-auto space-y-6">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div><p className="mb-1 text-xs font-semibold uppercase tracking-[.14em] dashboard-faint">Website content</p><h1 className="text-2xl font-semibold">
-            Pages {siteSlug && <span className="opacity-60">- {siteSlug}</span>}
-          </h1><p className="mt-2 text-sm dashboard-muted">Create, organize, preview, and publish every page in one place.</p></div>
+        <section className="overflow-hidden rounded-[26px] border dashboard-border dashboard-card-strong">
+          <div className="grid gap-6 p-6 lg:grid-cols-[1fr_auto] lg:items-end lg:p-8">
+            <div>
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#1349A3]/10 px-3 py-1.5 text-xs font-semibold text-[#1349A3] dark:text-blue-300"><Layers3 className="h-3.5 w-3.5" /> Site structure</div>
+              <h1 className="max-w-3xl text-2xl font-semibold tracking-tight md:text-3xl">Build the journey, page by page.</h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 dashboard-muted">Manage the structure, visibility, search readiness, and content of {siteSlug ? <strong className="font-semibold">{siteSlug}</strong> : "your websites"} from one focused workspace.</p>
+            </div>
+            {!showTrash && <button onClick={() => setCreatePageOpen(true)} className="flex items-center justify-center gap-2 rounded-xl bg-[#1349A3] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#1349A3]/15 transition hover:bg-[#1D5FC7]"><Plus className="h-4 w-4" /> Create new page</button>}
+          </div>
+          <div className="grid grid-cols-2 border-t dashboard-border md:grid-cols-4">
+            <PageMetric icon={FileText} label="Total pages" value={total} />
+            <PageMetric icon={Globe2} label="Published here" value={publishedCount} tone="text-emerald-600" />
+            <PageMetric icon={Clock3} label="Drafts here" value={draftCount} tone="text-amber-600" />
+            <PageMetric icon={Search} label="Average SEO" value={pages.length ? Math.round(pages.reduce((sum: number, item: PageRow) => sum + (item.seoScore ?? 0), 0) / pages.length) : 0} suffix="/100" tone="text-[#1349A3] dark:text-blue-300" />
+          </div>
+        </section>
 
-          {!showTrash && (
-            <button
-              onClick={() => setCreatePageOpen(true)}
-              className="dashboard-primary-button flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-medium"
-            >
-              <Plus className="w-4 h-4" />
-              Add Page
-            </button>
-          )}
-        </div>
-
-        <div className="dashboard-card-strong flex flex-wrap items-center gap-3 rounded-2xl p-3"><div className="relative min-w-[240px] flex-1 max-w-md">
+        <div className="dashboard-card-strong sticky top-0 z-10 flex flex-wrap items-center gap-3 rounded-2xl border dashboard-border p-3"><div className="relative min-w-[240px] flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-50" />
           <input
             value={search}
@@ -192,9 +201,9 @@ export default function PagesView({ siteSlug }: Props) {
               setPage(1);
             }}
             placeholder={showTrash ? "Search trash…" : "Search pages…"}
-            className="w-full pl-9 pr-3 py-2 rounded-xl dashboard-input backdrop-blur-xl text-sm"
+            className="w-full rounded-xl border dashboard-border bg-transparent py-2.5 pl-9 pr-3 text-sm outline-none focus:border-[#3B82F6]"
           />
-        </div><div className="flex items-center gap-2 ml-auto">
+        </div>{!showTrash && <select value={`${sortKey}:${sortDir}`} onChange={(event) => { const [key, dir] = event.target.value.split(":") as [SortKey, SortDir]; setSortKey(key); setSortDir(dir); }} aria-label="Sort pages" className="rounded-xl border dashboard-border bg-transparent px-3 py-2.5 text-xs font-medium outline-none"><option value="updatedAt:desc">Recently updated</option><option value="updatedAt:asc">Oldest updated</option><option value="title:asc">Title A–Z</option><option value="title:desc">Title Z–A</option><option value="seoScore:desc">Best SEO score</option></select>}<div className="flex items-center gap-2 ml-auto">
           <button
             onClick={() => {
               setShowTrash(false);
@@ -203,7 +212,7 @@ export default function PagesView({ siteSlug }: Props) {
             }}
             className={`rounded-xl px-4 py-2 text-sm font-medium ${
               !showTrash
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                ? "bg-[#1349A3] text-white shadow-lg shadow-[#1349A3]/20"
                 : "dashboard-card dashboard-muted"
             }`}
           >
@@ -243,7 +252,7 @@ export default function PagesView({ siteSlug }: Props) {
         )}
 
         {!isLoading && sortedPages.length > 0 && (
-          <div className="overflow-x-auto rounded-[22px] dashboard-card backdrop-blur-xl">
+          <div className="overflow-x-auto rounded-[22px] border dashboard-border dashboard-card-strong backdrop-blur-xl">
             <table className="w-full min-w-[900px] text-sm">
               <thead className="border-b dashboard-border bg-black/[.025] dark:bg-white/[.025]">
                 {showTrash ? (
@@ -365,7 +374,7 @@ export default function PagesView({ siteSlug }: Props) {
                             }
                           }}
                           disabled={!previewUrl}
-                          className="group block h-16 w-28 overflow-hidden rounded-lg border border-white/20 bg-white/70 text-left shadow-sm disabled:cursor-default dark:border-white/10 dark:bg-white/5"
+                          className="group block h-[72px] w-28 overflow-hidden rounded-xl border dashboard-border bg-white/70 text-left shadow-sm disabled:cursor-default dark:bg-white/5"
                         >
                           {pageRow.screenshotUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -386,7 +395,7 @@ export default function PagesView({ siteSlug }: Props) {
                       </td>
 
                       <td
-                        className="p-3 font-medium text-[var(--brand)] cursor-pointer hover:underline"
+                        className="p-3 cursor-pointer text-base font-semibold transition hover:text-[#1349A3]"
                         onClick={() => (window.location.href = editUrl)}
                       >
                         {pageRow.title}
@@ -396,12 +405,13 @@ export default function PagesView({ siteSlug }: Props) {
 
                       <td className="p-3">
                         <span
-                          className={`px-2 py-1 text-xs rounded-lg ${
+                          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${
                             pageRow.status === "PUBLISHED"
-                              ? "bg-green-600 text-white"
+                              ? "bg-emerald-500/10 text-emerald-600"
                               : "bg-gray-300 text-gray-800 dark:bg-white/10 dark:text-white/70"
                           }`}
                         >
+                          <span className={`h-1.5 w-1.5 rounded-full ${pageRow.status === "PUBLISHED" ? "bg-emerald-500" : "bg-gray-400"}`} />
                           {pageRow.status}
                         </span>
                       </td>
@@ -514,6 +524,15 @@ export default function PagesView({ siteSlug }: Props) {
           />
         )}
       </div>
+    </div>
+  );
+}
+
+function PageMetric({ icon: Icon, label, value, suffix, tone = "text-current" }: { icon: LucideIcon; label: string; value: number; suffix?: string; tone?: string }) {
+  return (
+    <div className="flex items-center gap-3 border-b border-r dashboard-border p-4 last:border-r-0 md:border-b-0 md:p-5">
+      <span className={`dashboard-subtle flex h-10 w-10 items-center justify-center rounded-xl ${tone}`}><Icon className="h-4 w-4" /></span>
+      <div><div className="text-xl font-semibold tracking-tight">{value}<span className="ml-0.5 text-xs font-medium dashboard-muted">{suffix}</span></div><div className="text-xs dashboard-muted">{label}</div></div>
     </div>
   );
 }

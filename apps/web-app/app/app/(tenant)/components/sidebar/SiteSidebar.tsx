@@ -42,7 +42,7 @@ export function SiteSidebar({
         { name: "Media", href: `${base}/media`, icon: ImageIcon },
         { name: "CMS", href: `${base}/cms`, icon: Database },
         { name: "Themes", href: `${base}/themes`, icon: Brush },
-        { name: "Plugins", href: `${base}/plugins`, icon: Puzzle },
+        { name: "Apps", href: `${base}/apps`, icon: Puzzle },
       ],
     },
     {

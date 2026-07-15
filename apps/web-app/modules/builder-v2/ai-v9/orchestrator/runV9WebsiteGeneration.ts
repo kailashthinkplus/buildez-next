@@ -49,7 +49,7 @@ function workflowText(workflow: V9Workflow) {
 
 function contractForWorkflow(workflow: V9Workflow) {
   const text = workflowText(workflow);
-  if (/saas|software|platform|app/.test(text)) {
+  if (/\b(?:saas|software|platform|app)\b/.test(text)) {
     return {
       narrative: ["outcome", "workflow", "features", "proof", "integrations", "pricing path", "demo"],
       required: [
@@ -147,7 +147,6 @@ function candidateDirectives(batch: number, workflow: V9Workflow) {
       colorPalette:
         "brand-aware neutral base, one confident primary color, one industry-appropriate accent, soft 1px borders",
       sectionNarrative: contract.narrative,
-      requiredSections: contract.required,
     },
     {
       id: `candidate-${offset + 2}`,
@@ -159,7 +158,6 @@ function candidateDirectives(batch: number, workflow: V9Workflow) {
       colorPalette:
         "soft light base, graphite text, one industry-appropriate accent, muted supporting surfaces",
       sectionNarrative: contract.narrative,
-      requiredSections: contract.required,
     },
     {
       id: `candidate-${offset + 3}`,
@@ -178,6 +176,7 @@ function candidateDirectives(batch: number, workflow: V9Workflow) {
       typographySystem: "bold modern display sans with elegant body rhythm",
       colorPalette: "porcelain, ink, muted teal, warm taupe, copper",
       sectionNarrative: ["clarity", "fit", "location", "confidence", "answers", "action"],
+      requiredSections: contract.required,
     },
     {
       id: `candidate-${offset + 5}`,
@@ -187,6 +186,7 @@ function candidateDirectives(batch: number, workflow: V9Workflow) {
       typographySystem: "soft luxury display headings paired with clean humanist sans text",
       colorPalette: "limestone, smoked oak, eucalyptus, off-white, muted wine accent",
       sectionNarrative: ["atmosphere", "experience", "craft", "proof", "gallery", "action"],
+      requiredSections: contract.required,
     },
   ].map((directive) => ({
     ...directive,

@@ -13,11 +13,22 @@ export interface RunAiOptions {
   context?: Record<string, unknown> | null;
 }
 
+export type AiGenerationVersion = "v9" | "v10";
+
+export function resolveAiGenerationEndpoint(
+  context?: Record<string, unknown> | null
+) {
+  return context?.aiGenerationVersion === "v10"
+    ? "/api/builder-v2/ai/generate-v10"
+    : "/api/builder-v2/ai/generate-v9";
+}
+
 /* ==========================================================
    AI CONVERSATION SERVICE
 ========================================================== */
 
 export class AiConversation {
+  private static activeController: AbortController | null = null;
   /* --------------------------------------------------------
      RUN WEBSITE GENERATION
   -------------------------------------------------------- */
@@ -29,6 +40,10 @@ export class AiConversation {
     context,
   }: RunAiOptions) {
     const store = useAiStore.getState();
+    let progressTimer: ReturnType<typeof setInterval> | undefined;
+    const controller = new AbortController();
+    AiConversation.activeController?.abort();
+    AiConversation.activeController = controller;
 
     try {
       store.setStatus("running");
@@ -48,7 +63,49 @@ Instructions:
 - Use strong CTAs`
         : prompt;
 
-      const res = await fetch("/api/builder-v2/ai/generate-v9", {
+      const generationRunId =
+        context?.aiGenerationVersion === "v10" && typeof context.generationRunId === "string"
+          ? context.generationRunId
+          : "";
+      let lastProgressSignature = "";
+      if (generationRunId) {
+        const subject = [context?.companyName, context?.industry, context?.useCase]
+          .find((value) => typeof value === "string" && value.trim()) as string | undefined;
+        store.setAgents([{
+          agent: "IntentAgent",
+          stage: "starting-engine",
+          ok: true,
+          summary: `Starting website generation${subject ? ` for ${subject}` : " from your approved brief"}.`,
+        }]);
+        const pollProgress = async () => {
+          try {
+            const progressResponse = await fetch(`/api/builder-v2/ai/progress-v10?runId=${encodeURIComponent(generationRunId)}`, {
+              credentials: "include",
+              cache: "no-store",
+            });
+            if (!progressResponse.ok) return;
+            const snapshot = (await progressResponse.json())?.progress;
+            const progress = snapshot?.current;
+            if (!progress?.agent || !progress?.summary) return;
+            const signature = `${progress.stage}:${progress.completed}:${progress.updatedAt}`;
+            if (signature === lastProgressSignature) return;
+            lastProgressSignature = signature;
+            const events = Array.isArray(snapshot?.events) ? snapshot.events : [progress];
+            useAiStore.getState().setAgents(events.map((event: any) => ({
+              agent: event.agent,
+              stage: event.stage,
+              ok: true,
+              summary: event.summary,
+            })));
+          } catch {
+            // Progress is optional; the generation request remains authoritative.
+          }
+        };
+        void pollProgress();
+        progressTimer = setInterval(pollProgress, 1000);
+      }
+
+      const res = await fetch(resolveAiGenerationEndpoint(context), {
         method: "POST",
         credentials: "include",
         headers: {
@@ -59,6 +116,7 @@ Instructions:
           prompt: finalPrompt,
           context,
         }),
+        signal: controller.signal,
       });
 
       if (!res.ok) {
@@ -79,10 +137,9 @@ Instructions:
       }
 
       const result = await res.json();
+      if (progressTimer) clearInterval(progressTimer);
 
-      const agents = Array.isArray(result?.metadata?.agents)
-        ? [...result.metadata.agents]
-        : [];
+      const agents = [...useAiStore.getState().agents];
       const qualityWarnings = Array.isArray(result?.metadata?.qualityWarnings)
         ? result.metadata.qualityWarnings.filter(Boolean)
         : [];
@@ -104,10 +161,20 @@ Instructions:
       store.setAgents(agents);
 
       store.setStatus("success");
+      AiConversation.activeController = null;
 
       return result;
 
     } catch (err) {
+
+      if (progressTimer) clearInterval(progressTimer);
+
+      if (controller.signal.aborted) {
+        store.setStatus("idle");
+        store.setElapsed(0);
+        AiConversation.activeController = null;
+        return null;
+      }
 
       console.error(err);
 
@@ -128,6 +195,9 @@ Instructions:
 
     const store = useAiStore.getState();
 
+    AiConversation.activeController?.abort();
+    AiConversation.activeController = null;
+    store.addMessage({ role: "assistant", text: "Generation stopped by user.", ts: Date.now(), kind: "text" });
     store.setStatus("idle");
 
     store.setElapsed(0);

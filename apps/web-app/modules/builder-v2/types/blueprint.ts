@@ -317,6 +317,29 @@ export interface BuilderMetadata {
 
   industry?: string;
 
+  creativeRecovery?: {
+    initialMissingNodes: string[];
+    recoveredNodes: string[];
+    recoveryAttempts: number;
+    recoveredSuccessfully: boolean;
+  };
+
+  creativeResponseDiagnostics?: {
+    normalizedShapeCount: number;
+    flatShapeNormalizedCount: number;
+    aliasShapeNormalizedCount: number;
+    shapeRecoveryAttempts: number;
+    totalCoverageMisses: number;
+    batchSplits: number;
+  };
+
+  creativeRequestDiagnostics?: {
+    semanticNodeCount: number;
+    batchCount: number;
+    compactContextCharacters: number;
+    fullArtifactsRepeatedPerBatch: boolean;
+  };
+
   themeDemo?: {
     presetId: string;
     category: string;

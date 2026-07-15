@@ -163,6 +163,7 @@ export async function classifyWebsiteIntent(
   try {
     const response = await modelGateway.complete({
       task: "classify",
+      debugLabel: "v10-website-engine-intent-classifier",
       temperature: 0,
       maxOutputTokens: 700,
       cacheKey,

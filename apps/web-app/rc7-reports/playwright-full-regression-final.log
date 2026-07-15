@@ -1,0 +1,206 @@
+
+Running 32 tests using 1 worker
+
+  ✓   1 [setup] › playwright/tests/auth.setup.ts:7:6 › authenticate Builder RC user (1.8s)
+  ✓   2 [builder-chromium] › playwright/tests/builder/authenticated-builder.spec.ts:13:5 › authenticated Builder page exposes the RC browser surface (1.5s)
+  ✘   3 [builder-chromium] › playwright/tests/builder/authenticated-builder.spec.ts:21:5 › @visual authenticated Builder canvas baseline (2.2s)
+  ✓   4 [builder-chromium] › playwright/tests/builder/operations/cross-container.spec.ts:35:5 › @operations @dnd cross-container drag persists and remains selected (5.1s)
+  ✓   5 [builder-chromium] › playwright/tests/builder/operations/cross-container.spec.ts:80:5 › @operations @save-error failed save remains recoverable and retry persists (5.2s)
+  ✓   6 [builder-chromium] › playwright/tests/builder/operations/drag-insert.spec.ts:30:5 › @operations @palette inserts Heading into a non-empty Container and persists (3.5s)
+  ✓   7 [builder-chromium] › playwright/tests/builder/operations/drag-insert.spec.ts:54:5 › @operations @palette inserts into an emptied Container as its only child (4.0s)
+  ✓   8 [builder-chromium] › playwright/tests/builder/operations/drag-insert.spec.ts:75:7 › @operations @palette inserts at first position and persists exact order (3.8s)
+  ✓   9 [builder-chromium] › playwright/tests/builder/operations/drag-insert.spec.ts:75:7 › @operations @palette inserts at last position and persists exact order (3.6s)
+  ✓  10 [builder-chromium] › playwright/tests/builder/operations/duplicate-selection.spec.ts:40:5 › @operations duplicate selects the created node and undo restores structure (2.2s)
+  ✓  11 [builder-chromium] › playwright/tests/builder/operations/fixture-reset.spec.ts:10:5 › @operations @fixture disposable page resets through authenticated production contracts (2.8s)
+  ✓  12 [builder-chromium] › playwright/tests/builder/operations/golden-journeys.spec.ts:82:5 › @operations @journeys landing-page journey inserts, duplicates, saves and reloads (4.4s)
+  ✓  13 [builder-chromium] › playwright/tests/builder/operations/golden-journeys.spec.ts:191:5 › @operations @journeys nested-layout journey moves content, saves and reloads (7.2s)
+  ✓  14 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:45:5 › @operations @invalid-dnd Escape cancels active native drag without mutation (2.3s)
+  ✓  15 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:55:5 › @operations @invalid-dnd release over Builder header leaves structure unchanged (4.9s)
+  ✘  16 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:69:5 › @operations @invalid-dnd drop onto self is an atomic no-op (12.4s)
+  ✓  17 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:77:5 › @operations @invalid-dnd parent into descendant is rejected without history (2.3s)
+  ✓  18 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:88:5 › @operations @invalid-dnd Section cannot be reparented under a widget parent (2.6s)
+  ✓  19 [builder-chromium] › playwright/tests/builder/operations/keyboard-focus.spec.ts:16:5 › @operations @keyboard shortcuts work from chrome and remain safe in editors (2.1s)
+  ✓  20 [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:115:5 › @operations @persistence duplicate persists exactly once and survives reload (3.1s)
+  ✓  21 [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:208:5 › @operations @persistence delete removes node and survives reload (3.1s)
+  ✓  22 [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:288:5 › @operations @persistence reorder preserves exact sibling order after reload (3.8s)
+  ✘  23 [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:375:5 › @operations @persistence cross-container move persists one parent and survives reload (13.2s)
+  ✓  24 [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:478:5 › @operations @persistence @copy-paste copy paste creates one independent node and survives reload (3.8s)
+  ✓  25 [builder-chromium] › playwright/tests/builder/operations/reorder.spec.ts:22:5 › @operations @reorder moves first sibling to last, undo/redo, save and reload (3.9s)
+  ✓  26 [builder-chromium] › playwright/tests/builder/operations/responsive-targeting.spec.ts:136:7 › @operations @responsive reorder targets correctly on desktop (2.6s)
+  ✓  27 [builder-chromium] › playwright/tests/builder/operations/responsive-targeting.spec.ts:136:7 › @operations @responsive reorder targets correctly on tablet (2.4s)
+  ✓  28 [builder-chromium] › playwright/tests/builder/operations/responsive-targeting.spec.ts:136:7 › @operations @responsive reorder targets correctly on mobile (5.3s)
+  ✓  29 [builder-chromium] › playwright/tests/builder/operations/scroll-targeting.spec.ts:58:5 › @operations @scroll palette insertion targets the lower canvas after scrolling and survives reload (4.3s)
+  ✓  30 [builder-chromium] › playwright/tests/builder/operations/zoom-targeting.spec.ts:99:7 › @operations @zoom sibling reorder targets correctly at 100% (2.5s)
+  ✓  31 [builder-chromium] › playwright/tests/builder/operations/zoom-targeting.spec.ts:99:7 › @operations @zoom sibling reorder targets correctly at 80% (2.4s)
+  ✓  32 [builder-chromium] › playwright/tests/builder/operations/zoom-targeting.spec.ts:99:7 › @operations @zoom sibling reorder targets correctly at 50% (4.8s)
+
+
+  1) [builder-chromium] › playwright/tests/builder/authenticated-builder.spec.ts:21:5 › @visual authenticated Builder canvas baseline 
+
+    Error: expect(locator).toHaveScreenshot(expected) failed
+
+    Locator: locator('[data-builder-canvas-scroll=\'true\']')
+      Expected an image 1280px by 664px, received 580px by 664px. 720902 pixels (ratio 0.85 of all image pixels) are different.
+
+      Snapshot: authenticated-builder-canvas.png
+
+    Call log:
+      - Expect "toHaveScreenshot(authenticated-builder-canvas.png)" with timeout 10000ms
+        - verifying given screenshot expectation
+      - waiting for locator('[data-builder-canvas-scroll=\'true\']')
+        - locator resolved to <div data-builder-canvas-scroll="true" class="relative h-full w-full overflow-scroll overscroll-contain">…</div>
+      - taking element screenshot
+        - disabled all CSS animations
+      - waiting for fonts to load...
+      - fonts loaded
+      - attempting scroll into view action
+        - waiting for element to be stable
+      - Expected an image 1280px by 664px, received 580px by 664px. 720902 pixels (ratio 0.85 of all image pixels) are different.
+      - waiting 100ms before taking screenshot
+      - waiting for locator('[data-builder-canvas-scroll=\'true\']')
+        - locator resolved to <div data-builder-canvas-scroll="true" class="relative h-full w-full overflow-scroll overscroll-contain">…</div>
+      - taking element screenshot
+        - disabled all CSS animations
+      - waiting for fonts to load...
+      - fonts loaded
+      - attempting scroll into view action
+        - waiting for element to be stable
+      - captured a stable screenshot
+      - Expected an image 1280px by 664px, received 580px by 664px. 720902 pixels (ratio 0.85 of all image pixels) are different.
+
+
+      23 |   const canvas = page.locator("[data-builder-canvas-scroll='true']");
+      24 |   await expect(canvas).toBeVisible();
+    > 25 |   await expect(canvas).toHaveScreenshot("authenticated-builder-canvas.png", {
+         |                        ^
+      26 |     animations: "disabled",
+      27 |   });
+      28 | });
+        at /Users/kailash/buildez/apps/web-app/playwright/tests/builder/authenticated-builder.spec.ts:25:24
+
+    attachment #1: authenticated-builder-canvas (image/png) ────────────────────────────────────────
+    Expected: playwright/tests/builder/authenticated-builder.spec.ts-snapshots/authenticated-builder-canvas-builder-chromium-darwin.png
+    Received: test-results/builder-authenticated-buil-47535-ted-Builder-canvas-baseline-builder-chromium/authenticated-builder-canvas-actual.png
+    Diff:     test-results/builder-authenticated-buil-47535-ted-Builder-canvas-baseline-builder-chromium/authenticated-builder-canvas-diff.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/builder-authenticated-buil-47535-ted-Builder-canvas-baseline-builder-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/builder-authenticated-buil-47535-ted-Builder-canvas-baseline-builder-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/builder-authenticated-buil-47535-ted-Builder-canvas-baseline-builder-chromium/error-context.md
+
+    attachment #5: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/builder-authenticated-buil-47535-ted-Builder-canvas-baseline-builder-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/builder-authenticated-buil-47535-ted-Builder-canvas-baseline-builder-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:69:5 › @operations @invalid-dnd drop onto self is an atomic no-op 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByTestId('builder-save-status')
+    Expected: "clean"
+    Received: "saved"
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 10000ms
+      - waiting for getByTestId('builder-save-status')
+        8 × locator resolved to <button type="button" title="Save status" data-save-state="dirty" data-testid="builder-save-status" class="flex items-center gap-2 px-1.5 py-1 text-sm transition text-amber-200">…</button>
+          - unexpected value "dirty"
+        16 × locator resolved to <button type="button" title="Save status" data-save-state="saved" data-testid="builder-save-status" class="flex items-center gap-2 px-1.5 py-1 text-sm transition text-white/70 hover:text-white">…</button>
+           - unexpected value "saved"
+
+
+      29 |   await expectNodeParent(page, FIXTURE_IDS.buttonA, FIXTURE_IDS.containerA);
+      30 |   await expectSelectedNode(page, FIXTURE_IDS.buttonA);
+    > 31 |   await expect(page.getByTestId("builder-save-status")).toHaveAttribute("data-save-state", "clean");
+         |                                                         ^
+      32 |   const blueprint = await readDisposableBlueprint(page.request, pageId);
+      33 |   expect(blueprint.nodes[FIXTURE_IDS.buttonA].parentId).toBe(FIXTURE_IDS.containerA);
+      34 |   expect(Object.keys(blueprint.nodes)).toHaveLength(14);
+        at expectUnchanged (/Users/kailash/buildez/apps/web-app/playwright/tests/builder/operations/invalid-dnd.spec.ts:31:57)
+        at /Users/kailash/buildez/apps/web-app/playwright/tests/builder/operations/invalid-dnd.spec.ts:74:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/builder-operations-invalid-ef7d8-nto-self-is-an-atomic-no-op-builder-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/builder-operations-invalid-ef7d8-nto-self-is-an-atomic-no-op-builder-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/builder-operations-invalid-ef7d8-nto-self-is-an-atomic-no-op-builder-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/builder-operations-invalid-ef7d8-nto-self-is-an-atomic-no-op-builder-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/builder-operations-invalid-ef7d8-nto-self-is-an-atomic-no-op-builder-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:375:5 › @operations @persistence cross-container move persists one parent and survives reload 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  locator('.builder-canvas-sandbox [data-node-id=\'rc-t3b-button-a\']').first()
+    Expected: "rc-t3b-container-b"
+    Received: "rc-t3b-container-a"
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 10000ms
+      - waiting for locator('.builder-canvas-sandbox [data-node-id=\'rc-t3b-button-a\']').first()
+        24 × locator resolved to <button data-href="#rc" draggable="true" contenteditable="true" data-node-type="button" data-motion-runtime="true" data-node-label="RC Button A" data-node-id="rc-t3b-button-a" data-node-parent-id="rc-t3b-container-a" class="↵  builder-node↵  group/builder-node↵  relative↵  box-border↵  select-none↵  cursor-pointer↵  ↵  ↵  pointer-events-auto↵  ↵">RC Button A</button>
+           - unexpected value "rc-t3b-container-a"
+
+
+       at ../helpers/builderAssertions.ts:9
+
+       7 |
+       8 | export async function expectNodeParent(page: Page, nodeId: string, parentId: string) {
+    >  9 |   await expect(builderNode(page, nodeId)).toHaveAttribute("data-node-parent-id", parentId);
+         |                                           ^
+      10 | }
+      11 |
+      12 | export async function expectSelectedNode(page: Page, nodeId: string) {
+        at expectNodeParent (/Users/kailash/buildez/apps/web-app/playwright/helpers/builderAssertions.ts:9:43)
+        at /Users/kailash/buildez/apps/web-app/playwright/tests/builder/operations/persistence-matrix.spec.ts:411:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/builder-operations-persist-bf48e--parent-and-survives-reload-builder-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/builder-operations-persist-bf48e--parent-and-survives-reload-builder-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/builder-operations-persist-bf48e--parent-and-survives-reload-builder-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/builder-operations-persist-bf48e--parent-and-survives-reload-builder-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/builder-operations-persist-bf48e--parent-and-survives-reload-builder-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [builder-chromium] › playwright/tests/builder/authenticated-builder.spec.ts:21:5 › @visual authenticated Builder canvas baseline 
+    [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:69:5 › @operations @invalid-dnd drop onto self is an atomic no-op 
+    [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:375:5 › @operations @persistence cross-container move persists one parent and survives reload 
+  29 passed (2.2m)
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m

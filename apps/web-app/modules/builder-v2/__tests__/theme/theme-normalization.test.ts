@@ -4,6 +4,24 @@ import { validateBlueprint } from "../../core/validation";
 import { createPrimitiveBlueprint } from "../fixtures/testBlueprintFixtures";
 import { createRegressionSpec, assertCondition, assertEqual } from "../helpers/testAssertions";
 
+function containsUndefinedValue(value: unknown): boolean {
+  if (value === undefined) {
+    return true;
+  }
+
+  if (Array.isArray(value)) {
+    return value.some((entry) => containsUndefinedValue(entry));
+  }
+
+  if (value && typeof value === "object") {
+    return Object.values(
+      value as Record<string, unknown>
+    ).some((entry) => containsUndefinedValue(entry));
+  }
+
+  return false;
+}
+
 const missingThemeBlueprint = {
   ...createPrimitiveBlueprint(),
   theme: undefined,
@@ -105,7 +123,7 @@ export const themeNormalizationSpec = createRegressionSpec({
     ),
     assertCondition(
       "no undefined values remain after theme normalization",
-      !JSON.stringify(noUndefinedTheme).includes("undefined") &&
+      !containsUndefinedValue(noUndefinedTheme) &&
         noUndefinedThemeTokens.colors.background === defaultThemeTokens.colors.background
     ),
   ],

@@ -1,0 +1,171 @@
+
+Running 32 tests using 1 worker
+
+  ✓   1 [setup] › playwright/tests/auth.setup.ts:7:6 › authenticate Builder RC user (1.9s)
+  ✓   2 [builder-chromium] › playwright/tests/builder/authenticated-builder.spec.ts:13:5 › authenticated Builder page exposes the RC browser surface (1.5s)
+  ✓   3 [builder-chromium] › playwright/tests/builder/authenticated-builder.spec.ts:21:5 › @visual authenticated Builder canvas baseline (1.6s)
+  ✓   4 [builder-chromium] › playwright/tests/builder/operations/cross-container.spec.ts:35:5 › @operations @dnd cross-container drag persists and remains selected (4.3s)
+  ✘   5 [builder-chromium] › playwright/tests/builder/operations/cross-container.spec.ts:80:5 › @operations @save-error failed save remains recoverable and retry persists (12.0s)
+  ✓   6 [builder-chromium] › playwright/tests/builder/operations/drag-insert.spec.ts:30:5 › @operations @palette inserts Heading into a non-empty Container and persists (3.8s)
+  ✓   7 [builder-chromium] › playwright/tests/builder/operations/drag-insert.spec.ts:54:5 › @operations @palette inserts into an emptied Container as its only child (3.4s)
+  ✓   8 [builder-chromium] › playwright/tests/builder/operations/drag-insert.spec.ts:75:7 › @operations @palette inserts at first position and persists exact order (3.7s)
+  ✓   9 [builder-chromium] › playwright/tests/builder/operations/drag-insert.spec.ts:75:7 › @operations @palette inserts at last position and persists exact order (3.1s)
+  ✓  10 [builder-chromium] › playwright/tests/builder/operations/duplicate-selection.spec.ts:40:5 › @operations duplicate selects the created node and undo restores structure (2.0s)
+  ✓  11 [builder-chromium] › playwright/tests/builder/operations/fixture-reset.spec.ts:10:5 › @operations @fixture disposable page resets through authenticated production contracts (2.9s)
+  ✓  12 [builder-chromium] › playwright/tests/builder/operations/golden-journeys.spec.ts:82:5 › @operations @journeys landing-page journey inserts, duplicates, saves and reloads (4.1s)
+  ✘  13 [builder-chromium] › playwright/tests/builder/operations/golden-journeys.spec.ts:191:5 › @operations @journeys nested-layout journey moves content, saves and reloads (3.5s)
+  ✓  14 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:45:5 › @operations @invalid-dnd Escape cancels active native drag without mutation (2.4s)
+  ✓  15 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:55:5 › @operations @invalid-dnd release over Builder header leaves structure unchanged (2.4s)
+  ✓  16 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:69:5 › @operations @invalid-dnd drop onto self is an atomic no-op (2.3s)
+  ✓  17 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:77:5 › @operations @invalid-dnd parent into descendant is rejected without history (2.2s)
+  ✓  18 [builder-chromium] › playwright/tests/builder/operations/invalid-dnd.spec.ts:88:5 › @operations @invalid-dnd Section cannot be reparented under a widget parent (2.4s)
+  ✓  19 [builder-chromium] › playwright/tests/builder/operations/keyboard-focus.spec.ts:16:5 › @operations @keyboard shortcuts work from chrome and remain safe in editors (2.2s)
+  ✓  20 [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:115:5 › @operations @persistence duplicate persists exactly once and survives reload (3.6s)
+  ✓  21 [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:208:5 › @operations @persistence delete removes node and survives reload (3.4s)
+  ✓  22 [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:288:5 › @operations @persistence reorder preserves exact sibling order after reload (3.9s)
+  ✘  23 [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:375:5 › @operations @persistence cross-container move persists one parent and survives reload (11.6s)
+  ✓  24 [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:478:5 › @operations @persistence @copy-paste copy paste creates one independent node and survives reload (3.6s)
+  ✓  25 [builder-chromium] › playwright/tests/builder/operations/reorder.spec.ts:22:5 › @operations @reorder moves first sibling to last, undo/redo, save and reload (3.8s)
+  ✓  26 [builder-chromium] › playwright/tests/builder/operations/responsive-targeting.spec.ts:136:7 › @operations @responsive reorder targets correctly on desktop (2.4s)
+  ✓  27 [builder-chromium] › playwright/tests/builder/operations/responsive-targeting.spec.ts:136:7 › @operations @responsive reorder targets correctly on tablet (2.4s)
+  ✓  28 [builder-chromium] › playwright/tests/builder/operations/responsive-targeting.spec.ts:136:7 › @operations @responsive reorder targets correctly on mobile (5.3s)
+  ✓  29 [builder-chromium] › playwright/tests/builder/operations/scroll-targeting.spec.ts:58:5 › @operations @scroll palette insertion targets the lower canvas after scrolling and survives reload (4.0s)
+  ✓  30 [builder-chromium] › playwright/tests/builder/operations/zoom-targeting.spec.ts:99:7 › @operations @zoom sibling reorder targets correctly at 100% (2.3s)
+  ✓  31 [builder-chromium] › playwright/tests/builder/operations/zoom-targeting.spec.ts:99:7 › @operations @zoom sibling reorder targets correctly at 80% (2.6s)
+  ✓  32 [builder-chromium] › playwright/tests/builder/operations/zoom-targeting.spec.ts:99:7 › @operations @zoom sibling reorder targets correctly at 50% (4.6s)
+
+
+  1) [builder-chromium] › playwright/tests/builder/operations/cross-container.spec.ts:80:5 › @operations @save-error failed save remains recoverable and retry persists 
+
+    Error: selected-node drag must reach the production drop commit handler
+
+    selected-node drag must reach the production drop commit handler
+
+    expect(received).not.toBeNull()
+
+    Received: null
+
+    Call Log:
+    - Timeout 5000ms exceeded while waiting on the predicate
+
+       at ../helpers/builderDrag.ts:695
+
+      693 |       },
+      694 |     )
+    > 695 |     .not.toBeNull();
+          |          ^
+      696 |
+      697 |   const commit =
+      698 |     await page.evaluate(
+        at dragSelectedNodeByHandle (/Users/kailash/buildez/apps/web-app/playwright/helpers/builderDrag.ts:695:10)
+        at /Users/kailash/buildez/apps/web-app/playwright/tests/builder/operations/cross-container.spec.ts:86:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/builder-operations-cross-c-eec89-overable-and-retry-persists-builder-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/builder-operations-cross-c-eec89-overable-and-retry-persists-builder-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/builder-operations-cross-c-eec89-overable-and-retry-persists-builder-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/builder-operations-cross-c-eec89-overable-and-retry-persists-builder-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/builder-operations-cross-c-eec89-overable-and-retry-persists-builder-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [builder-chromium] › playwright/tests/builder/operations/golden-journeys.spec.ts:191:5 › @operations @journeys nested-layout journey moves content, saves and reloads 
+
+    Error: production DnD must stabilize inside rc-t3b-container-nested
+
+    expect(received).not.toBeNull()
+
+    Received: null
+
+       at ../helpers/builderDrag.ts:340
+
+      338 |     stablePoint,
+      339 |     `production DnD must stabilize inside ${targetId}`,
+    > 340 |   ).not.toBeNull();
+          |         ^
+      341 |
+      342 |   if (!stablePoint) {
+      343 |     await page.mouse.up();
+        at dragSelectedNodeByHandle (/Users/kailash/buildez/apps/web-app/playwright/helpers/builderDrag.ts:340:9)
+        at /Users/kailash/buildez/apps/web-app/playwright/tests/builder/operations/golden-journeys.spec.ts:215:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/builder-operations-golden--44fad-s-content-saves-and-reloads-builder-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/builder-operations-golden--44fad-s-content-saves-and-reloads-builder-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/builder-operations-golden--44fad-s-content-saves-and-reloads-builder-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/builder-operations-golden--44fad-s-content-saves-and-reloads-builder-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/builder-operations-golden--44fad-s-content-saves-and-reloads-builder-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:375:5 › @operations @persistence cross-container move persists one parent and survives reload 
+
+    Error: selected-node drag must reach the production drop commit handler
+
+    selected-node drag must reach the production drop commit handler
+
+    expect(received).not.toBeNull()
+
+    Received: null
+
+    Call Log:
+    - Timeout 5000ms exceeded while waiting on the predicate
+
+       at ../helpers/builderDrag.ts:695
+
+      693 |       },
+      694 |     )
+    > 695 |     .not.toBeNull();
+          |          ^
+      696 |
+      697 |   const commit =
+      698 |     await page.evaluate(
+        at dragSelectedNodeByHandle (/Users/kailash/buildez/apps/web-app/playwright/helpers/builderDrag.ts:695:10)
+        at /Users/kailash/buildez/apps/web-app/playwright/tests/builder/operations/persistence-matrix.spec.ts:402:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/builder-operations-persist-bf48e--parent-and-survives-reload-builder-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/builder-operations-persist-bf48e--parent-and-survives-reload-builder-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/builder-operations-persist-bf48e--parent-and-survives-reload-builder-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/builder-operations-persist-bf48e--parent-and-survives-reload-builder-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/builder-operations-persist-bf48e--parent-and-survives-reload-builder-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [builder-chromium] › playwright/tests/builder/operations/cross-container.spec.ts:80:5 › @operations @save-error failed save remains recoverable and retry persists 
+    [builder-chromium] › playwright/tests/builder/operations/golden-journeys.spec.ts:191:5 › @operations @journeys nested-layout journey moves content, saves and reloads 
+    [builder-chromium] › playwright/tests/builder/operations/persistence-matrix.spec.ts:375:5 › @operations @persistence cross-container move persists one parent and survives reload 
+  29 passed (2.0m)
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m

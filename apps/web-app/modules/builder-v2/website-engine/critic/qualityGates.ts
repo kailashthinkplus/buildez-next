@@ -7,12 +7,12 @@ import type { CriticHardFailure, QualityGate, QualityGateResult } from "./critic
  * const gates = buildQualityGates();
  */
 export function buildQualityGates(): QualityGate[] {
-  return Object.freeze([
+  return [
     Object.freeze({ id: "critic.gate.preview-ready", label: "Preview Ready", threshold: 85, blocksPublish: false, description: "85+ score is required before preview-ready status." }),
     Object.freeze({ id: "critic.gate.publish-recommended", label: "Publish Recommended", threshold: 90, blocksPublish: true, description: "90+ score and zero hard failures are required for publish recommendation." }),
     Object.freeze({ id: "critic.gate.repair-required", label: "Repair Required", threshold: 85, blocksPublish: false, description: "Below 85 requires Repair before handoff." }),
     Object.freeze({ id: "critic.gate.hard-failure-block", label: "Hard Failure Block", threshold: 100, blocksPublish: true, description: "Any hard failure blocks publish recommendation regardless of score." }),
-  ]);
+  ];
 }
 
 /**

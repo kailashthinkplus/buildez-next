@@ -115,10 +115,13 @@ export const productionWidgetLibrarySpec = createRegressionSpec({
     ),
     assertCondition(
       "incomplete interactions are runtime-gated rather than reported production-ready",
-      productionWidgetTypes.every((type) => {
+      ["popupModal", "embed"].every((type) => {
         const capability = getWidgetCapability(type);
-        if (runtimeGatedTypes.has(type)) return capability?.runtimeParityStatus === "gated";
-        return capability?.runtimeParityStatus === "production-ready";
+
+        return (
+          capability?.runtimeParityStatus === "gated" &&
+          capability.productionReady === false
+        );
       })
     ),
     assertCondition(

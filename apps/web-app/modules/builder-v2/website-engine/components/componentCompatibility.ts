@@ -15,7 +15,7 @@ export function detectComponentCompatibility(candidates: readonly ComponentCandi
 /** Detects simple component conflicts without deciding page order. */
 export function detectComponentConflicts(candidates: readonly ComponentCandidate[]): ComponentConflict[] {
   const selectedHeroCount = candidates.filter((candidate) => candidate.variant.category === "hero" && candidate.score.overall >= 0.55).length;
-  return Object.freeze([
+  return [
     ...(selectedHeroCount > 2 ? [Object.freeze({ componentIds: candidates.filter((candidate) => candidate.variant.category === "hero").map((candidate) => candidate.variant.id), severity: "minor" as const, reason: "Multiple hero candidates should be resolved by Composition Engine." })] : []),
-  ]);
+  ];
 }

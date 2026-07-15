@@ -55,7 +55,7 @@ export default function ProfilePage() {
   }
 
   return <div className="mx-auto max-w-5xl pb-12">
-    <div className="mb-7 flex items-end justify-between gap-4"><div><p className="text-sm font-medium text-blue-600 dark:text-blue-400">Account settings</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">Your profile</h1><p className="mt-2 dashboard-muted">Keep your personal and professional details up to date.</p></div>{!editing && <button onClick={() => setEditing(true)} className="dashboard-primary-button flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white"><Pencil className="h-4 w-4" /> Edit profile</button>}</div>
+    <div className="mb-7 flex items-end justify-between gap-4"><div><p className="text-sm font-medium text-blue-600 dark:text-blue-400">Account settings</p><h1 className="mt-1 text-2xl font-semibold tracking-tight">Your profile</h1><p className="mt-2 dashboard-muted">Keep your personal and professional details up to date.</p></div>{!editing && <button onClick={() => setEditing(true)} className="dashboard-primary-button flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white"><Pencil className="h-4 w-4" /> Edit profile</button>}</div>
     {message && !editing && <div role="status" className={`mb-5 rounded-xl border px-4 py-3 text-sm ${message.type === "error" ? "border-red-500/20 bg-red-500/10 text-red-600" : "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"}`}>{message.text}</div>}
     <form onSubmit={submit} className="space-y-6">
       <section className="dashboard-card-strong rounded-3xl p-5 sm:p-7">

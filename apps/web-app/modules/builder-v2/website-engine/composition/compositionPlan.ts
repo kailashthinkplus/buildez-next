@@ -112,7 +112,7 @@ export function resolveCompositionFamilyContext(input: CompositionInput): Compos
     : input.intent?.businessFamily && input.intent.businessFamily !== "unknown"
       ? input.intent.businessFamily
       : "unknown";
-  const conversionFocused = Boolean(input.businessProfile?.conversionGoals.length || input.intent?.conversionGoals?.length);
+  const conversionFocused = Boolean(input.businessProfile?.conversionGoals.length || input.intent?.primaryGoal);
   return Object.freeze({ family, conversionFocused });
 }
 

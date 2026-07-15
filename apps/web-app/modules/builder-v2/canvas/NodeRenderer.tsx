@@ -886,9 +886,26 @@ const sectionContentWidthStyle = getRenderSectionContentWidthStyle(
       return;
     }
 
+    /*
+     * Starting a native drag from the selected node's handle blurs its
+     * contentEditable surface. That blur is interaction chrome, not an
+     * inline-text edit, and must not create an UpdateNodeCommand.
+     */
+    const activeDragId =
+      typeof window !== "undefined"
+        ? ((window as any).__builderDragId as string | null)
+        : null;
+
+    if (activeDragId === node.id) {
+      return;
+    }
+
     const props = buildInlineTextProps(node, value);
     if (!props) return;
-    commandBus.execute(new UpdateNodeCommand(node.id, { props }));
+
+    commandBus.execute(
+      new UpdateNodeCommand(node.id, { props })
+    );
   };
 
   switch (type) {

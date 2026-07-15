@@ -76,6 +76,21 @@ const AGENT_LABELS: Record<string, string> = {
   ValidatorAgent: "Validation",
   QAAgent: "QA",
   RepairAgent: "Polish",
+  BriefArchitectAgent: "Brief architect",
+  DecisionInterviewAgent: "Decision interview",
+  BusinessIntelligenceAgent: "Business strategy",
+  BrandIntelligenceAgent: "Brand direction",
+  ContentStrategyAgent: "Content strategy",
+  ExperienceAgent: "Experience strategy",
+  PatternAgent: "Pattern intelligence",
+  DesignSystemAgent: "Design system",
+  ComponentSelectionAgent: "Components",
+  CompositionAgent: "Composition",
+  BlueprintCompilerAgent: "Blueprint compiler",
+  CreativeEnrichmentAgent: "Creative enrichment",
+  ImageGenerationAgent: "Image generation",
+  CriticAgent: "Quality critic",
+  ParityAgent: "Renderer parity",
 };
 
 interface ThoughtLine {
@@ -118,6 +133,31 @@ type ContextQuestion = {
   options: string[];
 };
 
+type V10PreflightOption = {
+  id: string;
+  label: string;
+  description: string;
+  promptAddition: string;
+  contextPatch?: Partial<Record<Exclude<keyof ContextForm, "researchEnabled">, string>>;
+};
+
+type V10PreflightQuestion = {
+  id: string;
+  label: string;
+  whyItMatters: string;
+  options: V10PreflightOption[];
+};
+
+type V10Preflight = {
+  summary: string;
+  interpretedUseCase: string;
+  engineeredPrompt: string;
+  questions: V10PreflightQuestion[];
+  agentTrace: AiAgentActivity[];
+  timing?: { fallbackUsed?: boolean };
+  providerStatus?: { ok: boolean; category: string; message?: string };
+};
+
 const EMPTY_CONTEXT: ContextForm = {
   companyName: "",
   websiteName: "",
@@ -156,6 +196,13 @@ function buildRunningThoughts(elapsed: number): ThoughtLine[] {
   );
 
   return RUNNING_THOUGHTS.slice(0, activeIndex + 1);
+}
+
+function formatElapsed(elapsed: number) {
+  if (elapsed < 60) return `${elapsed}s`;
+  const minutes = Math.floor(elapsed / 60);
+  const seconds = elapsed % 60;
+  return `${minutes}m ${String(seconds).padStart(2, "0")}s`;
 }
 
 function promptNeedsContext(prompt: string) {
@@ -396,14 +443,22 @@ export default function AiPanel({
   const referenceInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const lastAgentSignatureRef = useRef("");
+  const decisionRef = useRef<HTMLDivElement>(null);
+  const runtimeRef = useRef<HTMLDivElement>(null);
+  const followingLiveUpdatesRef = useRef(true);
+  const preflightRequestRef = useRef<string | null>(null);
+  const seenAgentEventsRef = useRef(new Set<string>());
   const { elapsed } = useAiRuntime();
   const agents = useAiStore((s) => s.agents);
+  const runtimeMessages = useAiStore((s) => s.messages);
   const setAiStatus = useAiStore((s) => s.setStatus);
   const setAiErrorMessage = useAiStore((s) => s.setErrorMessage);
   const setAiAgents = useAiStore((s) => s.setAgents);
+  const addRuntimeMessage = useAiStore((s) => s.addMessage);
+  const clearRuntimeMessages = useAiStore((s) => s.clearMessages);
 
   const [prompt, setPrompt] = useState("");
+  const [generationVersion, setGenerationVersion] = useState<"v9" | "v10">("v10");
   const [tone, setTone] = useState("Professional");
   const [lastUserPrompt, setLastUserPrompt] = useState("");
   const [agentHistory, setAgentHistory] = useState<AgentHistoryItem[]>([]);
@@ -412,6 +467,10 @@ export default function AiPanel({
   const [persistedHistory, setPersistedHistory] = useState<PersistedChatItem[]>([]);
   const [contextPrompts, setContextPrompts] = useState<ContextQuestion[]>([]);
   const [pendingGenerationPrompt, setPendingGenerationPrompt] = useState("");
+  const [v10Preflight, setV10Preflight] = useState<V10Preflight | null>(null);
+  const [v10Selections, setV10Selections] = useState<Record<string, string>>({});
+  const [preflightLoading, setPreflightLoading] = useState(false);
+  const [showScrollToLatest, setShowScrollToLatest] = useState(false);
   const [referenceUploadStatus, setReferenceUploadStatus] = useState("");
   const [designReviewStatus, setDesignReviewStatus] = useState<
     "idle" | "pending" | "accepted"
@@ -557,24 +616,38 @@ export default function AiPanel({
 
   const activeThought = useMemo(() => {
     if (!isRunning) return null;
+    const liveAgent = agents[agents.length - 1];
+    if (generationVersion === "v10" && liveAgent) return formatAgent(liveAgent);
     const thoughts = buildRunningThoughts(elapsed);
     return thoughts[thoughts.length - 1] || null;
-  }, [elapsed, isRunning]);
+  }, [agents, elapsed, generationVersion, isRunning]);
+  const answeredDecisionCount = v10Preflight
+    ? v10Preflight.questions.filter((question) => Boolean(v10Selections[question.id])).length
+    : 0;
+  const activeDecisionQuestion = v10Preflight?.questions.find(
+    (question) => !v10Selections[question.id]
+  );
+  const activeDecisionIndex = v10Preflight && activeDecisionQuestion
+    ? v10Preflight.questions.findIndex((question) => question.id === activeDecisionQuestion.id)
+    : v10Preflight?.questions.length ?? 0;
+  const decisionsComplete = Boolean(
+    v10Preflight && answeredDecisionCount === v10Preflight.questions.length
+  );
 
   useEffect(() => {
-    const signature = agents
-      .map((agent) => `${agent.agent}:${agent.stage}:${agent.ok}:${agent.summary}`)
-      .join("|");
-
-    if (isRunning || !agents.length || !signature || signature === lastAgentSignatureRef.current) {
-      return;
-    }
-
-    lastAgentSignatureRef.current = signature;
+    if (!agents.length) return;
     const runId = `${Date.now()}`;
+    const completedAgents = isRunning ? agents.slice(0, -1) : agents;
+    const unseen = completedAgents.filter((agent) => {
+      const key = `${agent.agent}:${agent.stage}:${agent.summary}`;
+      if (seenAgentEventsRef.current.has(key)) return false;
+      seenAgentEventsRef.current.add(key);
+      return true;
+    });
+    if (!unseen.length) return;
     setAgentHistory((current) => [
       ...current,
-      ...agents.map((agent, index) => {
+      ...unseen.map((agent, index) => {
         const formatted = formatAgent(agent);
         return {
           ...formatted,
@@ -587,22 +660,35 @@ export default function AiPanel({
   }, [agents, isRunning]);
 
   useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      bottomRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
-      if (scrollRef.current) {
-        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-      }
-    });
+    if (!activeDecisionQuestion?.id && !decisionsComplete) return;
+    const frame = window.requestAnimationFrame(() =>
+      decisionRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" })
+    );
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeDecisionQuestion?.id, decisionsComplete]);
 
+  useEffect(() => {
+    if (!isRunning || !followingLiveUpdatesRef.current) return;
+    const frame = window.requestAnimationFrame(() =>
+      runtimeRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" })
+    );
     return () => window.cancelAnimationFrame(frame);
   }, [
     activeThought?.title,
     activeThought?.body,
     agentHistory.length,
-    aiChatRuntime.status,
-    elapsed,
-    lastUserPrompt,
+    isRunning,
   ]);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const element = scrollRef.current;
+      if (!element) return;
+      const hasNewContentBelow = element.scrollHeight - element.scrollTop - element.clientHeight >= 80;
+      setShowScrollToLatest(hasNewContentBelow);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [agentHistory.length, runtimeMessages.length, persistedHistory.length, contextPrompts.length, lastUserPrompt, savedContextSummary, preflightLoading, v10Preflight, activeDecisionQuestion?.id, activeThought?.title, activeThought?.body, isRunning, isError, designReviewStatus]);
 
   async function runGeneration(cleanPrompt: string, nextContext: ContextForm) {
     const savedContext =
@@ -611,13 +697,18 @@ export default function AiPanel({
         : nextContext;
 
     setContextPrompts([]);
+    setV10Preflight(null);
+    setV10Selections({});
     setPendingGenerationPrompt("");
     setDesignReviewStatus("idle");
+    addRuntimeMessage({ role: "assistant", text: "Direction approved. Website generation started.", ts: Date.now(), kind: "text" });
 
     await onRunAI(cleanPrompt, {
       ...(savedContext as unknown as Record<string, unknown>),
       tone,
       noCodeOutput: true,
+      aiGenerationVersion: generationVersion,
+      generationRunId: generationVersion === "v10" ? crypto.randomUUID() : undefined,
     });
     setDesignReviewStatus("pending");
   }
@@ -657,11 +748,14 @@ export default function AiPanel({
 
   async function submitPrompt(nextPrompt = prompt) {
     const cleanPrompt = nextPrompt.trim();
-    if (!cleanPrompt || isRunning) return;
+    if (!cleanPrompt || isRunning || preflightLoading || preflightRequestRef.current) return;
 
     setAiStatus("idle");
     setAiErrorMessage(null);
     setAiAgents([]);
+    clearRuntimeMessages();
+    setAgentHistory([]);
+    seenAgentEventsRef.current.clear();
     setPrompt("");
     setLastUserPrompt(cleanPrompt);
     setDesignReviewStatus("idle");
@@ -677,6 +771,40 @@ export default function AiPanel({
       ...contextForm,
       ...inferContextFromPrompt(cleanPrompt),
     };
+
+    if (mode === "generate" && generationVersion === "v10") {
+      const requestKey = `${pageId}:${cleanPrompt}`;
+      if (preflightRequestRef.current) return;
+      preflightRequestRef.current = requestKey;
+      setContextForm(inferredContext);
+      setContextPrompts([]);
+      setPendingGenerationPrompt(cleanPrompt);
+      setPreflightLoading(true);
+      try {
+        if (JSON.stringify(inferredContext) !== JSON.stringify(contextForm)) {
+          await saveContext(inferredContext);
+        }
+        const response = await fetch("/api/builder-v2/ai/preflight-v10", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: cleanPrompt, context: inferredContext }),
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload?.error || "Could not prepare the website brief.");
+        setV10Preflight(payload as V10Preflight);
+        setV10Selections({});
+        setAiAgents([]);
+      } catch (error) {
+        setAiStatus("error");
+        setAiErrorMessage(error instanceof Error ? error.message : "Website brief preparation failed.");
+      } finally {
+        if (preflightRequestRef.current === requestKey) preflightRequestRef.current = null;
+        setPreflightLoading(false);
+      }
+      return;
+    }
+
     const missingQuestions =
       mode === "generate" &&
       (promptNeedsContext(cleanPrompt) || !hasSpecificDesignIntent(inferredContext.designIntent))
@@ -694,6 +822,37 @@ export default function AiPanel({
     }
 
     await runGeneration(cleanPrompt, inferredContext);
+  }
+
+  function chooseV10Option(question: V10PreflightQuestion, option: V10PreflightOption) {
+    if (isRunning || preflightLoading) return;
+    setV10Selections((current) => ({ ...current, [question.id]: option.id }));
+  }
+
+  async function generateFromV10Preflight() {
+    if (!v10Preflight || !pendingGenerationPrompt || isRunning || preflightLoading) return;
+    const selected = v10Preflight.questions.map((question) => ({
+      question,
+      option: question.options.find((option) => option.id === v10Selections[question.id]),
+    }));
+    if (selected.some(({ option }) => !option)) return;
+
+    const contextPatch = selected.reduce<Partial<ContextForm>>(
+      (result, { option }) => ({ ...result, ...(option?.contextPatch || {}) }),
+      {}
+    );
+    const decisions = selected
+      .map(({ question, option }) => `${question.label}: ${option?.label}. ${option?.promptAddition}`)
+      .join("\n");
+    const engineeredPrompt = `${v10Preflight.engineeredPrompt}\n\nUSER-APPROVED WEBSITE DECISIONS:\n${decisions}`;
+    const nextContext = {
+      ...contextForm,
+      ...contextPatch,
+      designIntent: [contextForm.designIntent, ...selected.map(({ option }) => option?.label || "")]
+        .filter(Boolean)
+        .join("; "),
+    };
+    await runGeneration(engineeredPrompt, nextContext);
   }
 
   async function chooseContextOption(question: ContextQuestion, value: string) {
@@ -782,17 +941,35 @@ export default function AiPanel({
             </p>
           </div>
 
-          <button
-            type="button"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-neutral-800 bg-neutral-900/80 px-2.5 py-1.5 text-xs text-neutral-400 transition hover:border-neutral-700 hover:text-neutral-200"
+          <select
+            aria-label="AI generation version"
+            value={generationVersion}
+            disabled={isRunning || preflightLoading}
+            onChange={(event) => {
+              setGenerationVersion(event.target.value as "v9" | "v10");
+              setV10Preflight(null);
+              setV10Selections({});
+              setContextPrompts([]);
+              setPendingGenerationPrompt("");
+            }}
+            className="shrink-0 rounded-xl border border-neutral-800 bg-neutral-900/80 px-2.5 py-1.5 text-xs text-neutral-300 outline-none transition hover:border-neutral-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            OpenAI
-            <ChevronDown className="h-3.5 w-3.5" />
-          </button>
+            <option value="v10">AI v10 · Website Engine</option>
+            <option value="v9">AI v9 · Direct</option>
+          </select>
         </div>
       </div>
 
-      <div ref={scrollRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-[#121418]/70 px-4 py-4 backdrop-blur-xl">
+      <div className="relative min-h-0 flex-1">
+      <div
+        ref={scrollRef}
+        onScroll={(event) => {
+          const element = event.currentTarget;
+          followingLiveUpdatesRef.current = element.scrollHeight - element.scrollTop - element.clientHeight < 80;
+          setShowScrollToLatest(!followingLiveUpdatesRef.current);
+        }}
+        className="h-full min-h-0 space-y-4 overflow-y-auto bg-[#121418]/70 px-4 py-4 backdrop-blur-xl"
+      >
         <div
           className={`relative max-w-[92%] overflow-hidden rounded-[22px] border border-neutral-800 bg-neutral-900/70 px-4 py-3 shadow-xl shadow-black/20 ${
             isRunning ? "buildez-ai-scan" : ""
@@ -805,9 +982,17 @@ export default function AiPanel({
           </p>
         </div>
 
-        {lastUserPrompt ? (
-          <div className="ml-auto max-w-[88%] rounded-[22px] bg-neutral-800 px-4 py-3 shadow-xl shadow-black/20">
-            <p className="text-xs leading-5 text-neutral-100">{lastUserPrompt}</p>
+        {savedContextSummary ? (
+          <div className="max-w-[94%] rounded-[16px] border border-emerald-500/15 bg-emerald-500/[0.06] px-3.5 py-2.5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-200/80">Context in use</p>
+            <p className="mt-1 text-[11px] leading-4 text-emerald-50/75">{savedContextSummary}</p>
+          </div>
+        ) : null}
+
+        {contextForm.referenceImageUrl ? (
+          <div className="max-w-[94%] rounded-[16px] border border-violet-500/15 bg-violet-500/[0.06] px-3.5 py-2.5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-200/80">Visual reference in use</p>
+            <p className="mt-1 text-[11px] leading-4 text-violet-50/70">The attached reference will guide composition, spacing, color, and imagery.</p>
           </div>
         ) : null}
 
@@ -826,6 +1011,98 @@ export default function AiPanel({
             <p className="mt-1 text-xs leading-5 text-neutral-100">{item.text}</p>
           </div>
         ))}
+
+        {lastUserPrompt ? (
+          <div className="ml-auto max-w-[88%] rounded-[22px] bg-neutral-800 px-4 py-3 shadow-xl shadow-black/20">
+            <p className="text-xs leading-5 text-neutral-100">{lastUserPrompt}</p>
+          </div>
+        ) : null}
+
+        {preflightLoading ? (
+          <div className="max-w-[94%] rounded-[18px] border border-violet-500/20 bg-violet-500/[0.08] px-4 py-3">
+            <div className="flex items-center gap-2 text-violet-100">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <p className="text-xs font-semibold">Preparing a website strategy from your request…</p>
+            </div>
+            <p className="mt-1 text-xs leading-5 text-violet-50/75">Interpreting the use case and preparing decisions that materially change the result.</p>
+          </div>
+        ) : null}
+
+        {v10Preflight ? (
+          <div ref={decisionRef} className="max-w-[96%] rounded-[20px] border border-violet-400/25 bg-violet-500/[0.08] px-4 py-4 shadow-xl shadow-violet-950/10">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-violet-200">Website direction</p>
+              <p className="text-[11px] text-violet-100/60">{Math.min(activeDecisionIndex + 1, v10Preflight.questions.length)} of {v10Preflight.questions.length}</p>
+            </div>
+            <div className="mt-2 flex gap-1.5" aria-label={`${answeredDecisionCount} of ${v10Preflight.questions.length} decisions completed`}>
+              {v10Preflight.questions.map((question) => (
+                <span key={question.id} className={`h-1 flex-1 rounded-full ${v10Selections[question.id] ? "bg-violet-300" : "bg-white/10"}`} />
+              ))}
+            </div>
+
+            {v10Preflight.timing?.fallbackUsed ? (
+              <p className="mt-3 rounded-xl border border-violet-300/10 bg-black/10 px-3 py-2 text-[10px] leading-4 text-violet-100/60">
+                Strategy prepared locally because the AI brief service was temporarily unavailable. Website generation can continue normally.
+              </p>
+            ) : null}
+
+            {answeredDecisionCount > 0 && !decisionsComplete ? (
+              <div className="mt-3 space-y-1">
+                {v10Preflight.questions.filter((question) => v10Selections[question.id]).map((question) => {
+                  const option = question.options.find((item) => item.id === v10Selections[question.id]);
+                  return <p key={question.id} className="truncate text-[10px] text-violet-100/55">Selected: <span className="text-violet-100/85">{option?.label}</span></p>;
+                })}
+              </div>
+            ) : null}
+
+            {activeDecisionQuestion ? (
+              <div className="mt-4">
+                {answeredDecisionCount === 0 ? (
+                  <p className="mb-3 text-xs leading-5 text-violet-100/70">{v10Preflight.summary}</p>
+                ) : null}
+                <p className="text-sm font-semibold leading-5 text-white">{activeDecisionQuestion.label}</p>
+                <p className="mt-1 text-[11px] leading-4 text-violet-100/60">{activeDecisionQuestion.whyItMatters}</p>
+                <div className="mt-3 grid gap-2">
+                  {activeDecisionQuestion.options.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => chooseV10Option(activeDecisionQuestion, option)}
+                      className="rounded-xl border border-white/10 bg-black/15 px-3 py-2.5 text-left transition hover:border-violet-300/45 hover:bg-violet-300/10"
+                    >
+                      <span className="block text-xs font-semibold text-white">{option.label}</span>
+                      <span className="mt-0.5 block text-[11px] leading-4 text-neutral-300">{option.description}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {decisionsComplete ? (
+              <div className="mt-4">
+                <p className="text-sm font-semibold text-white">Direction ready</p>
+                <div className="mt-2 space-y-1.5">
+                  {v10Preflight.questions.map((question) => {
+                    const option = question.options.find((item) => item.id === v10Selections[question.id]);
+                    return (
+                      <button key={question.id} type="button" onClick={() => setV10Selections((current) => {
+                        const next = { ...current };
+                        delete next[question.id];
+                        return next;
+                      })} className="flex w-full items-center justify-between gap-3 rounded-lg bg-black/15 px-2.5 py-2 text-left hover:bg-white/[0.06]">
+                        <span className="truncate text-[11px] text-neutral-200">{option?.label}</span>
+                        <span className="shrink-0 text-[10px] text-violet-300">Change</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <button type="button" onClick={generateFromV10Preflight} className="mt-4 w-full rounded-xl bg-violet-400 px-3 py-2.5 text-xs font-semibold text-slate-950 transition hover:bg-violet-300">
+                  Build this website
+                </button>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
 
         {contextPrompts.length ? (
           <div className="max-w-[94%] rounded-[18px] border border-sky-500/20 bg-sky-500/[0.08] px-4 py-3 shadow-xl shadow-sky-950/10">
@@ -872,27 +1149,11 @@ export default function AiPanel({
           </div>
         ) : null}
 
-        {savedContextSummary ? (
-          <div className="max-w-[94%] rounded-[22px] border border-emerald-500/20 bg-emerald-500/[0.08] px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-200">
-              Using saved context
-            </p>
-            <p className="mt-1 text-xs leading-5 text-emerald-50/90">
-              {savedContextSummary}
-            </p>
+        {runtimeMessages.filter((message) => message.text.includes("started")).map((message) => (
+          <div key={`${message.ts}-${message.text}`} className="max-w-[92%] rounded-[18px] border border-sky-500/15 bg-sky-500/[0.06] px-4 py-3 text-sky-100">
+            <p className="text-xs leading-5">{message.text}</p>
           </div>
-        ) : null}
-
-        {contextForm.referenceImageUrl ? (
-          <div className="max-w-[94%] rounded-[18px] border border-violet-500/20 bg-violet-500/[0.08] px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-violet-200">
-              Reference attached
-            </p>
-            <p className="mt-1 text-xs leading-5 text-violet-50/85">
-              I will map the uploaded visual direction into the builder and published page.
-            </p>
-          </div>
-        ) : null}
+        ))}
 
         {agentHistory.map((item) => (
           <div
@@ -928,8 +1189,9 @@ export default function AiPanel({
         ))}
 
         {isRunning ? (
-          <div className="relative overflow-hidden rounded-[22px] border border-sky-500/20 bg-sky-500/[0.07] px-4 py-3 shadow-[0_0_34px_rgba(14,165,233,0.12)]">
+          <div ref={runtimeRef} className="relative overflow-hidden rounded-[22px] border border-sky-500/20 bg-sky-500/[0.07] px-4 py-3 shadow-[0_0_34px_rgba(14,165,233,0.12)]">
             <div className="pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full border border-sky-400/15 buildez-ai-orbit" />
+            <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-sky-300/[0.08] to-transparent buildez-ai-scan" />
             <div className="relative flex items-start gap-3">
               <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-200">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -940,7 +1202,7 @@ export default function AiPanel({
                   <span className="buildez-ai-dot">.</span>
                   <span className="buildez-ai-dot [animation-delay:120ms]">.</span>
                   <span className="buildez-ai-dot [animation-delay:240ms]">.</span>
-                  <span className="ml-1 text-neutral-500">{elapsed}s</span>
+                  <span className="ml-1 text-neutral-500">{formatElapsed(elapsed)}</span>
                 </div>
                 <p className="mt-1 text-xs leading-5 text-neutral-300">
                   {activeThought
@@ -994,7 +1256,28 @@ export default function AiPanel({
           </div>
         ) : null}
 
+        {runtimeMessages.filter((message) => !message.text.includes("started")).map((message) => (
+          <div key={`${message.ts}-${message.text}`} className={`max-w-[92%] rounded-[18px] border px-4 py-3 ${message.kind === "success" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-100" : "border-neutral-700 bg-neutral-900/80 text-neutral-200"}`}>
+            <p className="text-xs leading-5">{message.text}</p>
+          </div>
+        ))}
+
         <div ref={bottomRef} />
+      </div>
+      {showScrollToLatest ? (
+        <button
+          type="button"
+          aria-label="Scroll to latest AI event"
+          onClick={() => {
+            followingLiveUpdatesRef.current = true;
+            setShowScrollToLatest(false);
+            bottomRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+          }}
+          className="absolute bottom-3 left-1/2 z-20 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full border border-sky-300/25 bg-neutral-900/95 text-sky-200 shadow-xl shadow-black/40 backdrop-blur transition hover:border-sky-300/50 hover:bg-neutral-800"
+        >
+          <ChevronDown className="h-4 w-4" />
+        </button>
+      ) : null}
       </div>
 
       <div className="shrink-0 border-t border-white/10 p-3 pb-[max(12px,env(safe-area-inset-bottom))] backdrop-blur-xl">
@@ -1033,7 +1316,7 @@ export default function AiPanel({
               }
             }}
             rows={2}
-            disabled={isRunning}
+            disabled={isRunning || preflightLoading}
             placeholder="Add follow up..."
             className="min-h-[46px] w-full resize-none bg-transparent px-3 py-1.5 text-xs leading-5 text-neutral-100 outline-none placeholder:text-neutral-600 disabled:opacity-60"
           />
@@ -1095,7 +1378,7 @@ export default function AiPanel({
               <button
                 type="button"
                 onClick={isRunning ? onAbortAI : () => submitPrompt()}
-                disabled={!isRunning && !prompt.trim()}
+                disabled={!isRunning && (!prompt.trim() || preflightLoading)}
                 className={`flex h-8 w-8 items-center justify-center rounded-lg transition disabled:cursor-not-allowed disabled:opacity-35 ${
                   isRunning
                     ? "bg-red-500 text-white hover:bg-red-400"

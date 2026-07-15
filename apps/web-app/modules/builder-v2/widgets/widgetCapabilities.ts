@@ -95,7 +95,10 @@ function capabilityFromDefinition(definition: WidgetDefinition): WidgetCapabilit
     scaffoldOnly: false,
     productionReady: !metadataOnlyWidget,
     category: definition.category,
-    supportedInspectorGroups: inspectorGroups(definition.properties),
+    supportedInspectorGroups: inspectorGroups(
+      definition.properties,
+      definition.category
+    ),
     editableProps,
     editableStyles,
     responsiveFields,
@@ -156,17 +159,41 @@ function inferTarget(propertyId: string, category: WidgetProperty["category"]) {
   return "props";
 }
 
-function inspectorGroups(properties: readonly WidgetProperty[]): WidgetCapability["supportedInspectorGroups"] {
-  const groups = new Set<WidgetCapability["supportedInspectorGroups"][number]>();
+function inspectorGroups(
+  properties: readonly WidgetProperty[],
+  definitionCategory?: WidgetDefinition["category"]
+): WidgetCapability["supportedInspectorGroups"] {
+  const groups =
+    new Set<
+      WidgetCapability["supportedInspectorGroups"][number]
+    >();
+
+  /*
+   * Layout definitions such as Section may use shared inspector panels
+   * instead of declaring every control in the widget property list.
+   */
+  if (definitionCategory === "layout") {
+    groups.add("design");
+    groups.add("responsive");
+  }
+
   for (const property of properties) {
     if (property.category === "content") groups.add("content");
-    if (property.category === "style" || property.category === "layout") groups.add("design");
+    if (
+      property.category === "style" ||
+      property.category === "layout"
+    ) {
+      groups.add("design");
+    }
     if (property.category === "advanced") groups.add("advanced");
     if (property.category === "animation") groups.add("motion");
     if (property.category === "responsive") groups.add("responsive");
     if (property.responsive) groups.add("responsive");
-    if (property.type === "color" || property.themeTokenReady) groups.add("theme");
+    if (property.type === "color" || property.themeTokenReady) {
+      groups.add("theme");
+    }
   }
+
   groups.add("advanced");
   return [...groups];
 }
@@ -176,7 +203,7 @@ function isProductionWidget(type: NodeType) {
 }
 
 function isRuntimeGatedWidget(type: NodeType) {
-  return false;
+  return type === "popupModal" || type === "embed";
 }
 
 function isRestrictedWidget(type: NodeType) {

@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getUser } from "@/lib/auth/getUser";
 import { runV10WebsiteGeneration } from "@/modules/builder-v2/ai-v10";
+import { publishV10Progress } from "@/modules/builder-v2/ai-v10/progress/v10GenerationProgress";
+import { persistAfterSemanticHydration } from "@/modules/builder-v2/ai-v10/persistence/semanticHydrationPersistenceGate";
 
 type GenerateV10Body = {
   pageId?: string;
@@ -57,23 +59,28 @@ export async function POST(req: NextRequest) {
     }
 
     const context = record(body.context);
+    const runId = typeof context.generationRunId === "string" ? context.generationRunId : "";
+    const { generationRunId: _generationRunId, ...persistentContext } = context;
     const result = await runV10WebsiteGeneration({
       pageId,
       prompt,
       pageTitle: page.title || "Untitled",
+      pageSlug: page.slug || "home",
+      siteId: page.site.id,
       siteName: page.site.name,
       context,
+      onProgress: runId ? (update) => publishV10Progress({ runId, ...update }) : undefined,
     });
 
     const metadata = {
       ...(record(page.metadata) || {}),
       ...result.metadata,
-      aiContext: context,
+      aiContext: persistentContext,
       aiDesignStatus: "pending_review",
       aiDesignScope: "current_page_only",
     };
 
-    await prisma.$transaction(async (tx) => {
+    await persistAfterSemanticHydration(result.blueprint, () => prisma.$transaction(async (tx) => {
       await tx.page.update({
         where: { id: pageId },
         data: {
@@ -99,7 +106,7 @@ export async function POST(req: NextRequest) {
           updatedBy: auth.user.id,
         },
       });
-    });
+    }));
 
     return NextResponse.json({
       success: true,

@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function TenantRootPage() {
   return (
     <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-semibold tracking-tight">
+      <h1 className="text-2xl font-semibold tracking-tight">
         Workspace
       </h1>
 

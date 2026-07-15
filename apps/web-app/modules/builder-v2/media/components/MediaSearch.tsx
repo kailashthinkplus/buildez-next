@@ -60,7 +60,7 @@ export default function MediaSearch({
           left-3
           top-1/2
           -translate-y-1/2
-          text-white/40
+          dashboard-muted
           pointer-events-none
         "
       />
@@ -75,16 +75,15 @@ export default function MediaSearch({
           h-11
           rounded-xl
           border
-          border-white/10
-          bg-[#0F172A]
+          dashboard-border
+          bg-transparent
           pl-10
           pr-10
           text-sm
-          text-white
-          placeholder:text-white/35
+          placeholder:text-slate-400
           outline-none
           transition-colors
-          focus:border-blue-500
+          focus:border-[#3B82F6]
         "
       />
 
@@ -103,9 +102,8 @@ export default function MediaSearch({
             flex
             items-center
             justify-center
-            text-white/50
-            hover:bg-white/10
-            hover:text-white
+            dashboard-muted
+            dashboard-hover
             transition-colors
           "
         >

@@ -1,0 +1,1170 @@
+
+Running 2 tests using 1 worker
+
+  ✓  1 [setup] › playwright/tests/auth.setup.ts:7:6 › authenticate Builder RC user (2.0s)
+
+========== BROWSER CONSOLE ==========
+ warning Unrecognized feature: 'web-share'. [] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ info %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold [
+  '%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools',
+  'font-weight:bold'
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ warning Image with src "http://127.0.0.1:3000/buildez-logo-dark.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio. [
+  `Image with src "http://127.0.0.1:3000/buildez-logo-dark.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.`
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 86, top: 202, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 86,
+    top: 202,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 104, top: 202, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 104,
+    top: 202,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 122, top: 202, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 122,
+    top: 202,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 140, top: 202, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 140,
+    top: 202,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 158, top: 202, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 158,
+    top: 202,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 176, top: 521, width: 1056, height: 3, type: after} [
+  'EVENT builder:drop-intent',
+  {
+    left: 176,
+    top: 521,
+    width: 1056,
+    height: 3,
+    type: 'after',
+    targetId: 'rc-t3b-container-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 194, top: 521, width: 1056, height: 3, type: after} [
+  'EVENT builder:drop-intent',
+  {
+    left: 194,
+    top: 521,
+    width: 1056,
+    height: 3,
+    type: 'after',
+    targetId: 'rc-t3b-container-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 140, top: 154, width: 1200, height: 520, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 140,
+    top: 154,
+    width: 1200,
+    height: 520,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-section-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 158, top: 154, width: 1200, height: 520, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 158,
+    top: 154,
+    width: 1200,
+    height: 520,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-section-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 158, top: 154, width: 1200, height: 520, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 158,
+    top: 154,
+    width: 1200,
+    height: 520,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-section-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 158, top: 154, width: 1200, height: 520, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 158,
+    top: 154,
+    width: 1200,
+    height: 520,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-section-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 158, top: 154, width: 1200, height: 520, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 158,
+    top: 154,
+    width: 1200,
+    height: 520,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-section-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 158, top: 154, width: 1200, height: 520, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 158,
+    top: 154,
+    width: 1200,
+    height: 520,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-section-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 158, top: 154, width: 1200, height: 520, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 158,
+    top: 154,
+    width: 1200,
+    height: 520,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-section-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 158, top: 154, width: 1200, height: 520, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 158,
+    top: 154,
+    width: 1200,
+    height: 520,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-section-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 158, top: 673, width: 1200, height: 3, type: after} [
+  'EVENT builder:drop-intent',
+  {
+    left: 158,
+    top: 673,
+    width: 1200,
+    height: 3,
+    type: 'after',
+    targetId: 'rc-t3b-section-a',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 158, top: 654, width: 1200, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 158,
+    top: 654,
+    width: 1200,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-section-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 158, top: 636, width: 1200, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 158,
+    top: 636,
+    width: 1200,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-section-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 158, top: 620, width: 1200, height: 520, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 158,
+    top: 620,
+    width: 1200,
+    height: 520,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-section-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 230, top: 648, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 230,
+    top: 648,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 254, top: 654, width: 1008, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 254,
+    top: 654,
+    width: 1008,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-heading-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 254, top: 661, width: 1008, height: 3, type: after} [
+  'EVENT builder:drop-intent',
+  {
+    left: 254,
+    top: 661,
+    width: 1008,
+    height: 3,
+    type: 'after',
+    targetId: 'rc-t3b-heading-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 230, top: 596, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 230,
+    top: 596,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 254, top: 644, width: 1008, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 254,
+    top: 644,
+    width: 1008,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-text-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 254, top: 667, width: 1008, height: 3, type: after} [
+  'EVENT builder:drop-intent',
+  {
+    left: 254,
+    top: 667,
+    width: 1008,
+    height: 3,
+    type: 'after',
+    targetId: 'rc-t3b-text-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 230, top: 542, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 230,
+    top: 542,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 230, top: 524, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 230,
+    top: 524,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 230, top: 506, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 230,
+    top: 506,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 230, top: 488, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 230,
+    top: 488,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 230, top: 488, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 230,
+    top: 488,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 230, top: 488, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 230,
+    top: 488,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 230, top: 488, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 230,
+    top: 488,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 230, top: 488, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 230,
+    top: 488,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 230, top: 488, width: 1056, height: 320, type: inside} [
+  'EVENT builder:drop-intent',
+  {
+    left: 230,
+    top: 488,
+    width: 1056,
+    height: 320,
+    type: 'inside',
+    isEmpty: false,
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 254, top: 510, width: 1008, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 254,
+    top: 510,
+    width: 1008,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-heading-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 254, top: 510, width: 1008, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 254,
+    top: 510,
+    width: 1008,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-heading-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 230, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 230,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+
+========== BROWSER CONSOLE ==========
+ log EVENT builder:drop-intent {left: 248, top: 486, width: 1056, height: 3, type: before} [
+  'EVENT builder:drop-intent',
+  {
+    left: 248,
+    top: 486,
+    width: 1056,
+    height: 3,
+    type: 'before',
+    targetId: 'rc-t3b-container-b',
+    valid: true
+  }
+] 
+=====================================
+
+  ✘  2 [builder-chromium] › playwright/tests/builder/operations/golden-journeys.spec.ts:138:5 › @operations @journeys landing-page journey inserts, duplicates, saves and reloads (3.6s)
+
+
+  1) [builder-chromium] › playwright/tests/builder/operations/golden-journeys.spec.ts:138:5 › @operations @journeys landing-page journey inserts, duplicates, saves and reloads 
+
+    Error: a direct inside lane must stabilize for rc-t3b-container-b
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+       at ../helpers/builderDrag.ts:385
+
+      383 |     stabilized,
+      384 |     `a direct inside lane must stabilize for ${targetId}`,
+    > 385 |   ).toBe(true);
+          |     ^
+      386 |
+      387 |   expect(directPoint).not.toBeNull();
+      388 |
+        at dragPaletteWidgetInside (/Users/kailash/buildez/apps/web-app/playwright/helpers/builderDrag.ts:385:5)
+        at /Users/kailash/buildez/apps/web-app/playwright/tests/builder/operations/golden-journeys.spec.ts:153:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/builder-operations-golden--d228e-uplicates-saves-and-reloads-builder-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/builder-operations-golden--d228e-uplicates-saves-and-reloads-builder-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/builder-operations-golden--d228e-uplicates-saves-and-reloads-builder-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/builder-operations-golden--d228e-uplicates-saves-and-reloads-builder-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/builder-operations-golden--d228e-uplicates-saves-and-reloads-builder-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [builder-chromium] › playwright/tests/builder/operations/golden-journeys.spec.ts:138:5 › @operations @journeys landing-page journey inserts, duplicates, saves and reloads 
+  1 passed (7.2s)
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m

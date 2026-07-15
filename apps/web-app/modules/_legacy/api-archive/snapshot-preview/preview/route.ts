@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { requireTenantEditor } from "@/lib/preview/auth";
 import { generatePreviewToken } from "@/lib/preview/token";
-import { prisma } from "@buildez/db";
 
 export async function POST(
   req: Request,

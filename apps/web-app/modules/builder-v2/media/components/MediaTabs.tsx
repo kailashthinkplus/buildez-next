@@ -48,10 +48,10 @@ export default function MediaTabs({
         flex
         items-center
         gap-2
-        rounded-lg
-        bg-white/[0.04]
+        rounded-xl
+        dashboard-subtle
         border
-        border-white/10
+        dashboard-border
         p-1
       "
     >
@@ -79,8 +79,8 @@ export default function MediaTabs({
               transition-all
               ${
                 active
-                  ? "bg-white/15 text-white shadow-sm"
-                  : "text-white/60 hover:text-white hover:bg-white/[0.08]"
+                  ? "bg-[#1349A3] text-white shadow-sm"
+                  : "dashboard-muted dashboard-hover"
               }
             `}
           >

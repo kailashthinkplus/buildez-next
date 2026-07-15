@@ -1,9 +1,9 @@
 import { createEngineResult, type EngineResult } from "../sdk";
 import type { BuilderBlueprint as NativeBuilderBlueprint, BuilderTheme } from "../../types/blueprint";
-import { createBuilderTheme } from "../../theme/defaultTheme";
 import type { BuilderBlueprint, BuilderBlueprintInput, BuilderBlueprintMetrics, BuilderBlueprintResult, BuilderBlueprintWarning } from "./builderBlueprint";
 import { widgetBlueprintToTree } from "./containerBlueprint";
 import { expandComponentRecipes } from "./recipeExpander";
+import { createSemanticBuilderTheme } from "./SemanticBlueprintCompiler";
 import { buildSectionBlueprints } from "./sectionBlueprint";
 import { buildWidgetBlueprints } from "./widgetBlueprint";
 import { BUILDER_BLUEPRINT_ENGINE_VERSION_STRING } from "./version";
@@ -40,7 +40,7 @@ function buildNativeBlueprint(input: BuilderBlueprintInput, widgets: ReturnType<
   }]));
   return Object.freeze({
     metadata: {
-      version: 2,
+      version: 2 as const,
       title: input.websiteSpec?.business.businessName ?? "Website Engine Blueprint",
       createdAt: now,
       updatedAt: now,
@@ -79,7 +79,7 @@ export function buildBuilderBlueprint(input: BuilderBlueprintInput = {}): Builde
   const widgets = buildWidgetBlueprints(input, seeds);
   const page = widgets.find((widget) => widget.type === "page") ?? widgets[0];
   const sections = buildSectionBlueprints(input, widgets);
-  const theme = createBuilderTheme();
+  const theme = createSemanticBuilderTheme(input);
   const propertyDefinitions = widgets.flatMap((widget) => widget.propertyDefinitions);
   const propertyBindings = widgets.flatMap((widget) => widget.propertyBindings);
   const editablePropertyBindings = widgets.flatMap((widget) => widget.editablePropertyBindings);
@@ -169,3 +169,5 @@ export function runBuilderBlueprintEngine(input: BuilderBlueprintInput = {}): En
 }
 
 export { expandComponentRecipes, buildWidgetBlueprints, buildSectionBlueprints, validateBuilderBlueprint, validateNativeBlueprintCompatibility };
+export * from "./SemanticBlueprintCompiler";
+export * from "./recipes";

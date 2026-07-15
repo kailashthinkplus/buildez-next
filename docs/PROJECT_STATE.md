@@ -1,14 +1,16 @@
 # BuildEZ Project State
 
-Last updated: 2026-07-09
+Last updated: 2026-07-15
 
 ## Current Phase
 
-BSP-16 Builder QA Certification & Release Gate Approval.
+Phase 42 AI v10 Native Website Engine Integration and visual-quality validation.
 
 This phase finalizes the Builder Stabilization Program with QA certification documents, a final release gate, AI readiness certification, remaining risk register, updated quality score, and explicit Go/No-Go decision.
 
-This phase does not modify `ai-v9`, wire AI generation, execute Mapper, insert AI Builder nodes, enable feature flags, start Phase 40A, call live LLM APIs, call DB/network/MCP/providers, or change production routes.
+Phase 41 Internal AI v10 Preview Harness is implemented as a development-only, disposable local pipeline and renderer. It does not modify `ai-v9`, wire production AI generation, execute Mapper, insert AI Builder nodes, enable feature flags, start Phase 40A, call live LLM APIs, call DB/network/MCP/providers, or change production routes.
+
+Phase 42 AI v10 Native Website Engine Integration is implemented. The Builder exposes `AI v10 · Website Engine` (default) and `AI v9 · Direct`. V10 runs the Website Engine intelligence, design, component, composition, decision, specification, and native Blueprint stages; GPT-5.6 enriches only Engine-owned nodes, GPT Image 2 hydrates Engine image nodes, and Critic/repair/parity run before persistence. AI-v9 is not executed by v10.
 
 ## Completed
 
@@ -59,6 +61,8 @@ This phase does not modify `ai-v9`, wire AI generation, execute Mapper, insert A
 - Phase 38 AI Planner.
 - Phase 39 AI v10 Orchestrator.
 - Phase 40 ai-v9 Shadow Comparison.
+- Phase 41 Internal AI v10 Preview Harness.
+- Phase 42 AI v10 Native Website Engine Integration.
 - BSP-1 Builder Audit.
 - BSP-2 Builder Bug Database Classification & Fix Sprint Planning.
 - BSP-3 Builder Regression Suite Foundation.
@@ -80,13 +84,12 @@ This phase does not modify `ai-v9`, wire AI generation, execute Mapper, insert A
 
 Builder Stabilization Program status: complete.  
 Engineering readiness: conditional pass.  
-Production rollout: no-go.  
-Native Builder Execution: conditional go only for disabled, dry-run, non-mutating Phase 40A work.  
-Preview Harness: conditional go only for harness construction and evidence gathering.  
-Streaming Canvas UX: conditional go only as inert UI scaffolding.  
-AI Node Actions: conditional go only as inert disabled controls/plans.  
-AI-generated Builder nodes: no-go.  
-Mapper execution into Builder: no-go.
+AI v10 internal generation: enabled through the protected native Website Engine route.
+AI v10 Builder selection: enabled and default, with direct v9 retained for comparison.
+AI-generated Blueprint persistence: enabled for the current page after generation.
+Publishing: remains a separate user action.
+Website Engine deterministic Mapper command execution remains disabled; v10 persists the canonical native Blueprint produced by the Blueprint Engine.
+Release rollout: pending real-prompt visual and screenshot QA across industries.
 
 ## Known Repository Context
 
@@ -156,7 +159,7 @@ The platform foundation is universal:
 - Native Builder Mapper now converts Builder Blueprint intent into executable-plan metadata only; actual command execution remains deferred behind a disabled feature flag.
 - Creative Library now provides reusable recipe variants for downstream engines without emitting Builder nodes, React, CSS, HTML, JavaScript, screenshots, media, provider requests, or rendered output.
 - Repository starter coverage includes real estate, healthcare, restaurant / food and beverage, automotive, and education, with additional fixture contracts for D2C, hospitality, and interior design.
-- `ai-v9` remains unchanged and isolated until replacement is proven safe.
+- `ai-v9` remains available only through its direct selector path and is not imported or executed by v10.
 - BSP-1 Builder Audit now owns documentation-only native Builder audit artifacts, confirmed bug database entries, regression and stress plans, AI compatibility assessment, quality score, release gate, roadmap, implementation log, and developer log without modifying Builder behavior.
 - BSP-2 Builder Bug Triage now owns documentation-only fix-wave classification for BUG-0001 through BUG-0050, dependency planning, regression matrix planning, critical path planning, implementation log, and developer log without fixing bugs or changing Builder behavior.
 - BSP-3 Builder Regression Suite Foundation now owns compile-safe native Builder test scaffolding under `apps/web-app/modules/builder-v2/__tests__/`, deterministic fixtures, command/serialization/inspector/responsive/widget/parity harnesses, initial regression specs, and builder typecheck inclusion without changing Builder runtime behavior.
