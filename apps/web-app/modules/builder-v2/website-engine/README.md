@@ -35,3 +35,9 @@ The integration is warning-only. It does not reorder sections, block generation,
 The deterministic Design Intelligence Compiler translates existing design, brand, business-family, composition, and component intent into immutable execution metadata for typography, spacing, containers, media, motion, and responsive behavior. `SemanticBlueprintCompiler` attaches the plan as an isolated compilation trace before selecting native component compilers.
 
 RC-10 does not emit CSS or Builder nodes and does not alter component trees, Blueprint schema, serialization, hydration, renderer, canvas, runtime, or motion execution. Golden fixtures cover luxury real estate, restaurant, healthcare, automotive, and SaaS. See `docs/implementation/PHASE_44_DESIGN_INTELLIGENCE_COMPILER.md`.
+
+## RC-11: Golden Website Generation Benchmark
+
+The isolated Golden Website Benchmark executes 52 commercial website archetypes through existing composition quality, design intelligence, semantic routing, native component compilation, Blueprint validation, serialization, editability, responsive, and parity checks. It produces deterministic JSON-safe quality reports without participating in production generation.
+
+Playwright capture preparation covers 1440px desktop, 1024px tablet, and 390px mobile viewports; reference screenshot comparison remains intentionally deferred. See `docs/implementation/PHASE_45_GOLDEN_WEBSITE_BENCHMARK.md`.
