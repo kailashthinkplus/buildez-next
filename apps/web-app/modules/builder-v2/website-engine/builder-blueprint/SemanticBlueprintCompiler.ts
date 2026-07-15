@@ -5,6 +5,7 @@ import type { WidgetBlueprintSeed } from "./widgetBlueprint";
 import { RecipeRegistry, type SemanticSection } from "./recipes";
 import { ComponentVariantCompilerRegistry } from "./component-recipes";
 import { CompositionQualityEngine, type CompositionQualityScore } from "../composition-quality";
+import { DesignIntelligenceCompiler, type DesignExecutionPlan } from "../design-intelligence";
 
 function safeId(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "section";
@@ -49,6 +50,7 @@ export type SemanticBlueprintCompilation = Readonly<{
   sections: SemanticSection[];
   selectedRecipes: Array<{ sectionId: string; recipe: string }>;
   compositionQuality: CompositionQualityScore;
+  designExecutionPlan: DesignExecutionPlan;
 }>;
 
 export function compileSemanticBlueprint(input: BuilderBlueprintInput): SemanticBlueprintCompilation {
@@ -65,6 +67,14 @@ export function compileSemanticBlueprint(input: BuilderBlueprintInput): Semantic
     conversionGoal: input.websiteSpec?.goals.primaryGoal,
     selectedComponents: input.componentResult?.recommendedSelections.map((selection) => selection.variant.id),
     designIntent: input.designResult,
+  });
+  const designExecutionPlan = DesignIntelligenceCompiler.compile({
+    designResult: input.designResult,
+    businessFamily: input.websiteSpec?.business.family,
+    archetype: input.websiteSpec?.archetype,
+    compositionResult: input.compositionResult,
+    componentResult: input.componentResult,
+    selectedComponents: input.componentResult?.recommendedSelections.map((selection) => selection.variant.id),
   });
   const sectionNodeIds = sections.map((section, index) => `section.${safeId(section.id || `section_${index}`)}`);
   const page: WidgetBlueprintSeed = Object.freeze({
@@ -85,7 +95,7 @@ export function compileSemanticBlueprint(input: BuilderBlueprintInput): Semantic
     selectedRecipes.push({ sectionId: section.id, recipe: selectedRecipe.name });
     seeds.push(...selectedRecipe.recipe(context));
   });
-  return Object.freeze({ seeds, sections, selectedRecipes, compositionQuality });
+  return Object.freeze({ seeds, sections, selectedRecipes, compositionQuality, designExecutionPlan });
 }
 
 export function createSemanticBuilderTheme(input: BuilderBlueprintInput): BuilderTheme {
