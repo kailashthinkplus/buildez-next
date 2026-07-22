@@ -46,6 +46,7 @@ export const BUILDER_NODE_TYPES: readonly NodeType[] = Object.freeze([
   "smartFooter",
   "cta",
   "carousel",
+  "productCarousel",
   "beforeAfter",
   "table",
   "countdown",

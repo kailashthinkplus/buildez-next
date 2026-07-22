@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, Check, CreditCard } from "lucide-react";
 import { motion } from "framer-motion";
+import { DashboardModalPortal } from "../../../components/ui/DashboardModalPortal";
 
 export default function UpgradePlanModal({
   open,
@@ -53,7 +54,8 @@ export default function UpgradePlanModal({
       const orderData = await orderRes.json();
       if (!orderRes.ok) throw new Error(orderData.error);
 
-      new window.Razorpay({
+      const Razorpay = (window as typeof window & { Razorpay: new (options: Record<string, unknown>) => { open(): void } }).Razorpay;
+      new Razorpay({
         key: orderData.key,
         amount: orderData.amount,
         order_id: orderData.orderId,
@@ -83,6 +85,7 @@ export default function UpgradePlanModal({
   }
 
   return (
+    <DashboardModalPortal onClose={onClose}>
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* DIM BACKDROP */}
       <div
@@ -96,7 +99,7 @@ export default function UpgradePlanModal({
         animate={{ opacity: 1, scale: 1 }}
         className="
           relative w-full max-w-5xl rounded-2xl p-8 shadow-xl
-          dashboard-card-strong
+          dashboard-modal-surface border dashboard-border max-h-[calc(100dvh-2rem)] overflow-y-auto
         "
       >
         {/* Close Button */}
@@ -235,5 +238,6 @@ export default function UpgradePlanModal({
         </div>
       </motion.div>
     </div>
+    </DashboardModalPortal>
   );
 }

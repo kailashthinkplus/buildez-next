@@ -60,7 +60,9 @@ export function container(context: RecipeContext, role: string, parentId: string
 }
 
 export function heading(context: RecipeContext, parentId: string, role = "headline", level: "h1" | "h2" | "h3" = "h1", size = 60) {
-  return seed(context, { id: nodeId(context, `heading.${role}`), type: "heading", name: role, parentId, children: [], props: { text: semantic(role), level }, style: { color: context.input.designResult?.colorProfile.foreground ?? "#111827", fontFamily: context.input.designResult?.typographyProfile.headingFamily ?? "Inter", fontSize: { desktop: size, tablet: Math.round(size * .76), mobile: Math.round(size * .6) }, lineHeight: 1.08 } });
+  const scale = context.input.artDirectionBrief?.blueprintStrategy.headingScale;
+  const directedSize = scale === "dramatic" ? Math.max(size, 80) : scale === "expressive" ? Math.max(size, 68) : scale === "restrained" ? Math.min(size, 56) : size;
+  return seed(context, { id: nodeId(context, `heading.${role}`), type: "heading", name: role, parentId, children: [], props: { text: semantic(role), level }, style: { color: context.input.designResult?.colorProfile.foreground ?? "#111827", fontFamily: context.input.designResult?.typographyProfile.headingFamily ?? "Inter", fontSize: { desktop: directedSize, tablet: Math.round(directedSize * .76), mobile: Math.round(directedSize * .6) }, lineHeight: scale === "dramatic" ? 1 : 1.08 } });
 }
 
 export function text(context: RecipeContext, parentId: string, role: string, size = 17) {
@@ -73,5 +75,7 @@ export function button(context: RecipeContext, parentId: string, role: string, s
 }
 
 export function image(context: RecipeContext, parentId: string, role: string, ratio: string, fit: "cover" | "contain" = "cover") {
-  return seed(context, { id: nodeId(context, `image.${role}`), type: "image", name: role, parentId, children: [], props: { src: semantic(role), alt: semantic(`${role}.alt`) }, style: { width: "100%", aspectRatio: ratio, objectFit: fit, borderRadius: token(context, "radius", ["media", "card"], context.input.designResult?.themeProfile.radius ?? 18) } });
+  const corners = context.input.artDirectionBrief?.blueprintStrategy.cornerTreatment;
+  const radius = corners === "square" ? 0 : corners === "rounded" ? 28 : token(context, "radius", ["media", "card"], context.input.designResult?.themeProfile.radius ?? 18);
+  return seed(context, { id: nodeId(context, `image.${role}`), type: "image", name: role, parentId, children: [], props: { src: semantic(role), alt: semantic(`${role}.alt`) }, style: { width: "100%", aspectRatio: ratio, objectFit: fit, borderRadius: radius } });
 }

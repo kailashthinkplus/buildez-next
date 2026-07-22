@@ -42,7 +42,7 @@ const DEFAULT_DEPENDENCIES: V10PreflightDependencies = Object.freeze({
 
 type PreflightOutput = Omit<V10PreflightResult, "agentTrace" | "timing">;
 
-export const DEFAULT_V10_PREFLIGHT_MODEL = "gpt-4o-mini";
+export const DEFAULT_V10_PREFLIGHT_MODEL = "gpt-5.6-terra";
 export const DEFAULT_V10_PREFLIGHT_TOKEN_BUDGET = 2000;
 export const DEFAULT_V10_PREFLIGHT_TIMEOUT_MS = 12000;
 const MAX_V10_PREFLIGHT_TOTAL_MS = 15000;
@@ -240,6 +240,7 @@ Keep summary at 25 words or fewer and interpretedUseCase at 20 words or fewer. e
       const completion = await dependencies.complete({
         debugLabel: `v10-preflight-strategy-${attempt + 1}`,
         model: config.model,
+        reasoningEffort: /^gpt-5\.6(?:-|$)/i.test(config.model) ? "none" : undefined,
         maxCompletionTokens: config.tokenBudget,
         timeoutMs: Math.min(config.timeoutMs, remainingMs),
         responseFormat: "json_object",

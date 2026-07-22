@@ -1,294 +1,311 @@
 {
-  "timestamp": "2026-07-15T17:30:20.125Z",
+  "timestamp": "2026-07-21T15:17:46.056Z",
   "label": "published-render:input",
   "payload": {
     "summary": {
       "present": true,
-      "root": "page.root",
+      "root": "dg.page",
       "metadata": {
-        "title": "Create the requested website for sanjeevini group",
+        "title": "Test2Page",
         "version": 2,
-        "industry": "Real Estate",
-        "template": "ai-v10-website-engine",
-        "createdAt": "2026-07-15T17:25:10.271Z",
-        "updatedAt": "2026-07-15T17:27:43.444Z",
-        "aiGenerated": true,
-        "creativeRecovery": {
-          "recoveredNodes": [],
-          "recoveryAttempts": 0,
-          "initialMissingNodes": [],
-          "recoveredSuccessfully": true
-        },
-        "creativeRequestDiagnostics": {
-          "batchCount": 12,
-          "semanticNodeCount": 92,
-          "compactContextCharacters": 29409,
-          "fullArtifactsRepeatedPerBatch": false
-        },
-        "creativeResponseDiagnostics": {
-          "batchSplits": 0,
-          "totalCoverageMisses": 0,
-          "normalizedShapeCount": 12,
-          "shapeRecoveryAttempts": 0,
-          "flatShapeNormalizedCount": 0,
-          "aliasShapeNormalizedCount": 0
-        }
+        "template": "ai-v11-m2-design-preservation",
+        "createdAt": "2026-07-16T00:00:00.000Z",
+        "updatedAt": "2026-07-16T00:00:00.000Z",
+        "aiGenerated": true
       },
       "theme": {
-        "id": "design-tokens.luxury-theme-intent",
-        "name": "Luxury",
-        "preset": "website-engine.luxury",
+        "id": "buildez-default",
+        "name": "BuildEZ Default",
+        "preset": "buildez-default",
         "tokenKeys": [
           "cards",
           "forms",
           "colors",
-          "motion",
           "radius",
           "shadow",
           "states",
           "buttons",
           "spacing",
           "defaults",
-          "responsive",
           "typography"
         ]
       },
-      "nodeCount": 155,
-      "sectionCount": 10,
-      "imageCount": 12,
+      "nodeCount": 231,
+      "sectionCount": 11,
+      "imageCount": 19,
       "backgroundPromptCount": 0,
       "headings": [
-        "Ready to discuss your property needs?",
-        "Property decisions, grounded in clear details",
-        "Sanjeevini Group",
-        "Plan Your Next Step",
-        "Property Enquiries",
-        "Before You Decide",
-        "Find a property that feels right—before you visit.",
-        "Project information",
-        "Location clarity",
-        "Approval details"
+        "View new beauty arrivals of skincare",
+        "New Arrivals",
+        "Set of body care combo products",
+        "Rice body scrub with argan oil",
+        "Hyaluronic skin booster",
+        "Shower & bath gel",
+        "Skin care",
+        "Body products",
+        "Anti-aging care",
+        "Organic products"
       ],
       "textSamples": [
-        "Sanjeevini Group · Bangalore Real Estate",
-        "Connect with Sanjeevini Group for a focused property consultation.",
-        "Review the information that matters, ask direct questions and arrange a visit before deciding your next step.",
-        "Real estate development in Bangalore, with property enquiries handled through a personal consultation.",
-        "Enquire about a selected property or request a site visit to explore it in more detail.",
-        "Ask about a selected property, request its details, or arrange a consultation with Sanjeevini Group.",
-        "Confirm the property’s location, configuration, availability, pricing, and applicable registration or approval details during your consultation.",
-        "Book a Consultation",
-        "Explore Sanjeevini Group properties through clear project information and authentic architectural imagery, then arrange a focused consultation for the property that interests you.",
-        "PROPERTY CONSULTATION",
-        "A More Useful First Conversation",
-        "Book a Property Consultation",
-        "Book a focused consultation to review the property details that matter to you and discuss arranging a site visit.",
-        "Explore the spaces, materials and everyday details that shape a property before arranging a consultation."
+        "Home⌄",
+        "Category⌄",
+        "Offer⌄",
+        "Pages⌄",
+        "Shop",
+        "Skinelle",
+        "Skinelle",
+        "Contact",
+        "New collection",
+        "Discover the combination of science and luxury in every product. New collection is designed to give skin radiance.",
+        "Shop Now",
+        "$29.00 – $48.50",
+        "View products",
+        "$35.00"
       ],
       "colors": [
-        "#F7F2EA",
-        "#8A623A",
-        "#E7DDD0",
-        "#221F1A",
-        "#ffffff"
+        "#2c221b",
+        "#fafaf8",
+        "inherit",
+        "transparent",
+        "#ffffff",
+        "#716a65",
+        "#c05a3a",
+        "#aaa29c",
+        "#f4f1ed",
+        "#f6efe7",
+        "#d9d5d2",
+        "rgb(255 255 255 / 0.95)",
+        "#a53b20"
       ],
       "images": [
         {
-          "id": "image.image.section_heroeditorialsplit01",
+          "id": "dg.002.img",
           "type": "image",
           "hidden": false,
-          "src": "https://assets.getbuildez.com/ai-v10/cmqnpp4my000kvcj7w8mira4q/1784136457078-3b65c407-95f3-46a5-a05b-ae8f31c1b200.png",
+          "src": "/v11-premium/fashion.png",
           "backgroundImage": "",
-          "aiImagePrompt": "Cinematic documentary-style wide photograph of a contemporary residential development in Bangalore, India, showing the real building exterior and landscaped arrival area in warm ea...",
+          "aiImagePrompt": "",
           "backgroundPrompt": ""
         },
         {
-          "id": "image.item_1.section_gallerylifestylerail01",
-          "type": "image",
+          "id": "dg.003.div",
+          "type": "container",
           "hidden": false,
           "src": "",
-          "backgroundImage": "",
-          "aiImagePrompt": "Authentic documentary real estate photograph of a contemporary residential building in Bengaluru, India, viewed from a shaded pedestrian approach; warm stone and concrete materials...",
+          "backgroundImage": "linear-gradient(to right, #45150bd9, #5b1d0f4d, transparent)",
+          "aiImagePrompt": "",
           "backgroundPrompt": ""
         },
         {
-          "id": "image.item_2.section_gallerylifestylerail01",
+          "id": "dg.034.img",
           "type": "image",
           "hidden": false,
-          "src": "https://assets.getbuildez.com/ai-v10/cmqnpp4my000kvcj7w8mira4q/1784136443580-fa60d7d1-da91-4929-8427-3b4a5344daa2.png",
+          "src": "/v11-premium/product.png",
           "backgroundImage": "",
-          "aiImagePrompt": "Authentic documentary interior photograph of an unfurnished contemporary apartment living space in Bengaluru, India; broad window light, warm neutral walls, natural stone or tile f...",
+          "aiImagePrompt": "",
           "backgroundPrompt": ""
         },
         {
-          "id": "image.item_3.section_gallerylifestylerail01",
+          "id": "dg.042.img",
           "type": "image",
           "hidden": false,
-          "src": "",
+          "src": "/v11-premium/fashion.png",
           "backgroundImage": "",
-          "aiImagePrompt": "Authentic documentary-style architectural photograph of skilled construction workers reviewing building drawings together at an active Bengaluru residential development site, warm ...",
+          "aiImagePrompt": "",
           "backgroundPrompt": ""
         },
         {
-          "id": "image.item_4.section_gallerylifestylerail01",
+          "id": "dg.050.img",
           "type": "image",
           "hidden": false,
-          "src": "",
+          "src": "/v11-premium/clinic.png",
           "backgroundImage": "",
-          "aiImagePrompt": "Cinematic documentary architectural photograph of a contemporary residential building detail in Bengaluru, India, showing warm stone, textured concrete, shaded balconies and carefu...",
+          "aiImagePrompt": "",
           "backgroundPrompt": ""
         },
         {
-          "id": "image.item_5.section_gallerylifestylerail01",
+          "id": "dg.058.img",
           "type": "image",
           "hidden": false,
-          "src": "",
+          "src": "/v11-premium/resort.png",
           "backgroundImage": "",
-          "aiImagePrompt": "Authentic architectural-journal photograph of a calm shared residential courtyard in Bengaluru at dusk, mature tropical planting, covered walkway, warm interior light, a few reside...",
+          "aiImagePrompt": "",
           "backgroundPrompt": ""
         },
         {
-          "id": "image.item_6.section_gallerylifestylerail01",
+          "id": "dg.066.img",
           "type": "image",
           "hidden": false,
-          "src": "",
+          "src": "/v11-premium/fashion.png",
           "backgroundImage": "",
-          "aiImagePrompt": "Authentic documentary-style photograph of prospective homebuyers walking through a real residential property with a real estate representative in Bengaluru, warm late-afternoon nat...",
+          "aiImagePrompt": "",
           "backgroundPrompt": ""
         },
         {
-          "id": "image.image.section_heroappointmentfocused01",
+          "id": "dg.075.img",
           "type": "image",
           "hidden": false,
-          "src": "https://assets.getbuildez.com/ai-v10/cmqnpp4my000kvcj7w8mira4q/1784136446478-773e6d41-133e-400a-be06-ee1f236df41f.png",
+          "src": "/v11-premium/clinic.png",
           "backgroundImage": "",
-          "aiImagePrompt": "Authentic documentary-style photograph of a prospective homebuyer reviewing architectural plans with a real estate representative at a contemporary residential property in Bengalur...",
+          "aiImagePrompt": "",
           "backgroundPrompt": ""
         },
         {
-          "id": "image.item_1.section_projectshowcaseeditorial01",
+          "id": "dg.095.img",
           "type": "image",
           "hidden": false,
-          "src": "",
+          "src": "/v11-premium/product.png",
           "backgroundImage": "",
-          "aiImagePrompt": "Authentic documentary-style architectural photograph of a completed contemporary residential building in Bengaluru, India, viewed from street level in warm late-afternoon light; re...",
+          "aiImagePrompt": "",
           "backgroundPrompt": ""
         },
         {
-          "id": "image.item_2.section_projectshowcaseeditorial01",
-          "type": "image",
-          "hidden": false,
-          "src": "https://assets.getbuildez.com/ai-v10/cmqnpp4my000kvcj7w8mira4q/1784136450478-3720c593-807e-448d-8226-3fccb13c7653.png",
-          "backgroundImage": "",
-          "aiImagePrompt": "Authentic documentary architectural photograph of a completed residential courtyard and common area in Bengaluru, India; residents seen only as small unidentifiable figures, shaded...",
-          "backgroundPrompt": ""
-        },
-        {
-          "id": "image.item_3.section_projectshowcaseeditorial01",
-          "type": "image",
-          "hidden": false,
-          "src": "https://assets.getbuildez.com/ai-v10/cmqnpp4my000kvcj7w8mira4q/1784136452434-830a3ef5-43e3-4c9d-aeb7-a417da795174.png",
-          "backgroundImage": "",
-          "aiImagePrompt": "Authentic documentary-style architectural photograph of a contemporary residential development in Bengaluru, showing a quiet landscaped shared courtyard and building facade in warm...",
-          "backgroundPrompt": ""
-        },
-        {
-          "id": "image.item_4.section_projectshowcaseeditorial01",
-          "type": "image",
+          "id": "dg.096.div",
+          "type": "container",
           "hidden": false,
           "src": "",
+          "backgroundImage": "linear-gradient(to right, #221d19cc, transparent)",
+          "aiImagePrompt": "",
+          "backgroundPrompt": ""
+        },
+        {
+          "id": "dg.116.img",
+          "type": "image",
+          "hidden": false,
+          "src": "/v11-premium/product.png",
           "backgroundImage": "",
-          "aiImagePrompt": "Authentic documentary-style interior photograph of a contemporary residential apartment in Bengaluru during a real property walkthrough; bright unfurnished living and dining space,...",
+          "aiImagePrompt": "",
+          "backgroundPrompt": ""
+        },
+        {
+          "id": "dg.126.img",
+          "type": "image",
+          "hidden": false,
+          "src": "/v11-premium/clinic.png",
+          "backgroundImage": "",
+          "aiImagePrompt": "",
+          "backgroundPrompt": ""
+        },
+        {
+          "id": "dg.136.img",
+          "type": "image",
+          "hidden": false,
+          "src": "/v11-premium/resort.png",
+          "backgroundImage": "",
+          "aiImagePrompt": "",
+          "backgroundPrompt": ""
+        },
+        {
+          "id": "dg.146.img",
+          "type": "image",
+          "hidden": false,
+          "src": "/v11-premium/fashion.png",
+          "backgroundImage": "",
+          "aiImagePrompt": "",
+          "backgroundPrompt": ""
+        },
+        {
+          "id": "dg.159.img",
+          "type": "image",
+          "hidden": false,
+          "src": "/v11-premium/fashion.png",
+          "backgroundImage": "",
+          "aiImagePrompt": "",
+          "backgroundPrompt": ""
+        },
+        {
+          "id": "dg.165.img",
+          "type": "image",
+          "hidden": false,
+          "src": "/v11-premium/fashion.png",
+          "backgroundImage": "",
+          "aiImagePrompt": "",
           "backgroundPrompt": ""
         }
       ],
       "forbiddenHits": [],
       "layoutFingerprint": [
         {
-          "id": "section.section_heroeditorialsplit01",
+          "id": "dg.001.section",
           "type": "section",
-          "children": 1,
-          "backgroundColor": "#F7F2EA"
+          "children": 4,
+          "backgroundColor": "#a53b20"
         },
         {
-          "id": "section.section_heroappointmentfocused01",
+          "id": "dg.024.section",
           "type": "section",
-          "children": 1,
-          "backgroundColor": "#E7DDD0"
+          "children": 1
         },
         {
-          "id": "section.section_trustbandinline01",
+          "id": "dg.064.section",
           "type": "section",
           "children": 1,
-          "backgroundColor": "#F7F2EA"
+          "backgroundColor": "#f4f1ed"
         },
         {
-          "id": "section.section_projectshowcaseeditorial01",
+          "id": "dg.076.section",
           "type": "section",
-          "children": 1,
-          "backgroundColor": "#E7DDD0"
+          "children": 1
         },
         {
-          "id": "section.section_gallerylifestylerail01",
+          "id": "dg.094.section",
           "type": "section",
-          "children": 1,
-          "backgroundColor": "#F7F2EA"
+          "children": 6
         },
         {
-          "id": "section.section_faqobjectionaccordion01",
+          "id": "dg.106.section",
           "type": "section",
-          "children": 1,
-          "backgroundColor": "#E7DDD0"
+          "children": 1
         },
         {
-          "id": "section.section_contactleadcaptureform01",
+          "id": "dg.154.section",
           "type": "section",
           "children": 1,
-          "backgroundColor": "#F7F2EA"
+          "backgroundColor": "#f4f1ed"
         },
         {
-          "id": "section.section_finalconversionblock01",
+          "id": "dg.172.section",
           "type": "section",
-          "children": 1,
-          "backgroundColor": "#E7DDD0"
+          "children": 1
         },
         {
-          "id": "section.section_stickymobilecta01",
+          "id": "dg.191.section",
           "type": "section",
-          "children": 1,
-          "backgroundColor": "#F7F2EA"
+          "children": 2,
+          "display": "flex"
         },
         {
-          "id": "section.section_footertrustclosure01",
+          "id": "dg.201.footer",
           "type": "section",
           "children": 1,
-          "backgroundColor": "#E7DDD0"
+          "backgroundColor": "#ffffff"
         }
       ]
     },
     "siteLayout": {
       "present": true,
       "header": {
-        "enabled": true,
-        "variant": "minimal",
-        "brandLabel": "Sanjeevini Group",
-        "ctaLabel": "Book a site visit",
+        "enabled": false,
+        "variant": "solid",
+        "brandLabel": "My First Site",
+        "ctaLabel": "Contact",
         "navLabels": [
-          "Projects",
-          "Locations",
-          "Site visits",
+          "Home",
+          "Services",
+          "Work",
           "Contact"
         ]
       },
       "footer": {
-        "enabled": true,
-        "variant": "minimal",
-        "brandLabel": "Sanjeevini Group",
-        "body": "Sanjeevini Group helps visitors understand real estate property opportunities and take the next step with confidence.",
+        "enabled": false,
+        "variant": "solid",
+        "brandLabel": "My First Site",
+        "body": "A polished website built with a consistent site-wide theme.",
         "navLabels": [
-          "Projects",
-          "Locations",
-          "Contact"
+          "Home",
+          "Services",
+          "Contact",
+          "Privacy"
         ]
       }
     }

@@ -20,6 +20,7 @@ const PUBLIC_ROUTES = [
   "/api/razorpay",
   "/api/billing/activate",
   "/api/billing",
+  "/api/public",
   "/preview",
   "/api/preview",
 ];
@@ -44,6 +45,7 @@ const ONBOARDING_ROUTES = [
    ========================================================== */
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const host = (req.headers.get("x-forwarded-host") || req.headers.get("host") || "").split(":")[0].toLowerCase();
 
   console.log("\n==============================");
   console.log("🧭 MIDDLEWARE HIT");
@@ -63,6 +65,16 @@ export async function middleware(req: NextRequest) {
   ) {
     console.log("⛔ ABSOLUTE EXCLUDE → ALLOW");
     return NextResponse.next();
+  }
+
+  // Custom domains are resolved by the storefront itself. Keep platform and
+  // local hosts on their normal routes and rewrite all tenant-domain pages.
+  const platformDomain = process.env.PLATFORM_DOMAIN || "buildez.app";
+  const isPlatformHost = !host || host === "localhost" || host.endsWith(".localhost") || host === platformDomain || host.endsWith(`.${platformDomain}`);
+  if (!isPlatformHost && !pathname.startsWith("/api") && !pathname.startsWith("/app") && !pathname.startsWith("/_next")) {
+    const url = req.nextUrl.clone();
+    url.pathname = `/domain-runtime/${host}${pathname === "/" ? "" : pathname}`;
+    return NextResponse.rewrite(url);
   }
 
   /* ---------------------------------------------------------

@@ -9,13 +9,14 @@ import type {
   PatternIntelligenceResult,
   WebsiteIntentClassification,
 } from "../sdk";
-import type { ComponentResult, ComponentSelection } from "../components";
+import type { ComponentResult, ComponentSelection, SectionComponentSelection } from "../components";
 import type { ConstraintEvaluationResult } from "../constraints";
 import type { DesignResult } from "../design";
 import type { GraphEdge, GraphNode } from "../graph";
 import type { MediaStrategy } from "../media-intelligence";
 import type { MotionStrategy } from "../motion-intelligence";
 import type { RepositoryRecord } from "../repository";
+import type { ArtDirectionBrief } from "../creative-director";
 
 export type SectionOrdering = Readonly<{ orderedSectionIds: string[]; rationale: string[] }>;
 export type PageRhythm = Readonly<{ rhythm: "direct" | "trust-first" | "editorial" | "guided" | "commerce"; notes: string[] }>;
@@ -71,6 +72,7 @@ export type CompositionInput = Readonly<{
   patternIntelligence?: PatternIntelligenceResult;
   designResult?: DesignResult;
   componentResult?: ComponentResult;
+  artDirectionBrief?: ArtDirectionBrief;
   mediaStrategy?: MediaStrategy;
   motionStrategy?: MotionStrategy;
   intent?: WebsiteIntentClassification;
@@ -125,6 +127,19 @@ export function sectionsFromComponents(selections: readonly ComponentSelection[]
     purpose: selection.variant.label,
     requiredFacts: selection.requirements.requiredFacts,
     requiredAssets: selection.requirements.requiredAssets,
+    orderHint: index,
+  }));
+}
+
+export function sectionsFromSectionSelections(selections: readonly SectionComponentSelection[] = []): CompositionSection[] {
+  return selections.map((item, index) => Object.freeze({
+    id: item.section.id,
+    componentId: item.selection.variant.id,
+    category: item.section.category ?? item.selection.variant.category,
+    family: item.selection.variant.family,
+    purpose: item.section.purpose,
+    requiredFacts: item.selection.requirements.requiredFacts,
+    requiredAssets: item.selection.requirements.requiredAssets,
     orderHint: index,
   }));
 }

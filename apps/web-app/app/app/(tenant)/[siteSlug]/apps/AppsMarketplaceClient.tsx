@@ -12,6 +12,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
 
 type AppPlan = "Free" | "Premium";
 type MarketplaceApp = {
@@ -164,8 +165,9 @@ export default function AppsMarketplaceClient({ siteName }: { siteName: string }
       </div>
 
       {selected && (
+        <DashboardModalPortal onClose={() => setSelected(null)}>
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 backdrop-blur-sm sm:items-center sm:p-6" onMouseDown={(event) => event.target === event.currentTarget && setSelected(null)}>
-          <div role="dialog" aria-modal="true" aria-label={`${selected.name} integration details`} className="w-full max-w-lg rounded-t-[28px] border dashboard-border dashboard-card-strong p-6 shadow-2xl sm:rounded-[28px]">
+          <div role="dialog" aria-modal="true" aria-label={`${selected.name} integration details`} className="dashboard-modal-surface max-h-[100dvh] w-full max-w-lg overflow-y-auto rounded-t-[28px] border dashboard-border p-6 shadow-2xl sm:max-h-[calc(100dvh-3rem)] sm:rounded-[28px]">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4"><div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white p-3 shadow ring-1 ring-black/5"><img src={logoUrl(selected.slug)} alt={`${selected.name} logo`} className="h-full w-full object-contain" /></div><div><div className="text-xs dashboard-muted">{selected.category}</div><h2 className="text-xl font-semibold">{selected.name}</h2></div></div>
               <button onClick={() => setSelected(null)} aria-label="Close" className="rounded-xl p-2 dashboard-hover"><X className="h-5 w-5" /></button>
@@ -175,6 +177,7 @@ export default function AppsMarketplaceClient({ siteName }: { siteName: string }
             <button onClick={() => { toggleApp(selected.name); setSelected(null); }} className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold ${installed.includes(selected.name) ? "dashboard-subtle" : "bg-[#1349A3] text-white hover:bg-[#1D5FC7]"}`}>{installed.includes(selected.name) ? "Disconnect app" : selected.plan === "Free" ? "Connect for free" : "Add premium app"}</button>
           </div>
         </div>
+        </DashboardModalPortal>
       )}
     </div>
   );

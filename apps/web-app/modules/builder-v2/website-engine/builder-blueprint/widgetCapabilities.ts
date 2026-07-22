@@ -1,4 +1,5 @@
-import type { BuilderPrimitiveType, WidgetCapabilities } from "./builderBlueprint";
+import type { NodeType } from "../../types/blueprint";
+import type { WidgetCapabilities } from "./builderBlueprint";
 
 /**
  * Builds widget capabilities for editable native primitives.
@@ -6,7 +7,7 @@ import type { BuilderPrimitiveType, WidgetCapabilities } from "./builderBlueprin
  * @example
  * const capabilities = buildWidgetCapabilities("heading");
  */
-export function buildWidgetCapabilities(type: BuilderPrimitiveType): WidgetCapabilities {
+export function buildWidgetCapabilities(type: NodeType): WidgetCapabilities {
   const canNest = ["page", "section", "container", "column"].includes(type);
   return Object.freeze({
     canEdit: true,

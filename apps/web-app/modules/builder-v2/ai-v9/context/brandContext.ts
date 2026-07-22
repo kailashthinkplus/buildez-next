@@ -12,6 +12,9 @@ export type BuilderAiContextForm = {
   logoUrl?: string;
   referenceImageUrl?: string;
   referenceImageIntent?: string;
+  referenceFileName?: string;
+  referenceFileKind?: "image" | "pdf";
+  referenceAnalysis?: string;
   designIntent?: string;
   audience?: string;
   offer?: string;
@@ -24,6 +27,11 @@ function isRecord(value: unknown): value is JsonRecord {
 
 function cleanString(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+function cleanReferenceAnalysis(value: unknown) {
+  const cleaned = cleanString(value);
+  return cleaned?.slice(0, 24000);
 }
 
 function isWeakPlaceholder(value: unknown) {
@@ -73,9 +81,28 @@ function humanizeContextValue(value: unknown) {
 function normalizeUrl(value: unknown) {
   const raw = cleanString(value);
   if (!raw) return undefined;
-  if (/^https?:\/\//i.test(raw)) return raw;
-  if (/^[a-z0-9.-]+\.[a-z]{2,}/i.test(raw)) return `https://${raw}`;
-  return undefined;
+  const candidate = /^https?:\/\//i.test(raw) ? raw : /^[a-z0-9.-]+\.[a-z]{2,}/i.test(raw) ? `https://${raw}` : "";
+  if (!candidate) return undefined;
+  try {
+    const parsed = new URL(candidate);
+    if (/^(?:aiconversation|buildershell|rungeneration)\./i.test(parsed.hostname)) return undefined;
+    return parsed.toString().replace(/\/$/, "");
+  } catch {
+    return undefined;
+  }
+}
+
+function normalizeDesignIntent(value: unknown) {
+  const raw = cleanString(value);
+  if (!raw) return undefined;
+  const seen = new Set<string>();
+  const choices = raw.split(";").map((item) => item.trim()).filter(Boolean).reverse().filter((item) => {
+    const key = item.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 3).reverse();
+  return choices.join("; ");
 }
 
 export function normalizeContextForm(value: unknown): BuilderAiContextForm {
@@ -91,7 +118,13 @@ export function normalizeContextForm(value: unknown): BuilderAiContextForm {
     logoUrl: normalizeUrl(source.logoUrl),
     referenceImageUrl: normalizeUrl(source.referenceImageUrl),
     referenceImageIntent: cleanString(source.referenceImageIntent),
-    designIntent: cleanString(source.designIntent),
+    referenceFileName: cleanString(source.referenceFileName),
+    referenceFileKind:
+      source.referenceFileKind === "image" || source.referenceFileKind === "pdf"
+        ? source.referenceFileKind
+        : undefined,
+    referenceAnalysis: cleanReferenceAnalysis(source.referenceAnalysis),
+    designIntent: normalizeDesignIntent(source.designIntent),
     audience: cleanString(source.audience),
     offer: cleanString(source.offer),
     researchEnabled: source.researchEnabled !== false,
@@ -149,6 +182,10 @@ export async function getOrCreateAiConversation(input: {
   const previous = isRecord(existing?.context) ? normalizeContextForm(existing.context) : {};
   const incoming = normalizeContextForm(input.context);
   const context = mergeDefined(previous, incoming);
+  if (input.context && isRecord(input.context)) {
+    for (const key of Object.keys(input.context))
+      if ((incoming as JsonRecord)[key] === undefined) delete context[key];
+  }
 
   if (existing) {
     return prisma.aIConversation.update({
@@ -226,13 +263,10 @@ export async function loadBuilderAiContext(input: {
     : {};
 
   const baseContext = normalizeContextForm({
-    companyName: onboarding?.businessName,
+    companyName: page.site.name,
     websiteName: page.site.name,
     pageName: page.title,
-    websiteUrl: onboarding?.website || onboarding?.domain,
     logoUrl: page.site.logoUrl,
-    industry: onboarding?.profession,
-    useCase: onboarding?.primaryUseCase,
   });
 
   const context = mergeDefined(baseContext, metadataContext, saved);

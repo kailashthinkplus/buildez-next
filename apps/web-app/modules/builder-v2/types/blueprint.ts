@@ -52,6 +52,7 @@ export type NodeType =
   | "smartFooter"
   | "cta"
   | "carousel"
+  | "productCarousel"
   | "beforeAfter"
   | "table"
   | "countdown"

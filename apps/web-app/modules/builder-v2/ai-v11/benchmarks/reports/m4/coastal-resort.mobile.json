@@ -1,0 +1,67 @@
+{
+  "fixture": "coastal-resort",
+  "viewport": "mobile",
+  "contractFidelity": {
+    "passed": true,
+    "evidence": {
+      "graphValidated": true,
+      "blueprintValidated": true,
+      "serializationRoundTrip": true,
+      "compilerOutputRendered": true
+    }
+  },
+  "visualFidelity": {
+    "categories": {
+      "composition": 76,
+      "geometry": 92,
+      "responsiveComposition": 100,
+      "typography": 100,
+      "backgroundsAndColor": 66,
+      "imagePlacementAndCrop": 76,
+      "overlapAndLayering": 100,
+      "residualEffects": 100,
+      "contentCompleteness": 100,
+      "editability": 100,
+      "canvasRuntimeParity": 100
+    },
+    "criticalFailures": [],
+    "passed": true,
+    "evidence": {
+      "pixelDifferenceRatio": 0.33738287916876153,
+      "sectionOrderCorrect": true,
+      "headingDelta": 0.07946243990384616,
+      "ctaDelta": 0.10610747195512821,
+      "heroMediaDelta": 0.11815384615384615,
+      "floatingCardDelta": 1,
+      "editorialImageDelta": 0.045661431993611924,
+      "headingFontSizeDelta": 0,
+      "gridCompositionCorrect": true,
+      "overlapCorrect": true,
+      "overlapExpected": false,
+      "responsiveStackingCorrect": true,
+      "backgroundPresent": true,
+      "imageCropCorrect": true,
+      "residualEffectsPresent": true,
+      "contentComplete": true,
+      "editable": true,
+      "canvasRuntimeParity": true,
+      "horizontalOverflow": false,
+      "productionRendererUsed": true,
+      "compilerOutputUsed": true,
+      "heroMediaRolePresent": true
+    }
+  },
+  "certification": {
+    "architectureProof": true,
+    "acceptableFidelity": false,
+    "productionGradeFidelity": false,
+    "controllingCategory": "backgroundsAndColor",
+    "minimumScore": 66
+  },
+  "screenshotCertification": {
+    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/coastal-resort/mobile/full.png",
+    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/coastal-resort/mobile/full.png",
+    "pixelDifferenceRatio": 0.33738287916876153,
+    "certified": true
+  }
+}

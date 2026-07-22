@@ -18,6 +18,9 @@ import type { MediaStrategy } from "../media-intelligence";
 import type { MotionStrategy } from "../motion-intelligence";
 import type { RepositoryRecord } from "../repository";
 import type { VisualMoodProfile } from "../visual-mood";
+import type { ArtDirectionBrief } from "../creative-director";
+import type { LayoutArchetypeId } from "../layout-archetypes";
+import type { NodeType } from "../../types/blueprint";
 
 export type ComponentCategory =
   | "navigation" | "hero" | "trust-band" | "proof" | "CTA" | "gallery" | "media" | "service" | "product"
@@ -77,6 +80,25 @@ export type ComponentFallback = Readonly<{ componentId: string; fallbackComponen
 export type ComponentScore = Readonly<{ patternFit: number; designFit: number; mediaFit: number; motionFit: number; conversionFit: number; overall: number }>;
 export type ComponentCandidate = Readonly<{ variant: ComponentVariant; score: ComponentScore; reasons: string[]; risks: string[] }>;
 export type ComponentSelection = Readonly<{ variant: ComponentVariant; rationale: string[]; requirements: ComponentRequirement; editableMappingIntent: EditableMappingIntent }>;
+export type NarrativeSectionIntent = Readonly<{ id: string; purpose: string; category?: string; patternId?: string; experienceGoal?: string; mediaRole?: "dominant" | "supporting" | "none"; layoutArchetypeId?: LayoutArchetypeId }>;
+export type SectionComponentScore = Readonly<{ purposeFit: number; geometryCompatibility: number; archetypeCompatibility: number; visualVariety: number; brandFit: number; mediaRoleCompatibility: number; repetitionPenalty: number; silhouetteDiversity: number; exploration: number; overall: number }>;
+export type CompilerCoverage = "dedicated" | "archetype-fallback" | "legacy-recipe-fallback";
+export type ContainerMode = "boxed" | "wide" | "fullWidth" | "fullBleed" | "breakout";
+export type VisualCapabilityDiagnostic = Readonly<{
+  sectionId: string;
+  purpose: string;
+  candidateCapabilities: readonly NodeType[];
+  selectedCapability?: NodeType;
+  selectedWidgetType?: NodeType;
+  compilerCoverage: "native-adapter" | "role-correct-fallback" | "unavailable";
+  containerMode: ContainerMode;
+  fallbackReason?: string;
+  interactionLevel: "static" | "low" | "interactive";
+  motionEligibility: boolean;
+}>;
+export type SectionComponentCandidate = Readonly<{ section: NarrativeSectionIntent; candidate: ComponentCandidate; score: SectionComponentScore; silhouette: string; layoutArchetypeId?: LayoutArchetypeId; compilerCoverage: CompilerCoverage; fallbackReason?: string }>;
+export type SectionComponentSelection = Readonly<{ section: NarrativeSectionIntent; selection: ComponentSelection; score: SectionComponentScore; silhouette: string; layoutArchetypeId?: LayoutArchetypeId; compilerCoverage: CompilerCoverage; fallbackReason?: string; forceLegacyRecipe?: boolean; selectedCapability?: NodeType; capabilityCandidates?: readonly NodeType[]; containerMode?: ContainerMode }>;
+export type SectionAnatomyDiagnostic = Readonly<{ sectionId: string; requestedRole: string; selectedComponent?: string; selectedArchetype?: LayoutArchetypeId; anatomyFingerprint: string; rejectedDuplicateCandidates: string[]; finalSelectionReason: string; warning?: string }>;
 export type ComponentConfidence = Readonly<{ score: number; reasons: string[] }>;
 export type ComponentMetrics = Readonly<{ catalogCount: number; candidateCount: number; selectedCount: number; conflictCount: number; warningCount: number }>;
 export type ComponentWarning = EngineWarning;
@@ -88,6 +110,9 @@ export type ComponentInput = Readonly<{
   experienceStrategy?: ExperienceStrategy;
   patternIntelligence?: PatternIntelligenceResult;
   designResult?: DesignResult;
+  artDirectionBrief?: ArtDirectionBrief;
+  narrativeSections?: readonly NarrativeSectionIntent[];
+  explorationSeed?: string | number;
   inspirationProfile?: InspirationProfile;
   visualMoodProfile?: VisualMoodProfile;
   mediaStrategy?: MediaStrategy;
@@ -106,6 +131,12 @@ export type ComponentResult = Readonly<{
   version: string;
   rankedCandidates: ComponentCandidate[];
   recommendedSelections: ComponentSelection[];
+  sectionCandidates?: readonly Readonly<{ section: NarrativeSectionIntent; candidates: readonly SectionComponentCandidate[] }>[];
+  sectionSelections?: readonly SectionComponentSelection[];
+  explorationSeed?: string;
+  compilerCoverage?: readonly Readonly<{ sectionId: string; componentId: string; coverage: CompilerCoverage; fallbackReason?: string }>[];
+  anatomyDiagnostics?: readonly SectionAnatomyDiagnostic[];
+  visualCapabilityDiagnostics?: readonly VisualCapabilityDiagnostic[];
   componentFamilies: ComponentFamily[];
   componentCategories: ComponentCategory[];
   compatibilityNotes: ComponentCompatibility[];

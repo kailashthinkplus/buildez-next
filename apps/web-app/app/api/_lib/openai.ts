@@ -41,6 +41,10 @@ function getApiKey() {
   return key;
 }
 
+export function modelSupportsReasoningEffort(model: string) {
+  return /^(?:gpt-5(?:\.|-|$)|o[1-9](?:-|$))/i.test(model);
+}
+
 export async function callOpenAIChatCompletion(
   input: ChatCompletionRequest
 ): Promise<ChatCompletionResponse> {
@@ -56,7 +60,7 @@ export async function callOpenAIChatCompletion(
   if (input.maxCompletionTokens !== undefined) {
     requestBody.max_completion_tokens = input.maxCompletionTokens;
   }
-  if (input.reasoningEffort !== undefined) {
+  if (input.reasoningEffort !== undefined && modelSupportsReasoningEffort(input.model)) {
     requestBody.reasoning_effort = input.reasoningEffort;
   }
   if (input.responseFormat) {

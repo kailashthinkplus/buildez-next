@@ -543,6 +543,18 @@ const premiumWidgetSeeds: PremiumWidgetSeed[] = [
     aiPrompt: "Use sparingly for featured collections, testimonials, campaigns, or product highlights.",
   },
   {
+    type: "productCarousel",
+    name: "Shopez Product Carousel",
+    category: "commerce",
+    icon: "ShoppingBag",
+    eyebrow: "Shop",
+    title: "Featured products",
+    body: "Products are loaded from the connected Shopez catalog and stay current after publishing.",
+    primaryCta: "Shop all",
+    items: [],
+    aiPrompt: "Use for new arrivals, featured products, best sellers, sale collections, and related-product rows. Bind to Shopez; never invent product records.",
+  },
+  {
     type: "beforeAfter",
     name: "Before / After",
     category: "media",
@@ -653,6 +665,8 @@ const premiumWidgetSeeds: PremiumWidgetSeed[] = [
 ];
 
 function createPremiumDefinition(seed: PremiumWidgetSeed): WidgetDefinition {
+  const isCarousel = seed.type === "carousel" || seed.type === "productCarousel";
+  const isProductCarousel = seed.type === "productCarousel";
   return {
     type: seed.type,
     name: seed.name,
@@ -671,6 +685,24 @@ function createPremiumDefinition(seed: PremiumWidgetSeed): WidgetDefinition {
         primaryCta: seed.primaryCta,
         ...(seed.secondaryCta ? { secondaryCta: seed.secondaryCta } : {}),
         items: seed.items,
+        ...(isCarousel ? {
+          showArrows: true,
+          showDots: true,
+          autoplay: false,
+          autoplayDelay: 5000,
+          itemsPerView: isProductCarousel ? 4 : 3,
+          tabletItemsPerView: 2,
+          mobileItemsPerView: 1,
+          slideGap: 18,
+        } : {}),
+        ...(isProductCarousel ? {
+          source: "shopez",
+          productLimit: 12,
+          collectionId: "",
+          tag: "",
+          showPrice: true,
+          showQuickShop: true,
+        } : {}),
       },
       style: {
         width: "100%",
@@ -704,8 +736,36 @@ function createPremiumDefinition(seed: PremiumWidgetSeed): WidgetDefinition {
         cardIconColor: "theme.colors.primary",
       },
     },
-    properties: sharedProperties,
+    properties: isCarousel ? [...sharedProperties, ...carouselProperties(isProductCarousel)] : sharedProperties,
   };
+}
+
+function carouselProperties(product: boolean): WidgetProperty[] {
+  const properties: WidgetProperty[] = [
+    { id: "showArrows", label: "Show Arrows", type: "switch", target: "props", category: "content", defaultValue: true },
+    { id: "showDots", label: "Show Dots", type: "switch", target: "props", category: "content", defaultValue: true },
+    { id: "autoplay", label: "Autoplay", type: "switch", target: "props", category: "content", defaultValue: false },
+    { id: "autoplayDelay", label: "Autoplay Delay (ms)", type: "slider", target: "props", category: "content", min: 1500, max: 20000, step: 500, defaultValue: 5000 },
+    { id: "itemsPerView", label: "Desktop Items", type: "slider", target: "props", category: "layout", min: 1, max: 6, step: 1, defaultValue: product ? 4 : 3 },
+    { id: "tabletItemsPerView", label: "Tablet Items", type: "slider", target: "props", category: "responsive", min: 1, max: 4, step: 1, defaultValue: 2 },
+    { id: "mobileItemsPerView", label: "Mobile Items", type: "slider", target: "props", category: "responsive", min: 1, max: 2, step: 1, defaultValue: 1 },
+    { id: "slideGap", label: "Slide Gap", type: "slider", target: "props", category: "layout", min: 0, max: 64, step: 1, unit: "px", defaultValue: 18 },
+  ];
+  if (!product) {
+    properties.push({ id: "slides", label: "Slides", type: "textarea", target: "props", category: "content", description: "Structured slides remain editable by the Builder and AI.", aiEditable: true });
+    return properties;
+  }
+  properties.push(
+    { id: "source", label: "Product Source", type: "select", target: "props", category: "content", defaultValue: "shopez", options: [{ label: "Live Shopez Catalog", value: "shopez" }, { label: "Manual Slides", value: "manual" }] },
+    { id: "siteSlug", label: "Site Slug", type: "text", target: "props", category: "content", description: "Optional. The current tenant site is detected automatically." },
+    { id: "storefrontUrl", label: "Storefront URL", type: "url", target: "props", category: "content", description: "Optional product destination override. Tenant and connected-domain storefronts are detected automatically.", aiEditable: true },
+    { id: "collectionId", label: "Collection ID", type: "text", target: "props", category: "content", description: "Leave blank to show products from the full catalog.", aiEditable: true },
+    { id: "tag", label: "Product Tag", type: "text", target: "props", category: "content", description: "Optional exact tag filter.", aiEditable: true },
+    { id: "productLimit", label: "Maximum Products", type: "slider", target: "props", category: "content", min: 1, max: 30, step: 1, defaultValue: 12 },
+    { id: "showPrice", label: "Show Price", type: "switch", target: "props", category: "content", defaultValue: true },
+    { id: "showQuickShop", label: "Show Product Action", type: "switch", target: "props", category: "content", defaultValue: true },
+  );
+  return properties;
 }
 
 export const PremiumWidgetDefinitions = premiumWidgetSeeds.map(

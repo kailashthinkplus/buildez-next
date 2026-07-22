@@ -1,12 +1,15 @@
 import { uploadToR2 } from "@/lib/storage/uploadToR2";
 import type { BuilderBlueprint } from "../../types/blueprint";
+import { assignNativeWidgetMedia, discoverNativeWidgetMediaSlots } from "./nativeWidgetMediaSlots";
 
-type ImageTarget = { nodeId: string; prompt: string };
+type ImageTarget = { nodeId: string; prompt: string; slotPath?: string };
 
-function targetsFor(blueprint: BuilderBlueprint): ImageTarget[] {
-  return Object.values(blueprint.nodes)
+export function targetsFor(blueprint: BuilderBlueprint): ImageTarget[] {
+  const primitive = Object.values(blueprint.nodes)
     .filter((node) => node.type === "image" && !node.props?.src && typeof node.props?.aiImagePrompt === "string")
-    .map((node) => ({ nodeId: node.id, prompt: String(node.props.aiImagePrompt) }))
+    .map((node) => ({ nodeId: node.id, prompt: String(node.props.aiImagePrompt) }));
+  const native = discoverNativeWidgetMediaSlots(blueprint).filter((slot)=>slot.assignmentStatus === "pending").map((slot)=>({nodeId:slot.widgetId,prompt:slot.prompt,slotPath:slot.slotPath}));
+  return [...primitive,...native]
     .slice(0, Math.max(0, Math.min(10, Number(process.env.AI_V10_IMAGE_COUNT || 8))));
 }
 
@@ -81,6 +84,7 @@ export async function runV10ImageGeneration(
     }
   }));
   const nodes = { ...blueprint.nodes };
+  const nestedAssignments: Array<{widgetId:string;slotPath:string;url:string}> = [];
   const warnings: string[] = [];
   let applied = 0;
   for (const result of results) {
@@ -88,9 +92,13 @@ export async function runV10ImageGeneration(
       warnings.push(`${result.target.nodeId}: ${"error" in result ? result.error : "Image generation failed."}`);
       continue;
     }
-    const node = nodes[result.target.nodeId];
-    nodes[result.target.nodeId] = { ...node, props: { ...(node.props || {}), src: result.url } };
+    if (result.target.slotPath) nestedAssignments.push({widgetId:result.target.nodeId,slotPath:result.target.slotPath,url:result.url});
+    else { const node = nodes[result.target.nodeId]; nodes[result.target.nodeId] = { ...node, props: { ...(node.props || {}), src: result.url } }; }
     applied += 1;
   }
-  return { blueprint: { ...blueprint, nodes }, applied, warnings };
+  const nested = assignNativeWidgetMedia({ ...blueprint, nodes }, nestedAssignments);
+  nested.rejected.forEach((warning)=>warnings.push(warning));
+  return { blueprint: nested.blueprint, applied:applied-nested.rejected.length, warnings };
 }
+
+export { discoverNativeWidgetMediaSlots, assignNativeWidgetMedia } from "./nativeWidgetMediaSlots";

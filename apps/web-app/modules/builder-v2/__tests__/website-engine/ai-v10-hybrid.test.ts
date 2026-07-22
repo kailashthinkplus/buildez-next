@@ -14,6 +14,16 @@ import {
 import { resolveAiGenerationEndpoint } from "../../ai/services/AiConversation";
 import { createPrimitiveBlueprint } from "../fixtures/testBlueprintFixtures";
 import { collectCreativeNodeIds, findSemanticPlaceholders } from "../../ai-v10/creative/semanticHydrationValidation";
+import type { RenderedScreenshot } from "../../website-engine/visual-quality";
+import { assignNativeWidgetMedia, discoverNativeWidgetMediaSlots } from "../../ai-v10/media/nativeWidgetMediaSlots";
+
+function renderedCaptures(): RenderedScreenshot[] {
+  return (["desktop", "tablet", "mobile"] as const).map((viewport) => {
+    const width = viewport === "desktop" ? 1200 : viewport === "tablet" ? 900 : 390; const height = 8; const pixels = new Uint8Array(width * height * 4);
+    for (let index = 0; index < pixels.length; index += 4) { pixels[index] = (index / 4) % 251; pixels[index + 1] = (index / 7) % 241; pixels[index + 2] = (index / 11) % 239; pixels[index + 3] = 255; }
+    return { viewport, width, height, pixels, pixelFormat: "rgba" as const };
+  });
+}
 
 test("ai-v10 uses Website Engine nodes as the authoritative GPT enrichment input", async () => {
   let engineBlueprint = createPrimitiveBlueprint();
@@ -45,7 +55,7 @@ test("ai-v10 uses Website Engine nodes as the authoritative GPT enrichment input
           nodes: Object.fromEntries(Object.entries(creativeInput.blueprint.nodes).map(([id, node]) => {
             if (!collectCreativeNodeIds(creativeInput.blueprint).includes(id)) return [id, node];
             const replace = (value: unknown): unknown => typeof value === "string"
-              ? value.replace(/\{\{[a-zA-Z0-9_.-]+\}\}/g, "Customer-ready content")
+              ? value.replace(/\{\{[a-zA-Z0-9_.-]+\}\}/g, `${id} customer-ready content`)
               : Array.isArray(value) ? value.map(replace)
               : value && typeof value === "object" ? Object.fromEntries(Object.entries(value).map(([key, item]) => [key, replace(item)]))
               : value;
@@ -56,7 +66,13 @@ test("ai-v10 uses Website Engine nodes as the authoritative GPT enrichment input
           })),
         };
       },
-      runImageGeneration: async (candidate) => ({ blueprint: candidate, applied: 0, warnings: [] }),
+      runImageGeneration: async (candidate) => {
+        const slots = discoverNativeWidgetMediaSlots(candidate);
+        const assigned = assignNativeWidgetMedia(candidate, slots.map((slot, index) => ({ widgetId: slot.widgetId, slotPath: slot.slotPath, url: `https://example.com/generated-${index}.jpg` })));
+        const nodes = Object.fromEntries(Object.entries(assigned.blueprint.nodes).map(([id, node]) => node.type === "image" ? [id, { ...node, props: { ...node.props, src: "https://example.com/generated-primitive.jpg" } }] : [id, node]));
+        return { blueprint: { ...assigned.blueprint, nodes }, applied: slots.length, warnings: [] };
+      },
+      renderBlueprint: async () => renderedCaptures(),
     }
   );
 
@@ -64,7 +80,7 @@ test("ai-v10 uses Website Engine nodes as the authoritative GPT enrichment input
   assert.ok(authoritativeSpec);
   assert.equal(result.metadata.aiMode, "ai-v10-native-website-engine");
   assert.equal(result.metadata.aiV9Used, false);
-  assert.equal(result.metadata.canonicalBlueprint, true);
+  assert.equal(result.qualityCategories.populationQuality.passed, true);
   assert.ok(result.metadata.agents.some((agent) => agent.agent === "CompositionAgent"));
   assert.ok(result.metadata.agents.some((agent) => agent.agent === "ImageGenerationAgent"));
   assert.ok(result.trace.includes("ai-v10.website-engine.builder-blueprint"));
@@ -74,6 +90,9 @@ test("ai-v10 uses Website Engine nodes as the authoritative GPT enrichment input
   assert.equal(findSemanticPlaceholders(result.blueprint).length, 0);
   assert.ok(result.evaluation);
   assert.ok(result.repairPlan);
+  assert.ok(result.renderedVisualQuality);
+  assert.equal(result.qualityCategories.nonCompensating, true);
+  assert.equal(result.qualityCategories.visualQuality.available, true);
   assert.ok(progressStages.includes("creative-enrichment"));
   assert.ok(progressStages.includes("image-generation"));
   assert.equal(progressStages.at(-1), "complete");

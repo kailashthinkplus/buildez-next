@@ -1,0 +1,37 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [],
+  "files": [
+    "lib/shopez.ts",
+    "lib/domain-provisioning.ts",
+    "lib/site-metadata.ts",
+    "modules/analytics/AnalyticsTracker.tsx",
+    "middleware.ts",
+    "app/api/shopez/products/route.ts",
+    "app/api/shopez/products/[productId]/route.ts",
+    "app/api/shopez/overview/route.ts",
+    "app/api/shopez/orders/route.ts",
+    "app/api/shopez/customers/route.ts",
+    "app/api/shopez/discounts/route.ts",
+    "app/api/shopez/settings/route.ts",
+    "app/api/sites/[siteId]/domains/route.ts",
+    "app/api/sites/[siteId]/settings/route.ts",
+    "app/api/analytics/[siteSlug]/route.ts",
+    "app/api/analytics/workspace/route.ts",
+    "app/api/public/analytics/events/route.ts",
+    "app/api/public/shopez/store/route.ts",
+    "app/api/public/shopez/checkout/route.ts",
+    "app/api/public/shopez/payments/verify/route.ts",
+    "app/app/(tenant)/[siteSlug]/shopez/page.tsx",
+    "app/app/(tenant)/[siteSlug]/shopez/ShopezDashboard.tsx",
+    "app/app/(tenant)/[siteSlug]/shopez/products/[productId]/page.tsx",
+    "app/app/(tenant)/[siteSlug]/shopez/products/[productId]/ProductEditor.tsx",
+    "app/store/Storefront.tsx",
+    "app/store/[siteSlug]/[[...path]]/page.tsx",
+    "app/app/(tenant)/[siteSlug]/settings/page.tsx",
+    "app/app/(tenant)/[siteSlug]/settings/SiteSettings.tsx"
+    ,"app/app/(tenant)/[siteSlug]/analytics/page.tsx"
+    ,"app/app/(tenant)/[siteSlug]/dashboard/page.tsx"
+    ,"app/app/(tenant)/dashboard/page.tsx"
+  ]
+}

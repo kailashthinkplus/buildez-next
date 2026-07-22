@@ -70,3 +70,8 @@ scripts/*_debug.py
 *.hit-test.bak
 # Generated Next.js output
 apps/web-app/.next/
+
+# Local forensic and compiler snapshots (canonical V12 backups are already tracked)
+/backups/v11-*/
+/tmp/
+*.backup

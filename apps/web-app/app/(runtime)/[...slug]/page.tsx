@@ -16,8 +16,15 @@ import {
   normalizeSiteThemeLayout,
 } from "@/modules/builder-v2/theme/siteLayout";
 import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
+import { metadataForSite } from "@/lib/site-metadata";
+import { AnalyticsTracker } from "@/modules/analytics/AnalyticsTracker";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(props: { params: Promise<{ slug?: string[] }> }) {
+  const parts = (await props.params).slug || [];
+  return metadataForSite(parts[0] || "", parts[1] || "home");
+}
 
 export default async function PublicRuntimePage(props: {
   params: Promise<{ slug?: string[] }>;
@@ -28,6 +35,10 @@ export default async function PublicRuntimePage(props: {
   const siteSlug = parts[0] ?? (await resolveDefaultSiteSlug());
   const pageSlug = parts[1] ?? "home";
 
+  return renderPublishedSitePage(siteSlug, pageSlug);
+}
+
+export async function renderPublishedSitePage(siteSlug: string, pageSlug: string) {
   const result = await renderPage({ siteSlug, pageSlug });
 
   if (!result) {
@@ -60,12 +71,7 @@ export default async function PublicRuntimePage(props: {
       hasExplicitLayout ? fallbackLayout : disableSiteThemeChrome(fallbackLayout)
     );
 
-    return (
-      <PublishedPageRenderer
-        blueprint={result.blueprint}
-        siteLayout={siteLayout}
-      />
-    );
+    return <><AnalyticsTracker siteId={result.page.site.id}/><PublishedPageRenderer blueprint={result.blueprint} siteLayout={siteLayout}/></>;
   }
 
   const legacyDesignTokens =
@@ -103,13 +109,13 @@ export default async function PublicRuntimePage(props: {
   );
 
   return (
-    <SiteThemeFrame layout={legacySiteLayout} tokens={legacyTokens}>
+    <><AnalyticsTracker siteId={result.page.site.id}/><SiteThemeFrame layout={legacySiteLayout} tokens={legacyTokens}>
       <style dangerouslySetInnerHTML={{ __html: result.css }} />
       <div
         id="buildez-preview-root"
         dangerouslySetInnerHTML={{ __html: result.html }}
       />
-    </SiteThemeFrame>
+    </SiteThemeFrame></>
   );
 }
 

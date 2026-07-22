@@ -1,0 +1,11 @@
+[WebServer] (node:2072) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next dev
+[WebServer] (node:2365) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:2532) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer]  ⚠ Port 3000 is in use, trying 3001 instead.
+Error: Timed out waiting 120000ms from config.webServer.
+
+RC0_EXIT=1 RC0_DURATION_SECONDS=123

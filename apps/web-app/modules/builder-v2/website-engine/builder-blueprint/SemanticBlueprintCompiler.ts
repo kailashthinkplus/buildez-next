@@ -7,29 +7,40 @@ import { ComponentVariantCompilerRegistry } from "./component-recipes";
 import { CompositionQualityEngine, type CompositionQualityScore } from "../composition-quality";
 import { DesignIntelligenceCompiler, type DesignExecutionPlan } from "../design-intelligence";
 import { CreativeDirectorCompiler, type CreativeDirectionPlan } from "../creative-director";
+import { LayoutArchetypeRegistry, type LayoutArchetypeId } from "../layout-archetypes";
+import { compileNativeVisualCapability } from "./nativeVisualCapabilityCompiler";
 
 function safeId(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "section";
 }
 
-function orderedSections(input: BuilderBlueprintInput): SemanticSection[] {
+type SectionAssociationDiagnostic = Readonly<{ code: "MISSING_STABLE_SECTION_ASSOCIATION"; sectionId: string; message: string }>;
+
+function orderedSections(input: BuilderBlueprintInput, diagnostics: SectionAssociationDiagnostic[]): SemanticSection[] {
   const composition = input.compositionResult?.orderedSectionSequence ?? [];
   if (composition.length) return composition.map((section, order) => {
-    const spec = input.websiteSpec?.sections.find((candidate) => String(candidate.id) === section.id || candidate.componentVariantRef === section.componentId);
-    const selection = input.componentResult?.recommendedSelections.find((candidate) => candidate.variant.id === section.componentId);
+    const spec = input.websiteSpec?.sections.find((candidate) => String(candidate.id) === section.id);
+    const scopedSelection = input.componentResult?.sectionSelections?.find((candidate) => candidate.section.id === section.id);
+    const selection = scopedSelection?.selection ?? input.componentResult?.recommendedSelections.find((candidate) => candidate.variant.id === section.componentId);
+    if (input.websiteSpec?.sections.length && !spec) diagnostics.push(Object.freeze({ code: "MISSING_STABLE_SECTION_ASSOCIATION", sectionId: section.id, message: `No WebsiteSpec section matches stable composition section ${section.id}; component ID fallback is forbidden.` }));
     return {
       id: section.id,
       type: spec?.type ?? section.category,
       purpose: spec?.purpose ?? section.purpose,
       componentVariantId: selection?.variant.id ?? section.componentId ?? spec?.componentVariantRef,
       componentCategory: selection?.variant.category ?? section.category,
-      patternIds: [...(spec?.patternRefs ?? []), ...(selection?.variant.patternIds ?? []), ...(input.patternIntelligence?.selectedPatterns[order]?.patternId ? [input.patternIntelligence.selectedPatterns[order].patternId] : [])].filter((value, index, values) => values.indexOf(value) === index),
+      layoutArchetypeId: scopedSelection?.layoutArchetypeId,
+      forceLegacyRecipe: scopedSelection?.forceLegacyRecipe,
+      nativeCapability: scopedSelection?.selectedCapability,
+      containerMode: scopedSelection?.containerMode,
+      patternIds: [...(spec?.patternRefs ?? []), ...(scopedSelection?.section.patternId ? [scopedSelection.section.patternId] : []), ...(selection?.variant.patternIds ?? [])].filter((value, index, values) => values.indexOf(value) === index),
       order,
     };
   });
 
   if (input.websiteSpec?.sections.length) return input.websiteSpec.sections.map((section, order) => {
-    const selection = input.componentResult?.recommendedSelections.find((candidate) => candidate.variant.id === section.componentVariantRef) ?? input.componentResult?.recommendedSelections[order];
+    const scopedSelection = input.componentResult?.sectionSelections?.find((candidate) => candidate.section.id === String(section.id));
+    const selection = scopedSelection?.selection ?? input.componentResult?.recommendedSelections.find((candidate) => candidate.variant.id === section.componentVariantRef) ?? input.componentResult?.recommendedSelections[order];
     return {
       id: String(section.id), type: section.type, purpose: section.purpose,
       componentVariantId: section.componentVariantRef ?? selection?.variant.id,
@@ -50,14 +61,20 @@ export type SemanticBlueprintCompilation = Readonly<{
   seeds: WidgetBlueprintSeed[];
   sections: SemanticSection[];
   selectedRecipes: Array<{ sectionId: string; recipe: string }>;
+  selectedArchetypes: Array<{ sectionId: string; archetype: LayoutArchetypeId }>;
   compositionQuality: CompositionQualityScore;
   designExecutionPlan: DesignExecutionPlan;
   creativeDirectionPlan: CreativeDirectionPlan;
+  associationDiagnostics: readonly SectionAssociationDiagnostic[];
 }>;
 
 export function compileSemanticBlueprint(input: BuilderBlueprintInput): SemanticBlueprintCompilation {
-  const sections = orderedSections(input);
-  const creativeDirectionPlan = CreativeDirectorCompiler.compile(input);
+  const associationDiagnostics: SectionAssociationDiagnostic[] = [];
+  const sections = orderedSections(input, associationDiagnostics);
+  const compiledCreativeDirection = CreativeDirectorCompiler.compile(input);
+  const creativeDirectionPlan = input.artDirectionBrief
+    ? Object.freeze({ ...compiledCreativeDirection, artDirectionBrief: input.artDirectionBrief })
+    : compiledCreativeDirection;
   const compositionQuality = CompositionQualityEngine.evaluate({
     sections: sections.map((section) => ({
       id: section.id,
@@ -85,20 +102,36 @@ export function compileSemanticBlueprint(input: BuilderBlueprintInput): Semantic
     props: { title: input.websiteSpec?.business.businessName ?? "{{website.name}}", semanticCompiler: true }, style: {},
   });
   const selectedRecipes: Array<{ sectionId: string; recipe: string }> = [];
+  const selectedArchetypes: Array<{ sectionId: string; archetype: LayoutArchetypeId }> = [];
   const seeds: WidgetBlueprintSeed[] = [page];
   sections.forEach((section, index) => {
     const context = { input, section, sectionNodeId: sectionNodeIds[index], key: safeId(section.id || `section_${index}`) };
+    if (section.nativeCapability && section.containerMode) {
+      const nativeSeeds = compileNativeVisualCapability(context, section.nativeCapability, section.containerMode);
+      if (nativeSeeds) {
+        selectedRecipes.push({ sectionId: section.id, recipe: `native:${section.nativeCapability}` });
+        seeds.push(...nativeSeeds);
+        return;
+      }
+    }
     const selectedCompiler = ComponentVariantCompilerRegistry.resolve(section);
     if (selectedCompiler) {
       selectedRecipes.push({ sectionId: section.id, recipe: selectedCompiler.name });
       seeds.push(...selectedCompiler.compiler.compile(context));
       return;
     }
+    const selectedArchetype = section.forceLegacyRecipe ? undefined : section.layoutArchetypeId ? LayoutArchetypeRegistry.get(section.layoutArchetypeId) : LayoutArchetypeRegistry.resolve(section, input.artDirectionBrief, input.websiteSpec?.business.family);
+    if (selectedArchetype) {
+      selectedRecipes.push({ sectionId: section.id, recipe: `archetype:${selectedArchetype.id}` });
+      selectedArchetypes.push({ sectionId: section.id, archetype: selectedArchetype.id });
+      seeds.push(...selectedArchetype.compile(context));
+      return;
+    }
     const selectedRecipe = RecipeRegistry.resolve(section);
     selectedRecipes.push({ sectionId: section.id, recipe: selectedRecipe.name });
     seeds.push(...selectedRecipe.recipe(context));
   });
-  return Object.freeze({ seeds, sections, selectedRecipes, compositionQuality, designExecutionPlan, creativeDirectionPlan });
+  return Object.freeze({ seeds, sections, selectedRecipes, selectedArchetypes, compositionQuality, designExecutionPlan, creativeDirectionPlan, associationDiagnostics: Object.freeze(associationDiagnostics) });
 }
 
 export function createSemanticBuilderTheme(input: BuilderBlueprintInput): BuilderTheme {

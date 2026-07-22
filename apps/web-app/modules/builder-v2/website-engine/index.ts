@@ -21,6 +21,8 @@ export * from "./graph";
 export * from "./inspiration";
 export * from "./knowledge";
 export * from "./learning";
+export * from "./layout-archetypes";
+export * from "./native-visual-capabilities";
 export * from "./mapper";
 export * from "./media-intelligence";
 export * from "./motion-intelligence";

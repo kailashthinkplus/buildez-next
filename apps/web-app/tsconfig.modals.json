@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [],
+  "files": [
+    "app/app/(tenant)/components/ui/DashboardModalPortal.tsx",
+    "app/app/(tenant)/components/CreateSiteModal.tsx",
+    "app/app/(tenant)/pages/components/CreatePageModal.tsx",
+    "app/app/(tenant)/pages/components/PageSettingsModal.tsx",
+    "app/app/(tenant)/pages/components/DeletePageModal.tsx",
+    "app/app/(tenant)/[siteSlug]/cms/page.tsx",
+    "app/app/(tenant)/media/components/UploadMediaModal.tsx",
+    "app/app/(tenant)/workspace/billing/components/UpgradePlanModal.tsx",
+    "app/app/(tenant)/[siteSlug]/crm/page.tsx",
+    "app/app/(tenant)/[siteSlug]/apps/AppsMarketplaceClient.tsx",
+    "app/app/(tenant)/[siteSlug]/themes/ThemeMarketplaceClient.tsx"
+  ]
+}

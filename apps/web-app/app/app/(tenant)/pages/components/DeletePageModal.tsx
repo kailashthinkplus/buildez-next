@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, Trash2 } from "lucide-react";
 import { useDeletePage } from "../hooks/useDeletePage";
+import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
 
 type DeletePageModalProps = {
   page: {
@@ -36,11 +37,12 @@ export default function DeletePageModal({
   }
 
   return (
+    <DashboardModalPortal onClose={onClose}>
     <div className="fixed inset-0 bg-black/50 backdrop-blur-xl flex items-center justify-center z-50">
       <div
         className="
           w-full max-w-sm rounded-2xl p-6
-          dashboard-card-strong
+          dashboard-modal-surface border dashboard-border
           shadow-2xl backdrop-blur-2xl relative
         "
       >
@@ -61,7 +63,7 @@ export default function DeletePageModal({
             This action cannot be undone.
           </p>
           {error && (
-            <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+            <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">
               {error}
             </p>
           )}
@@ -89,5 +91,6 @@ export default function DeletePageModal({
         </div>
       </div>
     </div>
+    </DashboardModalPortal>
   );
 }

@@ -13,7 +13,12 @@ function overlap(left: readonly string[], right: readonly string[]) {
 function scoreVariant(variant: ComponentVariant, input: ComponentInput, context: ComponentFamilyContext): ComponentScore {
   const patternFit = Math.max(overlap(variant.patternIds, context.selectedPatternIds), context.selectedPatternIds.length ? 0.2 : 0.55);
   const familyFit = variant.metadata.compatibleFamilies.includes(context.family) || context.family === "unknown" ? 1 : 0.35;
-  const designFit = input.designResult ? 0.78 : 0.58;
+  const brief = input.artDirectionBrief;
+  const preferredTags = brief?.componentStrategy.preferredTags ?? [];
+  const preferredFamilies = brief?.componentStrategy.preferredFamilies ?? [];
+  const tagFit = overlap(variant.metadata.tags, preferredTags);
+  const familyDirectionFit = preferredFamilies.includes(variant.family) ? 1 : .55;
+  const designFit = brief ? bounded(.68 + tagFit * .2 + familyDirectionFit * .12) : input.designResult ? 0.78 : 0.58;
   const mediaFit = variant.requiredAssets.length ? (input.mediaStrategy ? 0.82 : 0.45) : 0.8;
   const motionFit = input.motionStrategy ? 0.78 : 0.58;
   const conversionFit = ["hero", "booking", "appointment", "conversion-block", "sticky-action", "form"].includes(variant.category) ? 0.78 : 0.62;

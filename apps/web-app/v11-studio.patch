@@ -1,0 +1,51 @@
+--- a/app/internal/v11-studio/page.tsx
++++ b/app/internal/v11-studio/page.tsx
+@@ -0,0 +1,6 @@
++import Link from "next/link";
+
++import { notFound } from "next/navigation";
+
++import { V11_COMPLETE_SINGLE_FILE_FIXTURE_IDS, V11_ENGINEERING_FIXTURE_IDS, buildV11VisualFixture, isV11VisualPreviewAvailable } from "@/modules/builder-v2/ai-v11/benchmarks/visual/visualFixture";
+
++export const dynamic = "force-dynamic";
+
++const IDS=[...V11_COMPLETE_SINGLE_FILE_FIXTURE_IDS,...V11_ENGINEERING_FIXTURE_IDS] as const;
+
++export default function Page(){ if(!isV11VisualPreviewAvailable()) notFound(); return <main style={{minHeight:"100vh",background:"#070a10",color:"#f8fafc",padding:"56px 24px",fontFamily:"Inter,system-ui,sans-serif"}}><div style={{width:"min(1180px,100%)",margin:"0 auto"}}><p style={{color:"#60a5fa",fontSize:12,fontWeight:700,letterSpacing:".16em",textTransform:"uppercase"}}>BuildEZ AI V11 · Internal</p><h1 style={{margin:"12px 0",fontSize:52,letterSpacing:"-.04em"}}>Visual Compiler Studio</h1><p style={{maxWidth:760,color:"#94a3b8",lineHeight:1.7,marginBottom:40}}>Compare the trusted TSX reference with the native Blueprint rendered by PublishedPageRenderer.</p><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:16}}>{IDS.map(id=>{const f=buildV11VisualFixture(id);return <Link key={id} href={`/internal/v11-studio/${id}`} style={{padding:20,border:"1px solid #263247",borderRadius:16,background:"#0f172a",color:"inherit",textDecoration:"none"}}><div style={{color:"#60a5fa",fontSize:11,fontWeight:700,textTransform:"uppercase"}}>{f.classification}</div><strong style={{display:"block",marginTop:8,fontSize:19}}>{id}</strong><div style={{marginTop:10,color:"#94a3b8",fontSize:13}}>{Object.keys(f.graph.nodes).length} graph · {Object.keys(f.blueprint.nodes).length} Blueprint · {f.diagnostics.length} diagnostics</div></Link>})}</div></div></main>}
+
+--- a/app/internal/v11-studio/[fixtureId]/page.tsx
++++ b/app/internal/v11-studio/[fixtureId]/page.tsx
+@@ -0,0 +1,5 @@
++import { notFound } from "next/navigation";
+
++import { buildV11VisualFixture,isV11PremiumFixtureId,isV11VisualFixtureId,isV11VisualPreviewAvailable } from "@/modules/builder-v2/ai-v11/benchmarks/visual/visualFixture";
+
++import { V11StudioClient } from "./V11StudioClient";
+
++export const dynamic="force-dynamic";
+
++export default async function Page({params}:{params:Promise<{fixtureId:string}>}){if(!isV11VisualPreviewAvailable()) notFound();const {fixtureId}=await params;if(!isV11VisualFixtureId(fixtureId)||isV11PremiumFixtureId(fixtureId)) notFound();const f=buildV11VisualFixture(fixtureId);return <V11StudioClient fixtureId={fixtureId} classification={f.classification} sourceFile={f.sourceFile} graphNodeCount={Object.keys(f.graph.nodes).length} blueprintNodeCount={Object.keys(f.blueprint.nodes).length} diagnostics={f.diagnostics.map(i=>({code:i.code,severity:i.severity,feature:i.feature,affectedNode:i.affectedNode,message:i.message,location:i.location,recommendedLowering:i.recommendedLowering}))}/> }
+
+--- a/app/internal/v11-studio/[fixtureId]/V11StudioClient.tsx
++++ b/app/internal/v11-studio/[fixtureId]/V11StudioClient.tsx
+@@ -0,0 +1,10 @@
++"use client";
+
++import Link from "next/link";
+
++import { useState } from "react";
+
++type V="desktop"|"laptop"|"tablet"|"mobile";
+
++const VP:Record<V,{label:string;width:number;height:number}>={desktop:{label:"Desktop",width:1440,height:1000},laptop:{label:"Laptop",width:1024,height:900},tablet:{label:"Tablet",width:768,height:900},mobile:{label:"Mobile",width:390,height:844}};
+
++type D={code:string;severity:string;feature?:string;affectedNode?:string;message:string;location?:{file:string;line:number;column:number};recommendedLowering?:string};
+
++export function V11StudioClient(p:{fixtureId:string;classification:string;sourceFile:string;graphNodeCount:number;blueprintNodeCount:number;diagnostics:D[]}){const [v,setV]=useState<V>("desktop");const [show,setShow]=useState(false);const x=VP[v];const base=`/internal/v11-visual/${p.fixtureId}`;return <main style={{minHeight:"100vh",padding:20,background:"#070a10",color:"#f8fafc",fontFamily:"Inter,system-ui,sans-serif"}}><header style={{width:"min(1900px,100%)",margin:"0 auto 18px",display:"flex",justifyContent:"space-between",alignItems:"flex-end",gap:20}}><div><Link href="/internal/v11-studio" style={{color:"#94a3b8",textDecoration:"none",fontSize:13}}>← All fixtures</Link><div style={{marginTop:16,color:"#60a5fa",fontSize:11,fontWeight:800,letterSpacing:".14em",textTransform:"uppercase"}}>V11 Studio · {p.classification}</div><h1 style={{margin:"7px 0",fontSize:38,letterSpacing:"-.04em"}}>{p.fixtureId}</h1><div style={{display:"flex",gap:14,flexWrap:"wrap",color:"#94a3b8",fontSize:12}}><span>{p.graphNodeCount} graph</span><span>{p.blueprintNodeCount} Blueprint</span><span>{p.diagnostics.length} diagnostics</span></div></div><div style={{display:"flex",gap:8}}><a href={`${base}?mode=reference`} target="_blank" rel="noreferrer" style={link}>Reference ↗</a><a href={`${base}?mode=compiled`} target="_blank" rel="noreferrer" style={link}>Builder ↗</a></div></header><section style={{position:"sticky",top:10,zIndex:20,width:"min(1900px,100%)",margin:"0 auto 14px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap",padding:10,border:"1px solid #263247",borderRadius:14,background:"rgba(15,23,42,.94)"}}><div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{(Object.keys(VP) as V[]).map(n=><button key={n} onClick={()=>setV(n)} style={{padding:"9px 12px",borderRadius:9,border:v===n?"1px solid #3b82f6":"1px solid transparent",background:v===n?"rgba(59,130,246,.18)":"transparent",color:v===n?"#fff":"#94a3b8",cursor:"pointer"}}>{VP[n].label} <small>{VP[n].width}px</small></button>)}</div><button onClick={()=>setShow(!show)} style={button}>{show?"Hide":"Show"} diagnostics</button></section><section style={{width:"min(1900px,100%)",margin:"0 auto",display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:12}}><Preview title="Trusted TSX reference" badge="Reference" src={`${base}?mode=reference`} width={x.width} height={x.height}/><Preview title="Builder Blueprint" badge="PublishedPageRenderer" src={`${base}?mode=compiled`} width={x.width} height={x.height}/></section>{show&&<section style={{width:"min(1900px,100%)",margin:"18px auto 0",padding:18,border:"1px solid #263247",borderRadius:14,background:"#0f172a"}}><h2>Compiler diagnostics</h2><code style={{color:"#94a3b8",fontSize:11}}>{p.sourceFile}</code><div style={{display:"grid",gap:10,marginTop:16}}>{p.diagnostics.length?p.diagnostics.map((i,k)=><article key={`${i.code}-${i.affectedNode??k}`} style={{padding:14,border:"1px solid #253247",borderRadius:10,background:"#0b1220"}}><div style={{display:"flex",justifyContent:"space-between"}}><strong>{i.code}</strong><span style={{color:i.severity==="error"?"#fca5a5":"#fcd34d",fontSize:10,textTransform:"uppercase"}}>{i.severity}</span></div><p style={{color:"#e2e8f0",fontSize:13,lineHeight:1.6}}>{i.message}</p><div style={{color:"#64748b",fontSize:11}}>{i.feature?`Feature: ${i.feature} · `:""}{i.affectedNode?`Node: ${i.affectedNode} · `:""}{i.location?`${i.location.file}:${i.location.line}:${i.location.column}`:""}</div>{i.recommendedLowering&&<p style={{color:"#93c5fd",fontSize:12}}>{i.recommendedLowering}</p>}</article>):<p style={{color:"#94a3b8"}}>No diagnostics emitted.</p>}</div></section>}</main>}
+
++function Preview({title,badge,src,width,height}:{title:string;badge:string;src:string;width:number;height:number}){return <article style={{minWidth:0,overflow:"hidden",border:"1px solid #263247",borderRadius:14,background:"#0f172a"}}><div style={{minHeight:58,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",borderBottom:"1px solid #1e293b"}}><div><strong>{title}</strong><div style={{marginTop:3,color:"#64748b",fontSize:11}}>{width} × {height}</div></div><span style={{padding:"5px 8px",borderRadius:999,background:"#1e293b",color:"#93c5fd",fontSize:10,textTransform:"uppercase"}}>{badge}</span></div><div style={{width:"100%",overflow:"auto",background:"#020617"}}><iframe src={src} title={title} style={{display:"block",width,height,border:0,background:"#fff"}}/></div></article>}
+
++const link={padding:"9px 12px",border:"1px solid #334155",borderRadius:9,color:"#e2e8f0",fontSize:12,textDecoration:"none"};
+
++const button={padding:"9px 12px",border:"1px solid #334155",borderRadius:9,background:"#111827",color:"#e2e8f0",cursor:"pointer"};
+

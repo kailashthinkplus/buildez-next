@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
+import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
 
 export default function UploadMediaModal({ open, onClose }: any) {
   const [file, setFile] = useState<File | null>(null);
@@ -41,8 +42,9 @@ export default function UploadMediaModal({ open, onClose }: any) {
   if (!open) return null;
 
   return (
+    <DashboardModalPortal onClose={onClose}>
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-lg">
-      <div className="relative w-full max-w-lg p-8 rounded-2xl dashboard-card-strong backdrop-blur-2xl backdrop-saturate-150 shadow-[0_20px_70px_-10px_rgba(0,0,0,0.25)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.65)]">
+      <div className="dashboard-modal-surface relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl border dashboard-border p-8 shadow-[0_20px_70px_-10px_rgba(0,0,0,0.25)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.65)]">
         
         {/* CLOSE ICON */}
         <button
@@ -107,5 +109,6 @@ export default function UploadMediaModal({ open, onClose }: any) {
         </div>
       </div>
     </div>
+    </DashboardModalPortal>
   );
 }

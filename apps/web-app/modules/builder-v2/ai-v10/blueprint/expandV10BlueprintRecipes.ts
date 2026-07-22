@@ -12,6 +12,7 @@ export function expandV10BlueprintRecipes(blueprint: BuilderBlueprint): BuilderB
   const root = nodes[blueprint.root];
   for (const [index, sectionId] of (root?.children || []).entries()) {
     const section = nodes[sectionId];
+    if (section?.props?.nativeVisualCapability) continue;
     const purpose = `${section?.props?.role || ""} ${section?.props?.purpose || ""}`.toLowerCase();
     const containerId = section?.children?.[0];
     const container = containerId ? nodes[containerId] : undefined;

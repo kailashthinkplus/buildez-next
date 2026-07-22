@@ -13,6 +13,8 @@ import {
   Layers,
   Settings,
   Database,
+  ContactRound,
+  ShoppingBag,
   X,
   Search,
   CircleHelp,
@@ -43,12 +45,14 @@ export function SiteSidebar({
         { name: "CMS", href: `${base}/cms`, icon: Database },
         { name: "Themes", href: `${base}/themes`, icon: Brush },
         { name: "Apps", href: `${base}/apps`, icon: Puzzle },
+        { name: "Shopez", href: `${base}/shopez`, icon: ShoppingBag },
       ],
     },
     {
       title: "Growth",
       links: [
         { name: "Analytics", href: `${base}/analytics`, icon: BarChart3 },
+        { name: "CRM", href: `${base}/crm`, icon: ContactRound },
         { name: "AI Tools", href: `${base}/ai`, icon: Bot },
         { name: "Forms", href: `${base}/forms`, icon: Layers },
       ],

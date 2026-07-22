@@ -3,6 +3,7 @@ import { runBuilderBlueprintEngine } from "../../website-engine/builder-blueprin
 import { runBusinessIntelligence } from "../../website-engine/business-intelligence/BusinessIntelligenceEngine";
 import { runComponentEngine } from "../../website-engine/components/ComponentEngine";
 import { runCompositionEngine } from "../../website-engine/composition/CompositionEngine";
+import { CreativeDirectorCompiler } from "../../website-engine/creative-director";
 import { runContentIntelligence } from "../../website-engine/content-intelligence/ContentIntelligenceEngine";
 import { runCritic } from "../../website-engine/critic/runCritic";
 import { runDecisionEngine } from "../../website-engine/decision/decisionPlan";
@@ -14,12 +15,17 @@ import { runRendererParityCheck } from "../../website-engine/renderer-parity/ren
 import { runRepair } from "../../website-engine/repair/runRepair";
 import type { BusinessContext, BusinessFamily, JsonValue } from "../../website-engine/sdk";
 import { runWebsiteSpecBuilder } from "../../website-engine/specification/WebsiteSpecBuilder";
+import { runRenderedVisualQualityLoop, type RenderBlueprintForVisualQuality, type RenderedVisualQualityLoopResult } from "../../website-engine/visual-quality";
 import type { BuilderBlueprint } from "../../types/blueprint";
 import { runV10CreativeEnrichment, type V10CreativeEnrichmentInput } from "../creative/runV10CreativeEnrichment";
 import { expandV10BlueprintRecipes } from "../blueprint/expandV10BlueprintRecipes";
 import { runV10ImageGeneration } from "../media/runV10ImageGeneration";
 import { applyV10BlueprintRepair } from "../repair/applyV10BlueprintRepair";
 import { assertSemanticHydrationComplete } from "../creative/semanticHydrationValidation";
+import { buildWidgetHydrationDiagnostics } from "../creative/typedWidgetHydration";
+import { discoverNativeWidgetMediaSlots } from "../media/nativeWidgetMediaSlots";
+import { AiV10ForensicTrace } from "../forensics";
+import { enforceNativeWidgetPopulationGate } from "../../website-engine/builder-blueprint/widget-population";
 
 export type RunV10WebsiteGenerationInput = {
   pageId: string;
@@ -36,6 +42,7 @@ export type RunV10WebsiteGenerationInput = {
 export type V10GenerationDependencies = Readonly<{
   runCreativeEnrichment: (input: V10CreativeEnrichmentInput) => Promise<BuilderBlueprint>;
   runImageGeneration: typeof runV10ImageGeneration;
+  renderBlueprint?: RenderBlueprintForVisualQuality;
 }>;
 
 const DEFAULT_DEPENDENCIES: V10GenerationDependencies = Object.freeze({
@@ -92,6 +99,11 @@ export async function runV10WebsiteGeneration(
   input: RunV10WebsiteGenerationInput,
   dependencies: V10GenerationDependencies = DEFAULT_DEPENDENCIES
 ) {
+  const generationRunId = typeof input.context?.generationRunId === "string"
+    ? input.context.generationRunId
+    : `${input.pageId}-${Date.now()}`;
+  const forensic = new AiV10ForensicTrace(generationRunId);
+  forensic.snapshot("00-input.json", { ...input, onProgress: input.onProgress ? "[callback]" : undefined, generationRunId });
   const businessContext = businessContextFor(input);
   const subject = businessContext.businessName || businessContext.industryId || "this website";
   const report = (completed: number, agent: string, stage: string, summary: string) =>
@@ -103,22 +115,27 @@ export async function runV10WebsiteGeneration(
     rawPromptSummary: input.prompt,
     businessContext,
   }).data;
+  forensic.snapshot("01-business-profile.json", businessProfile);
   report(2, "BrandIntelligenceAgent", "brand-intelligence", `Translating the selected art direction into a distinctive brand system for ${subject}.`);
   const brandProfile = runBrandIntelligence({
     businessProfile,
     businessContext,
     brandHints: input.context as never,
   } as never).data;
+  forensic.snapshot("02-brand-profile.json", brandProfile);
   report(3, "ContentStrategyAgent", "content-strategy", `Planning the page narrative, proof, and calls to action for ${subject}.`);
   const contentStrategy = runContentIntelligence({
     businessProfile,
     brandProfile,
     knownFacts: businessContext.knownFacts,
   } as never).data;
+  forensic.snapshot("03-content-strategy.json", contentStrategy);
   report(4, "ExperienceAgent", "experience", `Designing the visitor journey and conversion sequence for ${subject}.`);
   const experienceStrategy = runExperienceEngine({ businessProfile, contentStrategy } as never).data;
+  forensic.snapshot("04-experience-strategy.json", experienceStrategy);
   report(5, "PatternAgent", "pattern-intelligence", `Choosing use-case-specific sections and avoiding repetitive landing-page patterns.`);
   const patternIntelligence = runPatternIntelligence({ businessProfile, contentStrategy, experienceStrategy } as never).data;
+  forensic.snapshot("05-pattern-intelligence.json", patternIntelligence);
   report(6, "DesignSystemAgent", "design-system", `Creating typography, color, spacing, and visual rhythm from the approved direction.`);
   const designResult = runDesignEngine({
     businessProfile,
@@ -127,13 +144,38 @@ export async function runV10WebsiteGeneration(
     experienceStrategy,
     patternIntelligence,
   }).data;
+  forensic.snapshot("06-design-result.json", designResult);
+  const artDirectionBrief = CreativeDirectorCompiler.compile({
+    websiteSpec: { business: { family: businessProfile.businessFamily }, archetype: planner.interpretedIntent?.archetypeHints[0] } as never,
+    designResult,
+    patternIntelligence,
+  }).artDirectionBrief;
+  forensic.snapshot("07-art-direction-brief.json", artDirectionBrief);
   report(7, "ComponentSelectionAgent", "components", `Selecting editable Builder components for the planned content and interactions.`);
   const componentResult = runComponentEngine({
     businessProfile,
     brandProfile,
     patternIntelligence,
     designResult,
+    artDirectionBrief,
+    experienceStrategy,
   }).data;
+  forensic.snapshot("08-component-candidates.json", { rankedCandidates: componentResult.rankedCandidates, sectionCandidates: componentResult.sectionCandidates });
+  forensic.snapshot("09-component-selection.json", { recommendedSelections: componentResult.recommendedSelections, sectionSelections: componentResult.sectionSelections, compilerCoverage: componentResult.compilerCoverage, anatomyDiagnostics: componentResult.anatomyDiagnostics, visualCapabilityDiagnostics: componentResult.visualCapabilityDiagnostics, explorationSeed: componentResult.explorationSeed });
+  const capabilityTrace = componentResult.visualCapabilityDiagnostics ?? [];
+  forensic.snapshot("09-native-visual-capabilities.json", {
+    sections: capabilityTrace,
+    coverage: {
+      primitiveSectionCount: capabilityTrace.filter((item) => !item.selectedCapability).length,
+      premiumWidgetCount: capabilityTrace.filter((item) => item.selectedCapability).length,
+      interactiveWidgetCount: capabilityTrace.filter((item) => item.interactionLevel === "interactive").length,
+      fullBleedSectionCount: capabilityTrace.filter((item) => item.containerMode === "fullBleed").length,
+      fullWidthSectionCount: capabilityTrace.filter((item) => item.containerMode === "fullWidth").length,
+      boxedSectionCount: capabilityTrace.filter((item) => item.containerMode === "boxed").length,
+      uniqueSilhouetteCount: new Set(capabilityTrace.map((item) => item.selectedCapability).filter(Boolean)).size,
+      fallbackCompilerCount: capabilityTrace.filter((item) => item.compilerCoverage !== "native-adapter").length,
+    },
+  });
   report(8, "CompositionAgent", "composition", `Composing varied editorial layouts and responsive section structures.`);
   const compositionResult = runCompositionEngine({
     businessProfile,
@@ -142,7 +184,9 @@ export async function runV10WebsiteGeneration(
     patternIntelligence,
     designResult,
     componentResult,
+    artDirectionBrief,
   } as never).data;
+  forensic.snapshot("10-composition-result.json", compositionResult);
   const initialDecision = runDecisionEngine({
     businessIntelligence: businessProfile,
     brandIntelligence: brandProfile,
@@ -162,6 +206,7 @@ export async function runV10WebsiteGeneration(
     compositionResult,
     decisionPlan: initialDecision,
   }).data;
+  forensic.snapshot("11-website-spec.json", specification);
   report(9, "BlueprintCompilerAgent", "builder-blueprint", `Turning the approved design decisions into native editable sections.`);
   const blueprintArtifact = runBuilderBlueprintEngine({
     websiteSpec: specification.websiteSpec,
@@ -170,8 +215,12 @@ export async function runV10WebsiteGeneration(
     componentResult,
     compositionResult,
     patternIntelligence,
+    artDirectionBrief,
   }).data;
+  forensic.snapshot("12-semantic-compilation.json", blueprintArtifact);
+  forensic.snapshot("13-widget-seeds.json", blueprintArtifact.blueprint.widgets);
   const engineBlueprint = expandV10BlueprintRecipes(blueprintArtifact.blueprint.nativeBlueprint);
+  forensic.snapshot("14-blueprint-before-enrichment.json", engineBlueprint);
   report(10, "CreativeEnrichmentAgent", "creative-enrichment", `Writing use-case-aware copy and refining the approved layouts. This is usually the longest creative step.`);
   let creativeBeat = 0;
   const creativeMilestones = [
@@ -197,12 +246,16 @@ export async function runV10WebsiteGeneration(
     blueprint: engineBlueprint,
   }).finally(() => clearInterval(creativeTimer));
   assertSemanticHydrationComplete(enrichedBlueprint, "after-creative-enrichment");
+  forensic.snapshot("15-blueprint-after-enrichment.json", enrichedBlueprint);
+  forensic.snapshot("widget-hydration-diagnostics.json", buildWidgetHydrationDiagnostics(engineBlueprint, undefined, enrichedBlueprint));
 
   report(11, "ImageGenerationAgent", "image-generation", `Generating and uploading imagery matched to ${subject}; several assets may be processed sequentially.`);
   const imageResult = await dependencies.runImageGeneration(enrichedBlueprint, input.siteId, (completed, total) => {
     report(11, "ImageGenerationAgent", `image-generation-${completed}`, `Generated and uploaded ${completed} of ${total} planned website images for ${subject}.`);
   });
   assertSemanticHydrationComplete(imageResult.blueprint, "after-image-generation");
+  forensic.snapshot("16-blueprint-after-images.json", imageResult.blueprint);
+  forensic.snapshot("widget-media-assignment.json", { before:discoverNativeWidgetMediaSlots(enrichedBlueprint),after:discoverNativeWidgetMediaSlots(imageResult.blueprint),applied:imageResult.applied,warnings:imageResult.warnings });
   report(12, "CriticAgent", "quality-review", `Reviewing hierarchy, content specificity, composition depth, and image coverage.`);
   const initialParity = runRendererParityCheck({ blueprint: imageResult.blueprint, sourceId: `ai-v10.${input.pageId}.pre-repair` });
   const hydratedArtifact = withCurrentNativeBlueprint(blueprintArtifact, imageResult.blueprint);
@@ -227,8 +280,25 @@ export async function runV10WebsiteGeneration(
     missingFacts: specification.missingFacts,
   }).data;
   report(13, "RepairAgent", "cleanup", `Applying deterministic output cleanup; the critic repair plan remains advisory.`);
-  const blueprint = applyV10BlueprintRepair(imageResult.blueprint);
+  let blueprint = applyV10BlueprintRepair(imageResult.blueprint);
+  forensic.snapshot("17-blueprint-after-repair.json", blueprint);
   assertSemanticHydrationComplete(blueprint, "after-deterministic-cleanup");
+  let renderedVisualQuality: RenderedVisualQualityLoopResult | undefined;
+  if (dependencies.renderBlueprint) {
+    report(13, "VisualQualityAgent", "rendered-visual-quality", "Rendering desktop, tablet, and mobile candidates for pixel-level visual review.");
+    const forensicRender: RenderBlueprintForVisualQuality = async (candidate, iteration) => {
+      const screenshots = await dependencies.renderBlueprint!(candidate, iteration);
+      forensic.captureScreenshots(screenshots);
+      return screenshots;
+    };
+    renderedVisualQuality = await runRenderedVisualQualityLoop({ blueprint, render: forensicRender, maxIterations: 3 });
+    blueprint = renderedVisualQuality.blueprint;
+    assertSemanticHydrationComplete(blueprint, "after-rendered-visual-repair");
+  }
+  const populationEnforcement = enforceNativeWidgetPopulationGate({blueprint,businessContext:businessContext as unknown as Record<string,unknown>,knownFacts:businessContext.knownFacts as unknown as Record<string,unknown>,missingFacts:specification.missingFacts});
+  blueprint=populationEnforcement.blueprint;
+  forensic.snapshot("widget-population-gate.json", populationEnforcement.diagnostics);
+  if(!populationEnforcement.gate.passed){forensic.snapshot("18-final-blueprint-rejected.json",blueprint);throw new Error(`NATIVE_WIDGET_POPULATION_GATE_FAILED: ${populationEnforcement.gate.failures.slice(0,8).map((failure)=>`${failure.widgetId}:${failure.code}`).join(", ")}`);}
   report(14, "ParityAgent", "renderer-parity", `Verifying responsive Builder compatibility and preparing the page for review.`);
   const rendererParity = runRendererParityCheck({ blueprint, sourceId: `ai-v10.${input.pageId}.final` });
   const finalArtifact = withCurrentNativeBlueprint(blueprintArtifact, blueprint);
@@ -243,6 +313,16 @@ export async function runV10WebsiteGeneration(
     missingFacts: specification.missingFacts,
   }).data;
   const semanticHydration = assertSemanticHydrationComplete(blueprint, "before-generation-return");
+  forensic.snapshot("18-final-blueprint.json", blueprint);
+  forensic.finalize(blueprint);
+  const qualityCategories = Object.freeze({
+    engineeringQuality: Object.freeze({ score: Math.max(0, 100 - rendererParity.issues.reduce((sum, issue) => sum + (issue.severity === "blocker" ? 30 : issue.severity === "major" ? 15 : 4), 0)), passed: rendererParity.parityReady }),
+    semanticQuality: Object.freeze({ score: evaluation.overallScore, passed: evaluation.passed }),
+    visualQuality: Object.freeze({ available: Boolean(renderedVisualQuality), score: renderedVisualQuality ? Math.min(renderedVisualQuality.evaluation.compositionScore, renderedVisualQuality.evaluation.typographyScore, renderedVisualQuality.evaluation.imageryScore, renderedVisualQuality.evaluation.hierarchyScore, renderedVisualQuality.evaluation.originalityScore, renderedVisualQuality.evaluation.responsiveScore) : undefined, passed: renderedVisualQuality?.evaluation.passed }),
+    populationQuality: Object.freeze({ passed:populationEnforcement.gate.passed,fullyPopulatedWidgets:populationEnforcement.gate.fullyPopulatedWidgets,totalWidgets:populationEnforcement.gate.totalWidgets }),
+    passed: populationEnforcement.gate.passed && rendererParity.parityReady && evaluation.passed && (renderedVisualQuality ? renderedVisualQuality.evaluation.passed : true),
+    nonCompensating: true as const,
+  });
   report(15, "ParityAgent", "complete", `Website generation for ${subject} is complete.`);
 
   return {
@@ -250,6 +330,8 @@ export async function runV10WebsiteGeneration(
     spec: specification.websiteSpec,
     evaluation,
     repairPlan,
+    renderedVisualQuality,
+    qualityCategories,
     trace: [
       "ai-v10.website-engine.planner",
       "ai-v10.website-engine.business-intelligence",
@@ -267,6 +349,7 @@ export async function runV10WebsiteGeneration(
       "ai-v10.website-engine.critic",
       "ai-v10.website-engine.repair-plan-advisory",
       "ai-v10.website-engine.deterministic-cleanup-applied",
+      ...(renderedVisualQuality ? ["ai-v10.website-engine.rendered-visual-quality-loop"] : []),
       "ai-v10.website-engine.final-parity",
     ],
     metadata: {

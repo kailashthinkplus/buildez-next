@@ -70,7 +70,7 @@ test("preflight uses its dedicated fast model, compact budget, timeout, and stru
 test("default preflight configuration uses a repository-supported fast model", () => {
   const config = resolveV10PreflightConfig({} as NodeJS.ProcessEnv);
   assert.equal(config.model, DEFAULT_V10_PREFLIGHT_MODEL);
-  assert.equal(config.model, "gpt-4o-mini");
+  assert.equal(config.model, "gpt-5.6-terra");
   assert.equal(config.tokenBudget, 2000);
   assert.equal(config.timeoutMs, 12000);
 });

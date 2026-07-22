@@ -1,4 +1,4 @@
-import { createEngineResult, type BusinessContext, type EngineResult, type WebsiteGoalPlan, type WebsiteSpec } from "../sdk";
+import { createEngineResult, createEngineWarning, type BusinessContext, type EngineResult, type WebsiteGoalPlan, type WebsiteSpec } from "../sdk";
 import { buildAccessibilityRequirements } from "./accessibilityRequirementBuilder";
 import { buildAssetRequirements } from "./assetRequirementBuilder";
 import { buildComponentPreferences, buildForbiddenComponents } from "./componentPreferenceBuilder";
@@ -8,7 +8,7 @@ import { buildDesignRules } from "./designRuleBuilder";
 import { buildFallbackStrategy } from "./fallbackStrategyBuilder";
 import { buildMissingFacts } from "./missingFactsBuilder";
 import { buildResponsiveRules } from "./responsiveRuleBuilder";
-import { buildSectionSpecs } from "./sectionSpecBuilder";
+import { buildSectionSpecs, buildSectionSpecsWithDiagnostics } from "./sectionSpecBuilder";
 import { buildSeoRequirements } from "./seoRequirementBuilder";
 import { validateWebsiteSpecBuilderResult } from "./validation";
 import { WEBSITE_SPEC_BUILDER_VERSION_STRING } from "./version";
@@ -176,7 +176,11 @@ export function buildWebsiteSpec(input: WebsiteSpecBuilderInput = {}): WebsiteSp
 export function buildWebsiteSpecBuilderResult(input: WebsiteSpecBuilderInput = {}): WebsiteSpecBuilderResult {
   const websiteDNA = buildWebsiteDNA(input);
   const websiteSpec = buildWebsiteSpec(input);
-  const warnings = compileWarnings(input);
+  const association = buildSectionSpecsWithDiagnostics(input);
+  const warnings = [
+    ...compileWarnings(input),
+    ...association.diagnostics.map((diagnostic) => createEngineWarning(diagnostic.code, diagnostic.message, "website-spec-builder", "major", { sectionId: diagnostic.sectionId })),
+  ];
   const partial = Object.freeze({
     websiteSpec,
     websiteDNA: websiteDNA.dna,

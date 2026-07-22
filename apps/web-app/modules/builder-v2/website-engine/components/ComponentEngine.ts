@@ -8,6 +8,7 @@ import { buildComponentRequirements } from "./componentRequirements";
 import { scoreComponentCandidates } from "./componentScoring";
 import { validateComponentResult, validationIssuesToComponentErrors } from "./validation";
 import { COMPONENT_ENGINE_VERSION_STRING } from "./version";
+import { buildSectionScopedSelection } from "./sectionScopedSelection";
 import { resolveComponentFamilyContext, type ComponentCandidate, type ComponentConfidence, type ComponentInput, type ComponentMetrics, type ComponentResult, type ComponentSelection } from "./componentVariant";
 
 function deterministicId(input: ComponentInput, family: string) {
@@ -71,6 +72,7 @@ export function scoreComponentConfidence(input: ComponentInput, candidates: read
     reasons: [
       `patternIntelligence=${Boolean(input.patternIntelligence)}`,
       `designResult=${Boolean(input.designResult)}`,
+      `artDirectionBrief=${Boolean(input.artDirectionBrief)}`,
       `mediaStrategy=${Boolean(input.mediaStrategy)}`,
       `motionStrategy=${Boolean(input.motionStrategy)}`,
       `selected=${selections.length}`,
@@ -106,7 +108,8 @@ function createDecision(result: ComponentResult, confidence: ComponentConfidence
 export function runComponentEngine(input: ComponentInput = {}): EngineResult<ComponentResult> {
   const context = resolveComponentFamilyContext(input);
   const rankedCandidates = buildComponentCandidates(input);
-  const recommendedSelections = selectComponentVariants(rankedCandidates, input);
+  const scoped = buildSectionScopedSelection(input, context);
+  const recommendedSelections = scoped.sectionSelections.length ? scoped.sectionSelections.map((item) => item.selection) : selectComponentVariants(rankedCandidates, input);
   const compatibilityNotes = detectComponentCompatibility(rankedCandidates.slice(0, 12), context);
   const conflicts = detectComponentConflicts(rankedCandidates.slice(0, 8));
   const qualityChecks = buildComponentQualityChecks(recommendedSelections);
@@ -117,6 +120,12 @@ export function runComponentEngine(input: ComponentInput = {}): EngineResult<Com
     version: COMPONENT_ENGINE_VERSION_STRING,
     rankedCandidates,
     recommendedSelections,
+    sectionCandidates: scoped.sectionCandidates,
+    sectionSelections: scoped.sectionSelections,
+    explorationSeed: scoped.seed,
+    compilerCoverage: scoped.sectionSelections.map((item) => Object.freeze({ sectionId: item.section.id, componentId: item.selection.variant.id, coverage: item.compilerCoverage, fallbackReason: item.fallbackReason })),
+    anatomyDiagnostics: scoped.anatomyDiagnostics,
+    visualCapabilityDiagnostics: scoped.visualCapabilityDiagnostics,
     componentFamilies: Array.from(new Set(recommendedSelections.map((selection) => selection.variant.family))),
     componentCategories: Array.from(new Set(recommendedSelections.map((selection) => selection.variant.category))),
     compatibilityNotes,
@@ -130,7 +139,9 @@ export function runComponentEngine(input: ComponentInput = {}): EngineResult<Com
     explanations: [
       `Resolved component family context as ${context.family}.`,
       `Selected ${recommendedSelections.length} component variants from ${rankedCandidates.length} candidates.`,
+      ...(scoped.sectionSelections.length ? [`Assigned components to ${scoped.sectionSelections.length} narrative sections with seed ${scoped.seed}.`] : []),
       "Component Engine does not decide final page order; Composition Engine owns ordering.",
+      ...(input.artDirectionBrief ? [`Applied executable art direction ${input.artDirectionBrief.id}.`] : []),
     ],
     warnings: [],
   });

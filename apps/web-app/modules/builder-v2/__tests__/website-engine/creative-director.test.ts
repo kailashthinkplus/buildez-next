@@ -19,7 +19,8 @@ test("same Website Intelligence input produces identical immutable creative dire
   const first = compileCreativeDirection(input); const second = compileCreativeDirection(input);
   assert.deepEqual(first, second);
   assert.ok(Object.isFrozen(first)); assert.ok(Object.isFrozen(first.sectionStrategy)); assert.ok(Object.isFrozen(first.creativeWarnings));
-  assert.equal(first.metadataOnly, true); assert.equal(first.deterministic, true);
+  assert.equal(first.metadataOnly, false); assert.equal(first.executable, true); assert.equal(first.deterministic, true);
+  assert.ok(Object.isFrozen(first.artDirectionBrief));
 });
 
 test("industry fixtures receive distinct art direction personalities", () => {
@@ -48,11 +49,12 @@ test("anti-template rules detect card fatigue, CTA overload, repeated splits, an
   assert.ok(plan.visualRhythmPlan.sectionVariationScore < 70);
 });
 
-test("SemanticBlueprintCompiler attaches creative metadata without changing native seeds", () => {
+test("SemanticBlueprintCompiler attaches executable creative direction", () => {
   const input = goldenWebsiteInput(createGoldenWebsiteCase("fine-dining", "food_and_beverage"));
   const result = compileSemanticBlueprint(input);
   assert.equal(result.creativeDirectionPlan.compositionStyle, "cinematic");
-  assert.equal(result.creativeDirectionPlan.metadataOnly, true);
+  assert.equal(result.creativeDirectionPlan.metadataOnly, false);
+  assert.equal(result.creativeDirectionPlan.executable, true);
   assert.ok(result.seeds.length > 0);
   assert.equal(JSON.stringify(result.seeds).includes("creativeDirectionPlan"), false);
 });

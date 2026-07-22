@@ -1,0 +1,121 @@
+(node:1670) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:1670) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+✔ Aznac parity source statically expands a complete single-file website (2.399416ms)
+✔ hero media, responsive typography, controls, dots and embedded CSS survive (0.263542ms)
+✔ asymmetry, four-card systems, process, mosaic and footer remain editable (0.201292ms)
+✔ pipeline has no fixture-specific compiler path or V10 dependency (3.162875ms)
+(node:1717) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ AI context removes repeated historical directions and stack-trace URLs (1.813291ms)
+(node:1748) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:1748) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+✔ complete self-contained TSX is statically parsed into the entire page (1.9285ms)
+✔ default page, local helpers, arrays, maps, and provenance are preserved (2.353917ms)
+✔ embedded CSS and arbitrary responsive Tailwind values survive safely (1.442125ms)
+✔ SVG, links, images, header, hero, footer, validation and round trip survive (0.604542ms)
+✔ navigation nested inside a header satisfies full-page completeness (3.289084ms)
+✔ recoverable text and href losses are review warnings rather than fatal page failures (2.562792ms)
+✔ Sanjeevini parity page compiles completely from the same trusted TSX (54.134791ms)
+(node:2115) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:2115) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+✔ V11 M1 parses TSX without executing the fixture (0.837541ms)
+✔ V11 M1 interprets a provenance-complete design graph (0.629083ms)
+✔ V11 M1 compiles only primitive Builder nodes and passes existing validation (14.144833ms)
+✔ V11 M1 golden pipeline summary remains stable (0.265167ms)
+✔ V11 M2 lowers residual design intent into scoped custom CSS (0.161125ms)
+✔ V11 flattens nested inline elements so Builder leaf widgets never own children (0.861709ms)
+✔ V11 preserves visual card children when an anchor wraps structured content (0.575666ms)
+✔ V11 expands static arrays declared inside the generated page component (0.51675ms)
+✔ V11 expands local arrays in an anonymous default component (0.365875ms)
+✔ V11 resolves safe arithmetic, conditions, and bounded slices in visible JSX (0.800625ms)
+✔ V11 wraps non-section top-level JSX in an editable Builder section (0.557375ms)
+✔ V11 preserves document theme, explicit line breaks, compact controls, and empty decoration (4.75875ms)
+(node:2897) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:2897) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+✔ preserves flex growth, shrink, basis, min-width, fractions and arbitrary widths (2.852375ms)
+✔ preserves grids, responsive layout, centering, aspect and image behavior (0.350917ms)
+✔ full-page lowering uses explicit block wrappers and full sections without fixture branches (63.564875ms)
+✔ diagnostics are metadata and never enter preview document flow (0.598041ms)
+(node:3579) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:3579) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+✔ expands local arrow and function components with literal props and static children (29.050708ms)
+✔ evaluates bounded static arrays and expands map callbacks (40.132ms)
+✔ evaluates type-only assertions inside static array data (55.741792ms)
+✔ evaluates common display-only string formatting calls (1.397625ms)
+✔ rejects runtime expressions, hooks, and arbitrary imports with locations (2.692166ms)
+✔ reports complete source metadata for every unsupported visible expression (0.792333ms)
+✔ accepts computed className when it resolves entirely from static values (1.76825ms)
+✔ enforces component depth and expanded node budgets (4.129875ms)
+✔ parses, scopes, classifies, sanitizes, and lowers residual CSS (35.5195ms)
+✔ rejects unscoped selectors, imports, and external URLs without discarding safe properties (4.763125ms)
+✔ preserves safe element, descendant, child, attribute, and pseudo selectors (3.667416ms)
+✔ preserves safe per-element CSS when a sibling declaration is rejected (1.042958ms)
+✔ lowers root CSS variables to inheritable page custom CSS (2.124292ms)
+✔ lowers a safe universal box-sizing reset onto every editable node (2.633125ms)
+✔ preserves responsive resets, grid placement, negative overlap, and typography (5.007667ms)
+✔ extracts media roles and lowers them into editable image props (3.144709ms)
+✔ M3 visual harness fails closed in production and accepts only committed fixture IDs (13.522208ms)
+✔ luxury-real-estate compiles primitive-only and passes existing validation and serialization (10.555125ms)
+✔ luxury-real-estate produces complete three-viewport render-contract and fidelity reports (49.799625ms)
+✔ modern-saas compiles primitive-only and passes existing validation and serialization (3.854458ms)
+✔ modern-saas produces complete three-viewport render-contract and fidelity reports (7.693959ms)
+(node:4341) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:4341) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+✔ M4 discovers exactly eight committed allowlisted fixtures (0.802542ms)
+✔ M4 compiles, validates, and round-trips all eight fixtures (42.8905ms)
+✔ three certification levels are non-compensating (0.36975ms)
+✔ geometry is parent and viewport normalized and measures wrapping and overlap (0.171833ms)
+✔ material losses retain provenance and are ranked (2.297209ms)
+✔ security negative corpus fails closed and is never renderable (7.426958ms)
+✔ CSS security certification removes executable and network-loading CSS while preserving safe declarations (3.381084ms)
+✔ offline pipeline performance is measured against provisional budgets (57.998375ms)
+(node:5086) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ V11 direction choices come from current site context instead of industry presets (1.232708ms)
+✔ V11 gives an uploaded reference its own interpretation choices (0.293541ms)
+✔ V11 derives useful storefront directions from an ecommerce reference and ignores placeholder site names (0.204375ms)
+(node:5214) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:5214) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+✔ engineering and premium fixtures remain separately classified (0.7375ms)
+✔ ten premium categories and composition grammars are distinct (0.929667ms)
+✔ manual approval metadata is required and candidates are never auto-approved (0.083042ms)
+✔ low quality cannot qualify as gold standard (0.130875ms)
+✔ generic pattern diagnostics are source-quality only (0.309959ms)
+✔ premium sources are local, static, parseable, and never executed (24.907292ms)
+✔ all premium candidates compile through validation and serialization for preview (15.269ms)
+(node:5909) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:5909) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+✔ V11 is wired to its production generation endpoint (0.934167ms)
+✔ OpenAI request builder does not send reasoning effort to legacy GPT-4.1 (0.169042ms)
+✔ V11 streaming progress keeps a long request open until its result arrives (36.9875ms)
+✔ V11 stream errors retain replay generation ID and structured diagnostics (2.025459ms)
+✔ V11 source artifacts persist raw, normalized, hashes, status, and replay diagnostics (15.955209ms)
+✔ V11 premium prompt preserves approved use-case decisions and static source contract (0.382875ms)
+✔ V11 lowers an approved creative artifact without asking the creative model to satisfy compiler constraints (0.107458ms)
+✔ V11 reference prompt includes the design specification once and omits stored media URLs (0.089209ms)
+✔ V11 reserves completion budget for source and lowers reasoning after an empty response (0.104958ms)
+✔ V11 timeout fallback is safe and compiles into native Builder nodes (10.897667ms)
+✔ V11 replaces external model assets before source validation (0.733625ms)
+✔ V11 removes external CSS imports before source validation (2.7665ms)
+✔ V11 uses reference-appropriate replacement assets instead of unrelated catalog images (0.085917ms)
+✔ V11 commerce generation uses Shopez product media instead of generic premium assets (0.123875ms)
+✔ V11 rejects generic output for an uploaded commerce reference (0.112041ms)
+✔ V11 accepts a reference reconstruction that retains its commerce structure (0.092542ms)
+✔ V11 does not reject a storefront merely because it uses different commerce vocabulary (0.141375ms)
+ℹ tests 84
+ℹ suites 0
+ℹ pass 84
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14577.92925
+RC0_EXIT=0 RC0_DURATION_SECONDS=14

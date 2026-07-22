@@ -24,3 +24,5 @@ export * from "./styleBinding";
 export * from "./version";
 export * from "./widgetBlueprint";
 export * from "./widgetCapabilities";
+export * from "./nativeVisualCapabilityCompiler";
+export * from "./widget-population";

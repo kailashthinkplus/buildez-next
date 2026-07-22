@@ -33,17 +33,20 @@ function placeholder(context: RecipeContext, field: string) {
 function sectionShell(context: RecipeContext, children: string[], layout: BuilderStyle = {}) {
   const sectionY = token(context, "spacing", ["sectionY", "section_y", "xl"], context.input.designResult?.spacingProfile.sectionY ?? 72);
   const gutter = token(context, "spacing", ["containerX", "gutter", "md"], context.input.designResult?.spacingProfile.gutter ?? 24);
-  const maxWidth = context.input.designResult?.layoutProfile.maxWidth ?? "1180px";
+  const art = context.input.artDirectionBrief?.blueprintStrategy;
+  const maxWidth = art?.containerMode === "wide" ? "1440px" : context.input.designResult?.layoutProfile.maxWidth ?? "1180px";
   const containerId = id(context, "container");
   return [
-    seed(context, { id: context.sectionNodeId, type: "section", name: `${context.section.type} section`, parentId: "page.root", children: [containerId], props: { role: context.section.type, purpose: context.section.purpose, semanticRecipe: true, motion: context.input.designResult?.motionProfile.level ?? "low" }, style: { paddingTop: { desktop: sectionY, tablet: typeof sectionY === "number" ? Math.round(sectionY * .78) : sectionY, mobile: typeof sectionY === "number" ? Math.round(sectionY * .58) : sectionY }, paddingBottom: { desktop: sectionY, tablet: typeof sectionY === "number" ? Math.round(sectionY * .78) : sectionY, mobile: typeof sectionY === "number" ? Math.round(sectionY * .58) : sectionY }, backgroundColor: String(context.section.order % 2 ? token(context, "color", ["surfaceAlt", "surface_alt", "muted"], "#f5f2ec") : token(context, "color", ["background", "surface"], "#ffffff")) } }),
-    seed(context, { id: containerId, type: "container", name: `${context.section.type} layout`, parentId: context.sectionNodeId, children, props: { layout: layout.display ?? "grid" }, style: { width: "100%", maxWidth, margin: "0 auto", paddingLeft: { desktop: gutter, tablet: 20, mobile: 16 }, paddingRight: { desktop: gutter, tablet: 20, mobile: 16 }, ...layout } }),
+    seed(context, { id: context.sectionNodeId, type: "section", name: `${context.section.type} section`, parentId: "page.root", children: [containerId], props: { role: context.section.type, purpose: context.section.purpose, semanticRecipe: true, motion: context.input.designResult?.motionProfile.level ?? "low" }, style: { paddingTop: { desktop: sectionY, tablet: typeof sectionY === "number" ? Math.round(sectionY * .78) : sectionY, mobile: typeof sectionY === "number" ? Math.round(sectionY * .58) : sectionY }, paddingBottom: { desktop: sectionY, tablet: typeof sectionY === "number" ? Math.round(sectionY * .78) : sectionY, mobile: typeof sectionY === "number" ? Math.round(sectionY * .58) : sectionY }, backgroundColor: String(art?.sectionContrast === "subtle" ? token(context, "color", ["background", "surface"], "#ffffff") : context.section.order % 2 ? token(context, "color", ["surfaceAlt", "surface_alt", "muted"], "#f5f2ec") : token(context, "color", ["background", "surface"], "#ffffff")) } }),
+    seed(context, { id: containerId, type: "container", name: `${context.section.type} layout`, parentId: context.sectionNodeId, children, props: { layout: layout.display ?? "grid" }, style: { width: "100%", maxWidth, margin: "0 auto", paddingLeft: { desktop: gutter, tablet: 20, mobile: 16 }, paddingRight: { desktop: gutter, tablet: 20, mobile: 16 }, ...(art?.containerMode === "framed" ? { borderRadius: 24, overflow: "hidden" } : {}), ...layout } }),
   ];
 }
 
 function heading(context: RecipeContext, parentId: string, role = "headline", level?: string) {
   const headingId = id(context, `heading.${role}`);
-  return seed(context, { id: headingId, type: "heading", name: role, parentId, children: [], props: { text: placeholder(context, role), level: level ?? (context.section.order === 0 ? "h1" : "h2") }, style: { color: String(token(context, "color", ["foreground", "textPrimary", "text"], "#111827")), fontFamily: String(token(context, "typography", ["headingFamily", "headingFont", "fontHeading"], context.input.designResult?.typographyProfile.headingFamily ?? "Inter")), fontSize: { desktop: context.section.order === 0 ? 64 : 44, tablet: context.section.order === 0 ? 48 : 36, mobile: context.section.order === 0 ? 38 : 30 }, lineHeight: 1.08 } });
+  const scale = context.input.artDirectionBrief?.blueprintStrategy.headingScale;
+  const desktop = context.section.order === 0 ? scale === "dramatic" ? 80 : scale === "restrained" ? 56 : 68 : scale === "dramatic" ? 52 : scale === "restrained" ? 40 : 46;
+  return seed(context, { id: headingId, type: "heading", name: role, parentId, children: [], props: { text: placeholder(context, role), level: level ?? (context.section.order === 0 ? "h1" : "h2") }, style: { color: String(token(context, "color", ["foreground", "textPrimary", "text"], "#111827")), fontFamily: String(token(context, "typography", ["headingFamily", "headingFont", "fontHeading"], context.input.designResult?.typographyProfile.headingFamily ?? "Inter")), fontSize: { desktop, tablet: Math.round(desktop * .76), mobile: Math.max(30, Math.round(desktop * .52)) }, lineHeight: scale === "dramatic" ? 1 : 1.08 } });
 }
 
 function text(context: RecipeContext, parentId: string, role = "description") {
@@ -55,7 +58,9 @@ function button(context: RecipeContext, parentId: string, role = "primary_cta") 
 }
 
 function image(context: RecipeContext, parentId: string, role = "image", ratio = "16 / 10") {
-  return seed(context, { id: id(context, `image.${role}`), type: "image", name: role, parentId, children: [], props: { src: `{{${context.section.type}.${role}}}`, alt: `{{${context.section.type}.${role}.alt}}` }, style: { width: "100%", aspectRatio: ratio, objectFit: "cover", borderRadius: token(context, "radius", ["media", "card"], 18) } });
+  const corners = context.input.artDirectionBrief?.blueprintStrategy.cornerTreatment;
+  const borderRadius = corners === "square" ? 0 : corners === "rounded" ? 28 : token(context, "radius", ["media", "card"], 18);
+  return seed(context, { id: id(context, `image.${role}`), type: "image", name: role, parentId, children: [], props: { src: `{{${context.section.type}.${role}}}`, alt: `{{${context.section.type}.${role}.alt}}` }, style: { width: "100%", aspectRatio: ratio, objectFit: "cover", borderRadius } });
 }
 
 function editorialSplit(context: RecipeContext, kind: "hero" | "about" | "contact") {

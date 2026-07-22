@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X, Loader2, Rocket } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWorkspace } from "./WorkspaceContext";
+import { DashboardModalPortal } from "./ui/DashboardModalPortal";
 
 
 type Props = {
@@ -12,7 +13,7 @@ type Props = {
 };
 
 export default function CreateSiteModal({ open, onClose }: Props) {
-  const { plan, websites, refreshWebsites } = useWorkspace();
+  const { plan, websites } = useWorkspace();
 
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -23,8 +24,9 @@ export default function CreateSiteModal({ open, onClose }: Props) {
   /* -----------------------------------------------------------
      PLAN LIMITS (SAFE DEFAULTS)
   ----------------------------------------------------------- */
+  const planLimits = (plan?.plan as { limits?: { sites?: number } } | undefined)?.limits;
   const siteLimit =
-    plan?.plan?.limits?.sites ??
+    planLimits?.sites ??
     (plan?.planCode === "starter" ? 1 : 999);
 
   const usedSites = websites.length;
@@ -62,13 +64,8 @@ export default function CreateSiteModal({ open, onClose }: Props) {
       }
 
       setSuccess(true);
-      await refreshWebsites();
-
       setTimeout(() => {
-        onClose();
-        setSuccess(false);
-        setName("");
-        setSlug("");
+        window.location.reload();
       }, 1200);
     } catch (e: any) {
       setError(e.message);
@@ -81,6 +78,7 @@ export default function CreateSiteModal({ open, onClose }: Props) {
 
   return (
     <AnimatePresence>
+      <DashboardModalPortal onClose={onClose}>
       {/* BACKDROP */}
       <motion.div
         className="
@@ -101,8 +99,8 @@ export default function CreateSiteModal({ open, onClose }: Props) {
           exit={{ opacity: 0, y: 12 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="
-            h-screen w-screen
-            dashboard-card-strong
+            h-[100dvh] w-screen
+            dashboard-modal-surface
             backdrop-blur-xl
             shadow-2xl
             overflow-y-auto
@@ -227,6 +225,7 @@ export default function CreateSiteModal({ open, onClose }: Props) {
           </div></div>
         </motion.div>
       </motion.div>
+      </DashboardModalPortal>
     </AnimatePresence>
   );
 }

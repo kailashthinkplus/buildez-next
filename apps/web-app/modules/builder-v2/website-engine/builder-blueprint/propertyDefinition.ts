@@ -1,3 +1,6 @@
+import type { NodeType } from "../../types/blueprint";
+import { REGISTERED_WIDGET_DEFINITIONS } from "../../widgets/widgetCapabilities";
+import type { WidgetProperty } from "../../types/property";
 import type { BuilderPrimitiveType, PropertyControlType, PropertyDefinition, PropertyGroupId } from "./builderBlueprint";
 
 type DefinitionSeed = Readonly<{ id: string; label: string; path: string; control: PropertyControlType; group: PropertyGroupId; value: unknown; responsive?: boolean; aiEditable?: boolean; allowedValues?: readonly unknown[]; min?: number; max?: number; step?: number; unitOptions?: readonly string[]; helpText?: string }>;
@@ -63,8 +66,9 @@ const BY_TYPE: Record<BuilderPrimitiveType, DefinitionSeed[]> = {
  * @example
  * const definitions = buildPropertyDefinitions("heading", "headline");
  */
-export function buildPropertyDefinitions(type: BuilderPrimitiveType, widgetId: string): PropertyDefinition[] {
-  return [...BY_TYPE[type], ...COMMON].map((definition) => Object.freeze({
+export function buildPropertyDefinitions(type: NodeType, widgetId: string): PropertyDefinition[] {
+  const seeds = type in BY_TYPE ? BY_TYPE[type as BuilderPrimitiveType] : nativeDefinitionSeeds(type);
+  return [...seeds, ...COMMON].map((definition) => Object.freeze({
     id: `${widgetId}.${definition.id}`,
     label: definition.label,
     propertyPath: definition.path,
@@ -83,4 +87,46 @@ export function buildPropertyDefinitions(type: BuilderPrimitiveType, widgetId: s
     unitOptions: definition.unitOptions,
     helpText: definition.helpText,
   }));
+}
+
+function nativeDefinitionSeeds(type: NodeType): DefinitionSeed[] {
+  const definition = REGISTERED_WIDGET_DEFINITIONS.find((candidate) => candidate.type === type);
+  if (!definition) return [];
+  return definition.properties.map((property) => ({
+    id: `${property.target ?? "props"}.${property.id}`,
+    label: property.label,
+    path: `${property.target ?? inferTarget(property)}.${property.id}`,
+    control: controlType(property),
+    group: propertyGroup(property),
+    value: property.defaultValue,
+    responsive: property.responsive,
+    aiEditable: property.aiEditable,
+    allowedValues: property.options?.map((option) => option.value),
+    min: property.min,
+    max: property.max,
+    step: property.step,
+    unitOptions: property.units,
+    helpText: property.description,
+  }));
+}
+
+function inferTarget(property: WidgetProperty): "props" | "style" {
+  return property.category === "style" || property.category === "layout" ? "style" : "props";
+}
+
+function controlType(property: WidgetProperty): PropertyControlType {
+  const aliases: Partial<Record<WidgetProperty["type"], PropertyControlType>> = {
+    switch: "toggle",
+    url: "link",
+  };
+  return aliases[property.type] ?? property.type as PropertyControlType;
+}
+
+function propertyGroup(property: WidgetProperty): PropertyGroupId {
+  if (property.category === "content") return "content";
+  if (property.category === "layout") return "layout";
+  if (property.category === "animation") return "animation";
+  if (property.category === "responsive") return "responsive";
+  if (property.category === "advanced") return "advanced";
+  return ["fontFamily", "fontSize", "fontWeight", "lineHeight", "color"].some((part) => property.id.includes(part)) ? "typography" : "background";
 }

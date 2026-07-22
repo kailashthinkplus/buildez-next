@@ -10,6 +10,7 @@ import {
   Copy,
   X,
 } from "lucide-react";
+import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
 
 type Props = {
   open: boolean;
@@ -75,8 +76,9 @@ console.log("🟩 [CreatePageModal] CREATE SUCCESS");
   }
 
   return (
+    <DashboardModalPortal onClose={onClose}>
     <div className="fixed inset-0 z-[200] bg-black/40 backdrop-blur-lg">
-      <div className="relative flex h-screen w-screen flex-col overflow-y-auto dashboard-card-strong shadow-2xl">
+      <div className="dashboard-modal-surface relative flex h-[100dvh] w-screen flex-col overflow-y-auto shadow-2xl">
         {/* CLOSE */}
         <button
           onClick={onClose}
@@ -156,6 +158,7 @@ console.log("🟩 [CreatePageModal] CREATE SUCCESS");
         </div></main>
       </div>
     </div>
+    </DashboardModalPortal>
   );
 }
 

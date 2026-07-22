@@ -140,6 +140,29 @@ html.dark .app-shell, html.dark .dashboard-shell { background: var(--background)
    COMPONENTS
 ========================= */
 @layer components {
+  .dashboard-modal-root {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    isolation: isolate;
+    color-scheme: light;
+  }
+
+  .dark .dashboard-modal-root {
+    color-scheme: dark;
+  }
+
+  .dashboard-modal-surface {
+    background: #ffffff;
+    color: #111827;
+    border-color: rgba(15, 23, 42, 0.12);
+  }
+
+  .dark .dashboard-modal-surface {
+    background: #0d1014;
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.12);
+  }
   .app-shell {
     position: relative;
     z-index: 10;
@@ -806,6 +829,20 @@ html:not(.dark) .dashboard-shell .dashboard-control { background:#f7fafa; }
 html:not(.dark) .analytics-engine{color:#111827}html:not(.dark) .analytics-engine .dashboard-card{background:linear-gradient(145deg,rgba(255,255,255,.97),rgba(245,248,252,.92));border-color:rgba(30,41,59,.12);box-shadow:0 14px 36px rgba(30,50,85,.09),inset 0 1px 0 #fff}html:not(.dark) .globe-card{background:radial-gradient(circle at 50% 50%,rgba(62,207,228,.15),transparent 52%),linear-gradient(145deg,#fbfdff,#edf5fa)!important}html:not(.dark) .globe-tooltip{background:rgba(255,255,255,.86);border-color:rgba(30,41,59,.14);box-shadow:0 10px 28px rgba(30,50,85,.1)}html:not(.dark) .analytics-tabs{background:rgba(226,232,240,.74)}html:not(.dark) .chart-grid{stroke:rgba(51,65,85,.2)}html:not(.dark) .heatmap-browser{background:white;box-shadow:0 18px 42px rgba(30,50,85,.12)}html:not(.dark) .live-row:hover{background:rgba(226,232,240,.62)}
 @keyframes analyticsEnter{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}@keyframes analyticsCardIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}@keyframes liveRowIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}@keyframes globeSheen{0%,65%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
 @media(prefers-reduced-motion:reduce){.analytics-engine>header,.analytics-engine>.analytics-tabs,.analytics-engine>section,.analytics-engine .dashboard-card,.live-row,.globe-card:after{animation:none!important;opacity:1}.analytics-engine .analytics-metric:hover{transform:none}}
+
+/* CRM relationship engine */
+.crm-engine{--crm-violet:#9b78ff;--crm-cyan:#35d8ef;--crm-blue:#1349A3;--crm-lime:#6ee795}
+.crm-live-dot{width:7px;height:7px;border-radius:50%;background:var(--crm-violet);box-shadow:0 0 0 5px rgba(155,120,255,.1),0 0 15px var(--crm-violet);animation:analyticsPulse 2s infinite}
+.crm-tabs{background:rgba(255,255,255,.35)}.dark .crm-tabs{background:rgba(0,0,0,.18)}
+.crm-tabs button{min-height:32px!important;border-radius:8px!important;padding:0 15px;font-size:12px;color:var(--dashboard-muted)}
+.crm-tabs button.active{background:white;color:#111827;font-weight:600;box-shadow:0 3px 12px rgba(30,41,59,.1)}.dark .crm-tabs button.active{background:rgba(255,255,255,.1);color:white}
+.crm-metric:after{content:"";position:absolute;right:-35px;top:-45px;width:120px;height:120px;border-radius:50%;filter:blur(30px);opacity:.23}.crm-metric>*{position:relative;z-index:1}
+.crm-violet:after{background:var(--crm-violet)}.crm-cyan:after{background:var(--crm-cyan)}.crm-blue:after{background:var(--crm-blue)}.crm-lime:after{background:var(--crm-lime)}
+.crm-violet .crm-icon{color:#7c3aed;background:rgba(155,120,255,.13)}.crm-cyan .crm-icon{color:#0891b2;background:rgba(53,216,239,.13)}.crm-blue .crm-icon{color:#1349A3;background:rgba(19,73,163,.12)}.dark .crm-blue .crm-icon{color:#93c5fd;background:rgba(55,119,218,.16)}.crm-lime .crm-icon{color:#16a34a;background:rgba(110,231,149,.14)}
+.crm-ai{background:radial-gradient(circle at 15% 10%,rgba(155,120,255,.17),transparent 35%),radial-gradient(circle at 90% 80%,rgba(53,216,239,.12),transparent 32%),linear-gradient(145deg,rgba(255,255,255,.85),rgba(244,242,255,.68))}.dark .crm-ai{background:radial-gradient(circle at 15% 10%,rgba(155,120,255,.2),transparent 38%),radial-gradient(circle at 90% 80%,rgba(53,216,239,.1),transparent 35%),linear-gradient(145deg,rgba(22,20,38,.95),rgba(7,12,23,.9))}
+.crm-engine>header,.crm-engine>section,.crm-engine>nav{animation:analyticsEnter .55s cubic-bezier(.2,.8,.2,1) both}.crm-engine>section{animation-delay:.08s}.crm-engine>nav{animation-delay:.13s}
+html:not(.dark) .crm-engine .dashboard-card{background:linear-gradient(145deg,rgba(255,255,255,.97),rgba(244,248,253,.92));border-color:rgba(30,41,59,.11);box-shadow:0 14px 36px rgba(30,50,85,.08),inset 0 1px 0 #fff}
+@media(prefers-reduced-motion:reduce){.crm-engine>header,.crm-engine>section,.crm-engine>nav,.crm-live-dot{animation:none!important}}
 
 .analytics-engine{--pink:#2563eb;--blue:#2563eb}.metric-glow-blue:after{background:var(--blue)}.analytics-icon-blue,.spark-blue{color:#2563eb;background:rgba(37,99,235,.12)}.spark-blue{background:none}.heat-spot{background:#2563eb;box-shadow:0 0 0 12px rgba(37,99,235,.17),0 0 22px 12px rgba(56,189,248,.32)}.analytics-view{animation:analyticsViewIn .48s cubic-bezier(.2,.8,.2,1) both}.analytics-view>section{animation:analyticsViewIn .5s cubic-bezier(.2,.8,.2,1) both}@keyframes analyticsViewIn{from{opacity:0;transform:translateY(10px) scale(.995);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}@media(prefers-reduced-motion:reduce){.analytics-view,.analytics-view>section{animation:none!important}}
 .heat-insight{background:linear-gradient(145deg,rgba(219,234,254,.86),rgba(207,250,254,.56));border-color:rgba(37,99,235,.25);color:#1d4ed8}.dark .heat-insight{background:linear-gradient(145deg,rgba(30,64,175,.34),rgba(8,47,73,.28));border-color:rgba(96,165,250,.24);color:#bfdbfe}

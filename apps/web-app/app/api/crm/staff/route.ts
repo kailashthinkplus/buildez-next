@@ -1,0 +1,4 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@buildez/db";
+import { authorizedSite, notFound } from "../_auth";
+export async function GET(req:NextRequest){const siteId=req.nextUrl.searchParams.get("siteId")||"";const site=await authorizedSite(req,siteId);if(!site)return notFound();const tenant=await prisma.tenant.findUnique({where:{id:site.tenantId},include:{owner:true,teams:{include:{members:{include:{user:true}}}}}});const people=new Map<string,{id:string;name:string;email:string|null}>();if(tenant?.owner)people.set(tenant.owner.id,{id:tenant.owner.id,name:tenant.owner.name||tenant.owner.email||"Owner",email:tenant.owner.email});for(const team of tenant?.teams||[])for(const member of team.members)people.set(member.user.id,{id:member.user.id,name:member.user.name||member.user.email||"Team member",email:member.user.email});return NextResponse.json({staff:[...people.values()]})}

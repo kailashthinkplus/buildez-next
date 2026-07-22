@@ -367,9 +367,220 @@ exports.Prisma.SiteScalarFieldEnum = {
   slug: 'slug',
   status: 'status',
   designTokens: 'designTokens',
+  settings: 'settings',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
+};
+
+exports.Prisma.ShopScalarFieldEnum = {
+  id: 'id',
+  siteId: 'siteId',
+  tenantId: 'tenantId',
+  name: 'name',
+  currency: 'currency',
+  country: 'country',
+  supportEmail: 'supportEmail',
+  orderPrefix: 'orderPrefix',
+  taxInclusive: 'taxInclusive',
+  taxRate: 'taxRate',
+  freeShippingOver: 'freeShippingOver',
+  flatShippingRate: 'flatShippingRate',
+  isPublished: 'isPublished',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ShopProductScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  title: 'title',
+  handle: 'handle',
+  description: 'description',
+  vendor: 'vendor',
+  productType: 'productType',
+  status: 'status',
+  tags: 'tags',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
+  trackQuantity: 'trackQuantity',
+  continueSelling: 'continueSelling',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ShopProductImageScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  url: 'url',
+  alt: 'alt',
+  position: 'position'
+};
+
+exports.Prisma.ShopProductOptionScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  name: 'name',
+  values: 'values',
+  position: 'position'
+};
+
+exports.Prisma.ShopProductVariantScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  title: 'title',
+  sku: 'sku',
+  barcode: 'barcode',
+  price: 'price',
+  compareAtPrice: 'compareAtPrice',
+  cost: 'cost',
+  inventory: 'inventory',
+  weightGrams: 'weightGrams',
+  optionValues: 'optionValues',
+  position: 'position'
+};
+
+exports.Prisma.ShopCollectionScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  title: 'title',
+  handle: 'handle',
+  description: 'description',
+  imageUrl: 'imageUrl'
+};
+
+exports.Prisma.ShopCollectionProductScalarFieldEnum = {
+  collectionId: 'collectionId',
+  productId: 'productId',
+  position: 'position'
+};
+
+exports.Prisma.ShopCustomerScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  email: 'email',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  phone: 'phone',
+  acceptsMarketing: 'acceptsMarketing',
+  addresses: 'addresses',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ShopDiscountScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  code: 'code',
+  type: 'type',
+  value: 'value',
+  minimumAmount: 'minimumAmount',
+  usageLimit: 'usageLimit',
+  usageCount: 'usageCount',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  active: 'active'
+};
+
+exports.Prisma.ShopOrderScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  customerId: 'customerId',
+  discountId: 'discountId',
+  orderNumber: 'orderNumber',
+  email: 'email',
+  phone: 'phone',
+  currency: 'currency',
+  subtotal: 'subtotal',
+  discount: 'discount',
+  shipping: 'shipping',
+  tax: 'tax',
+  total: 'total',
+  status: 'status',
+  paymentStatus: 'paymentStatus',
+  fulfillmentStatus: 'fulfillmentStatus',
+  shippingAddress: 'shippingAddress',
+  billingAddress: 'billingAddress',
+  note: 'note',
+  provider: 'provider',
+  providerOrderId: 'providerOrderId',
+  providerPaymentId: 'providerPaymentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ShopOrderItemScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  productId: 'productId',
+  variantId: 'variantId',
+  title: 'title',
+  variantTitle: 'variantTitle',
+  sku: 'sku',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  total: 'total'
+};
+
+exports.Prisma.ShopPaymentIntegrationScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  provider: 'provider',
+  enabled: 'enabled',
+  publicKey: 'publicKey',
+  encryptedSecret: 'encryptedSecret',
+  webhookSecret: 'webhookSecret',
+  mode: 'mode',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CrmLeadScalarFieldEnum = {
+  id: 'id',
+  siteId: 'siteId',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  company: 'company',
+  message: 'message',
+  source: 'source',
+  sourceUrl: 'sourceUrl',
+  status: 'status',
+  score: 'score',
+  temperature: 'temperature',
+  assignedToId: 'assignedToId',
+  assignedToName: 'assignedToName',
+  tags: 'tags',
+  customData: 'customData',
+  notes: 'notes',
+  consent: 'consent',
+  lastContactedAt: 'lastContactedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CrmCommunicationScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  type: 'type',
+  direction: 'direction',
+  subject: 'subject',
+  content: 'content',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CrmApiKeyScalarFieldEnum = {
+  id: 'id',
+  siteId: 'siteId',
+  name: 'name',
+  keyPrefix: 'keyPrefix',
+  keyHash: 'keyHash',
+  lastUsedAt: 'lastUsedAt',
+  createdAt: 'createdAt',
+  revokedAt: 'revokedAt'
 };
 
 exports.Prisma.CmsCollectionScalarFieldEnum = {
@@ -639,9 +850,13 @@ exports.Prisma.TrafficEventScalarFieldEnum = {
   method: 'method',
   status: 'status',
   country: 'country',
+  city: 'city',
   referrer: 'referrer',
   device: 'device',
   visitorHash: 'visitorHash',
+  sessionId: 'sessionId',
+  eventType: 'eventType',
+  metadata: 'metadata',
   bucket: 'bucket',
   createdAt: 'createdAt'
 };
@@ -825,6 +1040,49 @@ exports.SiteStatus = exports.$Enums.SiteStatus = {
   PUBLISHED: 'PUBLISHED'
 };
 
+exports.ShopProductStatus = exports.$Enums.ShopProductStatus = {
+  DRAFT: 'DRAFT',
+  ACTIVE: 'ACTIVE',
+  ARCHIVED: 'ARCHIVED'
+};
+
+exports.ShopDiscountType = exports.$Enums.ShopDiscountType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED_AMOUNT: 'FIXED_AMOUNT',
+  FREE_SHIPPING: 'FREE_SHIPPING'
+};
+
+exports.ShopOrderStatus = exports.$Enums.ShopOrderStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  PROCESSING: 'PROCESSING',
+  FULFILLED: 'FULFILLED',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED'
+};
+
+exports.ShopPaymentStatus = exports.$Enums.ShopPaymentStatus = {
+  PENDING: 'PENDING',
+  AUTHORIZED: 'AUTHORIZED',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
+  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED'
+};
+
+exports.ShopFulfillmentStatus = exports.$Enums.ShopFulfillmentStatus = {
+  UNFULFILLED: 'UNFULFILLED',
+  PARTIAL: 'PARTIAL',
+  FULFILLED: 'FULFILLED',
+  RETURNED: 'RETURNED'
+};
+
+exports.ShopPaymentProvider = exports.$Enums.ShopPaymentProvider = {
+  RAZORPAY: 'RAZORPAY',
+  PAYPAL: 'PAYPAL',
+  COD: 'COD'
+};
+
 exports.PageStatus = exports.$Enums.PageStatus = {
   DRAFT: 'DRAFT',
   PUBLISHED: 'PUBLISHED'
@@ -879,6 +1137,21 @@ exports.Prisma.ModelName = {
   ThemeAsset: 'ThemeAsset',
   MediaAsset: 'MediaAsset',
   Site: 'Site',
+  Shop: 'Shop',
+  ShopProduct: 'ShopProduct',
+  ShopProductImage: 'ShopProductImage',
+  ShopProductOption: 'ShopProductOption',
+  ShopProductVariant: 'ShopProductVariant',
+  ShopCollection: 'ShopCollection',
+  ShopCollectionProduct: 'ShopCollectionProduct',
+  ShopCustomer: 'ShopCustomer',
+  ShopDiscount: 'ShopDiscount',
+  ShopOrder: 'ShopOrder',
+  ShopOrderItem: 'ShopOrderItem',
+  ShopPaymentIntegration: 'ShopPaymentIntegration',
+  CrmLead: 'CrmLead',
+  CrmCommunication: 'CrmCommunication',
+  CrmApiKey: 'CrmApiKey',
   CmsCollection: 'CmsCollection',
   CmsEntry: 'CmsEntry',
   SiteLayout: 'SiteLayout',

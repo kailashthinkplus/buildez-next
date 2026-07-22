@@ -2,6 +2,8 @@ import { callOpenAIChatCompletion, extractAssistantText } from "@/app/api/_lib/o
 import type { BuilderBlueprint, BuilderNode, BuilderTheme } from "../../types/blueprint";
 import { OPENAI_56_WEBSITE_BUILDER_PROFILE } from "../skills/openAi56WebsiteBuilder";
 import { assertCreativePatchCoverage, assertSemanticHydrationComplete, collectCreativeNodeIds, validateCreativePatchCoverage } from "./semanticHydrationValidation";
+import { WidgetPopulationRegistry } from "../../website-engine/builder-blueprint/widget-population";
+import { TypedWidgetHydrationSchemas } from "./typedWidgetHydration";
 
 export type V10CreativeEnrichmentInput = Readonly<{
   generationRunId?: string;
@@ -146,12 +148,16 @@ function select(value: unknown, keys: readonly string[]) {
 }
 
 export function buildCompactCreativeContext(input: V10CreativeEnrichmentInput) {
+  const ordered = Object.values(input.blueprint.nodes).filter((node)=>node.type === "section").map((node)=>({id:node.id,role:node.props?.role,purpose:node.props?.purpose}));
+  const majorHeadlines = Object.values(input.blueprint.nodes).filter((node)=>node.type === "heading" || node.type === "hero").map((node)=>node.props?.text ?? node.props?.title).filter(Boolean);
+  const ctaLabels = Object.values(input.blueprint.nodes).flatMap((node)=>[node.props?.primaryCta,node.props?.secondaryCta,node.type === "button" ? node.props?.text : undefined]).filter(Boolean);
   return {
     business: compactValue(input.businessContext),
     specification: select(input.websiteSpec, ["business", "goals", "archetype", "sections", "contentRequirements", "designRules", "conversionRules", "responsiveRules", "factsUsed", "missingFacts"]),
     design: select(input.designResult, ["designIntent", "designLanguage", "typographyProfile", "colorProfile", "spacingProfile", "layoutProfile", "motionProfile", "densityProfile", "designTokens"]),
     components: select(input.componentResult, ["recommendedSelections", "componentFamilies", "componentCategories", "requiredFacts", "requiredAssets"]),
     composition: select(input.compositionResult, ["orderedSectionSequence", "pageRhythm", "visualBreathing", "ctaCadence", "trustPlacement", "conversionJourney", "scrollNarrative", "mobileStacking", "densityTransitions"]),
+    pageHydration: { orderedSections:ordered, majorHeadlines, ctaLabels, adjacentSectionRule:"Keep each section distinct from its immediate neighbours.", widgetContracts:WidgetPopulationRegistry.all().map((contract)=>({widgetType:contract.widgetType,requiredProps:contract.requiredProps,minimumItems:contract.minimumItems,maximumItems:contract.maximumItems,requiredVerifiedFacts:contract.requiredVerifiedFacts,mediaSlots:contract.imageAssignmentSchema})), hydrationSchemas:TypedWidgetHydrationSchemas.map((schema)=>({id:schema.id,widgetType:schema.widgetType,allowedProps:schema.allowedProps,immutableProps:schema.immutableProps,collections:schema.collections})) },
   };
 }
 
@@ -273,15 +279,44 @@ export function classifyCreativeError(error: unknown): CreativeErrorClassificati
   return "transient_provider_error";
 }
 
-/** @deprecated Authorization failures are explicit permission errors and are never transient. */
-export function isTransientCreativeAuthorizationError() { return false; }
+/**
+ * Some OpenAI deployments can temporarily return authorization-style
+ * failures for an otherwise valid model/key combination.
+ * Keep explicit invalid keys and unknown model access failures fatal,
+ * but retry observed transient insufficient-permission responses.
+ */
+export function isTransientCreativeAuthorizationError(error: unknown) {
+  const text = errorText(error).toLowerCase();
+
+  return (
+    text.includes("insufficient permissions") &&
+    text.includes("gpt-5.6-sol")
+  );
+}
 
 export function isRetryableOpenAIError(error: unknown) {
   const text = errorText(error).toLowerCase();
-  if (/insufficient_quota|invalid_request_error|context_length_exceeded/.test(text)) return false;
+
+  if (/invalid_api_key|incorrect api key|api key.*invalid/.test(text)) {
+    return false;
+  }
+
+  if (isTransientCreativeAuthorizationError(error)) {
+    return true;
+  }
+
+  if (/insufficient_quota|context_length_exceeded/.test(text)) return false;
+
   const classification = classifyCreativeError(error);
-  if (classification === "invalid_api_key" || classification === "model_permission" || classification === "malformed_response") return false;
-  if (classification === "rate_limit") return /\b429\b|rate_limit|rate limit|too many requests/.test(text);
+
+  if (classification === "model_permission" || classification === "malformed_response") {
+    return false;
+  }
+
+  if (classification === "rate_limit") {
+    return /\b429\b|rate_limit|rate limit|too many requests/.test(text);
+  }
+
   return /\b(408|500|502|503|504)\b|timeout|timed out|abort|network request failed|fetch failed|econnreset|socket/.test(text);
 }
 
@@ -425,7 +460,7 @@ export async function runV10CreativeEnrichment(
           const prefix = classification === "invalid_api_key"
             ? "AI_V10_CREATIVE_INVALID_API_KEY"
             : classification === "model_permission"
-              ? "AI_V10_CREATIVE_MODEL_PERMISSION_FAILED"
+              ? "AI_V10_CREATIVE_AUTHORIZATION_FAILED_AFTER_RETRY"
               : classification === "rate_limit"
                 ? "AI_V10_CREATIVE_RATE_LIMIT_FAILED"
                 : "AI_V10_CREATIVE_TRANSIENT_PROVIDER_FAILED";

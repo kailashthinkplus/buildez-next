@@ -1,0 +1,67 @@
+{
+  "fixture": "bento-software",
+  "viewport": "desktop",
+  "contractFidelity": {
+    "passed": true,
+    "evidence": {
+      "graphValidated": true,
+      "blueprintValidated": true,
+      "serializationRoundTrip": true,
+      "compilerOutputRendered": true
+    }
+  },
+  "visualFidelity": {
+    "categories": {
+      "composition": 73,
+      "geometry": 94,
+      "responsiveComposition": 100,
+      "typography": 100,
+      "backgroundsAndColor": 63,
+      "imagePlacementAndCrop": 86,
+      "overlapAndLayering": 100,
+      "residualEffects": 100,
+      "contentCompleteness": 100,
+      "editability": 100,
+      "canvasRuntimeParity": 100
+    },
+    "criticalFailures": [],
+    "passed": true,
+    "evidence": {
+      "pixelDifferenceRatio": 0.36807963130551363,
+      "sectionOrderCorrect": true,
+      "headingDelta": 0.08507333126036484,
+      "ctaDelta": 0.05791942792547678,
+      "heroMediaDelta": 0.07141376451077944,
+      "floatingCardDelta": 0.49356327088515756,
+      "editorialImageDelta": 0.20022478272928995,
+      "headingFontSizeDelta": 0,
+      "gridCompositionCorrect": true,
+      "overlapCorrect": true,
+      "overlapExpected": false,
+      "responsiveStackingCorrect": true,
+      "backgroundPresent": true,
+      "imageCropCorrect": true,
+      "residualEffectsPresent": true,
+      "contentComplete": true,
+      "editable": true,
+      "canvasRuntimeParity": true,
+      "horizontalOverflow": false,
+      "productionRendererUsed": true,
+      "compilerOutputUsed": true,
+      "heroMediaRolePresent": true
+    }
+  },
+  "certification": {
+    "architectureProof": true,
+    "acceptableFidelity": false,
+    "productionGradeFidelity": false,
+    "controllingCategory": "backgroundsAndColor",
+    "minimumScore": 63
+  },
+  "screenshotCertification": {
+    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/bento-software/desktop/full.png",
+    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/bento-software/desktop/full.png",
+    "pixelDifferenceRatio": 0.36807963130551363,
+    "certified": true
+  }
+}

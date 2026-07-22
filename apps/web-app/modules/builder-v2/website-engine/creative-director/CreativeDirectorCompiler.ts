@@ -1,6 +1,7 @@
 import type { BuilderBlueprintInput } from "../builder-blueprint/builderBlueprint";
+import type { ArtDirectionBrief, ArtDirectionCompositionStyle } from "./ArtDirectionBrief";
 
-export type CompositionStyle = "editorial" | "cinematic" | "minimal" | "luxury" | "bold" | "technical" | "warm" | "premium";
+export type CompositionStyle = ArtDirectionCompositionStyle;
 export type CreativeScoreDimensions = Readonly<{ originality: number; emotionalImpact: number; visualStorytelling: number; brandDifferentiation: number; conversionConfidence: number }>;
 export type CreativeWarning = Readonly<{ code: string; severity: "low" | "medium" | "high"; message: string; affectedSections: readonly string[] }>;
 export type CreativeSectionStrategy = Readonly<{
@@ -20,7 +21,10 @@ export type CreativeDirectionPlan = Readonly<{
   creativeScore: number;
   scoreDimensions: CreativeScoreDimensions;
   creativeWarnings: readonly CreativeWarning[];
-  metadataOnly: true;
+  artDirectionBrief: ArtDirectionBrief;
+  executable: true;
+  /** @deprecated The plan is executable from v1 onward. */
+  metadataOnly: false;
   deterministic: true;
 }>;
 
@@ -28,7 +32,7 @@ type Section = Readonly<{ id: string; componentId?: string; category?: string; p
 
 function sections(input: BuilderBlueprintInput): Section[] {
   if (input.compositionResult?.orderedSectionSequence.length) return input.compositionResult.orderedSectionSequence.map((section) => ({ id: section.id, componentId: section.componentId, category: section.category, purpose: section.purpose }));
-  return input.websiteSpec?.sections.map((section) => ({ id: String(section.id), componentId: section.componentVariantRef, category: section.type, purpose: section.purpose })) ?? [];
+  return input.websiteSpec?.sections?.map((section) => ({ id: String(section.id), componentId: section.componentVariantRef, category: section.type, purpose: section.purpose })) ?? [];
 }
 
 function corpus(section: Section) { return `${section.id} ${section.componentId ?? ""} ${section.category ?? ""} ${section.purpose ?? ""}`.toLowerCase(); }
@@ -73,6 +77,22 @@ function antiTemplateWarnings(items: readonly Section[], input: BuilderBlueprint
 
 function clamp(value: number) { return Math.max(0, Math.min(100, Math.round(value))); }
 
+function artDirectionBrief(input: BuilderBlueprintInput, direction: { personality: string; style: CompositionStyle }, items: readonly Section[], warnings: readonly CreativeWarning[], densityPattern: readonly ("open" | "balanced" | "dense")[]): ArtDirectionBrief {
+  const family = identity(input).family;
+  const expressive = ["luxury", "cinematic", "bold"].includes(direction.style);
+  const technical = direction.style === "technical";
+  const warm = direction.style === "warm";
+  const imagery = items.filter(isImagery).length;
+  const preferredTags = direction.style === "cinematic" ? ["editorial", "gallery", "lifestyle"] : direction.style === "luxury" ? ["premium", "editorial", "gallery"] : technical ? ["product", "service"] : warm ? ["story", "lifestyle"] : [direction.style];
+  return Object.freeze({
+    version: "1", id: `art-direction.${family}.${direction.style}`, visualPersonality: direction.personality, compositionStyle: direction.style,
+    componentStrategy: Object.freeze({ preferredTags: Object.freeze(preferredTags), preferredFamilies: Object.freeze(expressive ? ["hero", "gallery", "proof"] : technical ? ["hero", "service", "proof"] : ["hero", "content", "conversion"]), discouragedPatterns: Object.freeze(warnings.map((item) => item.code)) }),
+    compositionStrategy: Object.freeze({ rhythm: direction.style === "technical" ? "direct" : direction.style === "minimal" ? "trust-first" : direction.style === "cinematic" || direction.style === "luxury" || direction.style === "premium" ? "editorial" : family === "ecommerce_d2c" ? "commerce" : "guided", breathing: expressive ? "airy" : technical ? "compact" : "balanced", mediaRhythm: expressive || imagery >= 2 ? "alternating" : "content-led", densityPattern: Object.freeze([...densityPattern]), maximumSectionCount: expressive ? 9 : 8, emphasizeImagery: expressive || direction.style === "editorial", varySectionWeight: direction.style !== "technical" }),
+    blueprintStrategy: Object.freeze({ containerMode: direction.style === "cinematic" ? "wide" : direction.style === "luxury" || direction.style === "premium" ? "framed" : "contained", headingScale: expressive ? "dramatic" : direction.style === "editorial" || direction.style === "bold" ? "expressive" : "restrained", sectionContrast: direction.style === "bold" || technical ? "strong" : expressive ? "alternating" : "subtle", mediaTreatment: direction.style === "cinematic" ? "immersive" : expressive || direction.style === "editorial" ? "editorial" : "controlled", cornerTreatment: technical ? "square" : warm ? "rounded" : "soft" }),
+    antiTemplateRules: Object.freeze(warnings.map((item) => item.code)), deterministic: true,
+  });
+}
+
 export function compileCreativeDirection(input: BuilderBlueprintInput): CreativeDirectionPlan {
   const items = sections(input); const profile = identity(input); const direction = directionFor(profile.family, profile.archetype, profile.premium); const warnings = antiTemplateWarnings(items, input);
   const trust = items.filter(isTrust); const conversion = items.filter(isConversion); const imagery = items.filter(isImagery); const patterns = new Set(items.map((item) => isGrid(item) ? "grid" : isSplit(item) ? "split" : isTrust(item) ? "proof" : isConversion(item) ? "conversion" : isImagery(item) ? "media" : "narrative"));
@@ -86,7 +106,8 @@ export function compileCreativeDirection(input: BuilderBlueprintInput): Creative
   });
   const creativeScore = clamp(Object.values(dimensions).reduce((sum, value) => sum + value, 0) / 5);
   const narrativeFlow = items.map((item, index) => index === 0 ? "establish desire and point of view" : isImagery(item) ? "immerse through visual storytelling" : isTrust(item) ? "integrate proof into the experience" : isConversion(item) ? "resolve into a focused next step" : isGrid(item) ? "support structured exploration" : "advance the narrative");
-  return Object.freeze({ visualPersonality: direction.personality, compositionStyle: direction.style, sectionStrategy: Object.freeze({ maximumRecommendedSectionCount: profile.premium ? 9 : 8, sectionHierarchy: Object.freeze(items.map((item) => item.id)), narrativeFlow: Object.freeze(narrativeFlow), trustSectionIds: Object.freeze(trust.map((item) => item.id)), conversionSectionIds: Object.freeze(conversion.map((item) => item.id)), imageryDominantSectionIds: Object.freeze(imagery.map((item) => item.id)) }), antiTemplateRules: Object.freeze(warnings), visualRhythmPlan: Object.freeze({ sectionVariationScore: variation, largeImageMoments: Object.freeze(imagery.map((item) => item.id)), densityPattern: Object.freeze(densityPattern), contrastChanges: Math.max(1, Math.min(3, patterns.size - 1)), intentionalWhitespace: input.compositionResult?.visualBreathing?.level === "airy" || densityPattern.includes("open"), variedComposition: patterns.size >= 4 }), creativeScore, scoreDimensions: dimensions, creativeWarnings: Object.freeze(warnings), metadataOnly: true, deterministic: true });
+  const brief = artDirectionBrief(input, direction, items, warnings, densityPattern);
+  return Object.freeze({ visualPersonality: direction.personality, compositionStyle: direction.style, sectionStrategy: Object.freeze({ maximumRecommendedSectionCount: profile.premium ? 9 : 8, sectionHierarchy: Object.freeze(items.map((item) => item.id)), narrativeFlow: Object.freeze(narrativeFlow), trustSectionIds: Object.freeze(trust.map((item) => item.id)), conversionSectionIds: Object.freeze(conversion.map((item) => item.id)), imageryDominantSectionIds: Object.freeze(imagery.map((item) => item.id)) }), antiTemplateRules: Object.freeze(warnings), visualRhythmPlan: Object.freeze({ sectionVariationScore: variation, largeImageMoments: Object.freeze(imagery.map((item) => item.id)), densityPattern: Object.freeze(densityPattern), contrastChanges: Math.max(1, Math.min(3, patterns.size - 1)), intentionalWhitespace: input.compositionResult?.visualBreathing?.level === "airy" || densityPattern.includes("open"), variedComposition: patterns.size >= 4 }), creativeScore, scoreDimensions: dimensions, creativeWarnings: Object.freeze(warnings), artDirectionBrief: brief, executable: true, metadataOnly: false, deterministic: true });
 }
 
 export const CreativeDirectorCompiler = Object.freeze({ compile: compileCreativeDirection });

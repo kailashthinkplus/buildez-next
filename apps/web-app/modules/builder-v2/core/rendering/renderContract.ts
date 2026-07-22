@@ -20,6 +20,38 @@ export type RenderNodeContractSummary = Readonly<{
   supported: boolean;
 }>;
 
+export type NativeLayoutDisplay = "block" | "flex" | "grid" | "inline-block" | "none";
+
+const NATIVE_LAYOUT_DISPLAYS = new Set<NativeLayoutDisplay>([
+  "block",
+  "flex",
+  "grid",
+  "inline-block",
+  "none",
+]);
+
+function supportedDisplay(value: unknown): NativeLayoutDisplay | undefined {
+  return typeof value === "string" && NATIVE_LAYOUT_DISPLAYS.has(value as NativeLayoutDisplay)
+    ? value as NativeLayoutDisplay
+    : undefined;
+}
+
+/**
+ * Resolves the native container display contract shared by Canvas and runtime.
+ * Canonical resolved style is authoritative. The legacy layout prop is a
+ * fallback only, and a flex default is used only when neither is specified.
+ */
+export function resolveNativeLayoutDisplay(input: Readonly<{
+  resolvedDisplay?: unknown;
+  layoutProp?: unknown;
+  defaultDisplay?: NativeLayoutDisplay;
+}>): NativeLayoutDisplay {
+  return supportedDisplay(input.resolvedDisplay)
+    ?? supportedDisplay(input.layoutProp)
+    ?? input.defaultDisplay
+    ?? "flex";
+}
+
 export function createRenderContractSummary(
   node: BuilderNode
 ): RenderNodeContractSummary {

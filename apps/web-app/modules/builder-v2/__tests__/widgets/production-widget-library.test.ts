@@ -23,6 +23,7 @@ const productionWidgetTypes: NodeType[] = [
   "locationMap",
   "socialLinks",
   "carousel",
+  "productCarousel",
   "beforeAfter",
   "table",
   "countdown",

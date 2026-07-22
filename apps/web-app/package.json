@@ -5,6 +5,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "replay:v11": "node --import tsx scripts/replay-v11-source.ts",
     "typecheck:builder": "tsc -p tsconfig.builder.json --noEmit",
     "test:builder": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__ -name '*.test.ts' -print)",
     "test:builder:rc-t1": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/commands modules/builder-v2/__tests__/serialization modules/builder-v2/__tests__/rc-t1 -name '*.test.ts' -print)",

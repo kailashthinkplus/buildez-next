@@ -15,6 +15,7 @@ import {
   resolveRenderStyle,
   resolveRenderStyleValue,
 } from "../core/rendering/renderStyleResolver";
+import { resolveNativeLayoutDisplay } from "../core/rendering/renderContract";
 import { collectRenderCustomCss } from "../core/rendering/renderCustomCss";
 import { isSystemFont, normalizeGoogleFontFamily } from "@/lib/googleFonts";
 import ProductionWidgetView from "../widgets/premium/ProductionWidgetView";
@@ -1006,7 +1007,10 @@ const sectionContentWidthStyle = getRenderSectionContentWidthStyle(
 }
 
    case "container": {
-  const layout = props?.layout ?? "flex";
+  const layout = resolveNativeLayoutDisplay({
+    resolvedDisplay: renderStyle.display,
+    layoutProp: props?.layout,
+  });
   const direction = String(renderStyle.flexDirection ?? props?.direction ?? "row");
   const gap = props?.gap ?? 24;
 
@@ -1034,10 +1038,7 @@ const sectionContentWidthStyle = getRenderSectionContentWidthStyle(
         boxSizing: "border-box",
         minWidth: renderStyle.minWidth ?? 0,
 
-        display:
-          layout === "grid"
-            ? "grid"
-            : renderStyle.display ?? "flex",
+        display: layout,
 
         flexDirection:
           layout === "grid"
@@ -1098,6 +1099,14 @@ const sectionContentWidthStyle = getRenderSectionContentWidthStyle(
           ? "column"
           : configuredParentDirection;
 
+      const parentDisplay = resolveNativeLayoutDisplay({
+        resolvedDisplay: parentNode
+          ? resolveRenderStyle(parentNode, blueprint, { device, scale: 1 }).display
+          : undefined,
+        layoutProp: parentNode?.props?.layout,
+      });
+      const isGridParent = parentDisplay === "grid";
+
       const isVerticallyStacked =
         parentDirection === "column" ||
         parentDirection === "column-reverse";
@@ -1138,16 +1147,22 @@ const equalWidth = `${100 / siblingCount}%`;
 
 const columnFlex = isVerticallyStacked
   ? "0 0 auto"
+  : isGridParent
+    ? undefined
   : resolvedWidth
     ? `0 0 ${resolvedWidth}`
     : `0 0 ${equalWidth}`;
 
       const columnWidth = isVerticallyStacked
   ? "100%"
+  : isGridParent
+    ? resolvedWidth
   : resolvedWidth ?? equalWidth;
 
 const columnMaxWidth = isVerticallyStacked
   ? "100%"
+  : isGridParent
+    ? resolvedWidth ?? "none"
   : resolvedWidth ?? equalWidth;
 
       return (
@@ -1233,6 +1248,7 @@ const columnMaxWidth = isVerticallyStacked
         ...renderStyle,
         display: "block",
         width: renderStyle.width ?? "100%",
+        whiteSpace: String(props?.text ?? "").includes("\n") ? "pre-line" : renderStyle.whiteSpace,
       })}
       dangerouslySetInnerHTML={{
         __html: String(props?.html ?? props?.text ?? props?.content ?? "Text"),
@@ -1256,6 +1272,7 @@ case "heading":
         ...renderStyle,
         display: "block",
         width: renderStyle.width ?? "100%",
+        whiteSpace: String(props?.text ?? "").includes("\n") ? "pre-line" : renderStyle.whiteSpace,
       })}
     >
       {String(props?.text ?? props?.content ?? "Heading")}

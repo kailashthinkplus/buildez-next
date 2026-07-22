@@ -1,5 +1,7 @@
 import type { BuilderBlueprint } from "../../types/blueprint";
 import type { Enrichment } from "./runV10CreativeEnrichment";
+import { ProductionGenerationCapabilityCatalog } from "../../website-engine/native-visual-capabilities";
+import { validateTypedWidgetPatch } from "./typedWidgetHydration";
 
 export type SemanticHydrationIssue = Readonly<{
   nodeId: string;
@@ -28,7 +30,13 @@ export type CreativePatchCoverageResult = Readonly<{
 }>;
 
 export const SEMANTIC_PLACEHOLDER_PATTERN = /\{\{[a-zA-Z0-9_.-]+\}\}/g;
-const HYDRATABLE_TYPES = new Set(["heading", "text", "button", "image"]);
+const HYDRATABLE_TYPES = new Set([
+  "heading",
+  "text",
+  "button",
+  "image",
+  ...ProductionGenerationCapabilityCatalog.all().map((capability) => capability.widgetType),
+]);
 
 export function findSemanticPlaceholders(value: unknown): string[] {
   const matches: string[] = [];
@@ -121,6 +129,7 @@ export function validateCreativePatchCoverage(
     }
     if (findSemanticPlaceholders(props).length > 0) issues.push(`Node ${id} patch still contains semantic placeholders.`);
     const values = props as Record<string, unknown>;
+    validateTypedWidgetPatch(node, values).forEach((issue)=>issues.push(`Node ${id} ${issue.path}: ${issue.code} (${issue.message})`));
     if ((node.type === "heading" || node.type === "text") && !usableText(values.text)) {
       issues.push(`Node ${id} requires non-empty customer-facing text.`);
     }

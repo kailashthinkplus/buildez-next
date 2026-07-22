@@ -13,14 +13,47 @@ export interface RunAiOptions {
   context?: Record<string, unknown> | null;
 }
 
-export type AiGenerationVersion = "v9" | "v10";
+export type AiGenerationVersion = "v9" | "v10" | "v11";
 
 export function resolveAiGenerationEndpoint(
   context?: Record<string, unknown> | null
 ) {
-  return context?.aiGenerationVersion === "v10"
-    ? "/api/builder-v2/ai/generate-v10"
-    : "/api/builder-v2/ai/generate-v9";
+  if (context?.aiGenerationVersion === "v11") return "/api/builder-v2/ai/generate-v11";
+  if (context?.aiGenerationVersion === "v10") return "/api/builder-v2/ai/generate-v10";
+  return "/api/builder-v2/ai/generate-v9";
+}
+
+export async function readV11Stream(res: Response) {
+  if (!res.body) throw new Error("The generation connection ended unexpectedly.");
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let result: any;
+  const consume = (line: string) => {
+    if (!line.trim()) return;
+    const event = JSON.parse(line);
+    if (event.type === "progress") {
+      useAiStore.getState().setAgents([{ agent: event.agent || "DesignAgent", stage: "creating", ok: true, summary: event.summary || "Creating your website." }]);
+    } else if (event.type === "error") {
+      const error = new Error(event.error || "Website generation failed.");
+      Object.assign(error, {
+        generationId: event.generationId,
+        diagnostics: event.diagnostics,
+      });
+      throw error;
+    } else if (event.type === "result") result = event.data;
+  };
+  while (true) {
+    const { done, value } = await reader.read();
+    buffer += decoder.decode(value, { stream: !done });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() || "";
+    for (const line of lines) consume(line);
+    if (done) break;
+  }
+  if (buffer.trim()) consume(buffer);
+  if (!result) throw new Error("The website was not returned. Please try again.");
+  return result;
 }
 
 /* ==========================================================
@@ -136,7 +169,9 @@ Instructions:
         throw new Error(message);
       }
 
-      const result = await res.json();
+      const result = context?.aiGenerationVersion === "v11"
+        ? await readV11Stream(res)
+        : await res.json();
       if (progressTimer) clearInterval(progressTimer);
 
       const agents = [...useAiStore.getState().agents];
@@ -179,7 +214,10 @@ Instructions:
       console.error(err);
 
       const message = err instanceof Error ? err.message : "AI request failed";
-      store.setErrorMessage(message);
+      const friendlyMessage = /V11_SOURCE_REJECTED|V11_.*(?:INVALID|FAILED|INCOMPLETE|EMPTY)|NODE_COUNT_BUDGET|UNRESOLVED_IDENTIFIER|UNSUPPORTED_MAP_SOURCE/.test(message)
+        ? "We couldn’t finish this design cleanly. Please try again — your brief and choices are saved."
+        : message;
+      store.setErrorMessage(friendlyMessage);
       store.setStatus("error");
 
       throw err;

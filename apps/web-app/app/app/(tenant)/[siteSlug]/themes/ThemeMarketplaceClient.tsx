@@ -11,6 +11,7 @@ import {
   type SiteThemeLayout,
 } from "@/modules/builder-v2/theme/siteLayout";
 import { SiteThemeFrame } from "@/modules/builder-v2/theme/SiteThemeFrame";
+import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
 
 type Props = {
   siteId: string;
@@ -323,13 +324,14 @@ export default function ThemeMarketplaceClient({
         </div> : <div className="rounded-[22px] border dashboard-border dashboard-card py-20 text-center"><LayoutGrid className="dashboard-muted mx-auto h-8 w-8" /><h2 className="mt-3 font-semibold">No themes found</h2><p className="mt-1 text-sm dashboard-muted">Try another search or style.</p></div>}
 
         {detailsOpen && (
+          <DashboardModalPortal onClose={() => setDetailsOpen(false)}>
           <div
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
             role="dialog"
             aria-modal="true"
             aria-labelledby="theme-details-title"
           >
-            <div className="max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-lg border dashboard-border dashboard-card shadow-2xl">
+            <div className="dashboard-modal-surface max-h-[calc(100dvh-2rem)] w-full max-w-6xl overflow-hidden rounded-lg border dashboard-border shadow-2xl">
               <div className="flex items-center justify-between border-b dashboard-border px-5 py-4">
                 <div className="flex items-center gap-2">
                   <LayoutTemplate className="h-4 w-4" />
@@ -569,6 +571,7 @@ export default function ThemeMarketplaceClient({
               </div>
             </div>
           </div>
+          </DashboardModalPortal>
         )}
       </div>
     </div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useUpdatePage } from "../hooks/useUpdatePage";
+import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
 
 export default function PageSettingsModal({ page, open, onClose, onSaved }) {
   const { updatePage, loading } = useUpdatePage();
@@ -45,6 +46,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
   }
 
   return (
+    <DashboardModalPortal onClose={onClose}>
     <div
       className="
         fixed inset-0 z-50 flex items-center justify-center
@@ -54,7 +56,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
       <div
         className="
           w-full max-w-lg rounded-2xl p-6
-          dashboard-card-strong
+          dashboard-modal-surface border dashboard-border
           shadow-2xl backdrop-blur-2xl
           relative animate-[fadeIn_0.15s_ease-out]
         "
@@ -77,7 +79,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
 
         <div className="flex flex-col gap-4">
           {error && (
-            <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+            <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">
               {error}
             </p>
           )}
@@ -160,5 +162,6 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
         </div>
       </div>
     </div>
+    </DashboardModalPortal>
   );
 }
