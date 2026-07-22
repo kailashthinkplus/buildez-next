@@ -1,7 +1,7 @@
 // /Users/kailash/buildez/apps/web-app/lib/plan/check-limit.ts
 
 import { prisma } from "@buildez/db";
-import { ApiError } from "@/lib/api/apiHandler";
+import { NotFoundError } from "@/lib/api/errors";
 
 /**
  * checkPlanLimit
@@ -19,7 +19,7 @@ export async function checkPlanLimit(
     select: { planId: true },
   });
 
-  if (!tenant) throw new ApiError("NOT_FOUND", "Tenant not found");
+  if (!tenant) throw new NotFoundError("Tenant not found");
 
   const plan = await prisma.plan.findUnique({
     where: { id: tenant.planId || "" },

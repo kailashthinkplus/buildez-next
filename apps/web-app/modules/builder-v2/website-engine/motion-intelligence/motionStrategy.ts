@@ -76,7 +76,7 @@ export type MotionStrategy = Readonly<{
   reducedMotion: ReducedMotionProfile;
   accessibilityNotes: string[];
   providerCandidates: string[];
-  risks: MotionRisk[];
+  risks: readonly MotionRisk[];
   warnings: string[];
   confidence: number;
 }>;

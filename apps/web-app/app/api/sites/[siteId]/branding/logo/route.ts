@@ -12,7 +12,7 @@ import { mapLogoColorsToDesignTokens } from "@/app/api/_lib/designTokens/mapLogo
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { siteId: string } }
+  { params }: { params: Promise<{ siteId: string }> }
 ) {
   try {
     /* ----------------------------------------------------------
@@ -27,7 +27,7 @@ export async function POST(
       );
     }
 
-    const siteId = params.siteId;
+    const { siteId } = await params;
 
     /* ----------------------------------------------------------
        LOAD SITE

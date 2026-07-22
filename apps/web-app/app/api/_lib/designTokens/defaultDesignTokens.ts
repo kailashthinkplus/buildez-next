@@ -11,9 +11,18 @@ export function getDefaultDesignTokens(): DesignTokens {
       onBackground: "#000000",
       textPrimary: "#000000",
       textSecondary: "#64748b",
+      border: "#e2e8f0",
+      accent: "#6366f1",
     },
-    typography: {},
+    typography: {
+      fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+      fontSize: {},
+      fontWeight: {},
+      lineHeight: {},
+      letterSpacing: {},
+    },
     spacing: {},
-    borderRadius: {},
-  } as DesignTokens;
+    shadows: {},
+    radius: {},
+  };
 }

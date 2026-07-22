@@ -5,7 +5,7 @@ function risk(code: string, message: string, severity: MotionRisk["severity"]): 
 }
 
 /** Detects motion risks without creating animation code. */
-export function detectMotionRisks(input: MotionInput, context: MotionFamilyContext, strategy: Pick<MotionStrategy, "parallaxStrategy" | "performanceProfile">): MotionRisk[] {
+export function detectMotionRisks(input: MotionInput, context: MotionFamilyContext, strategy: Pick<MotionStrategy, "parallaxStrategy" | "performanceProfile">): readonly MotionRisk[] {
   const missingRequiredMedia = input.mediaStrategy?.assetReadiness.missingRequiredCount ?? 0;
   return Object.freeze([
     ...(context.family === "healthcare" ? [risk("HEALTHCARE_LOW_MOTION", "Healthcare motion must avoid anxiety, distraction, and hidden state changes.", "blocker")] : []),

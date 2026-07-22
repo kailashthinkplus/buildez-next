@@ -34,7 +34,7 @@ function patterns(id: string, patternIds: string[]): PatternIntelligenceResult {
 }
 
 function designResult(id: string, language: string): DesignResult {
-  return Object.freeze({
+  return Object.freeze<DesignResult>({
     id,
     version: "0.1.0",
     designIntent: { id: `${id}.intent`, goals: ["visual clarity"], constraints: [], mood: [language], audiencePerception: ["credible"] },
@@ -57,11 +57,11 @@ function designResult(id: string, language: string): DesignResult {
 }
 
 function mediaStrategy(id: string, missingAssets: string[]): MediaStrategy {
-  return Object.freeze({ id, version: "0.1.0", requiredImages: [], requiredVideos: [], icons: [], maps: [], threeDInteractiveNeeds: [], assetRequirements: [], assetReadiness: { score: missingAssets.length ? 0.5 : 1, knownAssetCount: 1, missingRequiredCount: missingAssets.length, requiredCount: 1, reasons: [] }, truthPolicy: { rules: ["No fake assets."], realAssetRequirements: [], generatedAssetLimits: [], stockRiskWarnings: [] }, substitutionPolicy: { defaultAction: "request_asset", byRequirementId: {}, notes: [] }, aiGeneratedSuitability: [], realAssetRequirements: [], stockRiskWarnings: [], missingAssets, risks: [], confidence: 0.7, warnings: [] });
+  return Object.freeze<MediaStrategy>({ id, version: "0.1.0", requiredImages: [], requiredVideos: [], icons: [], maps: [], threeDInteractiveNeeds: [], assetRequirements: [], assetReadiness: { score: missingAssets.length ? 0.5 : 1, knownAssetCount: 1, missingRequiredCount: missingAssets.length, requiredCount: 1, reasons: [] }, truthPolicy: { rules: ["No fake assets."], realAssetRequirements: [], generatedAssetLimits: [], stockRiskWarnings: [] }, substitutionPolicy: { defaultAction: "request_asset", byRequirementId: {}, notes: [] }, aiGeneratedSuitability: [], realAssetRequirements: [], stockRiskWarnings: [], missingAssets, risks: [], confidence: 0.7, warnings: [] });
 }
 
 function motionStrategy(id: string): MotionStrategy {
-  return Object.freeze({ id, version: "0.1.0", motionLanguage: "Minimal", scrollBehavior: { strategy: "Natural", philosophy: [] }, revealStrategy: { primary: "Fade", secondary: [], avoid: [] }, parallaxStrategy: { level: "None", notes: [] }, cameraMovement: { strategy: "Static", notes: [] }, hoverBehavior: { tone: "subtle", targets: [] }, transitionBehavior: { pacing: "quick", intent: [] }, microInteractions: { interactions: ["Button hover"], notes: [] }, stickyBehavior: { policy: "navigation only", notes: [] }, pageTransitions: { philosophy: "minimal", notes: [] }, performanceProfile: { budget: "balanced", constraints: [] }, reducedMotion: { required: true, strategy: "disable decorative motion", notes: [] }, accessibilityNotes: [], providerCandidates: [], risks: [], warnings: [], confidence: 0.7 });
+  return Object.freeze<MotionStrategy>({ id, version: "0.1.0", motionLanguage: "Minimal", scrollBehavior: { strategy: "Natural", philosophy: [] }, revealStrategy: { primary: "Fade", secondary: [], avoid: [] }, parallaxStrategy: { level: "None", notes: [] }, cameraMovement: { strategy: "Static", notes: [] }, hoverBehavior: { tone: "subtle", targets: [] }, transitionBehavior: { pacing: "quick", intent: [] }, microInteractions: { interactions: ["Button hover"], notes: [] }, stickyBehavior: { policy: "navigation only", notes: [] }, pageTransitions: { philosophy: "minimal", notes: [] }, performanceProfile: { budget: "balanced", constraints: [] }, reducedMotion: { required: true, strategy: "disable decorative motion", notes: [] }, accessibilityNotes: [], providerCandidates: [], risks: [], warnings: [], confidence: 0.7 });
 }
 
 const fixtures: readonly ComponentInput[] = Object.freeze([

@@ -1,11 +1,10 @@
 // /apps/web-app/app/api/auth/recovery-login/route.ts
 
 import { NextResponse } from "next/server";
-import { prisma } from "@buildez/db";
+import { AuthProvider, prisma } from "@buildez/db";
 import { hashRecovery } from "@/lib/auth/recovery";
 import { writeAuthLog } from "@/lib/auth/authLog";
 import { checkLockout } from "@/lib/auth/lockout";
-import { AuthProvider } from "@prisma/client";
 import { cookies } from "next/headers";
 
 export async function POST(req: Request) {

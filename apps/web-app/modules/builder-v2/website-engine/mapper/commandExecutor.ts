@@ -13,7 +13,7 @@ import type { NativeBuilderMappingPlan } from "./mapperPlan";
  * const commands = buildCommandObjectsFromPlan(plan);
  */
 export function buildCommandObjectsFromPlan(plan: NativeBuilderMappingPlan): BuilderCommand[] {
-  return plan.commandPlan.flatMap((commandPlan) => {
+  return plan.commandPlan.flatMap<BuilderCommand>((commandPlan) => {
     const intent = commandPlan.sourceIntent;
     if (intent.commandType === "InsertNodeCommand" && intent.parentId && intent.node) {
       return [new InsertNodeCommand(intent.parentId, { ...intent.node, children: [...intent.node.children], props: { ...intent.node.props }, style: { ...intent.node.style } }, intent.index)];

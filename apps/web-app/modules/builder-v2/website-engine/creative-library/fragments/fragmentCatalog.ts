@@ -54,7 +54,7 @@ function fragmentFor(family: CreativeFragmentFamily, index: number): CreativeFra
     assemblyRules: [
       { rule: `${family}.metadata-merge.${pad(index)}`, target: "metadata", effect: "Add fragment metadata to recipe assembly plan only.", codeGenerated: false as const },
       { rule: `${family}.composition-note.${pad(index)}`, target: "composition", effect: "Influence future composition without emitting UI.", codeGenerated: false as const },
-    ],
+    ] as CreativeFragment["assemblyRules"],
     editabilityImpact: ["Preserve primitive editability.", "Expose future inspector intent only."],
     inspectorHints: [`${family} fragment should map to existing native property paths later.`],
     responsiveBehavior: ["desktop metadata only", "tablet reduce complexity", "mobile keep action and content readable"],

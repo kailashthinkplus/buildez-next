@@ -48,6 +48,6 @@ export function runCreativeLibraryVerification(): EngineResult<CreativeLibraryVe
       safetyBoundaryStatus: "metadata-only",
       notes: ["Creative Library is metadata-only.", "No rendering, Builder nodes, React, CSS, HTML, JS, DB, network, MCP, providers, or LLM calls are used."],
     },
-    metadata: { issues: validation.issues, catalogCount: result.metrics.catalogCount, selectedDiverseSetCount: diverseSelections.length },
+    metadata: { issues: [...validation.issues], catalogCount: result.metrics.catalogCount, selectedDiverseSetCount: diverseSelections.length },
   });
 }

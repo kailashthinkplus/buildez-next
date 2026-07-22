@@ -26,7 +26,7 @@ const verificationBusiness: BusinessContext = Object.freeze({
   differentiators: [],
   proofPoints: [],
   knownFacts: { city: "provided" },
-  missingFacts: ["brand authorization"],
+  missingFacts: [{ id: "brand-authorization", label: "brand authorization", required: true, reason: "Verification fixture" }],
 });
 
 /**

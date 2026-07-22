@@ -16,7 +16,7 @@ function brandProfile(id: string, premiumLevel: BrandIntelligenceProfile["premiu
 }
 
 function designResult(id: string, language: string): DesignResult {
-  return Object.freeze({
+  return Object.freeze<DesignResult>({
     id,
     version: "0.1.0",
     designIntent: { id: `${id}.intent`, goals: ["visual clarity"], constraints: [], mood: [language], audiencePerception: ["credible"] },
@@ -39,7 +39,7 @@ function designResult(id: string, language: string): DesignResult {
 }
 
 function inspirationProfile(id: string, categories: string[], imagery: string[]): InspirationProfile {
-  return Object.freeze({
+  return Object.freeze<InspirationProfile>({
     id,
     version: "0.1.0",
     selectedInspirationCategories: categories,

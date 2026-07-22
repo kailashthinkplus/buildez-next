@@ -18,7 +18,7 @@ function brandProfile(id: string, premiumLevel: BrandIntelligenceProfile["premiu
 }
 
 function designResult(id: string, language: string, motionLevel: DesignResult["motionProfile"]["level"]): DesignResult {
-  return Object.freeze({
+  return Object.freeze<DesignResult>({
     id,
     version: "0.1.0",
     designIntent: { id: `${id}.intent`, goals: ["visual clarity"], constraints: [], mood: [language], audiencePerception: ["credible"] },
@@ -45,7 +45,7 @@ function inspirationProfile(id: string, motion: string[]): InspirationProfile {
 }
 
 function visualMoodProfile(id: string, primaryEmotion: VisualMoodProfile["primaryEmotion"], cinematicLevel: VisualMoodProfile["cinematicLevel"]["level"]): VisualMoodProfile {
-  return Object.freeze({
+  return Object.freeze<VisualMoodProfile>({
     id,
     version: "0.1.0",
     primaryEmotion,
@@ -74,7 +74,7 @@ function visualMoodProfile(id: string, primaryEmotion: VisualMoodProfile["primar
 }
 
 function mediaStrategy(id: string, missingRequiredCount: number): MediaStrategy {
-  return Object.freeze({
+  return Object.freeze<MediaStrategy>({
     id,
     version: "0.1.0",
     requiredImages: [],

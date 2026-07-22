@@ -40,3 +40,9 @@ export function apiHandler(
     }
   };
 }
+
+export function authHandler(
+  fn: (context: { req: NextRequest }) => Promise<unknown>
+) {
+  return apiHandler((req) => fn({ req }));
+}

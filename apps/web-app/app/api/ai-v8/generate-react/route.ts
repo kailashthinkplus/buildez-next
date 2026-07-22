@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@buildez/db";
+import { Prisma, prisma } from "@buildez/db";
 import {
   callOpenAIChatCompletion,
   extractAssistantText,
@@ -780,14 +780,14 @@ async function saveReactCode({
     await tx.blueprint.upsert({
       where: { pageId },
       update: {
-        data: blueprintData,
+        data: blueprintData as unknown as Prisma.InputJsonValue,
         schemaVersion: 1,
       },
       create: {
         pageId,
         siteId: page.site.id,
         tenantId: page.site.tenantId,
-        data: blueprintData,
+        data: blueprintData as unknown as Prisma.InputJsonValue,
         schemaVersion: 1,
       },
     });

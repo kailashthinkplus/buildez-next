@@ -1,11 +1,10 @@
 // /apps/web-app/app/api/auth/send-otp/route.ts
 
 import { authHandler } from "@/lib/api/handler";
-import { prisma } from "@buildez/db";
+import { AuthProvider, prisma } from "@buildez/db";
 import { generateOtp, hashOtp } from "@/lib/auth/otp";
 import { checkLockout } from "@/lib/auth/lockout";
 import { writeAuthLog } from "@/lib/auth/authLog";
-import { AuthProvider } from "@prisma/client";
 
 export const POST = authHandler(async ({ req }) => {
   const { email } = await req.json();

@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@buildez/db";
+import { AuthProvider, prisma } from "@buildez/db";
 import { verifyTOTP } from "@buildez/auth";
 import { checkLockout } from "@/lib/auth/lockout";
 import { writeAuthLog } from "@/lib/auth/authLog";
-import { AuthProvider } from "@prisma/client";
 
 export async function POST(req: Request) {
   const { userId, code } = await req.json();

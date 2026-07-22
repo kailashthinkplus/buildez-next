@@ -34,7 +34,7 @@ function buildBusinessContext(input: WebsiteSpecBuilderInput): BusinessContext {
     offerings: unique([...(input.businessContext?.offerings ?? []), ...(input.businessProfile?.offerModel ?? [])]),
     differentiators: unique([...(input.businessContext?.differentiators ?? []), ...(input.businessProfile?.differentiation ?? []), ...(input.brandProfile?.differentiation ?? [])]),
     proofPoints: unique([...(input.businessContext?.proofPoints ?? []), ...(input.businessProfile?.trustSignals ?? [])]),
-    knownFacts: Object.freeze({ ...(input.businessContext?.knownFacts ?? {}), ...(input.knownFacts ?? {}) }),
+    knownFacts: Object.freeze({ ...(input.businessContext?.knownFacts ?? {}), ...(input.knownFacts ?? {}) }) as BusinessContext["knownFacts"],
     missingFacts: buildMissingFacts(input),
     sourceNotes: unique([...(input.businessContext?.sourceNotes ?? []), "Built by deterministic WebsiteSpec Builder."]),
   });
@@ -148,7 +148,7 @@ export function buildWebsiteSpec(input: WebsiteSpecBuilderInput = {}): WebsiteSp
     experienceStrategyRef: input.experienceStrategy ? String(input.experienceStrategy.id) : undefined,
     patternIntelligenceRef: input.patternIntelligence ? String(input.patternIntelligence.id) : undefined,
     goals: buildGoals(input),
-    archetype: input.decisionPlan?.selectedArchetype ?? input.intent?.archetypeHints[0] ?? "unknown",
+    archetype: (input.decisionPlan?.selectedArchetype ?? input.intent?.archetypeHints[0] ?? "unknown") as WebsiteSpec["archetype"],
     dna: dnaResult.dna,
     sections,
     contentRequirements: buildContentRequirements(input),

@@ -115,6 +115,21 @@ export async function getCurrentUser(req?: Request) {
   return session.user;
 }
 
+export async function getCurrentSession() {
+  const sessionId = (await cookies()).get(SESSION_COOKIE)?.value;
+  if (!sessionId) return null;
+
+  return prisma.session.findFirst({
+    where: {
+      id: sessionId,
+      revoked: false,
+      expiresAt: { gt: new Date() },
+    },
+  });
+}
+
+export const getSessionUser = getCurrentUser;
+
 /* ======================
    REQUIRE USER
 ====================== */

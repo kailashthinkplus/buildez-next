@@ -89,7 +89,7 @@ export type MediaStrategy = Readonly<{
   realAssetRequirements: string[];
   stockRiskWarnings: string[];
   missingAssets: string[];
-  risks: MediaRisk[];
+  risks: readonly MediaRisk[];
   confidence: number;
   warnings: string[];
 }>;

@@ -39,16 +39,8 @@ export async function POST(req: Request) {
   const tenant = await prisma.tenant.create({
     data: {
       name: businessName,
-    },
-  });
-
-  /* ---------------------------------------------------------
-     3. ATTACH USER TO TENANT
-  --------------------------------------------------------- */
-  await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      tenantId: tenant.id,
+      owner: { connect: { id: user.id } },
+      users: { connect: { id: user.id } },
     },
   });
 

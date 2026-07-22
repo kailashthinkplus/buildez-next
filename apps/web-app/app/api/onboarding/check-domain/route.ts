@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Domain required" }, { status: 400 });
     }
 
-    const exists = await db.siteDomain.findUnique({
+    const exists = await prisma.siteDomain.findUnique({
       where: { domain: domain.toLowerCase().trim() },
     });
 

@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
       await tx.blueprint.upsert({
         where: { pageId },
         update: {
-          data: result.blueprint as Prisma.InputJsonValue,
+          data: result.blueprint as unknown as Prisma.InputJsonValue,
           schemaVersion: 2,
           updatedBy: auth.user.id,
         },
@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
           pageId,
           siteId: page.site.id,
           tenantId: page.site.tenantId,
-          data: result.blueprint as Prisma.InputJsonValue,
+          data: result.blueprint as unknown as Prisma.InputJsonValue,
           schemaVersion: 2,
           updatedBy: auth.user.id,
         },

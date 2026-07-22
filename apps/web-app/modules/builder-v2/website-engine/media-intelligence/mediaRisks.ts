@@ -10,7 +10,7 @@ function risk(code: string, message: string, severity: MediaRisk["severity"], ta
  * @example
  * const risks = detectMediaRisks(input, context, requirements);
  */
-export function detectMediaRisks(input: MediaInput, context: MediaFamilyContext, requirements: readonly MediaAssetRequirement[]): MediaRisk[] {
+export function detectMediaRisks(input: MediaInput, context: MediaFamilyContext, requirements: readonly MediaAssetRequirement[]): readonly MediaRisk[] {
   const missingRequired = requirements.filter((item) => item.required && item.missing);
   return Object.freeze([
     ...missingRequired.map((item) => risk("MISSING_REQUIRED_ASSET", `${item.label} is required and missing.`, "major", item.id)),

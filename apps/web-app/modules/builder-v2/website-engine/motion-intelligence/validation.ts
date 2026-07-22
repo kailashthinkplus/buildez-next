@@ -29,10 +29,6 @@ export function validateMotionStrategy(strategy: MotionStrategy): MotionValidati
 /** Converts validation issues to SDK errors. */
 export function validationIssuesToMotionErrors(issues: readonly MotionValidationIssue[]): EngineError[] {
   return issues.map((item) =>
-    createEngineError("INVALID_MOTION_STRATEGY", item.message, "motion-intelligence", {
-      recoverable: true,
-      severity: "major",
-      metadata: { path: item.path, code: item.code },
-    })
+    createEngineError("INVALID_MOTION_STRATEGY", item.message, "motion-intelligence", true, "major", { path: item.path, code: item.code })
   );
 }

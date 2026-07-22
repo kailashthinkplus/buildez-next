@@ -244,12 +244,13 @@ export type EvolutionResult = Readonly<{
  * @example
  * const variants = buildCandidateVariants();
  */
-export function buildCandidateVariants(): CandidateVariant[] {
-  return Object.freeze([
-    Object.freeze({ id: "a.trust-editorial", label: "Trust Editorial", mutationKinds: ["hero-recipe", "layout-rhythm", "typography-rhythm", "cta-cadence"], priority: 1 }),
-    Object.freeze({ id: "b.conversion-direct", label: "Conversion Direct", mutationKinds: ["recipe-family", "cta-cadence", "spacing-rhythm", "composition-ordering"], priority: 2 }),
-    Object.freeze({ id: "c.visual-depth", label: "Visual Depth", mutationKinds: ["fragment-selection", "design-dna-weighting", "visual-density", "media-strategy"], priority: 3 }),
-    Object.freeze({ id: "d.motion-clarity", label: "Motion Clarity", mutationKinds: ["motion-rhythm", "grid-philosophy", "asymmetry-level", "layout-rhythm"], priority: 4 }),
-    Object.freeze({ id: "e.premium-structure", label: "Premium Structure", mutationKinds: ["hero-recipe", "fragment-selection", "typography-rhythm", "visual-density", "composition-ordering"], priority: 5 }),
-  ]);
+export function buildCandidateVariants(): readonly CandidateVariant[] {
+  const variants: CandidateVariant[] = [
+    Object.freeze<CandidateVariant>({ id: "a.trust-editorial", label: "Trust Editorial", mutationKinds: ["hero-recipe", "layout-rhythm", "typography-rhythm", "cta-cadence"], priority: 1 }),
+    Object.freeze<CandidateVariant>({ id: "b.conversion-direct", label: "Conversion Direct", mutationKinds: ["recipe-family", "cta-cadence", "spacing-rhythm", "composition-ordering"], priority: 2 }),
+    Object.freeze<CandidateVariant>({ id: "c.visual-depth", label: "Visual Depth", mutationKinds: ["fragment-selection", "design-dna-weighting", "visual-density", "media-strategy"], priority: 3 }),
+    Object.freeze<CandidateVariant>({ id: "d.motion-clarity", label: "Motion Clarity", mutationKinds: ["motion-rhythm", "grid-philosophy", "asymmetry-level", "layout-rhythm"], priority: 4 }),
+    Object.freeze<CandidateVariant>({ id: "e.premium-structure", label: "Premium Structure", mutationKinds: ["hero-recipe", "fragment-selection", "typography-rhythm", "visual-density", "composition-ordering"], priority: 5 }),
+  ];
+  return Object.freeze(variants);
 }

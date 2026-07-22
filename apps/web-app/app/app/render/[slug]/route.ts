@@ -12,7 +12,7 @@ import { resolveBlueprintTree } from "@/modules/builder/runtime/resolveBlueprint
 
 export async function POST(
   req: Request,
-  ctx: { params: { pageId: string } }
+  ctx: { params: Promise<{ slug: string }> }
 ) {
   return apiHandler(async () => {
     console.log("\n==============================");
@@ -23,7 +23,7 @@ export async function POST(
 
     const h = await headers();
     const tenantId = h.get("tenant-id");
-    const { pageId } = ctx.params;
+    const { slug: pageId } = await ctx.params;
 
     console.log("🔥 pageId:", pageId);
     console.log("🔥 tenantId:", tenantId);

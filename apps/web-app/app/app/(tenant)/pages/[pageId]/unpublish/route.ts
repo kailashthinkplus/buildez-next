@@ -1,6 +1,7 @@
 // /app/api/pages/[pageId]/unpublish/route.ts
 import { NextRequest } from "next/server";
-import { apiHandler, ApiError } from "@/lib/api/apiHandler";
+import { apiHandler } from "@/lib/api/apiHandler";
+import { NotFoundError } from "@/lib/api/errors";
 import { prisma } from "@buildez/db";
 import { requirePermission } from "@/lib/auth/permissions";
 import { revalidatePage } from "@/lib/snapshots/revalidatePage";
@@ -15,7 +16,7 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
     where: { id: pageId, tenantId },
   });
 
-  if (!page) throw new ApiError("NOT_FOUND");
+  if (!page) throw new NotFoundError();
 
   const updated = await prisma.page.update({
     where: { id: pageId },

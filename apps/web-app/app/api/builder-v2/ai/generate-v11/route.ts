@@ -139,8 +139,8 @@ export async function POST(req: NextRequest) {
               await tx.page.update({ where: { id: pageId }, data: { reactCode: result.creativeSource, renderMode: "BLUEPRINT", metadata: metadata as Prisma.InputJsonValue } });
               await tx.blueprint.upsert({
                 where: { pageId },
-                update: { data: result.blueprint as Prisma.InputJsonValue, schemaVersion: 2, updatedBy: auth.user.id },
-                create: { pageId, siteId: page.site.id, tenantId: page.site.tenantId, data: result.blueprint as Prisma.InputJsonValue, schemaVersion: 2, updatedBy: auth.user.id },
+                update: { data: result.blueprint as unknown as Prisma.InputJsonValue, schemaVersion: 2, updatedBy: auth.user.id },
+                create: { pageId, siteId: page.site.id, tenantId: page.site.tenantId, data: result.blueprint as unknown as Prisma.InputJsonValue, schemaVersion: 2, updatedBy: auth.user.id },
               });
               await tx.siteLayout.upsert({
                 where: { siteId: page.site.id },

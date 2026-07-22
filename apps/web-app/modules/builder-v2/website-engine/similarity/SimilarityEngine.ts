@@ -118,7 +118,7 @@ export function buildWebsiteSimilarityProfile(input: SimilarityInput): WebsiteSi
 
   return Object.freeze({
     id: `similarity.profile.${input.compiledPlan?.id ?? input.websiteSpec?.id ?? input.designDNA?.id ?? "candidate"}`,
-    industry: input.compiledPlan?.selectedIndustry ?? input.websiteSpec?.business.industry,
+    industry: input.compiledPlan?.selectedIndustry ?? input.websiteSpec?.business.industryId,
     archetype: input.compiledPlan?.selectedArchetype ?? input.websiteSpec?.archetype,
     designDnaId: input.designDNA?.id,
     designDnaAxes: designDnaAxes(input.designDNA),

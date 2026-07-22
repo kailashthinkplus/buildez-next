@@ -1,11 +1,10 @@
 // /apps/web-app/app/api/auth/verify-otp/route.ts
 
 import { NextResponse } from "next/server";
-import { prisma } from "@buildez/db";
+import { AuthProvider, prisma } from "@buildez/db";
 import { hashOtp } from "@/lib/auth/otp";
 import { checkLockout } from "@/lib/auth/lockout";
 import { writeAuthLog } from "@/lib/auth/authLog";
-import { AuthProvider } from "@prisma/client";
 import { cookies } from "next/headers";
 
 export async function POST(req: Request) {

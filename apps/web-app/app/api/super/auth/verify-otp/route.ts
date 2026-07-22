@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@buildez/db";
+import { AuthProvider, prisma } from "@buildez/db";
 import { hashOtp } from "@/lib/auth/otp";
 import { createSession } from "@/lib/auth/session";
-import { AuthProvider } from "@prisma/client";
 
 export async function POST(req: Request) {
   const { email, otp } = await req.json();
 
-  const record = await db.otp.findFirst({
+  const record = await prisma.otp.findFirst({
     where: {
       email,
       consumed: false,

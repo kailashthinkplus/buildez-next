@@ -1,7 +1,6 @@
 // /Users/kailash/buildez/apps/web-app/lib/auth/authLog.ts
 
-import { prisma } from "@buildez/db";
-import { AuthProvider } from "@prisma/client";
+import { AuthProvider, prisma } from "@buildez/db";
 
 /**
  * Write authentication event to AuthLog table
@@ -19,6 +18,7 @@ export async function writeAuthLog({
   success: boolean;
   ipAddress?: string;
   userAgent?: string;
+  message?: string;
 }) {
   try {
     await prisma.authLog.create({
