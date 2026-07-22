@@ -1,0 +1,30 @@
+Build a premium, complete homepage for Sanjeevini Group, a residential real-estate developer serving homebuyers in Bengaluru.
+
+PAGE GOAL
+Help serious homebuyers explore and shortlist residences, understand the developer's approach, and book a private site visit.
+
+EVIDENCE POLICY
+Research and verify the business using the official company website and credible primary sources. Use only supported company facts, project names, locations, contact details, dates, and numbers. If a claim cannot be verified, keep the copy qualitative. Never invent awards, testimonials, residents, statistics, addresses, or project details.
+
+VISUAL LANGUAGE
+Warm architectural editorial. Create a restrained, high-end Indian architectural-journal aesthetic—not a generic luxury-property template.
+
+- Palette: porcelain #FAFAF8, warm stone #F4F1ED, deep olive #2C3523, sage #5C6651, terracotta #C05A3A, espresso #2C221B.
+- Typography: a Cormorant Garamond-style high-contrast editorial serif for display headlines paired with an Outfit-style geometric sans for navigation, labels, body copy, and controls.
+- Composition: cardless asymmetric grids, oversized editorial headlines, thin rules, generous negative space, varied image crops, quiet information bands, and one restrained terracotta action color.
+- Imagery: believable Bengaluru residential architecture; one commanding residence-led hero, material and landscape details, completed-project evidence, and one authentic lived-experience image. Do not repeat one image as filler.
+- Avoid excessive rounded cards, floating glass panels, gradients, generic icon grids, small cramped text, and repeated equal-sized section patterns.
+
+CONTENT AND PAGE ARCHITECTURE
+Create 8 substantial sections:
+1. Refined primary navigation with the Sanjeevini Group identity, Projects, Legacy, Why us, Testimonials, Contact, and a Book a private visit action.
+2. Full-viewport residence-led hero with a distinctive editorial headline, short credible introduction, primary and secondary actions, and one quiet proof detail.
+3. Selected residences shown through an asymmetric image-led project composition with useful project information only when verified.
+4. Legacy/editorial story combining a tactile architectural image, considered long-form copy, and verified evidence.
+5. Six clear reasons to choose Sanjeevini in a minimal 1px editorial grid—not rounded cards.
+6. Human proof or completed-project evidence. Use a testimonial only if it is verified; otherwise present an honest delivered-work or customer-experience section without quotation marks or invented names.
+7. Enquiry section for a private site visit with useful fields and concise reassurance.
+8. Polished footer with verified contact information and navigation.
+
+IMPLEMENTATION CONTRACT
+Return one complete static TSX file only. Use semantic HTML and responsive Tailwind utilities. Use static JSX, static arrays, and bounded .map() calls only. No imports, hooks, event handlers, network requests, runtime expressions, or external image URLs. Add aria-label="primary-navigation", aria-label="hero", and aria-label="footer" to the required landmarks. Keep the structure between 100 and 180 editable nodes and below 300 expanded JSX elements. Every section must remain strong at desktop, tablet, and mobile sizes and must survive conversion into editable BuildEZ Builder nodes.

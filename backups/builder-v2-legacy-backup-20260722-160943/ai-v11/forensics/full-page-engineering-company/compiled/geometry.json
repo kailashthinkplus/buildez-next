@@ -1,0 +1,1170 @@
+{
+  "desktop": {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "sections": {
+      "navbar": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 116,
+        "display": "block",
+        "position": "absolute",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "20px 24px",
+        "overflow": "visible"
+      },
+      "hero": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 1000,
+        "display": "block",
+        "position": "relative",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "0px",
+        "overflow": "hidden"
+      },
+      "about": {
+        "x": 0,
+        "y": 1000,
+        "width": 1440,
+        "height": 977,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "128px 48px",
+        "overflow": "visible"
+      },
+      "advantages": {
+        "x": 0,
+        "y": 988,
+        "width": 1440,
+        "height": 946,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "128px 48px",
+        "overflow": "visible"
+      },
+      "services": {
+        "x": 0,
+        "y": 1000,
+        "width": 1440,
+        "height": 1012,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "128px 48px",
+        "overflow": "visible"
+      },
+      "process": {
+        "x": 0,
+        "y": 1006,
+        "width": 1440,
+        "height": 817,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "128px 48px",
+        "overflow": "visible"
+      },
+      "projects": {
+        "x": 0,
+        "y": 908,
+        "width": 1440,
+        "height": 1104,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "128px 48px",
+        "overflow": "visible"
+      },
+      "contact": {
+        "x": 0,
+        "y": 1104,
+        "width": 1440,
+        "height": 554.78125,
+        "display": "block",
+        "position": "relative",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "128px 48px",
+        "overflow": "hidden"
+      },
+      "footer": {
+        "x": 0,
+        "y": 1658.78125,
+        "width": 1440,
+        "height": 439,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "64px 48px",
+        "overflow": "visible"
+      }
+    },
+    "headingLines": [
+      {
+        "text": "We engineer the systems industry depends on.",
+        "width": 1100,
+        "fontSize": "96px",
+        "lineHeight": "91.2px",
+        "lines": 2
+      },
+      {
+        "text": "Complexity becomes manageable when the whole system is visible.",
+        "width": 640.015625,
+        "fontSize": "72px",
+        "lineHeight": "90px",
+        "lines": 5
+      },
+      {
+        "text": "Designed to remove risk before it reaches the field.",
+        "width": 648,
+        "fontSize": "72px",
+        "lineHeight": "108px",
+        "lines": 3
+      },
+      {
+        "text": "Whole-system thinking",
+        "width": 360.65625,
+        "fontSize": "24px",
+        "lineHeight": "36px",
+        "lines": 1
+      },
+      {
+        "text": "Evidence at every gate",
+        "width": 360.671875,
+        "fontSize": "24px",
+        "lineHeight": "36px",
+        "lines": 1
+      },
+      {
+        "text": "Delivery intelligence",
+        "width": 360.65625,
+        "fontSize": "24px",
+        "lineHeight": "36px",
+        "lines": 1
+      },
+      {
+        "text": "Engineering depth for assets that shape economies.",
+        "width": 896,
+        "fontSize": "72px",
+        "lineHeight": "108px",
+        "lines": 3
+      },
+      {
+        "text": "Industrial systems",
+        "width": 362.65625,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Energy infrastructure",
+        "width": 362.671875,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Advanced mobility",
+        "width": 362.65625,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Three stages. One unbroken line of evidence.",
+        "width": 405.328125,
+        "fontSize": "48px",
+        "lineHeight": "72px",
+        "lines": 3
+      },
+      {
+        "text": "Frame the system",
+        "width": 170.828125,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 2
+      },
+      {
+        "text": "Engineer the proof",
+        "width": 170.828125,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 2
+      },
+      {
+        "text": "Deliver with evidence",
+        "width": 170.828125,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 3
+      },
+      {
+        "text": "Infrastructure measured by what it enables.",
+        "width": 1024,
+        "fontSize": "72px",
+        "lineHeight": "108px",
+        "lines": 2
+      },
+      {
+        "text": "North Sea Energy Hub",
+        "width": 362.65625,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Apex Mobility Works",
+        "width": 362.671875,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Meridian Control Centre",
+        "width": 362.65625,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "What must this system make possible?",
+        "width": 880,
+        "fontSize": "88px",
+        "lineHeight": "83.6px",
+        "lines": 3
+      },
+      {
+        "text": "Capabilities",
+        "width": 300,
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "lines": 1
+      },
+      {
+        "text": "Studios",
+        "width": 300,
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "lines": 1
+      },
+      {
+        "text": "Connect",
+        "width": 300,
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "lines": 1
+      }
+    ]
+  },
+  "laptop": {
+    "viewport": {
+      "width": 1024,
+      "height": 800
+    },
+    "scrollWidth": 1024,
+    "clientWidth": 1024,
+    "sections": {
+      "navbar": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 116,
+        "display": "block",
+        "position": "absolute",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "20px 24px",
+        "overflow": "visible"
+      },
+      "hero": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 800,
+        "display": "block",
+        "position": "relative",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "0px",
+        "overflow": "hidden"
+      },
+      "about": {
+        "x": 0,
+        "y": 800,
+        "width": 1024,
+        "height": 913,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "advantages": {
+        "x": 0,
+        "y": 856,
+        "width": 1024,
+        "height": 954,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "services": {
+        "x": 0,
+        "y": 877,
+        "width": 1024,
+        "height": 1652,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "process": {
+        "x": 0,
+        "y": 1226,
+        "width": 1024,
+        "height": 759,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "projects": {
+        "x": 0,
+        "y": 779,
+        "width": 1024,
+        "height": 1040,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "contact": {
+        "x": 0,
+        "y": 1040,
+        "width": 1024,
+        "height": 765.5625,
+        "display": "block",
+        "position": "relative",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "hidden"
+      },
+      "footer": {
+        "x": 0,
+        "y": 1805.5625,
+        "width": 1024,
+        "height": 439,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "64px 24px",
+        "overflow": "visible"
+      }
+    },
+    "headingLines": [
+      {
+        "text": "We engineer the systems industry depends on.",
+        "width": 976,
+        "fontSize": "96px",
+        "lineHeight": "91.2px",
+        "lines": 3
+      },
+      {
+        "text": "Complexity becomes manageable when the whole system is visible.",
+        "width": 592,
+        "fontSize": "72px",
+        "lineHeight": "90px",
+        "lines": 5
+      },
+      {
+        "text": "Designed to remove risk before it reaches the field.",
+        "width": 976,
+        "fontSize": "72px",
+        "lineHeight": "108px",
+        "lines": 2
+      },
+      {
+        "text": "Whole-system thinking",
+        "width": 238,
+        "fontSize": "24px",
+        "lineHeight": "36px",
+        "lines": 2
+      },
+      {
+        "text": "Evidence at every gate",
+        "width": 238,
+        "fontSize": "24px",
+        "lineHeight": "36px",
+        "lines": 2
+      },
+      {
+        "text": "Delivery intelligence",
+        "width": 238,
+        "fontSize": "24px",
+        "lineHeight": "36px",
+        "lines": 1
+      },
+      {
+        "text": "Engineering depth for assets that shape economies.",
+        "width": 749.5625,
+        "fontSize": "72px",
+        "lineHeight": "108px",
+        "lines": 3
+      },
+      {
+        "text": "Industrial systems",
+        "width": 912,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Energy infrastructure",
+        "width": 912,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Advanced mobility",
+        "width": 912,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Three stages. One unbroken line of evidence.",
+        "width": 192,
+        "fontSize": "48px",
+        "lineHeight": "72px",
+        "lines": 6
+      },
+      {
+        "text": "Frame the system",
+        "width": 145.5,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 2
+      },
+      {
+        "text": "Engineer the proof",
+        "width": 145.5,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 2
+      },
+      {
+        "text": "Deliver with evidence",
+        "width": 145.5,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 3
+      },
+      {
+        "text": "Infrastructure measured by what it enables.",
+        "width": 976,
+        "fontSize": "72px",
+        "lineHeight": "108px",
+        "lines": 2
+      },
+      {
+        "text": "North Sea Energy Hub",
+        "width": 240,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 2
+      },
+      {
+        "text": "Apex Mobility Works",
+        "width": 240,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 2
+      },
+      {
+        "text": "Meridian Control Centre",
+        "width": 240,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 2
+      },
+      {
+        "text": "What must this system make possible?",
+        "width": 336,
+        "fontSize": "88px",
+        "lineHeight": "83.6px",
+        "lines": 6
+      },
+      {
+        "text": "Capabilities",
+        "width": 208,
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "lines": 1
+      },
+      {
+        "text": "Studios",
+        "width": 208,
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "lines": 1
+      },
+      {
+        "text": "Connect",
+        "width": 208,
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "lines": 1
+      }
+    ]
+  },
+  "tablet": {
+    "viewport": {
+      "width": 768,
+      "height": 900
+    },
+    "scrollWidth": 768,
+    "clientWidth": 768,
+    "sections": {
+      "navbar": {
+        "x": 0,
+        "y": 0,
+        "width": 768,
+        "height": 384,
+        "display": "block",
+        "position": "absolute",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "20px 24px",
+        "overflow": "visible"
+      },
+      "hero": {
+        "x": 0,
+        "y": 0,
+        "width": 768,
+        "height": 900,
+        "display": "block",
+        "position": "relative",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "0px",
+        "overflow": "hidden"
+      },
+      "about": {
+        "x": 0,
+        "y": 900,
+        "width": 768,
+        "height": 1379,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "advantages": {
+        "x": 0,
+        "y": 1139,
+        "width": 768,
+        "height": 1522,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "services": {
+        "x": 0,
+        "y": 1211,
+        "width": 768,
+        "height": 1608,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "process": {
+        "x": 0,
+        "y": 1254,
+        "width": 768,
+        "height": 1213,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "projects": {
+        "x": 0,
+        "y": 1056,
+        "width": 768,
+        "height": 2120,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "contact": {
+        "x": 0,
+        "y": 1510,
+        "width": 768,
+        "height": 545.59375,
+        "display": "block",
+        "position": "relative",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "hidden"
+      },
+      "footer": {
+        "x": 0,
+        "y": 2055.59375,
+        "width": 768,
+        "height": 1012,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "64px 24px",
+        "overflow": "visible"
+      }
+    },
+    "headingLines": [
+      {
+        "text": "We engineer the systems industry depends on.",
+        "width": 720,
+        "fontSize": "72px",
+        "lineHeight": "68.4px",
+        "lines": 3
+      },
+      {
+        "text": "Complexity becomes manageable when the whole system is visible.",
+        "width": 720,
+        "fontSize": "48px",
+        "lineHeight": "60px",
+        "lines": 3
+      },
+      {
+        "text": "Designed to remove risk before it reaches the field.",
+        "width": 720,
+        "fontSize": "48px",
+        "lineHeight": "72px",
+        "lines": 2
+      },
+      {
+        "text": "Whole-system thinking",
+        "width": 654,
+        "fontSize": "24px",
+        "lineHeight": "36px",
+        "lines": 1
+      },
+      {
+        "text": "Evidence at every gate",
+        "width": 654,
+        "fontSize": "24px",
+        "lineHeight": "36px",
+        "lines": 1
+      },
+      {
+        "text": "Delivery intelligence",
+        "width": 654,
+        "fontSize": "24px",
+        "lineHeight": "36px",
+        "lines": 1
+      },
+      {
+        "text": "Engineering depth for assets that shape economies.",
+        "width": 720,
+        "fontSize": "48px",
+        "lineHeight": "72px",
+        "lines": 2
+      },
+      {
+        "text": "Industrial systems",
+        "width": 656,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Energy infrastructure",
+        "width": 656,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Advanced mobility",
+        "width": 656,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Three stages. One unbroken line of evidence.",
+        "width": 720,
+        "fontSize": "48px",
+        "lineHeight": "72px",
+        "lines": 2
+      },
+      {
+        "text": "Frame the system",
+        "width": 718,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Engineer the proof",
+        "width": 718,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Deliver with evidence",
+        "width": 718,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Infrastructure measured by what it enables.",
+        "width": 720,
+        "fontSize": "48px",
+        "lineHeight": "72px",
+        "lines": 2
+      },
+      {
+        "text": "North Sea Energy Hub",
+        "width": 656,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Apex Mobility Works",
+        "width": 656,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Meridian Control Centre",
+        "width": 656,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "What must this system make possible?",
+        "width": 720,
+        "fontSize": "64px",
+        "lineHeight": "60.8px",
+        "lines": 2
+      },
+      {
+        "text": "Capabilities",
+        "width": 720,
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "lines": 1
+      },
+      {
+        "text": "Studios",
+        "width": 720,
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "lines": 1
+      },
+      {
+        "text": "Connect",
+        "width": 720,
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "lines": 1
+      }
+    ]
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "sections": {
+      "navbar": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 384,
+        "display": "block",
+        "position": "absolute",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "20px 24px",
+        "overflow": "visible"
+      },
+      "hero": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 1162.734375,
+        "display": "block",
+        "position": "relative",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "0px",
+        "overflow": "hidden"
+      },
+      "about": {
+        "x": 0,
+        "y": 1162.734375,
+        "width": 390,
+        "height": 1644,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "advantages": {
+        "x": 0,
+        "y": 1243.734375,
+        "width": 390,
+        "height": 1930,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "services": {
+        "x": 0,
+        "y": 1386.734375,
+        "width": 390,
+        "height": 1824,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "process": {
+        "x": 0,
+        "y": 1333.734375,
+        "width": 390,
+        "height": 1453,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "projects": {
+        "x": 0,
+        "y": 1148.734375,
+        "width": 390,
+        "height": 2192,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "visible"
+      },
+      "contact": {
+        "x": 0,
+        "y": 1517.734375,
+        "width": 390,
+        "height": 755.1875,
+        "display": "block",
+        "position": "relative",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "96px 24px",
+        "overflow": "hidden"
+      },
+      "footer": {
+        "x": 0,
+        "y": 2272.921875,
+        "width": 390,
+        "height": 1068,
+        "display": "block",
+        "position": "static",
+        "minWidth": "0px",
+        "maxWidth": "none",
+        "gridTemplateColumns": "none",
+        "gap": "normal",
+        "padding": "64px 24px",
+        "overflow": "visible"
+      }
+    },
+    "headingLines": [
+      {
+        "text": "We engineer the systems industry depends on.",
+        "width": 342,
+        "fontSize": "72px",
+        "lineHeight": "68.4px",
+        "lines": 7
+      },
+      {
+        "text": "Complexity becomes manageable when the whole system is visible.",
+        "width": 342,
+        "fontSize": "48px",
+        "lineHeight": "60px",
+        "lines": 6
+      },
+      {
+        "text": "Designed to remove risk before it reaches the field.",
+        "width": 342,
+        "fontSize": "48px",
+        "lineHeight": "72px",
+        "lines": 5
+      },
+      {
+        "text": "Whole-system thinking",
+        "width": 276,
+        "fontSize": "24px",
+        "lineHeight": "36px",
+        "lines": 1
+      },
+      {
+        "text": "Evidence at every gate",
+        "width": 276,
+        "fontSize": "24px",
+        "lineHeight": "36px",
+        "lines": 1
+      },
+      {
+        "text": "Delivery intelligence",
+        "width": 276,
+        "fontSize": "24px",
+        "lineHeight": "36px",
+        "lines": 1
+      },
+      {
+        "text": "Engineering depth for assets that shape economies.",
+        "width": 342,
+        "fontSize": "48px",
+        "lineHeight": "72px",
+        "lines": 5
+      },
+      {
+        "text": "Industrial systems",
+        "width": 278,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Energy infrastructure",
+        "width": 278,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 2
+      },
+      {
+        "text": "Advanced mobility",
+        "width": 278,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Three stages. One unbroken line of evidence.",
+        "width": 342,
+        "fontSize": "48px",
+        "lineHeight": "72px",
+        "lines": 4
+      },
+      {
+        "text": "Frame the system",
+        "width": 340,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Engineer the proof",
+        "width": 340,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Deliver with evidence",
+        "width": 340,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 1
+      },
+      {
+        "text": "Infrastructure measured by what it enables.",
+        "width": 342,
+        "fontSize": "48px",
+        "lineHeight": "72px",
+        "lines": 3
+      },
+      {
+        "text": "North Sea Energy Hub",
+        "width": 278,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 2
+      },
+      {
+        "text": "Apex Mobility Works",
+        "width": 278,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 2
+      },
+      {
+        "text": "Meridian Control Centre",
+        "width": 278,
+        "fontSize": "30px",
+        "lineHeight": "45px",
+        "lines": 2
+      },
+      {
+        "text": "What must this system make possible?",
+        "width": 342,
+        "fontSize": "64px",
+        "lineHeight": "60.8px",
+        "lines": 4
+      },
+      {
+        "text": "Capabilities",
+        "width": 342,
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "lines": 1
+      },
+      {
+        "text": "Studios",
+        "width": 342,
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "lines": 1
+      },
+      {
+        "text": "Connect",
+        "width": 342,
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "lines": 1
+      }
+    ]
+  }
+}

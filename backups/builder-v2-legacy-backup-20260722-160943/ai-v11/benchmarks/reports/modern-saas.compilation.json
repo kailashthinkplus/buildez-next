@@ -1,0 +1,233 @@
+{
+  "diagnostics": [],
+  "provenance": {
+    "dg.page": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 19,
+      "column": 5,
+      "sourceElement": "ModernSaas"
+    },
+    "dg.004.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 23,
+      "column": 13,
+      "sourceElement": "p"
+    },
+    "dg.005.h1": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 24,
+      "column": 13,
+      "sourceElement": "h1"
+    },
+    "dg.006.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 25,
+      "column": 13,
+      "sourceElement": "p"
+    },
+    "dg.007.button": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 26,
+      "column": 13,
+      "sourceElement": "button"
+    },
+    "dg.003.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 22,
+      "column": 11,
+      "sourceElement": "div"
+    },
+    "dg.009.img": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 29,
+      "column": 13,
+      "sourceElement": "img"
+    },
+    "dg.011.strong": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 30,
+      "column": 58,
+      "sourceElement": "strong"
+    },
+    "dg.012.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 30,
+      "column": 123,
+      "sourceElement": "p"
+    },
+    "dg.010.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 30,
+      "column": 13,
+      "sourceElement": "div"
+    },
+    "dg.014.strong": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 31,
+      "column": 58,
+      "sourceElement": "strong"
+    },
+    "dg.015.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 31,
+      "column": 124,
+      "sourceElement": "p"
+    },
+    "dg.013.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 31,
+      "column": 13,
+      "sourceElement": "div"
+    },
+    "dg.008.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 28,
+      "column": 11,
+      "sourceElement": "div"
+    },
+    "dg.002.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 21,
+      "column": 9,
+      "sourceElement": "div"
+    },
+    "dg.001.section": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 20,
+      "column": 7,
+      "sourceElement": "section"
+    },
+    "dg.019.h2": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 37,
+      "column": 72,
+      "sourceElement": "h2"
+    },
+    "dg.020.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 37,
+      "column": 183,
+      "sourceElement": "p"
+    },
+    "dg.018.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 37,
+      "column": 11,
+      "sourceElement": "div"
+    },
+    "dg.023.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 11,
+      "column": 5,
+      "sourceElement": "div"
+    },
+    "dg.024.h3": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 12,
+      "column": 5,
+      "sourceElement": "h3"
+    },
+    "dg.025.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 13,
+      "column": 5,
+      "sourceElement": "p"
+    },
+    "dg.022.article": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 10,
+      "column": 3,
+      "sourceElement": "article"
+    },
+    "dg.027.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 11,
+      "column": 5,
+      "sourceElement": "div"
+    },
+    "dg.028.h3": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 12,
+      "column": 5,
+      "sourceElement": "h3"
+    },
+    "dg.029.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 13,
+      "column": 5,
+      "sourceElement": "p"
+    },
+    "dg.026.article": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 10,
+      "column": 3,
+      "sourceElement": "article"
+    },
+    "dg.031.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 11,
+      "column": 5,
+      "sourceElement": "div"
+    },
+    "dg.032.h3": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 12,
+      "column": 5,
+      "sourceElement": "h3"
+    },
+    "dg.033.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 13,
+      "column": 5,
+      "sourceElement": "p"
+    },
+    "dg.030.article": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 10,
+      "column": 3,
+      "sourceElement": "article"
+    },
+    "dg.035.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 11,
+      "column": 5,
+      "sourceElement": "div"
+    },
+    "dg.036.h3": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 12,
+      "column": 5,
+      "sourceElement": "h3"
+    },
+    "dg.037.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 13,
+      "column": 5,
+      "sourceElement": "p"
+    },
+    "dg.034.article": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 10,
+      "column": 3,
+      "sourceElement": "article"
+    },
+    "dg.021.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 38,
+      "column": 11,
+      "sourceElement": "div"
+    },
+    "dg.017.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 36,
+      "column": 9,
+      "sourceElement": "div"
+    },
+    "dg.016.section": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+      "line": 35,
+      "column": 7,
+      "sourceElement": "section"
+    }
+  }
+}

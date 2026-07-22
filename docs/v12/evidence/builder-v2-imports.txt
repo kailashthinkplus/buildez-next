@@ -1,0 +1,361 @@
+apps/web-app/app/(runtime)/[...slug]/page.tsx:5:import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
+apps/web-app/app/(runtime)/[...slug]/page.tsx:9:} from "@/modules/builder-v2/debug/blueprintDebug";
+apps/web-app/app/(runtime)/[...slug]/page.tsx:10:import { defaultThemeTokens } from "@/modules/builder-v2/theme/defaultTheme";
+apps/web-app/app/(runtime)/[...slug]/page.tsx:11:import { SiteThemeFrame } from "@/modules/builder-v2/theme/SiteThemeFrame";
+apps/web-app/app/(runtime)/[...slug]/page.tsx:17:} from "@/modules/builder-v2/theme/siteLayout";
+apps/web-app/app/(runtime)/[...slug]/page.tsx:18:import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
+apps/web-app/modules/builder-v2/media/services/media.service.ts:34:    const response = await fetch(`/api/builder-v2/assets?siteId=${siteId}`);
+apps/web-app/modules/builder-v2/media/services/media.service.ts:54:    const response = await fetch("/api/builder-v2/assets/upload", {
+apps/web-app/modules/builder-v2/media/services/media.service.ts:109:    const response = await fetch(`/api/builder-v2/assets/${assetId}`, {
+apps/web-app/modules/builder-v2/media/services/media.service.ts:124:      `/api/builder-v2/assets?siteId=${siteId}&q=${encodeURIComponent(query)}`
+apps/web-app/app/internal/visual-critic/[caseId]/page.tsx:5:import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
+apps/web-app/app/internal/visual-critic/[caseId]/page.tsx:6:import { buildGoldenWebsitePreview } from "@/modules/builder-v2/website-engine/golden-websites";
+apps/web-app/app/internal/visual-critic/[caseId]/page.tsx:7:import { goldenWebsiteInput } from "@/modules/builder-v2/website-engine/golden-websites/framework/GoldenWebsiteRunner";
+apps/web-app/app/internal/visual-critic/[caseId]/page.tsx:8:import { isInternalPreviewAvailable } from "@/modules/builder-v2/website-engine/internal-preview";
+apps/web-app/app/internal/visual-critic/[caseId]/page.tsx:9:import { createBlueprintRepairPlan, executeRepairPlan } from "@/modules/builder-v2/website-engine/repair";
+apps/web-app/app/preview/[siteSlug]/[pageSlugWithId]/page.tsx:3:import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
+apps/web-app/app/preview/[siteSlug]/[pageSlugWithId]/page.tsx:4:import { isBuilderV2Blueprint } from "@/modules/builder-v2/runtime/isBuilderV2Blueprint";
+apps/web-app/app/preview/[siteSlug]/[pageSlugWithId]/page.tsx:8:} from "@/modules/builder-v2/debug/blueprintDebug";
+apps/web-app/app/preview/[siteSlug]/[pageSlugWithId]/page.tsx:9:import { defaultThemeTokens } from "@/modules/builder-v2/theme/defaultTheme";
+apps/web-app/app/preview/[siteSlug]/[pageSlugWithId]/page.tsx:10:import { SiteThemeFrame } from "@/modules/builder-v2/theme/SiteThemeFrame";
+apps/web-app/app/preview/[siteSlug]/[pageSlugWithId]/page.tsx:16:} from "@/modules/builder-v2/theme/siteLayout";
+apps/web-app/app/preview/[siteSlug]/[pageSlugWithId]/page.tsx:17:import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
+apps/web-app/app/internal/content-compiler-preview/page.tsx:2:import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
+apps/web-app/app/internal/content-compiler-preview/page.tsx:3:import { buildContentCompilerVisualFixture, CONTENT_VISUAL_VARIANTS, type ContentVisualVariant } from "@/modules/builder-v2/website-engine/builder-blueprint/component-recipes/content/contentVisualFixtures";
+apps/web-app/app/internal/content-compiler-preview/page.tsx:4:import { isInternalPreviewAvailable } from "@/modules/builder-v2/website-engine/internal-preview";
+apps/web-app/app/internal/v11-visual/page.tsx:9:} from "@/modules/builder-v2/ai-v11/benchmarks/visual/visualFixture";
+apps/web-app/app/internal/v11-visual/[fixtureId]/page.tsx:3:import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
+apps/web-app/app/internal/v11-visual/[fixtureId]/page.tsx:4:import { TrustedV11Reference } from "@/modules/builder-v2/ai-v11/benchmarks/reference/TrustedReferences";
+apps/web-app/app/internal/v11-visual/[fixtureId]/page.tsx:10:} from "@/modules/builder-v2/ai-v11/benchmarks/visual/visualFixture";
+apps/web-app/app/internal/ai-v10-forensic/[runId]/page.tsx:4:import { PublishedPageRenderer } from "../../../../modules/builder-v2/runtime/PublishedPageRenderer";
+apps/web-app/app/internal/ai-v10-forensic/[runId]/page.tsx:5:import type { BuilderBlueprint } from "../../../../modules/builder-v2/types/blueprint";
+apps/web-app/app/internal/ai-v10-forensic/[runId]/canvas/page.tsx:4:import type { BuilderBlueprint } from "../../../../../modules/builder-v2/types/blueprint";
+apps/web-app/app/internal/ai-v10-forensic/[runId]/canvas/CanvasForensicClient.tsx:3:import NodeRenderer from "../../../../../modules/builder-v2/canvas/NodeRenderer";
+apps/web-app/app/internal/ai-v10-forensic/[runId]/canvas/CanvasForensicClient.tsx:4:import { useCanvasStore, type Device } from "../../../../../modules/builder-v2/store/useCanvasStore";
+apps/web-app/app/internal/ai-v10-forensic/[runId]/canvas/CanvasForensicClient.tsx:5:import type { BuilderBlueprint } from "../../../../../modules/builder-v2/types/blueprint";
+apps/web-app/app/internal/ai-v10-preview/page.tsx:2:import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
+apps/web-app/app/internal/ai-v10-preview/page.tsx:7:} from "@/modules/builder-v2/website-engine/internal-preview";
+apps/web-app/app/internal/golden-preview/[caseId]/page.tsx:3:import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
+apps/web-app/app/internal/golden-preview/[caseId]/page.tsx:4:import { buildGoldenWebsitePreview } from "@/modules/builder-v2/website-engine/golden-websites";
+apps/web-app/app/internal/golden-preview/[caseId]/page.tsx:5:import { isInternalPreviewAvailable } from "@/modules/builder-v2/website-engine/internal-preview";
+apps/web-app/app/app/(tenant)/media/page.tsx:3:import MediaLibrary from "@/modules/builder-v2/media/components/MediaLibrary";
+apps/web-app/app/internal/v11-parity/sanjeevini/page.tsx:3:import SanjeeviniPremiumParity from "@/modules/builder-v2/ai-v11/fixtures/sanjeevini-premium-parity";
+apps/web-app/app/internal/v11-parity/sanjeevini/page.tsx:4:import { buildV11VisualFixture, isV11VisualPreviewAvailable } from "@/modules/builder-v2/ai-v11/benchmarks/visual/visualFixture";
+apps/web-app/app/internal/v11-parity/sanjeevini/page.tsx:5:import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
+apps/web-app/modules/builder-v2/ai-compatibility/README.md:21:import { runAICompatibilityAudit } from "@/modules/builder-v2/ai-compatibility";
+apps/web-app/app/api/ai-v8/generate-images/route.ts:6:import { persistGeneratedImage } from "@/modules/builder-v2/media/server/persistGeneratedImage";
+apps/web-app/app/api/builder-v2/ai/preflight-v11/route.ts:3:import { prepareV11Direction } from "@/modules/builder-v2/ai-v11/preflight/prepareV11Direction";
+apps/web-app/app/api/builder-v2/ai/preflight-v10/route.ts:3:import { prepareV10PreflightResponse } from "@/modules/builder-v2/ai-v10/preflight/preflightResponse";
+apps/web-app/app/app/(builder)/[siteSlug]/[pageSlugWithId]/BuilderRoot.tsx:5:import { registerWidgets } from "@/modules/builder-v2/widgets/registerWidgets";
+apps/web-app/app/app/(builder)/[siteSlug]/[pageSlugWithId]/BuilderRoot.tsx:12:  () => import("@/modules/builder-v2/workspace/BuilderRoot"),
+apps/web-app/app/api/builder-v2/ai/generate-v9/route.ts:5:import { createFallbackBlueprint } from "@/modules/builder-v2/ai-v9/blueprintFactory";
+apps/web-app/app/api/builder-v2/ai/generate-v9/route.ts:13:} from "@/modules/builder-v2/ai-v9/context/brandContext";
+apps/web-app/app/api/builder-v2/ai/generate-v9/route.ts:14:import { runV9WebsiteGeneration } from "@/modules/builder-v2/ai-v9/orchestrator/runV9WebsiteGeneration";
+apps/web-app/app/api/builder-v2/ai/generate-v9/route.ts:19:} from "@/modules/builder-v2/debug/blueprintDebug";
+apps/web-app/app/api/builder-v2/ai/progress-v10/route.ts:3:import { readV10Progress } from "@/modules/builder-v2/ai-v10/progress/v10GenerationProgress";
+apps/web-app/app/api/builder-v2/ai/context/route.ts:9:} from "@/modules/builder-v2/ai-v9/context/brandContext";
+apps/web-app/app/api/builder-v2/ai/generate-v11/route.ts:6:import { generateV11Website } from "@/modules/builder-v2/ai-v11/production/generateV11Website";
+apps/web-app/app/api/builder-v2/ai/generate-v11/route.ts:7:import type { V11SourceArtifact } from "@/modules/builder-v2/ai-v11/production/sourceArtifact";
+apps/web-app/app/app/(tenant)/[siteSlug]/media/page.tsx:3:import MediaLibrary from "@/modules/builder-v2/media/components/MediaLibrary";
+apps/web-app/app/api/builder-v2/ai/generate-v10/route.ts:5:import { runV10WebsiteGeneration } from "@/modules/builder-v2/ai-v10";
+apps/web-app/app/api/builder-v2/ai/generate-v10/route.ts:6:import { publishV10Progress } from "@/modules/builder-v2/ai-v10/progress/v10GenerationProgress";
+apps/web-app/app/api/builder-v2/ai/generate-v10/route.ts:7:import { persistAfterSemanticHydration } from "@/modules/builder-v2/ai-v10/persistence/semanticHydrationPersistenceGate";
+apps/web-app/app/app/(tenant)/[siteSlug]/themes/page.tsx:9:} from "@/modules/builder-v2/theme/siteLayout";
+apps/web-app/app/app/(tenant)/[siteSlug]/themes/page.tsx:10:import { getThemePreset } from "@/modules/builder-v2/theme/themePresets";
+apps/web-app/app/app/(tenant)/[siteSlug]/themes/ThemeMarketplaceClient.tsx:7:import { firstPartyThemePresets } from "@/modules/builder-v2/theme/themePresets";
+apps/web-app/app/app/(tenant)/[siteSlug]/themes/ThemeMarketplaceClient.tsx:8:import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
+apps/web-app/app/app/(tenant)/[siteSlug]/themes/ThemeMarketplaceClient.tsx:12:} from "@/modules/builder-v2/theme/siteLayout";
+apps/web-app/app/app/(tenant)/[siteSlug]/themes/ThemeMarketplaceClient.tsx:13:import { SiteThemeFrame } from "@/modules/builder-v2/theme/SiteThemeFrame";
+apps/web-app/app/api/pages/[pageId]/publish/route.ts:16:import { isBuilderV2Blueprint } from "@/modules/builder-v2/runtime/isBuilderV2Blueprint";
+apps/web-app/app/app/(builder)/[siteSlug]/[pageSlugWithId]/sidebar/ai/AiPanel.tsx:3:export { default } from "@/modules/builder-v2/ai/components/AiPanel";
+apps/web-app/app/app/(tenant)/[siteSlug]/brand/page.tsx:4:import BrandIntelligenceSettings from "@/modules/builder-v2/brand/BrandIntelligenceSettings";
+apps/web-app/app/api/sites/[siteId]/design-tokens/route.ts:4:import { getThemePreset } from "@/modules/builder-v2/theme/themePresets";
+apps/web-app/app/api/sites/[siteId]/design-tokens/route.ts:9:} from "@/modules/builder-v2/theme/themeDemoBlueprints";
+apps/web-app/modules/builder-v2/api/media.ts:7:    return api(`/api/builder-v2/assets?siteId=${siteId}`);
+apps/web-app/modules/builder-v2/api/media.ts:25:    return api("/api/builder-v2/assets", {
+apps/web-app/modules/builder-v2/workspace/BuilderShell.tsx:801:    const res = await fetch(`/api/builder-v2/blueprints/${pageId}`, {
+apps/web-app/modules/builder-v2/workspace/BuilderHeader.tsx:363:        const response = await fetch(`/api/builder-v2/blueprints/${pageId}`, {
+apps/web-app/modules/builder-v2/ai/services/AiConversation.ts:21:  if (context?.aiGenerationVersion === "v11") return "/api/builder-v2/ai/generate-v11";
+apps/web-app/modules/builder-v2/ai/services/AiConversation.ts:22:  if (context?.aiGenerationVersion === "v10") return "/api/builder-v2/ai/generate-v10";
+apps/web-app/modules/builder-v2/ai/services/AiConversation.ts:23:  return "/api/builder-v2/ai/generate-v9";
+apps/web-app/modules/builder-v2/ai/services/AiConversation.ts:115:            const progressResponse = await fetch(`/api/builder-v2/ai/progress-v10?runId=${encodeURIComponent(generationRunId)}`, {
+apps/web-app/modules/builder-v2/inspector/tabs/ContentTab.tsx:101:      const res = await fetch("/api/builder-v2/assets/upload", {
+apps/web-app/modules/builder-v2/inspector/tabs/DesignTab.tsx:171:      const response = await fetch("/api/builder-v2/assets/upload", {
+apps/web-app/modules/builder-v2/ai/components/AiPanel.tsx:556:      const res = await fetch("/api/builder-v2/ai/context", {
+apps/web-app/modules/builder-v2/ai/components/AiPanel.tsx:603:      const analysisResponse = await fetch("/api/builder-v2/ai/analyze-reference", {
+apps/web-app/modules/builder-v2/ai/components/AiPanel.tsx:620:        const uploadResponse = await fetch("/api/builder-v2/assets/upload", {
+apps/web-app/modules/builder-v2/ai/components/AiPanel.tsx:666:        const res = await fetch(`/api/builder-v2/ai/context?pageId=${encodeURIComponent(pageId)}`, {
+apps/web-app/modules/builder-v2/ai/components/AiPanel.tsx:834:      const res = await fetch("/api/builder-v2/ai/finalize-design", {
+apps/web-app/modules/builder-v2/ai/components/AiPanel.tsx:927:        const response = await fetch(generationVersion === "v11" ? "/api/builder-v2/ai/preflight-v11" : "/api/builder-v2/ai/preflight-v10", {
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/bento-software.desktop.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/bento-software/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/bento-software.desktop.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/bento-software/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/editorial-architecture.tablet.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/editorial-architecture/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/editorial-architecture.tablet.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/editorial-architecture/tablet/full.png",
+apps/web-app/modules/builder-v2/__tests__/website-engine/ai-v10-hybrid.test.ts:144:    "/api/builder-v2/ai/generate-v10"
+apps/web-app/modules/builder-v2/__tests__/website-engine/ai-v10-hybrid.test.ts:148:    "/api/builder-v2/ai/generate-v9"
+apps/web-app/modules/builder-v2/__tests__/website-engine/ai-v10-hybrid.test.ts:150:  assert.equal(resolveAiGenerationEndpoint(), "/api/builder-v2/ai/generate-v9");
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/bento-software.mobile.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/bento-software/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/bento-software.mobile.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/bento-software/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/luxury-real-estate.tablet.json:70:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/luxury-real-estate/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/luxury-real-estate.tablet.json:71:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/luxury-real-estate/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/luxury-product-launch.desktop.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/luxury-product-launch/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/luxury-product-launch.desktop.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/luxury-product-launch/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/editorial-architecture.mobile.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/editorial-architecture/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/editorial-architecture.mobile.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/editorial-architecture/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/creative-agency.desktop.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/creative-agency/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/creative-agency.desktop.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/creative-agency/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/luxury-real-estate.mobile.json:70:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/luxury-real-estate/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/luxury-real-estate.mobile.json:71:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/luxury-real-estate/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/bento-software.tablet.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/bento-software/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/bento-software.tablet.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/bento-software/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/modern-saas.mobile.json:70:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/modern-saas/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/modern-saas.mobile.json:71:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/modern-saas/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/minimal-advisory.desktop.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/minimal-advisory/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/minimal-advisory.desktop.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/minimal-advisory/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/luxury-product-launch.mobile.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/luxury-product-launch/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/luxury-product-launch.mobile.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/luxury-product-launch/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/minimal-advisory.tablet.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/minimal-advisory/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/minimal-advisory.tablet.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/minimal-advisory/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/coastal-resort.tablet.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/coastal-resort/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/coastal-resort.tablet.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/coastal-resort/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/creative-agency.mobile.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/creative-agency/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/creative-agency.mobile.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/creative-agency/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:198:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/editorial-architecture.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:214:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/editorial-architecture.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:230:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/editorial-architecture.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:246:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-product-launch.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:262:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-product-launch.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:278:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/coastal-resort.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:294:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/coastal-resort.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:310:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/coastal-resort.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:326:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/minimal-advisory.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:342:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/minimal-advisory.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:358:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/minimal-advisory.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:374:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/bento-software.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:390:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/bento-software.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:406:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/bento-software.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:422:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/bento-software.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:438:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/bento-software.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:454:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/bento-software.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:470:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/bento-software.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:486:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/creative-agency.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:502:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/creative-agency.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:518:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/creative-agency.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:534:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/creative-agency.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/corpus-summary.json:550:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/creative-agency.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/coastal-resort.desktop.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/coastal-resort/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/coastal-resort.desktop.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/coastal-resort/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/modern-saas.desktop.json:70:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/modern-saas/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/modern-saas.desktop.json:71:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/modern-saas/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/modern-saas.tablet.json:70:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/modern-saas/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/modern-saas.tablet.json:71:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/modern-saas/tablet/full.png",
+apps/web-app/modules/builder-v2/__tests__/rc-t3/operations/commandbus-enforcement.test.ts:8:    path.resolve(process.cwd(), "modules/builder-v2/store/useBuilderStore.ts"),
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/creative-agency.tablet.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/creative-agency/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/creative-agency.tablet.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/creative-agency/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/editorial-architecture.desktop.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/editorial-architecture/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/editorial-architecture.desktop.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/editorial-architecture/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/luxury-real-estate.desktop.json:70:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/luxury-real-estate/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/luxury-real-estate.desktop.json:71:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/luxury-real-estate/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/coastal-resort.mobile.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/coastal-resort/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/coastal-resort.mobile.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/coastal-resort/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/minimal-advisory.mobile.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/minimal-advisory/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/minimal-advisory.mobile.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/minimal-advisory/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/luxury-product-launch.tablet.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/luxury-product-launch/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m4/luxury-product-launch.tablet.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/luxury-product-launch/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m3/luxury-real-estate.tablet.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/reference/luxury-real-estate/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m3/luxury-real-estate.tablet.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/compiled/luxury-real-estate/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m3/luxury-real-estate.mobile.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/reference/luxury-real-estate/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m3/luxury-real-estate.mobile.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/compiled/luxury-real-estate/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m3/modern-saas.mobile.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/reference/modern-saas/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m3/modern-saas.mobile.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/compiled/modern-saas/mobile/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m3/modern-saas.desktop.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/reference/modern-saas/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m3/modern-saas.desktop.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/compiled/modern-saas/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m3/modern-saas.tablet.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/reference/modern-saas/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m3/modern-saas.tablet.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/compiled/modern-saas/tablet/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:21:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:69:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:97:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:124:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:159:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:190:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:242:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:277:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:324:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:350:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:375:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:396:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:420:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:456:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:519:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:563:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:595:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:622:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:648:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:679:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:704:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:757:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:788:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:813:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:842:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:870:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:895:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:924:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:952:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:977:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1006:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1034:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1066:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1099:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1135:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1176:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1200:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1227:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1259:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1298:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1339:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1363:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1390:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1422:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1461:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1502:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1526:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1553:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1585:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1624:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1662:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1699:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/luxury-real-estate.json:1708:    "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m3/luxury-real-estate.desktop.json:62:    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/reference/luxury-real-estate/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/m3/luxury-real-estate.desktop.json:63:    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/compiled/luxury-real-estate/desktop/full.png",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:21:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:48:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:77:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:103:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:151:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:185:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:227:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:252:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:277:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:304:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:329:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:354:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:381:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:421:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:457:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:495:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:524:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:549:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:582:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:608:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:633:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:658:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:697:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:723:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:748:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:773:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:812:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:838:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:863:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:888:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:927:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:953:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:978:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:1003:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:1042:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:1078:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:1105:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:1139:        "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/expected-graphs/modern-saas.json:1148:    "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:5:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:11:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:17:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:23:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:29:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:35:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:41:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:47:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:53:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:59:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:65:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:71:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:77:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:83:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:89:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:95:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:101:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:107:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:113:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:119:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:125:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:131:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:137:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:143:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:149:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:155:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:161:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:167:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:173:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:179:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:185:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:191:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:197:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:203:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:209:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:215:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:221:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/modern-saas.compilation.json:227:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/modern-saas.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:5:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:11:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:17:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:23:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:29:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:35:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:41:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:47:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:53:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:59:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:65:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:71:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:77:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:83:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:89:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:95:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:101:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:107:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:113:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:119:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:125:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:131:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:137:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:143:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:149:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:155:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:161:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:167:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:173:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:179:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:185:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:191:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:197:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:203:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:209:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:215:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:221:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:227:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:233:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:239:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:245:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:251:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:257:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:263:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:269:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:275:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:281:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:287:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:293:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:299:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:305:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/benchmarks/reports/luxury-real-estate.compilation.json:311:      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+apps/web-app/modules/builder-v2/ai-v11/tests/productionGeneration.test.ts:21:  assert.equal(resolveAiGenerationEndpoint({ aiGenerationVersion: "v11" }), "/api/builder-v2/ai/generate-v11");
+apps/web-app/modules/builder-v2/ai-v11/tests/premiumCorpus.test.ts:69:        "modules/builder-v2/ai-v11/fixtures",
+apps/web-app/modules/builder-v2/website-engine/builder-blueprint/README.md:79:- Native node shape: `apps/web-app/modules/builder-v2/types/blueprint.ts` `BuilderNode`

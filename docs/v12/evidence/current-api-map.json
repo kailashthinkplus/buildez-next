@@ -1,0 +1,450 @@
+{
+  "generatedAt": "2026-07-22T10:46:42.626Z",
+  "count": 111,
+  "routes": [
+    {
+      "route": "/api/ai-v8/generate-images",
+      "source": "apps/web-app/app/api/ai-v8/generate-images/route.ts"
+    },
+    {
+      "route": "/api/ai-v8/generate-react",
+      "source": "apps/web-app/app/api/ai-v8/generate-react/route.ts"
+    },
+    {
+      "route": "/api/ai-v8/refine-react",
+      "source": "apps/web-app/app/api/ai-v8/refine-react/route.ts"
+    },
+    {
+      "route": "/api/ai/rewrite",
+      "source": "apps/web-app/app/api/ai/rewrite/route.ts"
+    },
+    {
+      "route": "/api/analytics/:siteSlug",
+      "source": "apps/web-app/app/api/analytics/[siteSlug]/route.ts"
+    },
+    {
+      "route": "/api/analytics/workspace",
+      "source": "apps/web-app/app/api/analytics/workspace/route.ts"
+    },
+    {
+      "route": "/api/auth/google/callback",
+      "source": "apps/web-app/app/api/auth/google/callback/route.ts"
+    },
+    {
+      "route": "/api/auth/google",
+      "source": "apps/web-app/app/api/auth/google/route.ts"
+    },
+    {
+      "route": "/api/auth/login",
+      "source": "apps/web-app/app/api/auth/login/route.ts"
+    },
+    {
+      "route": "/api/auth/logout",
+      "source": "apps/web-app/app/api/auth/logout/route.ts"
+    },
+    {
+      "route": "/api/auth/recovery-login",
+      "source": "apps/web-app/app/api/auth/recovery-login/route.ts"
+    },
+    {
+      "route": "/api/auth/send-otp",
+      "source": "apps/web-app/app/api/auth/send-otp/route.ts"
+    },
+    {
+      "route": "/api/auth/set-tenant-cookie",
+      "source": "apps/web-app/app/api/auth/set-tenant-cookie/route.ts"
+    },
+    {
+      "route": "/api/auth/verify-otp",
+      "source": "apps/web-app/app/api/auth/verify-otp/route.ts"
+    },
+    {
+      "route": "/api/billing/activate",
+      "source": "apps/web-app/app/api/billing/activate/route.ts"
+    },
+    {
+      "route": "/api/billing/current",
+      "source": "apps/web-app/app/api/billing/current/route.ts"
+    },
+    {
+      "route": "/api/branding/extract-palette",
+      "source": "apps/web-app/app/api/branding/extract-palette/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/ai/analyze-reference",
+      "source": "apps/web-app/app/api/builder-v2/ai/analyze-reference/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/ai/context",
+      "source": "apps/web-app/app/api/builder-v2/ai/context/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/ai/finalize-design",
+      "source": "apps/web-app/app/api/builder-v2/ai/finalize-design/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/ai/generate-v10",
+      "source": "apps/web-app/app/api/builder-v2/ai/generate-v10/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/ai/generate-v11",
+      "source": "apps/web-app/app/api/builder-v2/ai/generate-v11/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/ai/generate-v9",
+      "source": "apps/web-app/app/api/builder-v2/ai/generate-v9/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/ai/generate",
+      "source": "apps/web-app/app/api/builder-v2/ai/generate/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/ai/preflight-v10",
+      "source": "apps/web-app/app/api/builder-v2/ai/preflight-v10/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/ai/preflight-v11",
+      "source": "apps/web-app/app/api/builder-v2/ai/preflight-v11/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/ai/progress-v10",
+      "source": "apps/web-app/app/api/builder-v2/ai/progress-v10/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/assets/:assetId",
+      "source": "apps/web-app/app/api/builder-v2/assets/[assetId]/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/assets",
+      "source": "apps/web-app/app/api/builder-v2/assets/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/assets/upload",
+      "source": "apps/web-app/app/api/builder-v2/assets/upload/route.ts"
+    },
+    {
+      "route": "/api/builder-v2/blueprints/:pageId",
+      "source": "apps/web-app/app/api/builder-v2/blueprints/[pageId]/route.ts"
+    },
+    {
+      "route": "/api/cms/collections/:collectionId",
+      "source": "apps/web-app/app/api/cms/collections/[collectionId]/route.ts"
+    },
+    {
+      "route": "/api/cms/collections",
+      "source": "apps/web-app/app/api/cms/collections/route.ts"
+    },
+    {
+      "route": "/api/cms/entries/:entryId",
+      "source": "apps/web-app/app/api/cms/entries/[entryId]/route.ts"
+    },
+    {
+      "route": "/api/cms/entries",
+      "source": "apps/web-app/app/api/cms/entries/route.ts"
+    },
+    {
+      "route": "/api/cms/runtime/:entryId",
+      "source": "apps/web-app/app/api/cms/runtime/[entryId]/route.ts"
+    },
+    {
+      "route": "/api/compliance/scan",
+      "source": "apps/web-app/app/api/compliance/scan/route.ts"
+    },
+    {
+      "route": "/api/crm/insights",
+      "source": "apps/web-app/app/api/crm/insights/route.ts"
+    },
+    {
+      "route": "/api/crm/keys/:keyId",
+      "source": "apps/web-app/app/api/crm/keys/[keyId]/route.ts"
+    },
+    {
+      "route": "/api/crm/keys",
+      "source": "apps/web-app/app/api/crm/keys/route.ts"
+    },
+    {
+      "route": "/api/crm/leads/:leadId/communications",
+      "source": "apps/web-app/app/api/crm/leads/[leadId]/communications/route.ts"
+    },
+    {
+      "route": "/api/crm/leads/:leadId",
+      "source": "apps/web-app/app/api/crm/leads/[leadId]/route.ts"
+    },
+    {
+      "route": "/api/crm/leads",
+      "source": "apps/web-app/app/api/crm/leads/route.ts"
+    },
+    {
+      "route": "/api/crm/staff",
+      "source": "apps/web-app/app/api/crm/staff/route.ts"
+    },
+    {
+      "route": "/api/fonts/google",
+      "source": "apps/web-app/app/api/fonts/google/route.ts"
+    },
+    {
+      "route": "/api/health/user",
+      "source": "apps/web-app/app/api/health/user/route.ts"
+    },
+    {
+      "route": "/api/onboarding/account-type",
+      "source": "apps/web-app/app/api/onboarding/account-type/route.ts"
+    },
+    {
+      "route": "/api/onboarding/business-details",
+      "source": "apps/web-app/app/api/onboarding/business-details/route.ts"
+    },
+    {
+      "route": "/api/onboarding/check-domain",
+      "source": "apps/web-app/app/api/onboarding/check-domain/route.ts"
+    },
+    {
+      "route": "/api/onboarding/choose-plan",
+      "source": "apps/web-app/app/api/onboarding/choose-plan/route.ts"
+    },
+    {
+      "route": "/api/onboarding/complete",
+      "source": "apps/web-app/app/api/onboarding/complete/route.ts"
+    },
+    {
+      "route": "/api/onboarding/create-tenant",
+      "source": "apps/web-app/app/api/onboarding/create-tenant/route.ts"
+    },
+    {
+      "route": "/api/onboarding/finish",
+      "source": "apps/web-app/app/api/onboarding/finish/route.ts"
+    },
+    {
+      "route": "/api/onboarding/pay/create-order",
+      "source": "apps/web-app/app/api/onboarding/pay/create-order/route.ts"
+    },
+    {
+      "route": "/api/onboarding/pay/verify",
+      "source": "apps/web-app/app/api/onboarding/pay/verify/route.ts"
+    },
+    {
+      "route": "/api/onboarding/save-domain",
+      "source": "apps/web-app/app/api/onboarding/save-domain/route.ts"
+    },
+    {
+      "route": "/api/onboarding/save",
+      "source": "apps/web-app/app/api/onboarding/save/route.ts"
+    },
+    {
+      "route": "/api/onboarding/status",
+      "source": "apps/web-app/app/api/onboarding/status/route.ts"
+    },
+    {
+      "route": "/api/onboarding/trial/create-customer",
+      "source": "apps/web-app/app/api/onboarding/trial/create-customer/route.ts"
+    },
+    {
+      "route": "/api/onboarding/trial/create-mandate",
+      "source": "apps/web-app/app/api/onboarding/trial/create-mandate/route.ts"
+    },
+    {
+      "route": "/api/onboarding/trial/verify",
+      "source": "apps/web-app/app/api/onboarding/trial/verify/route.ts"
+    },
+    {
+      "route": "/api/pages/:pageId/publish",
+      "source": "apps/web-app/app/api/pages/[pageId]/publish/route.ts"
+    },
+    {
+      "route": "/api/pages/:pageId/restore",
+      "source": "apps/web-app/app/api/pages/[pageId]/restore/route.ts"
+    },
+    {
+      "route": "/api/pages/:pageId",
+      "source": "apps/web-app/app/api/pages/[pageId]/route.ts"
+    },
+    {
+      "route": "/api/pages/:pageId/trash",
+      "source": "apps/web-app/app/api/pages/[pageId]/trash/route.ts"
+    },
+    {
+      "route": "/api/pages/:pageId/unpublish",
+      "source": "apps/web-app/app/api/pages/[pageId]/unpublish/route.ts"
+    },
+    {
+      "route": "/api/pages/create-from-template",
+      "source": "apps/web-app/app/api/pages/create-from-template/route.ts"
+    },
+    {
+      "route": "/api/pages/duplicate",
+      "source": "apps/web-app/app/api/pages/duplicate/route.ts"
+    },
+    {
+      "route": "/api/pages",
+      "source": "apps/web-app/app/api/pages/route.ts"
+    },
+    {
+      "route": "/api/plans",
+      "source": "apps/web-app/app/api/plans/route.ts"
+    },
+    {
+      "route": "/api/preview/:pageId",
+      "source": "apps/web-app/app/api/preview/[pageId]/route.ts"
+    },
+    {
+      "route": "/api/profile/avatar",
+      "source": "apps/web-app/app/api/profile/avatar/route.ts"
+    },
+    {
+      "route": "/api/profile/password",
+      "source": "apps/web-app/app/api/profile/password/route.ts"
+    },
+    {
+      "route": "/api/profile",
+      "source": "apps/web-app/app/api/profile/route.ts"
+    },
+    {
+      "route": "/api/public/analytics/events",
+      "source": "apps/web-app/app/api/public/analytics/events/route.ts"
+    },
+    {
+      "route": "/api/public/crm/leads",
+      "source": "apps/web-app/app/api/public/crm/leads/route.ts"
+    },
+    {
+      "route": "/api/public/shopez/checkout",
+      "source": "apps/web-app/app/api/public/shopez/checkout/route.ts"
+    },
+    {
+      "route": "/api/public/shopez/media/:imageId",
+      "source": "apps/web-app/app/api/public/shopez/media/[imageId]/route.ts"
+    },
+    {
+      "route": "/api/public/shopez/payments/verify",
+      "source": "apps/web-app/app/api/public/shopez/payments/verify/route.ts"
+    },
+    {
+      "route": "/api/public/shopez/store",
+      "source": "apps/web-app/app/api/public/shopez/store/route.ts"
+    },
+    {
+      "route": "/api/razorpay/order",
+      "source": "apps/web-app/app/api/razorpay/order/route.ts"
+    },
+    {
+      "route": "/api/razorpay/verify",
+      "source": "apps/web-app/app/api/razorpay/verify/route.ts"
+    },
+    {
+      "route": "/api/render/:slug*",
+      "source": "apps/web-app/app/api/render/[...slug]/route.ts"
+    },
+    {
+      "route": "/api/runtime/css/:siteSlug/:pageSlug",
+      "source": "apps/web-app/app/api/runtime/css/[siteSlug]/[pageSlug]/route.ts"
+    },
+    {
+      "route": "/api/shopez/customers",
+      "source": "apps/web-app/app/api/shopez/customers/route.ts"
+    },
+    {
+      "route": "/api/shopez/discounts",
+      "source": "apps/web-app/app/api/shopez/discounts/route.ts"
+    },
+    {
+      "route": "/api/shopez/orders",
+      "source": "apps/web-app/app/api/shopez/orders/route.ts"
+    },
+    {
+      "route": "/api/shopez/overview",
+      "source": "apps/web-app/app/api/shopez/overview/route.ts"
+    },
+    {
+      "route": "/api/shopez/products/:productId",
+      "source": "apps/web-app/app/api/shopez/products/[productId]/route.ts"
+    },
+    {
+      "route": "/api/shopez/products",
+      "source": "apps/web-app/app/api/shopez/products/route.ts"
+    },
+    {
+      "route": "/api/shopez/settings",
+      "source": "apps/web-app/app/api/shopez/settings/route.ts"
+    },
+    {
+      "route": "/api/sites/:siteId/branding/logo",
+      "source": "apps/web-app/app/api/sites/[siteId]/branding/logo/route.ts"
+    },
+    {
+      "route": "/api/sites/:siteId/branding",
+      "source": "apps/web-app/app/api/sites/[siteId]/branding/route.ts"
+    },
+    {
+      "route": "/api/sites/:siteId/design-tokens",
+      "source": "apps/web-app/app/api/sites/[siteId]/design-tokens/route.ts"
+    },
+    {
+      "route": "/api/sites/:siteId/domains",
+      "source": "apps/web-app/app/api/sites/[siteId]/domains/route.ts"
+    },
+    {
+      "route": "/api/sites/:siteId/layout",
+      "source": "apps/web-app/app/api/sites/[siteId]/layout/route.ts"
+    },
+    {
+      "route": "/api/sites/:siteId/settings",
+      "source": "apps/web-app/app/api/sites/[siteId]/settings/route.ts"
+    },
+    {
+      "route": "/api/sites/by-page/:pageId",
+      "source": "apps/web-app/app/api/sites/by-page/[pageId]/route.ts"
+    },
+    {
+      "route": "/api/sites",
+      "source": "apps/web-app/app/api/sites/route.ts"
+    },
+    {
+      "route": "/api/super/auth/send-otp",
+      "source": "apps/web-app/app/api/super/auth/send-otp/route.ts"
+    },
+    {
+      "route": "/api/super/auth/totp/verify",
+      "source": "apps/web-app/app/api/super/auth/totp/verify/route.ts"
+    },
+    {
+      "route": "/api/super/auth/verify-otp",
+      "source": "apps/web-app/app/api/super/auth/verify-otp/route.ts"
+    },
+    {
+      "route": "/api/super/security/auth-logs",
+      "source": "apps/web-app/app/api/super/security/auth-logs/route.ts"
+    },
+    {
+      "route": "/api/tenant/me",
+      "source": "apps/web-app/app/api/tenant/me/route.ts"
+    },
+    {
+      "route": "/api/uploads/image/init",
+      "source": "apps/web-app/app/api/uploads/image/init/route.ts"
+    },
+    {
+      "route": "/api/uploads/logo/init",
+      "source": "apps/web-app/app/api/uploads/logo/init/route.ts"
+    },
+    {
+      "route": "/api/webhooks/razorpay/mandate",
+      "source": "apps/web-app/app/api/webhooks/razorpay/mandate/route.ts"
+    },
+    {
+      "route": "/app/pages/:pageId/preview",
+      "source": "apps/web-app/app/app/(tenant)/pages/[pageId]/preview/route.ts"
+    },
+    {
+      "route": "/app/pages/:pageId/settings",
+      "source": "apps/web-app/app/app/(tenant)/pages/[pageId]/settings/route.ts"
+    },
+    {
+      "route": "/app/pages/:pageId/unpublish",
+      "source": "apps/web-app/app/app/(tenant)/pages/[pageId]/unpublish/route.ts"
+    },
+    {
+      "route": "/app/render/:slug",
+      "source": "apps/web-app/app/app/render/[slug]/route.ts"
+    }
+  ]
+}

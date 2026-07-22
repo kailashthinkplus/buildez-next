@@ -9,6 +9,7 @@ export * from "./builder-blueprint";
 export * from "./components";
 export * from "./content-intelligence";
 export * from "./creative-library";
+export * from "./creative-director";
 export * from "./critic";
 export * from "./creative-providers";
 export * from "./debug/GeneratorLogger";

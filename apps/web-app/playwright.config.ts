@@ -36,7 +36,7 @@ export default defineConfig({
   projects: [
     {
       name: "internal-preview-chromium",
-      testMatch: /internal\/.*\.spec\.ts/,
+      testMatch: [ /internal\/.*\.spec\.ts/, /golden-websites\/.*\.spec\.ts/ ],
       use: {
         ...devices["Desktop Chrome"],
       },
@@ -47,7 +47,7 @@ export default defineConfig({
     },
     {
       name: "builder-chromium",
-      testIgnore: [/auth\.setup\.ts/, /internal\/.*\.spec\.ts/],
+      testIgnore: [/auth\.setup\.ts/, /internal\/.*\.spec\.ts/, /golden-websites\/.*\.spec\.ts/],
       dependencies: ["setup"],
       use: {
         ...devices["Desktop Chrome"],

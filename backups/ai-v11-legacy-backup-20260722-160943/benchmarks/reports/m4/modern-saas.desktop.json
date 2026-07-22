@@ -1,0 +1,75 @@
+{
+  "fixture": "modern-saas",
+  "viewport": "desktop",
+  "contractFidelity": {
+    "categories": {
+      "structure": 100,
+      "layout": 100,
+      "responsiveComposition": 100,
+      "typography": 100,
+      "colorsBackgrounds": 100,
+      "effects": 100,
+      "content": 100,
+      "mediaRoles": 100,
+      "editability": 100,
+      "rendererParity": 100
+    },
+    "criticalFailures": [],
+    "passed": true,
+    "nonCompensating": true
+  },
+  "visualFidelity": {
+    "categories": {
+      "composition": 89,
+      "geometry": 96,
+      "responsiveComposition": 100,
+      "typography": 100,
+      "backgroundsAndColor": 79,
+      "imagePlacementAndCrop": 94,
+      "overlapAndLayering": 100,
+      "residualEffects": 100,
+      "contentCompleteness": 100,
+      "editability": 100,
+      "canvasRuntimeParity": 100
+    },
+    "criticalFailures": [],
+    "passed": true,
+    "evidence": {
+      "pixelDifferenceRatio": 0.20656419641360818,
+      "sectionOrderCorrect": true,
+      "headingDelta": 0.0631145954316686,
+      "ctaDelta": 0.043983989365563296,
+      "heroMediaDelta": 0.03010549748354626,
+      "floatingCardDelta": 0.030686217576461474,
+      "editorialImageDelta": 1,
+      "headingFontSizeDelta": 0,
+      "gridCompositionCorrect": true,
+      "overlapCorrect": true,
+      "overlapExpected": false,
+      "responsiveStackingCorrect": true,
+      "backgroundPresent": true,
+      "imageCropCorrect": true,
+      "residualEffectsPresent": true,
+      "contentComplete": true,
+      "editable": true,
+      "canvasRuntimeParity": true,
+      "horizontalOverflow": false,
+      "productionRendererUsed": true,
+      "compilerOutputUsed": true,
+      "heroMediaRolePresent": true
+    }
+  },
+  "certification": {
+    "architectureProof": true,
+    "acceptableFidelity": true,
+    "productionGradeFidelity": false,
+    "controllingCategory": "backgroundsAndColor",
+    "minimumScore": 79
+  },
+  "screenshotCertification": {
+    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/modern-saas/desktop/full.png",
+    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/modern-saas/desktop/full.png",
+    "pixelDifferenceRatio": 0.20656419641360818,
+    "certified": true
+  }
+}

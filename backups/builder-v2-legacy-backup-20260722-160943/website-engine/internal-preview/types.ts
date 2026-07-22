@@ -1,0 +1,44 @@
+import type { BuilderBlueprint as CanonicalBlueprint } from "../../types/blueprint";
+import type { BuilderBlueprintResult } from "../builder-blueprint";
+import type { CompilerResult } from "../compiler";
+import type { CriticResult } from "../critic";
+import type { MapperResult } from "../mapper";
+import type { AIV10OrchestratorResult } from "../orchestrator";
+import type { PlannerResult } from "../planner";
+import type { RendererParityResult } from "../renderer-parity";
+import type { RepairResult } from "../repair";
+import type { ShadowComparisonResult } from "../shadow-comparison";
+import type { WebsiteSpecBuilderResult } from "../specification";
+import type { JsonValue } from "../sdk";
+import type { InternalPreviewInput } from "./previewInput";
+import type { PreviewStageTiming } from "./previewTrace";
+import type { PreviewValidationResult } from "./previewValidation";
+import { INTERNAL_PREVIEW_VERSION } from "./version";
+
+export type InternalPreviewResult = Readonly<{
+  requestId: string;
+  pipelineVersion: typeof INTERNAL_PREVIEW_VERSION;
+  generationMode: "deterministic-fixture";
+  input: InternalPreviewInput;
+  plannerResult: PlannerResult;
+  websiteSpec: WebsiteSpecBuilderResult["websiteSpec"];
+  intelligenceArtifacts: Readonly<Record<string, JsonValue>>;
+  compiledPlan: CompilerResult["plan"];
+  builderBlueprintArtifact: BuilderBlueprintResult;
+  canonicalBlueprint?: CanonicalBlueprint;
+  mapperResult: MapperResult;
+  validation: PreviewValidationResult;
+  criticResult: CriticResult;
+  repairRecommendations: RepairResult;
+  rendererParityResult: RendererParityResult;
+  aiV9ShadowComparisonResult?: ShadowComparisonResult;
+  orchestratorResult: AIV10OrchestratorResult;
+  warnings: readonly string[];
+  errors: readonly string[];
+  stageTimings: readonly PreviewStageTiming[];
+  deterministicTrace: readonly string[];
+  featureFlagSnapshot: Readonly<Record<string, false>>;
+  externalProviderUsage: Readonly<{ llm: false; image: false; database: false; network: false; paidApi: false }>;
+  disposable: true;
+}>;
+

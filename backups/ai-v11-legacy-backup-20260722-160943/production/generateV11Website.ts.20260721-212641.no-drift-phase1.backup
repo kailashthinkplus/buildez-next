@@ -1,0 +1,431 @@
+import { callOpenAIChatCompletion, extractAssistantText } from "@/app/api/_lib/openai";
+
+import type { BuilderBlueprint } from "../../types/blueprint";
+import { formatValidationIssue, validateBlueprint } from "../../core/validation";
+import { serializeBlueprint, deserializeBlueprint } from "../../core/serialization";
+import { parseTsx } from "../ast/parser";
+import { normalizeTsx } from "../ast/normalize";
+import { compileDesignGraphToBlueprint } from "../compiler/blueprintCompiler";
+import { buildDesignGraph } from "../design-graph/builder";
+import { validateDesignGraph } from "../design-graph/validator";
+import { assessUntrustedSource } from "../security/sourceGate";
+import { validateFullPageCompleteness } from "../validator/fullPageCompleteness";
+import { createV11CreativeBrief, type V11CreativeBrief } from "./createV11CreativeBrief";
+import { researchV11Business, type V11ResearchPack } from "./researchV11Business";
+
+export type V11GenerationInput = Readonly<{
+  prompt: string;
+  pageTitle: string;
+  context?: Record<string, unknown>;
+  onProgress?: (agent: string, summary: string) => void;
+  onCreativeSource?: (source: string) => Promise<void> | void;
+}>;
+
+const ASSET_CATALOG = [
+  "/v11-premium/agency.png", "/v11-premium/ai-saas.png", "/v11-premium/architecture.png",
+  "/v11-premium/automotive.png", "/v11-premium/clinic.png", "/v11-premium/fashion.png",
+  "/v11-premium/fintech.png", "/v11-premium/product.png", "/v11-premium/real-estate.png",
+  "/v11-premium/resort.png",
+] as const;
+const PRODUCTION_EVALUATION_BUDGETS = Object.freeze({
+  maxNodeCount: 650,
+  maxExpansionCount: 300,
+  maxOperations: 30000,
+});
+
+function extractTsx(value: string) {
+  const fenced = value.match(/```(?:tsx|jsx|typescript)?\s*([\s\S]*?)```/i)?.[1];
+  return (fenced || value).trim();
+}
+
+function responseOutputText(payload: unknown) {
+  const root = payload && typeof payload === "object" ? payload as Record<string, unknown> : {};
+  if (typeof root.output_text === "string") return root.output_text.trim();
+  return (Array.isArray(root.output) ? root.output : []).flatMap((item) => {
+    const content = item && typeof item === "object" ? (item as Record<string, unknown>).content : [];
+    return Array.isArray(content) ? content : [];
+  }).map((item) => item && typeof item === "object" && typeof (item as Record<string, unknown>).text === "string"
+    ? String((item as Record<string, unknown>).text) : "").filter(Boolean).join("\n").trim();
+}
+
+async function generateCodeFirstInBackground(model: string, prompt: string, onProgress?: V11GenerationInput["onProgress"]) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("Missing OPENAI_API_KEY");
+  const headers = { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` };
+  const started = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ model, input: prompt, background: true, reasoning: { effort: "none" }, max_output_tokens: 14000 }),
+    cache: "no-store",
+    signal: AbortSignal.timeout(20000),
+  });
+  const raw = await started.text();
+  let response: Record<string, unknown>;
+  try { response = JSON.parse(raw) as Record<string, unknown>; } catch { throw new Error(`V11_BACKGROUND_START_INVALID (${started.status})`); }
+  if (!started.ok || typeof response.id !== "string") throw new Error(`V11_BACKGROUND_START_FAILED (${started.status}): ${responseOutputText(response) || raw.slice(0, 500)}`);
+  const deadline = Date.now() + 180000;
+  let lastNotice = 0;
+  while (response.status === "queued" || response.status === "in_progress") {
+    if (Date.now() >= deadline) throw new Error(`V11_CREATIVE_BACKGROUND_PENDING: Response ${String(response.id)} is still processing; no page was changed.`);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const elapsedSeconds = Math.round((180000 - (deadline - Date.now())) / 1000);
+    if (elapsedSeconds - lastNotice >= 12) {
+      lastNotice = elapsedSeconds;
+      onProgress?.("DesignAgent", `The code-first design is still rendering (${elapsedSeconds}s); the request remains recoverable.`);
+    }
+    const polled = await fetch(`https://api.openai.com/v1/responses/${response.id}`, { headers, cache: "no-store", signal: AbortSignal.timeout(15000) });
+    const pollRaw = await polled.text();
+    try { response = JSON.parse(pollRaw) as Record<string, unknown>; } catch { throw new Error(`V11_BACKGROUND_POLL_INVALID (${polled.status})`); }
+    if (!polled.ok) throw new Error(`V11_BACKGROUND_POLL_FAILED (${polled.status})`);
+  }
+  const text = responseOutputText(response);
+  if (response.status === "incomplete" && text) {
+    try {
+      parseTsx(extractTsx(text), "ai-v11-incomplete-but-usable.tsx");
+      onProgress?.("DesignAgent", "The model reached its response limit, but returned a complete valid design; continuing safely.");
+      return text;
+    } catch {
+      const details = response.incomplete_details && typeof response.incomplete_details === "object"
+        ? JSON.stringify(response.incomplete_details) : "unknown reason";
+      throw new Error(`V11_CREATIVE_OUTPUT_TRUNCATED: ${details}`);
+    }
+  }
+  if (response.status !== "completed") {
+    const details = response.incomplete_details && typeof response.incomplete_details === "object"
+      ? JSON.stringify(response.incomplete_details) : "no details returned";
+    throw new Error(`V11_CREATIVE_BACKGROUND_${String(response.status || "FAILED").toUpperCase()}: ${details}`);
+  }
+  if (!text) throw new Error("V11_EMPTY_MODEL_SOURCE");
+  return text;
+}
+
+export function sanitizeGeneratedTsx(value: string, preferredAssets: readonly string[] = ASSET_CATALOG) {
+  let assetIndex = 0;
+  const nextAsset = () => {
+    const asset = preferredAssets[assetIndex % preferredAssets.length] || ASSET_CATALOG[7];
+    assetIndex += 1;
+    return asset;
+  };
+  return value
+    .replace(/\bsrc\s*=\s*(["'])https?:\/\/[^"']+\1/gi, () => {
+      return `src="${nextAsset()}"`;
+    })
+    .replace(/\bsrc\s*=\s*(["'])\/v11-premium\/[^"']+\1/gi, () => `src="${nextAsset()}"`)
+    .replace(/\bhref\s*=\s*(["'])https?:\/\/[^"']+\1/gi, 'href="#contact"')
+    .replace(/https?:\/\/[^\s"'`}<]+/gi, "");
+}
+
+function preferredAssetsForContext(context: Record<string, unknown>) {
+  const catalog = context.shopezCatalog && typeof context.shopezCatalog === "object" ? context.shopezCatalog as Record<string, unknown> : {};
+  const products = Array.isArray(catalog.products) ? catalog.products : [];
+  const catalogImages = products.flatMap((product) => {
+    const images = product && typeof product === "object" ? (product as Record<string, unknown>).images : [];
+    return Array.isArray(images) ? images.map((image) => image && typeof image === "object" ? String((image as Record<string, unknown>).src || "") : "").filter(Boolean) : [];
+  });
+  if (catalogImages.length) return catalogImages;
+  const description = `${context.industry || ""} ${context.useCase || ""} ${context.referenceAnalysis || ""}`.toLowerCase();
+  if (/shop|store|e-?commerce|product|skincare|beauty|cosmetic/.test(description)) {
+    return ["/v11-premium/product.png", "/v11-premium/fashion.png"] as const;
+  }
+  return ASSET_CATALOG;
+}
+
+export function assertReferenceFidelity(source: string, context: Record<string, unknown>) {
+  const analysis = String(context.referenceAnalysis || "").toLowerCase();
+  if (!analysis) return;
+  const normalized = source.toLowerCase();
+  const genericMarkers = ["a better way to move forward", "understand", "create", "deliver", "start a conversation"];
+  if (genericMarkers.filter((term) => normalized.includes(term)).length >= 3) {
+    throw new Error("V11_REFERENCE_FIDELITY_FAILED: Generic template content replaced the uploaded design.");
+  }
+}
+
+export function referenceFidelityWarnings(source: string, context: Record<string, unknown>) {
+  const analysis = String(context.referenceAnalysis || "").toLowerCase();
+  if (!analysis || !/e-?commerce|storefront|product grid|product card|shopping|catalog|skincare|beauty/.test(analysis)) return [];
+  const normalized = source.toLowerCase();
+  const commerceSignals = ["product", "collection", "categor", "shop", "cart", "sale", "bestseller", "best seller", "newsletter", "new arrival", "price", "blog", "serum", "cream", "₹", "$", "£", "€"];
+  const matched = commerceSignals.filter((term) => normalized.includes(term));
+  return matched.length >= 2 ? [] : ["The commerce vocabulary score was low; review storefront sections visually before accepting the design."];
+}
+
+export function buildV11FallbackTsx(input: V11GenerationInput, creative: V11CreativeBrief) {
+  const context = input.context || {};
+  const brand = String(context.companyName || context.websiteName || input.pageTitle || "Your Brand");
+  const offer = String(context.offer || context.useCase || "A better way to move forward");
+  const audience = String(context.audience || "people who value thoughtful, dependable work");
+  return `export default function Page(){return <main className="bg-stone-50 text-stone-950">
+  <header className="border-b border-stone-200 bg-stone-50"><nav aria-label="primary-navigation" className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5"><a href="#top" className="text-xl font-semibold">${brand}</a><div className="flex items-center gap-6"><a href="#services">Services</a><a href="#approach">Approach</a><a href="#contact" className="bg-stone-900 px-5 py-3 text-white">Start a conversation</a></div></nav></header>
+  <section id="top" aria-label="hero" className="mx-auto grid min-h-[720px] max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2"><div><p className="mb-5 text-sm uppercase tracking-[0.24em]">${creative.name}</p><h1 className="text-6xl font-semibold leading-[0.95] lg:text-8xl">${offer}</h1><p className="mt-7 max-w-xl text-xl text-stone-600">Created for ${audience}, with clarity, craft, and measurable purpose.</p><a href="#contact" className="mt-9 inline-block bg-orange-700 px-6 py-4 text-white">Explore the opportunity</a></div><img src="${ASSET_CATALOG[0]}" alt="A considered brand experience" data-media-role="hero-foreground" className="h-[620px] w-full object-cover" /></section>
+  <section className="border-y border-stone-200 bg-white px-6 py-10"><div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3"><p className="text-lg">Clear strategic direction</p><p className="text-lg">Distinctive visual execution</p><p className="text-lg">A focused path to action</p></div></section>
+  <section id="services" className="mx-auto max-w-7xl px-6 py-28"><p className="text-sm uppercase tracking-[0.2em]">What we do</p><h2 className="mt-4 max-w-4xl text-5xl font-semibold">A complete experience, shaped around what matters most.</h2><div className="mt-16 grid gap-10 md:grid-cols-3"><article><p className="text-sm">01</p><h3 className="mt-4 text-2xl font-semibold">Understand</h3><p className="mt-3 text-stone-600">We clarify the audience, challenge, and opportunity before making decisions.</p></article><article><p className="text-sm">02</p><h3 className="mt-4 text-2xl font-semibold">Create</h3><p className="mt-3 text-stone-600">We turn strategy into a coherent system with a memorable point of view.</p></article><article><p className="text-sm">03</p><h3 className="mt-4 text-2xl font-semibold">Deliver</h3><p className="mt-3 text-stone-600">We refine every detail and build a direct path from attention to action.</p></article></div></section>
+  <section id="approach" className="bg-stone-900 px-6 py-28 text-white"><div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-2"><img src="${ASSET_CATALOG[3]}" alt="Detailed and purposeful work" data-media-role="editorial-image" className="h-[560px] w-full object-cover"/><div className="self-center"><p className="text-sm uppercase tracking-[0.2em] text-orange-300">Our approach</p><h2 className="mt-5 text-5xl font-semibold">Designed to feel unmistakably yours.</h2><p className="mt-6 text-lg text-stone-300">Every choice supports the story, strengthens trust, and helps the right audience take the next step.</p></div></div></section>
+  <section className="mx-auto max-w-7xl px-6 py-28"><div className="grid gap-8 md:grid-cols-2"><div><p className="text-sm uppercase tracking-[0.2em]">Why it works</p><h2 className="mt-4 text-5xl font-semibold">Less noise. More meaning.</h2></div><div className="space-y-8 text-lg text-stone-600"><p>Strong hierarchy makes complex ideas easier to understand.</p><p>Purposeful imagery creates recognition without relying on decoration.</p><p>Focused calls to action turn interest into a clear next step.</p></div></div></section>
+  <section id="contact" className="bg-orange-700 px-6 py-24 text-white"><div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 lg:flex-row lg:items-end"><div><p className="text-sm uppercase tracking-[0.2em]">Ready when you are</p><h2 className="mt-4 max-w-3xl text-5xl font-semibold">Let’s create something worth remembering.</h2></div><a href="#contact" className="border border-white px-6 py-4">Start a conversation</a></div></section>
+  <footer aria-label="footer" className="bg-stone-950 px-6 py-14 text-stone-300"><div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row"><div><p className="text-xl font-semibold text-white">${brand}</p><p className="mt-3 max-w-md">${offer}</p></div><nav className="flex gap-6"><a href="#services">Services</a><a href="#approach">Approach</a><a href="#contact">Contact</a></nav></div></footer>
+  </main>}`;
+}
+
+export function buildV11DesignPrompt(input: V11GenerationInput, creativeBrief?: V11CreativeBrief, research?: V11ResearchPack) {
+  const creative = creativeBrief || createV11CreativeBrief(input.context || {}, input.prompt);
+  const evidence = research || { status: "unavailable", summary: "Use only supplied facts.", verifiedFacts: [], offerings: [], locations: [], sourceUrls: [], prohibitedClaims: [] };
+  const approvedContext = Object.fromEntries(Object.entries(input.context || {}).filter(([key]) => ![
+    "referenceAnalysis", "referenceFileUrl", "referenceImageUrl",
+  ].includes(key)));
+  return `You are BuildEZ AI V11, a world-class web designer and conversion-focused creative director.
+Create one complete, premium, production-quality webpage as static TSX. Return TSX only.
+
+USER BRIEF
+${input.prompt}
+
+PAGE
+${input.pageTitle}
+
+APPROVED CONTEXT
+${JSON.stringify(approvedContext, null, 2)}
+
+REFERENCE-TO-BUILDER INSTRUCTION
+${typeof input.context?.referenceAnalysis === "string" && input.context.referenceAnalysis.trim()
+  ? `A UI image or PDF has been analyzed below. Treat it as the primary visual specification. Reconstruct its complete structure as responsive TSX. Preserve the observed visual system while replacing reference-specific business content with approved website facts.\n\n${input.context.referenceAnalysis}`
+  : "No uploaded UI reference was supplied."}
+
+FACT AND CONTENT PACK
+${JSON.stringify(evidence, null, 2)}
+
+SHOPEZ COMMERCE CONTRACT
+${input.context?.shopezCatalog
+  ? `This site has a live Shopez catalog in APPROVED CONTEXT. Product titles, descriptions, prices, compare-at prices, inventory, handles, links, and product image paths MUST come only from shopezCatalog. Never invent, rename, or hardcode substitute products. Use the supplied local product image paths and productUrl values exactly. Product grids are catalog views, not decorative mockups.`
+  : `No Shopez catalog was supplied. Do not invent purchasable products, prices, ratings, inventory, discounts, or functional shopping controls. Use clearly non-transactional category or brand storytelling instead.`}
+
+ART DIRECTION — FOLLOW AS A SYSTEM
+Name: ${creative.name}
+Palette: ${creative.palette.join("; ")}
+Typography: ${creative.type}
+Composition: ${creative.composition}
+Imagery: ${creative.imageDirection}
+Conversion: ${creative.conversion}
+Quality rules:
+${creative.qualityRules.map((rule) => `- ${rule}`).join("\n")}
+
+NON-NEGOTIABLE DESIGN STANDARD
+- Make a specific art direction for this use case; never output a generic template.
+- Use strong hierarchy, editorial typography, deliberate whitespace, layered media, asymmetric composition, evidence, conversion sections, and a polished footer. Do not turn every section into a grid of rounded cards.
+- Write complete, credible, use-case-specific copy. No lorem ipsum, placeholders, vague filler, or invented facts. Claims may come only from the FACT AND CONTENT PACK or APPROVED CONTEXT.
+- Include 7-10 substantial sections: navigation, hero, credibility/proof, offering, differentiation/process, showcase, testimonial or evidence, final CTA, footer.
+- Every section must feel composed at desktop, tablet, and mobile sizes.
+- Write normal, clean, self-contained production React/TSX. You may use local components, helper functions, static data, array maps, conditional rendering, SVG icons, CSS variables, gradients, and responsive Tailwind utilities when they improve the result.
+- Do not design around a downstream page-builder compiler. The first artifact is judged as a webpage on its own visual and UX quality.
+- Do not import packages or make network requests. The default export must be one component and all required components/data must be in this file.
+- Use semantic HTML. Add aria-label="primary-navigation" to the navigation section, aria-label="hero" to the hero section, and aria-label="footer" to the footer section. The generated header/navigation and footer are the authoritative site chrome and must be complete, responsive, and editable.
+- Prefer approved uploaded or local assets. When a final asset is unavailable, use a semantically descriptive https image URL; BuildEZ will resolve and persist media after design approval. Never insert unrelated imagery.
+- Add meaningful alt text and data-media-role="hero-foreground" or "editorial-image" to important images.
+- Use anchors with href="#..." and matching section ids for navigation.
+- Keep the component maintainable and avoid needless wrapper elements, but do not sacrifice composition or detail to satisfy a node-count target.`;
+}
+
+export function buildV11LoweringPrompt(creativeSource: string, failure?: unknown, allowedAssets: readonly string[] = ASSET_CATALOG) {
+  return `You are the BuildEZ compiler adapter. Convert an already-approved React design into semantically equivalent static TSX that the native visual Builder can edit. This is a lowering pass, not a redesign.
+
+APPROVED CREATIVE SOURCE
+\`\`\`tsx
+${creativeSource}
+\`\`\`
+
+${failure ? `THE PRIOR LOWERING FAILED\n${failure instanceof Error ? failure.message : String(failure)}\n` : ""}
+PRESERVE EXACTLY
+- Section order, content, hierarchy, palette, typography intent, spacing rhythm, image roles, navigation, header, footer, and responsive composition.
+- Preserve every substantive section. Do not replace copy with generic agency language.
+
+LOWERING CONTRACT
+- Return one complete TSX file only.
+- No imports, hooks, event handlers, fetch, style tags, external URLs, optional chaining, Date, Math, template interpolation in visible JSX, or method calls in visible JSX.
+- Use static JSX, literal className strings, local literal arrays, and .map() only. Visible expressions may be item.property, index + 1, or a static ternary.
+- Add aria-label="primary-navigation", aria-label="hero", and aria-label="footer" to the corresponding elements.
+- Preserve image paths already present in the approved source. Allowed local image paths: ${allowedAssets.join(", ")}.
+- Use href="#..." anchors with matching ids.
+- Do not emit carousel arrows, sliders, pagination dots, accordions, tabs, or other controls unless the native output can provide their behavior. Render repeated content as an honest responsive grid when interaction cannot survive lowering.
+- Keep repeated arrays to 6 items or fewer and total expanded intrinsic elements below 300.
+- If an effect cannot be represented, approximate that effect while preserving geometry and hierarchy. Never delete a section merely because an implementation detail is unsupported.`;
+}
+
+export function resolveV11AttemptProfile(attempt: number, failure?: unknown) {
+  const empty = failure instanceof Error && failure.message.includes("V11_EMPTY_MODEL_SOURCE");
+  if (attempt === 0) return { reasoningEffort: "low" as const, maxCompletionTokens: 9000, timeoutMs: 75000 };
+  if (empty) return { reasoningEffort: "low" as const, maxCompletionTokens: 9000, timeoutMs: 70000 };
+  return { reasoningEffort: "low" as const, maxCompletionTokens: 7000, timeoutMs: 60000 };
+}
+
+export async function generateV11Website(input: V11GenerationInput): Promise<{
+  blueprint: BuilderBlueprint;
+  source: string;
+  creativeSource: string;
+  metadata: Record<string, unknown>;
+}> {
+  input.onProgress?.("ResearchAgent", "Checking the business, its offer, and the facts the page can safely use.");
+  const creativeBrief = createV11CreativeBrief(input.context || {}, input.prompt);
+  const research = await researchV11Business(input.context || {}, input.prompt);
+  input.onProgress?.("DesignAgent", "Creating the production React design without Builder compiler restrictions.");
+  const designPrompt = buildV11DesignPrompt(input, creativeBrief, research);
+  const model = process.env.OPENAI_V11_MODEL || "gpt-5.6-sol";
+  const referenceCodeModel = process.env.OPENAI_V11_REFERENCE_CODE_MODEL || model;
+  const hasVisualReference = typeof input.context?.referenceAnalysis === "string" && Boolean(input.context.referenceAnalysis.trim());
+  let creativeSource = "";
+  try {
+    const generatedCreative = await generateCodeFirstInBackground(
+      hasVisualReference ? referenceCodeModel : model,
+      designPrompt,
+      input.onProgress
+    );
+    creativeSource = extractTsx(generatedCreative);
+    parseTsx(creativeSource, "ai-v11-creative-source.tsx");
+    assertReferenceFidelity(creativeSource, input.context || {});
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.includes("V11_CREATIVE_OUTPUT_TRUNCATED")) {
+      input.onProgress?.("RepairAgent", "The first design exceeded the response limit. Rebuilding the same direction as a complete compact page.");
+      const compactResponse = await callOpenAIChatCompletion({
+        model: process.env.OPENAI_V11_RECOVERY_MODEL || "gpt-5.6-sol",
+        debugLabel: "builder-ai-v11-truncation-recovery",
+        messages: [{ role: "user", content: `${designPrompt}\n\nCOMPACT COMPLETION REQUIREMENT\nReturn a complete TSX file within 7,000 output tokens. Preserve all substantive sections and the reference structure, but reduce decorative wrappers and repeated items. Do not explain.` }],
+        reasoningEffort: "none",
+        maxCompletionTokens: 9000,
+        timeoutMs: 75000,
+      });
+      creativeSource = extractTsx(extractAssistantText(compactResponse));
+      parseTsx(creativeSource, "ai-v11-creative-recovery.tsx");
+      assertReferenceFidelity(creativeSource, input.context || {});
+    } else if (/timeout|timed out|aborted/i.test(message)) {
+      throw new Error("V11_CREATIVE_GENERATION_TIMEOUT: The code-first design did not finish in time. No page was changed.");
+    } else {
+      throw error;
+    }
+  }
+  await input.onCreativeSource?.(creativeSource);
+
+  // Most code-first pages are already static enough for the native compiler.
+  // Always attempt deterministic local compilation before paying for a second
+  // model call; the adapter is only a compatibility repair path.
+  try {
+    input.onProgress?.("BlueprintCompilerAgent", "Trying direct local conversion of the completed React design.");
+    const directSource = sanitizeGeneratedTsx(creativeSource, preferredAssetsForContext(input.context || {}));
+    const directResult = compileGeneratedSource(directSource);
+    return {
+      ...directResult,
+      creativeSource,
+      metadata: {
+        ...directResult.metadata,
+        creativeBrief,
+        research: { status: research.status, sources: research.sourceUrls, verifiedFactCount: research.verifiedFacts.length },
+        codeFirst: { preserved: true, syntaxValidated: true, loweringMode: "deterministic-local", loweringAttempts: 0 },
+        referenceFidelityWarnings: referenceFidelityWarnings(directSource, input.context || {}),
+      },
+    };
+  } catch (directCompilationError) {
+    input.onProgress?.("BlueprintCompilerAgent", `The design uses features outside native nodes; running one compatibility conversion (${directCompilationError instanceof Error ? directCompilationError.message.split(":")[0] : "unsupported source"}).`);
+  }
+
+  input.onProgress?.("BlueprintCompilerAgent", "Lowering the approved React design into editable native Builder nodes.");
+  let source = "";
+  let failure: unknown;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const loweringPrompt = buildV11LoweringPrompt(creativeSource, attempt === 0 ? undefined : failure, preferredAssetsForContext(input.context || {}));
+    try {
+      const generatedText = extractAssistantText(await callOpenAIChatCompletion({
+        model: process.env.OPENAI_V11_LOWERING_MODEL || "gpt-5.6-sol",
+        debugLabel: attempt === 0 ? "builder-ai-v11-lower-to-native" : "builder-ai-v11-repair-native-lowering",
+        messages: [{ role: "user", content: loweringPrompt }],
+        reasoningEffort: "none",
+        maxCompletionTokens: attempt === 0 ? 8000 : 6500,
+        timeoutMs: attempt === 0 ? 150000 : 90000,
+      }));
+      source = sanitizeGeneratedTsx(extractTsx(generatedText), preferredAssetsForContext(input.context || {}));
+      assertReferenceFidelity(source, input.context || {});
+    } catch (error) {
+      failure = error;
+      const message = error instanceof Error ? error.message : String(error);
+      if (/timeout|timed out|aborted/i.test(message)) {
+        throw new Error("V11_NATIVE_LOWERING_TIMEOUT: The completed React design could not be converted to native nodes within the adapter window. The code artifact has been retained for recovery.");
+      }
+      continue;
+    }
+    try {
+      input.onProgress?.("BlueprintCompilerAgent", "Converting the generated TSX into editable Builder nodes.");
+      const result = compileGeneratedSource(source);
+      input.onProgress?.("QAAgent", "Validating responsive structure, content, header, footer, and editability.");
+      return {
+        ...result,
+        creativeSource,
+        metadata: {
+          ...result.metadata,
+          creativeBrief,
+          research: { status: research.status, sources: research.sourceUrls, verifiedFactCount: research.verifiedFacts.length },
+          codeFirst: { preserved: true, syntaxValidated: true, loweringAttempts: attempt + 1 },
+          referenceFidelityWarnings: referenceFidelityWarnings(source, input.context || {}),
+        },
+      };
+    } catch (error) {
+      failure = error;
+    }
+  }
+  throw failure instanceof Error ? failure : new Error("V11_NATIVE_LOWERING_FAILED: The approved design could not be converted to Builder nodes. No page was changed.");
+}
+
+function compileGeneratedSource(source: string): {
+  blueprint: BuilderBlueprint;
+  source: string;
+  metadata: Record<string, unknown>;
+} {
+  if (!source) throw new Error("V11_EMPTY_MODEL_SOURCE");
+  const file = "ai-v11-generated.tsx";
+  const gate = assessUntrustedSource(source, file, PRODUCTION_EVALUATION_BUDGETS);
+  if (!gate.safe) {
+    const details = gate.findings
+      .map((item) => {
+        const location = `${file}:${item.line}:${item.column}`;
+        const message =
+          "message" in item && typeof item.message === "string"
+            ? `: ${item.message}`
+            : "";
+        return `${item.code} at ${location}${message}`;
+      })
+      .join("\n");
+
+    throw new Error(`V11_SOURCE_REJECTED:\n${details}`);
+  }
+  const parsed = parseTsx(source, file);
+  const graph = buildDesignGraph(normalizeTsx(parsed), PRODUCTION_EVALUATION_BUDGETS);
+  const graphValidation = validateDesignGraph(graph);
+  if (!graphValidation.valid) throw new Error(`V11_GRAPH_INVALID: ${graphValidation.issues.join(", ")}`);
+  const compilation = compileDesignGraphToBlueprint(graph);
+  const validation = validateBlueprint(compilation.blueprint);
+  if (!validation.valid) throw new Error(`V11_BLUEPRINT_INVALID: ${validation.issues.map(formatValidationIssue).join("\n\n")}`);
+  const serialized = serializeBlueprint(compilation.blueprint);
+  if (!serialized.ok) throw new Error("V11_SERIALIZATION_FAILED");
+  const roundTrip = deserializeBlueprint(serialized.value);
+  if (!roundTrip.ok) throw new Error("V11_ROUND_TRIP_FAILED");
+  for (const id of roundTrip.value.nodes[roundTrip.value.root]?.children || []) {
+    const node = roundTrip.value.nodes[id];
+    if (node?.type === "section") node.style = { ...node.style, width: "100%" };
+  }
+  const completeness = validateFullPageCompleteness({ source, ast: parsed.ast, graph, blueprint: roundTrip.value, diagnostics: compilation.diagnostics });
+  if (!completeness.valid) throw new Error(`V11_PAGE_INCOMPLETE: ${completeness.issues.join(" ")}`);
+  const warnings = compilation.diagnostics.filter((item) => item.severity === "warning");
+  const qualityWarnings = [
+    ...completeness.warnings,
+    ...warnings.map((item) => item.message),
+  ];
+
+  return {
+    blueprint: roundTrip.value,
+    source,
+    metadata: {
+      aiGenerationVersion: "v11",
+      aiDesignStatus: "pending_review",
+      aiDesignScope: "current_page_only",
+      qualityStatus: qualityWarnings.length > 12 ? "needs_improvement" : "passed",
+      qualityScore: Math.max(70, 100 - qualityWarnings.length * 2),
+      qualityWarnings: qualityWarnings.slice(0, 8),
+      v11: { nodeCount: Object.keys(roundTrip.value.nodes).length, sectionCount: completeness.compiled.sections, diagnostics: compilation.diagnostics.length },
+    },
+  };
+}

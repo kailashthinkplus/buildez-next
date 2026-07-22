@@ -1,0 +1,317 @@
+{
+  "diagnostics": [],
+  "provenance": {
+    "dg.page": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 31,
+      "column": 5,
+      "sourceElement": "LuxuryRealEstate"
+    },
+    "dg.002.img": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 33,
+      "column": 9,
+      "sourceElement": "img"
+    },
+    "dg.003.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 34,
+      "column": 9,
+      "sourceElement": "div"
+    },
+    "dg.006.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 16,
+      "column": 10,
+      "sourceElement": "p"
+    },
+    "dg.007.h1": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 38,
+      "column": 13,
+      "sourceElement": "h1"
+    },
+    "dg.008.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 39,
+      "column": 13,
+      "sourceElement": "p"
+    },
+    "dg.009.button": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 40,
+      "column": 13,
+      "sourceElement": "button"
+    },
+    "dg.005.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 36,
+      "column": 11,
+      "sourceElement": "div"
+    },
+    "dg.011.img": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 43,
+      "column": 13,
+      "sourceElement": "img"
+    },
+    "dg.014.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 45,
+      "column": 20,
+      "sourceElement": "p"
+    },
+    "dg.015.h2": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 45,
+      "column": 102,
+      "sourceElement": "h2"
+    },
+    "dg.013.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 45,
+      "column": 15,
+      "sourceElement": "div"
+    },
+    "dg.016.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 46,
+      "column": 15,
+      "sourceElement": "p"
+    },
+    "dg.012.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 44,
+      "column": 13,
+      "sourceElement": "div"
+    },
+    "dg.010.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 42,
+      "column": 11,
+      "sourceElement": "div"
+    },
+    "dg.004.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 35,
+      "column": 9,
+      "sourceElement": "div"
+    },
+    "dg.001.section": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 32,
+      "column": 7,
+      "sourceElement": "section"
+    },
+    "dg.020.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 54,
+      "column": 42,
+      "sourceElement": "p"
+    },
+    "dg.019.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 54,
+      "column": 11,
+      "sourceElement": "div"
+    },
+    "dg.022.h2": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 56,
+      "column": 13,
+      "sourceElement": "h2"
+    },
+    "dg.024.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 58,
+      "column": 15,
+      "sourceElement": "p"
+    },
+    "dg.025.img": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 59,
+      "column": 15,
+      "sourceElement": "img"
+    },
+    "dg.023.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 57,
+      "column": 13,
+      "sourceElement": "div"
+    },
+    "dg.028.strong": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 10,
+      "column": 5,
+      "sourceElement": "strong"
+    },
+    "dg.029.span": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 11,
+      "column": 5,
+      "sourceElement": "span"
+    },
+    "dg.027.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 9,
+      "column": 3,
+      "sourceElement": "div"
+    },
+    "dg.031.strong": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 10,
+      "column": 5,
+      "sourceElement": "strong"
+    },
+    "dg.032.span": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 11,
+      "column": 5,
+      "sourceElement": "span"
+    },
+    "dg.030.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 9,
+      "column": 3,
+      "sourceElement": "div"
+    },
+    "dg.034.strong": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 10,
+      "column": 5,
+      "sourceElement": "strong"
+    },
+    "dg.035.span": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 11,
+      "column": 5,
+      "sourceElement": "span"
+    },
+    "dg.033.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 9,
+      "column": 3,
+      "sourceElement": "div"
+    },
+    "dg.026.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 61,
+      "column": 13,
+      "sourceElement": "div"
+    },
+    "dg.021.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 55,
+      "column": 11,
+      "sourceElement": "div"
+    },
+    "dg.018.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 53,
+      "column": 9,
+      "sourceElement": "div"
+    },
+    "dg.038.img": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 21,
+      "column": 5,
+      "sourceElement": "img"
+    },
+    "dg.040.h3": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 23,
+      "column": 7,
+      "sourceElement": "h3"
+    },
+    "dg.041.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 24,
+      "column": 7,
+      "sourceElement": "p"
+    },
+    "dg.039.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 22,
+      "column": 5,
+      "sourceElement": "div"
+    },
+    "dg.037.article": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 20,
+      "column": 3,
+      "sourceElement": "article"
+    },
+    "dg.043.img": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 21,
+      "column": 5,
+      "sourceElement": "img"
+    },
+    "dg.045.h3": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 23,
+      "column": 7,
+      "sourceElement": "h3"
+    },
+    "dg.046.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 24,
+      "column": 7,
+      "sourceElement": "p"
+    },
+    "dg.044.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 22,
+      "column": 5,
+      "sourceElement": "div"
+    },
+    "dg.042.article": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 20,
+      "column": 3,
+      "sourceElement": "article"
+    },
+    "dg.048.img": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 21,
+      "column": 5,
+      "sourceElement": "img"
+    },
+    "dg.050.h3": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 23,
+      "column": 7,
+      "sourceElement": "h3"
+    },
+    "dg.051.p": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 24,
+      "column": 7,
+      "sourceElement": "p"
+    },
+    "dg.049.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 22,
+      "column": 5,
+      "sourceElement": "div"
+    },
+    "dg.047.article": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 20,
+      "column": 3,
+      "sourceElement": "article"
+    },
+    "dg.036.div": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 68,
+      "column": 9,
+      "sourceElement": "div"
+    },
+    "dg.017.section": {
+      "sourceFile": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/fixtures/luxury-real-estate.tsx",
+      "line": 52,
+      "column": 7,
+      "sourceElement": "section"
+    }
+  }
+}

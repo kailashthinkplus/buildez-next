@@ -1,0 +1,67 @@
+{
+  "fixture": "creative-agency",
+  "viewport": "tablet",
+  "contractFidelity": {
+    "passed": true,
+    "evidence": {
+      "graphValidated": true,
+      "blueprintValidated": true,
+      "serializationRoundTrip": true,
+      "compilerOutputRendered": true
+    }
+  },
+  "visualFidelity": {
+    "categories": {
+      "composition": 77,
+      "geometry": 83,
+      "responsiveComposition": 100,
+      "typography": 5,
+      "backgroundsAndColor": 67,
+      "imagePlacementAndCrop": 36,
+      "overlapAndLayering": 100,
+      "residualEffects": 100,
+      "contentCompleteness": 100,
+      "editability": 100,
+      "canvasRuntimeParity": 100
+    },
+    "criticalFailures": [],
+    "passed": false,
+    "evidence": {
+      "pixelDifferenceRatio": 0.3256772884196414,
+      "sectionOrderCorrect": true,
+      "headingDelta": 0.16544841897898707,
+      "ctaDelta": 0.2431360003591954,
+      "heroMediaDelta": 0.32183925584815015,
+      "floatingCardDelta": 0.6750744348284841,
+      "editorialImageDelta": 0.4413408551897321,
+      "headingFontSizeDelta": 0.3333333333333333,
+      "gridCompositionCorrect": true,
+      "overlapCorrect": true,
+      "overlapExpected": false,
+      "responsiveStackingCorrect": true,
+      "backgroundPresent": true,
+      "imageCropCorrect": true,
+      "residualEffectsPresent": true,
+      "contentComplete": true,
+      "editable": true,
+      "canvasRuntimeParity": true,
+      "horizontalOverflow": false,
+      "productionRendererUsed": true,
+      "compilerOutputUsed": true,
+      "heroMediaRolePresent": true
+    }
+  },
+  "certification": {
+    "architectureProof": false,
+    "acceptableFidelity": false,
+    "productionGradeFidelity": false,
+    "controllingCategory": "typography",
+    "minimumScore": 5
+  },
+  "screenshotCertification": {
+    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/creative-agency/tablet/full.png",
+    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/creative-agency/tablet/full.png",
+    "pixelDifferenceRatio": 0.3256772884196414,
+    "certified": false
+  }
+}

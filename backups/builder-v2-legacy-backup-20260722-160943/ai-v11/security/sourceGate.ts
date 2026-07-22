@@ -1,0 +1,83 @@
+import { parseTsx, V11TsxParseError } from "../ast/parser";
+import { normalizeTsx } from "../ast/normalize";
+import { buildDesignGraph } from "../design-graph/builder";
+import { compileDesignGraphToBlueprint } from "../compiler/blueprintCompiler";
+import { certifyBlueprintCustomCss } from "./cssCertification";
+import type { EvaluationBudgets } from "../interpreter/staticEvaluator";
+
+const FORBIDDEN: readonly [RegExp, string][] = [
+  [/\bimport\s*\(/, "DYNAMIC_IMPORT_REJECTED"],
+  [
+    /\buse(?:State|Effect|Memo|Callback|Ref|Reducer|Context|LayoutEffect)\s*\(/,
+    "HOOK_REJECTED",
+  ],
+  [/\bfetch\s*\(/, "NETWORK_ACCESS_REJECTED"],
+  [/\b(?:process\.env|import\.meta\.env)\b/, "ENVIRONMENT_ACCESS_REJECTED"],
+  [/https?:\/\//, "EXTERNAL_URL_REJECTED"],
+];
+type SourceGateFinding = Readonly<{
+  code: string;
+  line: number;
+  column: number;
+  message?: string;
+}>;
+
+export function assessUntrustedSource(
+  source: string,
+  file = "security-fixture.tsx",
+  budgets: Partial<EvaluationBudgets> = {},
+) {
+  const findings: SourceGateFinding[] = FORBIDDEN.flatMap(
+    ([pattern, code]): SourceGateFinding[] => {
+    const match = pattern.exec(source);
+    if (!match) return [];
+    const prefix = source.slice(0, match.index);
+    return [
+      {
+        code,
+        line: prefix.split("\n").length,
+        column: (prefix.match(/(?:^|\n)([^\n]*)$/)?.[1].length ?? 0) + 1,
+      },
+    ];
+  });
+  try {
+    const parsed = parseTsx(source, file);
+    const graph = buildDesignGraph(normalizeTsx(parsed), budgets);
+    const compilation = compileDesignGraphToBlueprint(graph);
+    for (const diagnostic of compilation.diagnostics)
+      if (diagnostic.severity === "error")
+        findings.push({
+          code: diagnostic.code,
+          line: diagnostic.location.line,
+          column: diagnostic.location.column,
+        });
+    for (const violation of certifyBlueprintCustomCss(compilation.blueprint))
+      findings.push({
+        code: "UNSAFE_BLUEPRINT_CSS",
+        line: 1,
+        column: 1,
+        message: `${violation.nodeId}:${violation.construct}`,
+      });
+  } catch (error) {
+    if (error instanceof V11TsxParseError) {
+      findings.push({
+        code: "PARSE_REJECTED",
+        line: error.line,
+        column: error.column,
+        message: error.parserMessage,
+      });
+    } else {
+      findings.push({
+        code: "PARSE_REJECTED",
+        line: 1,
+        column: 1,
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+  return Object.freeze({
+    safe: findings.length === 0,
+    renderable: findings.length === 0,
+    findings: Object.freeze(findings),
+  });
+}

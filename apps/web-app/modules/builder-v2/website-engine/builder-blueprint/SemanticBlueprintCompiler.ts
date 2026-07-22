@@ -6,6 +6,7 @@ import { RecipeRegistry, type SemanticSection } from "./recipes";
 import { ComponentVariantCompilerRegistry } from "./component-recipes";
 import { CompositionQualityEngine, type CompositionQualityScore } from "../composition-quality";
 import { DesignIntelligenceCompiler, type DesignExecutionPlan } from "../design-intelligence";
+import { CreativeDirectorCompiler, type CreativeDirectionPlan } from "../creative-director";
 
 function safeId(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "section";
@@ -51,10 +52,12 @@ export type SemanticBlueprintCompilation = Readonly<{
   selectedRecipes: Array<{ sectionId: string; recipe: string }>;
   compositionQuality: CompositionQualityScore;
   designExecutionPlan: DesignExecutionPlan;
+  creativeDirectionPlan: CreativeDirectionPlan;
 }>;
 
 export function compileSemanticBlueprint(input: BuilderBlueprintInput): SemanticBlueprintCompilation {
   const sections = orderedSections(input);
+  const creativeDirectionPlan = CreativeDirectorCompiler.compile(input);
   const compositionQuality = CompositionQualityEngine.evaluate({
     sections: sections.map((section) => ({
       id: section.id,
@@ -95,7 +98,7 @@ export function compileSemanticBlueprint(input: BuilderBlueprintInput): Semantic
     selectedRecipes.push({ sectionId: section.id, recipe: selectedRecipe.name });
     seeds.push(...selectedRecipe.recipe(context));
   });
-  return Object.freeze({ seeds, sections, selectedRecipes, compositionQuality, designExecutionPlan });
+  return Object.freeze({ seeds, sections, selectedRecipes, compositionQuality, designExecutionPlan, creativeDirectionPlan });
 }
 
 export function createSemanticBuilderTheme(input: BuilderBlueprintInput): BuilderTheme {

@@ -1,0 +1,17 @@
+{
+  "categories": {
+    "structure": 100,
+    "layout": 100,
+    "responsiveComposition": 100,
+    "typography": 100,
+    "colorsBackgrounds": 100,
+    "effects": 100,
+    "content": 100,
+    "mediaRoles": 100,
+    "editability": 100,
+    "rendererParity": 100
+  },
+  "criticalFailures": [],
+  "passed": true,
+  "nonCompensating": true
+}

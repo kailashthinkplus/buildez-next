@@ -1,0 +1,687 @@
+import type { NormalizedTsx } from "../ast/normalize";
+import type {
+  DesignGraphNode,
+  DesignNodeType,
+  DesignProvenance,
+} from "../design-graph/schema";
+import {
+  fidelityDiagnostic,
+  type FidelityDiagnostic,
+} from "../diagnostics/fidelity";
+import {
+  collectStaticBindings,
+  collectTopLevelBindings,
+  createEvaluationState,
+  evaluateStatic,
+  type EvaluationBudgets,
+  type StaticEnvironment,
+  type StaticValue,
+} from "./staticEvaluator";
+import { interpretTailwind } from "./tailwindInterpreter";
+import { extractEmbeddedCss } from "../css-layer/embeddedCss";
+
+export type InterpretedJsx = Readonly<{
+  rootIds: readonly string[];
+  rootPresentation?: Readonly<{
+    layout: Record<string, unknown>;
+    style: Record<string, unknown>;
+    responsive: Record<string, unknown>;
+  }>;
+  nodes: Readonly<Record<string, DesignGraphNode>>;
+  diagnostics: readonly FidelityDiagnostic[];
+  evaluation: Readonly<{
+    operations: number;
+    expansions: number;
+    nodes: number;
+  }>;
+}>;
+
+type ComponentDefinition = Readonly<{
+  name: string;
+  params: any;
+  jsx: any;
+  node: any;
+}>;
+
+const TYPE_MAP: Record<string, DesignNodeType> = {
+  section: "section",
+  div: "container",
+  article: "container",
+  main: "container",
+  header: "section",
+  footer: "section",
+  nav: "container",
+  h1: "heading",
+  h2: "heading",
+  h3: "heading",
+  h4: "heading",
+  h5: "heading",
+  h6: "heading",
+  p: "text",
+  span: "text",
+  strong: "text",
+  br: "text",
+  blockquote: "container",
+  button: "button",
+  a: "button",
+  img: "image",
+  picture: "picture",
+  video: "video",
+  ul: "list",
+  ol: "list",
+  li: "listItem",
+  svg: "svg",
+};
+
+function elementName(node: any): string {
+  const name = node?.openingElement?.name;
+  return name?.type === "JSXIdentifier" ? name.name : "unknown";
+}
+
+function provenance(
+  file: string,
+  node: any,
+  sourceElement: string,
+): DesignProvenance {
+  return Object.freeze({
+    sourceFile: file,
+    line: node.loc?.start?.line ?? 1,
+    column: (node.loc?.start?.column ?? 0) + 1,
+    sourceElement,
+  });
+}
+
+function jsxFromFunction(node: any): any | undefined {
+  if (!node) return undefined;
+  if (["JSXElement", "JSXFragment"].includes(node.body?.type)) return node.body;
+  if (node.body?.type !== "BlockStatement") return undefined;
+  return node.body.body.find(
+    (statement: any) => statement.type === "ReturnStatement",
+  )?.argument;
+}
+
+function collectComponents(ast: any): Map<string, ComponentDefinition> {
+  const components = new Map<string, ComponentDefinition>();
+  for (const statement of ast?.program?.body ?? []) {
+    const declaration = statement.type.startsWith("Export")
+      ? statement.declaration
+      : statement;
+    if (declaration?.type === "FunctionDeclaration" && declaration.id?.name) {
+      const jsx = jsxFromFunction(declaration);
+      if (jsx)
+        components.set(declaration.id.name, {
+          name: declaration.id.name,
+          params: declaration.params[0],
+          jsx,
+          node: declaration,
+        });
+    }
+    if (declaration?.type === "VariableDeclaration")
+      for (const item of declaration.declarations) {
+        if (
+          item.id?.type !== "Identifier" ||
+          !["ArrowFunctionExpression", "FunctionExpression"].includes(
+            item.init?.type,
+          )
+        )
+          continue;
+        const jsx = jsxFromFunction(item.init);
+        if (jsx)
+          components.set(item.id.name, {
+            name: item.id.name,
+            params: item.init.params[0],
+            jsx,
+            node: item.init,
+          });
+      }
+  }
+  return components;
+}
+
+function bindPattern(
+  pattern: any,
+  value: StaticValue,
+  target: Record<string, StaticValue>,
+) {
+  if (!pattern) return;
+  if (pattern.type === "Identifier") {
+    target[pattern.name] = value;
+    return;
+  }
+  if (
+    pattern.type === "ObjectPattern" &&
+    value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    !("kind" in value)
+  ) {
+    for (const property of pattern.properties)
+      if (property.type === "ObjectProperty") {
+        const key = property.key.name ?? property.key.value;
+        const next = (value as Record<string, StaticValue>)[String(key)];
+        if (next !== undefined) bindPattern(property.value, next, target);
+      }
+  }
+}
+
+export function interpretJsx(
+  normalized: NormalizedTsx,
+  budgets: Partial<EvaluationBudgets> = {},
+): InterpretedJsx {
+  const nodes: Record<string, DesignGraphNode> = {};
+  const state = createEvaluationState(normalized.file, budgets);
+  const components = collectComponents(normalized.ast);
+  const topLevelEnv = collectTopLevelBindings(normalized.ast, state);
+  const globalEnv = normalized.localStatements.length
+    ? collectStaticBindings(normalized.localStatements, state, topLevelEnv)
+    : topLevelEnv;
+  const embeddedCss = extractEmbeddedCss(normalized.source);
+  let sequence = 0;
+  let rootPresentation: InterpretedJsx["rootPresentation"];
+
+  for (const statement of normalized.ast?.program?.body ?? []) {
+    if (
+      statement.type === "ImportDeclaration" &&
+      statement.source?.value !== "react"
+    )
+      state.diagnostics.push(
+        fidelityDiagnostic({
+          code: "ARBITRARY_IMPORT_REJECTED",
+          severity: "error",
+          message: `Import '${statement.source.value}' is outside the static source contract.`,
+          location: {
+            file: normalized.file,
+            line: statement.loc?.start?.line ?? 1,
+            column: (statement.loc?.start?.column ?? 0) + 1,
+          },
+          recommendedLowering:
+            "Use local static components and local asset placeholder strings only.",
+        }),
+      );
+  }
+  const hookPattern =
+    /\buse(?:State|Effect|Memo|Callback|Ref|Reducer|Context|LayoutEffect)\s*\(/;
+  if (hookPattern.test(normalized.source))
+    state.diagnostics.push(
+      fidelityDiagnostic({
+        code: "HOOK_REJECTED",
+        severity: "error",
+        message: "React hooks are forbidden in the V11 static source profile.",
+        location: { file: normalized.file, line: 1, column: 1 },
+        recommendedLowering:
+          "Replace runtime state/effects with static literals and responsive design values.",
+      }),
+    );
+
+  function valueOf(
+    expression: any,
+    env: StaticEnvironment,
+  ): StaticValue | undefined {
+    return evaluateStatic(expression, env, state);
+  }
+
+  function attributeValue(
+    attribute: any,
+    env: StaticEnvironment,
+  ): StaticValue | undefined {
+    if (!attribute?.value) return true;
+    if (attribute.value.type === "StringLiteral") return attribute.value.value;
+    if (attribute.value.type === "JSXExpressionContainer")
+      return valueOf(attribute.value.expression, env);
+    return undefined;
+  }
+
+  function textOf(node: any, env: StaticEnvironment): string | undefined {
+    const values = (node.children ?? [])
+      .flatMap((child: any) => {
+        if (child.type === "JSXText")
+          return [child.value.replace(/\s+/g, " ").trim()];
+        if (child.type === "JSXElement" && elementName(child) === "br")
+          return ["\n"];
+        if (child.type === "JSXExpressionContainer") {
+          if (
+            child.expression?.type === "CallExpression" &&
+            child.expression.callee?.type === "MemberExpression" &&
+            child.expression.callee.property?.name === "map"
+          )
+            return [];
+          if (
+            ![
+              "StringLiteral",
+              "NumericLiteral",
+              "BooleanLiteral",
+              "Identifier",
+              "MemberExpression",
+              "TemplateLiteral",
+              "UnaryExpression",
+              "BinaryExpression",
+              "LogicalExpression",
+              "ConditionalExpression",
+              "CallExpression",
+            ].includes(child.expression?.type)
+          )
+            return [];
+          const value = valueOf(child.expression, env);
+          return ["string", "number", "boolean"].includes(typeof value)
+            ? [String(value)]
+            : [];
+        }
+        return [];
+      })
+      .filter(Boolean);
+    return values.join(" ").replace(/ *\n */g, "\n").trim() || undefined;
+  }
+
+  function visitExpression(
+    expression: any,
+    parentId: string | null,
+    path: string,
+    env: StaticEnvironment,
+    componentDepth: number,
+  ): string[] {
+    if (!expression || expression.type === "JSXEmptyExpression") return [];
+    if (["JSXElement", "JSXFragment"].includes(expression.type))
+      return visit(expression, parentId, path, env, componentDepth);
+    if (expression.type === "ConditionalExpression") {
+      const condition = valueOf(expression.test, env);
+      if (typeof condition === "boolean")
+        return visitExpression(
+          condition ? expression.consequent : expression.alternate,
+          parentId,
+          path,
+          env,
+          componentDepth,
+        );
+    }
+    if (
+      expression.type === "LogicalExpression" &&
+      expression.operator === "&&"
+    ) {
+      const condition = valueOf(expression.left, env);
+      if (typeof condition === "boolean")
+        return condition
+          ? visitExpression(
+              expression.right,
+              parentId,
+              path,
+              env,
+              componentDepth,
+            )
+          : [];
+    }
+    if (expression.type === "Identifier") {
+      const value = env[expression.name];
+      if (
+        value &&
+        typeof value === "object" &&
+        !Array.isArray(value) &&
+        "kind" in value &&
+        value.kind === "jsx"
+      ) {
+        const jsx = value as { kind: "jsx"; nodes: readonly any[] };
+        return jsx.nodes.flatMap((child, index) =>
+          visit(child, parentId, `${path}.${index}`, env, componentDepth),
+        );
+      }
+    }
+    if (
+      expression.type === "CallExpression" &&
+      expression.callee?.type === "MemberExpression" &&
+      !expression.callee.computed &&
+      expression.callee.property?.name === "map"
+    ) {
+      const values = valueOf(expression.callee.object, env);
+      const callback = expression.arguments[0];
+      if (
+        !Array.isArray(values) ||
+        !["ArrowFunctionExpression", "FunctionExpression"].includes(
+          callback?.type,
+        )
+      )
+        return diagnoseExpression(
+          expression,
+          "UNSUPPORTED_MAP_SOURCE",
+          "Only .map() over a bounded static array is supported.",
+        );
+      if (state.expansions + values.length > state.budgets.maxExpansionCount)
+        return diagnoseExpression(
+          expression,
+          "EXPANSION_BUDGET",
+          "Static map expansion budget exceeded.",
+        );
+      state.expansions += values.length;
+      return values.flatMap((value, index) => {
+        const next: Record<string, StaticValue> = { ...env };
+        bindPattern(callback.params[0], value, next);
+        if (callback.params[1]?.type === "Identifier")
+          next[callback.params[1].name] = index;
+        const body =
+          callback.body.type === "BlockStatement"
+            ? callback.body.body.find(
+                (item: any) => item.type === "ReturnStatement",
+              )?.argument
+            : callback.body;
+        return visitExpression(
+          body,
+          parentId,
+          `${path}.map${index}`,
+          next,
+          componentDepth,
+        );
+      });
+    }
+    const primitive = valueOf(expression, env);
+    if (["string", "number", "boolean"].includes(typeof primitive)) return [];
+    return diagnoseExpression(
+      expression,
+      "UNSUPPORTED_VISIBLE_EXPRESSION",
+      `Visible expression '${expression.type}' could not be expanded statically.`,
+    );
+
+    function diagnoseExpression(
+      target: any,
+      code: string,
+      message: string,
+    ): string[] {
+      state.diagnostics.push(
+        fidelityDiagnostic({
+          code,
+          severity: "error",
+          message,
+          location: {
+            file: normalized.file,
+            line: target.loc?.start?.line ?? 1,
+            column: (target.loc?.start?.column ?? 0) + 1,
+          },
+          recommendedLowering:
+            "Use a bounded static array, literal property access, static ternary, or static logical AND.",
+        }),
+      );
+      return [];
+    }
+  }
+
+  function expandComponent(
+    node: any,
+    definition: ComponentDefinition,
+    parentId: string | null,
+    path: string,
+    env: StaticEnvironment,
+    componentDepth: number,
+  ): string[] {
+    if (componentDepth >= state.budgets.maxComponentDepth) {
+      state.diagnostics.push(
+        fidelityDiagnostic({
+          code: "COMPONENT_DEPTH_BUDGET",
+          severity: "error",
+          message: `Component expansion depth exceeded at '${definition.name}'.`,
+          location: {
+            file: normalized.file,
+            line: node.loc?.start?.line ?? 1,
+            column: (node.loc?.start?.column ?? 0) + 1,
+          },
+          recommendedLowering:
+            "Flatten recursive or deeply nested local component composition.",
+        }),
+      );
+      return [];
+    }
+    state.expansions += 1;
+    if (state.expansions > state.budgets.maxExpansionCount) return [];
+    const props: Record<string, StaticValue> = {};
+    for (const attribute of node.openingElement.attributes ?? []) {
+      if (attribute.type !== "JSXAttribute") continue;
+      const value = attributeValue(attribute, env);
+      if (value !== undefined) props[attribute.name.name] = value;
+    }
+    const children = (node.children ?? []).filter(
+      (child: any) => !(child.type === "JSXText" && !child.value.trim()),
+    );
+    if (children.length)
+      props.children = children.every((child: any) => child.type === "JSXText")
+        ? children
+            .map((child: any) => child.value.replace(/\s+/g, " ").trim())
+            .filter(Boolean)
+            .join(" ")
+        : Object.freeze({ kind: "jsx", nodes: Object.freeze(children) });
+    const next: Record<string, StaticValue> = { ...env };
+    bindPattern(definition.params, props, next);
+    return visit(
+      definition.jsx,
+      parentId,
+      `${path}.${definition.name}`,
+      next,
+      componentDepth + 1,
+    );
+  }
+
+  function visit(
+    node: any,
+    parentId: string | null,
+    path: string,
+    env: StaticEnvironment,
+    componentDepth: number,
+  ): string[] {
+    if (!node) return [];
+    if (node.type === "JSXFragment")
+      return (node.children ?? []).flatMap((child: any, index: number) =>
+        visit(child, parentId, `${path}.${index}`, env, componentDepth),
+      );
+    if (node.type === "JSXText") return [];
+    if (node.type === "JSXExpressionContainer")
+      return visitExpression(
+        node.expression,
+        parentId,
+        path,
+        env,
+        componentDepth,
+      );
+    if (node.type !== "JSXElement")
+      return visitExpression(node, parentId, path, env, componentDepth);
+    const sourceElement = elementName(node);
+    if (sourceElement === "style") return [];
+    if (sourceElement === "main" && parentId === null) {
+      const mainAttributes: Record<string, string> = {};
+      for (const attribute of node.openingElement.attributes ?? []) {
+        if (attribute.type !== "JSXAttribute") continue;
+        const value = attributeValue(attribute, env);
+        if (["string", "number", "boolean"].includes(typeof value))
+          mainAttributes[attribute.name.name] = String(value);
+      }
+      const mainTailwind = interpretTailwind(
+        mainAttributes.className ?? "",
+        { file: normalized.file, line: node.loc?.start?.line ?? 1, column: (node.loc?.start?.column ?? 0) + 1 },
+        "dg.page",
+        embeddedCss.classes,
+      );
+      state.diagnostics.push(...mainTailwind.diagnostics);
+      rootPresentation = Object.freeze({ layout: mainTailwind.layout, style: mainTailwind.style, responsive: mainTailwind.responsive });
+      return (node.children ?? []).flatMap((child: any, index: number) =>
+        visit(child, null, `${path}.main${index}`, env, componentDepth),
+      );
+    }
+    if (/^[A-Z]/.test(sourceElement)) {
+      const definition = components.get(sourceElement);
+      if (definition)
+        return expandComponent(
+          node,
+          definition,
+          parentId,
+          path,
+          env,
+          componentDepth,
+        );
+    }
+    state.nodes += 1;
+    if (state.nodes > state.budgets.maxNodeCount) {
+      state.diagnostics.push(
+        fidelityDiagnostic({
+          code: "NODE_COUNT_BUDGET",
+          severity: "error",
+          message: "Design node budget exceeded.",
+          location: {
+            file: normalized.file,
+            line: node.loc?.start?.line ?? 1,
+            column: (node.loc?.start?.column ?? 0) + 1,
+          },
+          recommendedLowering: "Reduce repeated or decorative source nodes.",
+        }),
+      );
+      return [];
+    }
+    const type = TYPE_MAP[sourceElement] ?? "container";
+    const id = `dg.${String(++sequence).padStart(3, "0")}.${sourceElement.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+    const prov = provenance(normalized.file, node, sourceElement);
+    const attributes: Record<string, string> = {};
+    for (const attribute of node.openingElement.attributes ?? []) {
+      if (attribute.type !== "JSXAttribute") continue;
+      const value = attributeValue(attribute, env);
+      if (["string", "number", "boolean"].includes(typeof value))
+        attributes[attribute.name.name] = String(value);
+      else if (value !== undefined)
+        state.diagnostics.push(
+          fidelityDiagnostic({
+            code: "NON_PRIMITIVE_DOM_ATTRIBUTE",
+            severity: "warning",
+            message: `Attribute '${attribute.name.name}' is not a DOM primitive.`,
+            affectedNode: id,
+            location: {
+              file: normalized.file,
+              line: attribute.loc?.start?.line ?? prov.line,
+              column: (attribute.loc?.start?.column ?? 0) + 1,
+            },
+            recommendedLowering:
+              "Pass static object/array props only to local components, not intrinsic elements.",
+          }),
+        );
+    }
+    if (!TYPE_MAP[sourceElement])
+      state.diagnostics.push(
+        fidelityDiagnostic({
+          code: "UNKNOWN_JSX_ELEMENT",
+          severity: "warning",
+          message: `Unknown JSX element '${sourceElement}' was lowered to a generic container.`,
+          affectedNode: id,
+          location: {
+            file: normalized.file,
+            line: prov.line,
+            column: prov.column,
+          },
+          recommendedLowering:
+            "Use a supported intrinsic element or add a static semantic mapping.",
+        }),
+      );
+    const tailwind = interpretTailwind(
+      attributes.className ?? "",
+      { file: normalized.file, line: prov.line, column: prov.column },
+      id,
+      embeddedCss.classes,
+    );
+    state.diagnostics.push(...tailwind.diagnostics);
+    const childIds = (
+      sourceElement === "svg" ? [] : (node.children ?? [])
+    ).flatMap((child: any, index: number) =>
+      visit(child, id, `${path}.${index}`, env, componentDepth),
+    );
+    nodes[id] = Object.freeze({
+      id,
+      type,
+      semanticRole: semanticRole(sourceElement, attributes, parentId),
+      parentId,
+      children: Object.freeze(childIds),
+      layout: Object.freeze(tailwind.layout),
+      style: Object.freeze(tailwind.style),
+      responsive: Object.freeze(tailwind.responsive),
+      effects: tailwind.effects,
+      embeddedCss:
+        (attributes.className ?? "")
+          .split(/\s+/)
+          .map((name) => embeddedCss.byClass.get(name))
+          .filter(Boolean)
+          .join("\n") || undefined,
+      media:
+        type === "image" || type === "video"
+          ? mediaSemantics(
+              type,
+              attributes,
+              tailwind.layout,
+              tailwind.style,
+              tailwind.responsive,
+            )
+          : undefined,
+      content: textOf(node, env),
+      attributes: Object.freeze(attributes),
+      provenance: prov,
+    });
+    return [id];
+  }
+
+  const rootIds = visit(normalized.root, null, "root", globalEnv, 0);
+  return Object.freeze({
+    rootIds: Object.freeze(rootIds),
+    rootPresentation,
+    nodes: Object.freeze(nodes),
+    diagnostics: Object.freeze(state.diagnostics),
+    evaluation: Object.freeze({
+      operations: state.operations,
+      expansions: state.expansions,
+      nodes: state.nodes,
+    }),
+  });
+}
+
+function mediaSemantics(
+  type: DesignNodeType,
+  attributes: Record<string, string>,
+  layout: Record<string, unknown>,
+  style: Record<string, unknown>,
+  responsive: Record<string, Record<string, unknown> | undefined>,
+) {
+  const role =
+    attributes["data-media-role"] ??
+    (type === "video" ? "video-background" : "editorial-image");
+  return Object.freeze({
+    role,
+    src: attributes.src,
+    alt: attributes.alt,
+    objectFit: String(style.objectFit ?? "") || undefined,
+    objectPosition: String(style.objectPosition ?? "") || undefined,
+    aspectRatio: String(style.aspectRatio ?? "") || undefined,
+    opacity: typeof style.opacity === "number" ? style.opacity : undefined,
+    foreground:
+      !role.includes("background") &&
+      role !== "decorative-image" &&
+      role !== "texture",
+    background: role.includes("background"),
+    overlayRelationship:
+      layout.position === "absolute"
+        ? "layered-in-positioned-parent"
+        : undefined,
+    responsiveVisibility: Object.freeze({
+      tablet: responsive.tablet?.display !== "none",
+      desktop: responsive.desktop?.display !== "none",
+    }),
+  });
+}
+
+function semanticRole(
+  element: string,
+  attributes: Record<string, string>,
+  parentId: string | null,
+): string {
+  if (attributes["data-media-role"]) return attributes["data-media-role"];
+  if (attributes["aria-label"])
+    return attributes["aria-label"]
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  if (element === "h1") return "primary-heading";
+  if (/^h[2-6]$/.test(element)) return "section-heading";
+  if (element === "button" || element === "a") return "call-to-action";
+  if (element === "img")
+    return attributes.alt?.toLowerCase().includes("portrait")
+      ? "portrait"
+      : "editorial-image";
+  if (element === "section") return "content-section";
+  return parentId ? element : "document-content";
+}

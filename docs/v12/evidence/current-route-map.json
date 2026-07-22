@@ -1,0 +1,170 @@
+{
+  "generatedAt": "2026-07-22T10:46:42.622Z",
+  "count": 41,
+  "routes": [
+    {
+      "route": "/:slug*",
+      "source": "apps/web-app/app/(runtime)/[...slug]/page.tsx"
+    },
+    {
+      "route": "/app/login",
+      "source": "apps/web-app/app/app/(auth)/login/page.tsx"
+    },
+    {
+      "route": "/app/verify-otp",
+      "source": "apps/web-app/app/app/(auth)/verify-otp/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/:pageSlugWithId",
+      "source": "apps/web-app/app/app/(builder)/[siteSlug]/[pageSlugWithId]/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/analytics",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/analytics/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/apps",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/apps/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/brand",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/brand/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/cms",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/cms/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/crm/:leadId",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/crm/[leadId]/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/crm",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/crm/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/dashboard",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/dashboard/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/media",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/media/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/pages",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/pages/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/settings",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/settings/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/shopez",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/shopez/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/shopez/products/:productId",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/shopez/products/[productId]/page.tsx"
+    },
+    {
+      "route": "/app/:siteSlug/themes",
+      "source": "apps/web-app/app/app/(tenant)/[siteSlug]/themes/page.tsx"
+    },
+    {
+      "route": "/app/dashboard",
+      "source": "apps/web-app/app/app/(tenant)/dashboard/page.tsx"
+    },
+    {
+      "route": "/app/media",
+      "source": "apps/web-app/app/app/(tenant)/media/page.tsx"
+    },
+    {
+      "route": "/app",
+      "source": "apps/web-app/app/app/(tenant)/page.tsx"
+    },
+    {
+      "route": "/app/pages",
+      "source": "apps/web-app/app/app/(tenant)/pages/page.tsx"
+    },
+    {
+      "route": "/app/profile",
+      "source": "apps/web-app/app/app/(tenant)/profile/page.tsx"
+    },
+    {
+      "route": "/app/workspace/billing",
+      "source": "apps/web-app/app/app/(tenant)/workspace/billing/page.tsx"
+    },
+    {
+      "route": "/app/workspace/websites",
+      "source": "apps/web-app/app/app/(tenant)/workspace/websites/page.tsx"
+    },
+    {
+      "route": "/app/onboarding",
+      "source": "apps/web-app/app/app/onboarding/page.tsx"
+    },
+    {
+      "route": "/app",
+      "source": "apps/web-app/app/app/page.tsx"
+    },
+    {
+      "route": "/domain-runtime/:domain/::path*",
+      "source": "apps/web-app/app/domain-runtime/[domain]/[[...path]]/page.tsx"
+    },
+    {
+      "route": "/internal/ai-v10-forensic/:runId/canvas",
+      "source": "apps/web-app/app/internal/ai-v10-forensic/[runId]/canvas/page.tsx"
+    },
+    {
+      "route": "/internal/ai-v10-forensic/:runId",
+      "source": "apps/web-app/app/internal/ai-v10-forensic/[runId]/page.tsx"
+    },
+    {
+      "route": "/internal/ai-v10-preview",
+      "source": "apps/web-app/app/internal/ai-v10-preview/page.tsx"
+    },
+    {
+      "route": "/internal/content-compiler-preview",
+      "source": "apps/web-app/app/internal/content-compiler-preview/page.tsx"
+    },
+    {
+      "route": "/internal/golden-preview/:caseId",
+      "source": "apps/web-app/app/internal/golden-preview/[caseId]/page.tsx"
+    },
+    {
+      "route": "/internal/v11-parity/sanjeevini",
+      "source": "apps/web-app/app/internal/v11-parity/sanjeevini/page.tsx"
+    },
+    {
+      "route": "/internal/v11-visual/:fixtureId",
+      "source": "apps/web-app/app/internal/v11-visual/[fixtureId]/page.tsx"
+    },
+    {
+      "route": "/internal/v11-visual",
+      "source": "apps/web-app/app/internal/v11-visual/page.tsx"
+    },
+    {
+      "route": "/internal/visual-critic/:caseId",
+      "source": "apps/web-app/app/internal/visual-critic/[caseId]/page.tsx"
+    },
+    {
+      "route": "/preview/:siteSlug/:pageSlugWithId",
+      "source": "apps/web-app/app/preview/[siteSlug]/[pageSlugWithId]/page.tsx"
+    },
+    {
+      "route": "/store/:siteSlug/::path*",
+      "source": "apps/web-app/app/store/[siteSlug]/[[...path]]/page.tsx"
+    },
+    {
+      "route": "/super/security/auth-logs",
+      "source": "apps/web-app/app/super/(protected)/security/auth-logs/page.tsx"
+    },
+    {
+      "route": "/super/login",
+      "source": "apps/web-app/app/super/login/page.tsx"
+    }
+  ]
+}

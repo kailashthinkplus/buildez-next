@@ -1,0 +1,67 @@
+{
+  "fixture": "luxury-real-estate",
+  "viewport": "tablet",
+  "contractFidelity": {
+    "categories": {
+      "structure": 100,
+      "layout": 100,
+      "responsiveComposition": 100,
+      "typography": 100,
+      "colorsBackgrounds": 100,
+      "effects": 100,
+      "content": 100,
+      "mediaRoles": 100,
+      "editability": 100,
+      "rendererParity": 100
+    },
+    "criticalFailures": [],
+    "passed": true,
+    "nonCompensating": true
+  },
+  "visualFidelity": {
+    "categories": {
+      "composition": 98,
+      "geometry": 58,
+      "responsiveComposition": 100,
+      "typography": 100,
+      "backgroundsAndColor": 88,
+      "imagePlacementAndCrop": 100,
+      "overlapAndLayering": 86,
+      "residualEffects": 100,
+      "contentCompleteness": 100,
+      "editability": 100,
+      "canvasRuntimeParity": 100
+    },
+    "criticalFailures": [],
+    "passed": true,
+    "evidence": {
+      "pixelDifferenceRatio": 0.12268998156527568,
+      "sectionOrderCorrect": true,
+      "headingDelta": 0.25941675587803814,
+      "ctaDelta": 0.7396176171384118,
+      "heroMediaDelta": 0,
+      "floatingCardDelta": 0.10885458976441917,
+      "editorialImageDelta": 0.09301181102362205,
+      "headingFontSizeDelta": 0,
+      "gridCompositionCorrect": true,
+      "overlapCorrect": true,
+      "responsiveStackingCorrect": true,
+      "backgroundPresent": true,
+      "imageCropCorrect": true,
+      "residualEffectsPresent": true,
+      "contentComplete": true,
+      "editable": true,
+      "canvasRuntimeParity": true,
+      "horizontalOverflow": false,
+      "productionRendererUsed": true,
+      "compilerOutputUsed": true,
+      "heroMediaRolePresent": true
+    }
+  },
+  "screenshotCertification": {
+    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/reference/luxury-real-estate/tablet/full.png",
+    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m3/compiled/luxury-real-estate/tablet/full.png",
+    "pixelDifferenceRatio": 0.12268998156527568,
+    "certified": true
+  }
+}

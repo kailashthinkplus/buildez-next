@@ -1,0 +1,35 @@
+{
+  "version": "12",
+  "createdAt": "2026-07-22T10:39:43Z",
+  "repositoryRoot": "/Users/kailash/buildez",
+  "branch": "feature/v12-builder3-agentic-platform",
+  "preMigrationCommit": "cc01d84a73288b1304432a706f2bd4612d14b626",
+  "executionPack": {
+    "path": "/Users/kailash/Library/Mobile Documents/com~apple~CloudDocs/Office/Build EZ/V12/BuildEZ_V12_Builder3_No_Drift_Execution_Pack.zip",
+    "payloadHashFailures": 0
+  },
+  "backups": [
+    {
+      "source": "apps/web-app/modules/builder-v2",
+      "target": "backups/builder-v2-legacy-backup-20260722-160943",
+      "fileCount": 1791,
+      "inventory": "docs/v12/evidence/builder-v2-backup-20260722-160943.sha256",
+      "restoreDigest": "a9433e12c4d0aad6a894a57a68c8e49c72628bad1747c590b6e0a7371eba7fc7",
+      "restoreVerified": true
+    },
+    {
+      "source": "apps/web-app/modules/builder-v2/ai-v11",
+      "target": "backups/ai-v11-legacy-backup-20260722-160943",
+      "fileCount": 440,
+      "inventory": "docs/v12/evidence/ai-v11-backup-20260722-160943.sha256",
+      "restoreDigest": "b839eb192c73af8d6e2213bc9b244862a61aeae39c351a9822f9017c712ecc6a",
+      "restoreVerified": true
+    }
+  ],
+  "baseline": {
+    "tests": 550,
+    "passed": 542,
+    "failed": 8,
+    "cutoverBlocked": true
+  }
+}

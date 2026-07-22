@@ -1,0 +1,67 @@
+{
+  "fixture": "creative-agency",
+  "viewport": "mobile",
+  "contractFidelity": {
+    "passed": true,
+    "evidence": {
+      "graphValidated": true,
+      "blueprintValidated": true,
+      "serializationRoundTrip": true,
+      "compilerOutputRendered": true
+    }
+  },
+  "visualFidelity": {
+    "categories": {
+      "composition": 73,
+      "geometry": 95,
+      "responsiveComposition": 100,
+      "typography": 100,
+      "backgroundsAndColor": 63,
+      "imagePlacementAndCrop": 90,
+      "overlapAndLayering": 100,
+      "residualEffects": 100,
+      "contentCompleteness": 100,
+      "editability": 100,
+      "canvasRuntimeParity": 100
+    },
+    "criticalFailures": [],
+    "passed": true,
+    "evidence": {
+      "pixelDifferenceRatio": 0.36634321099379924,
+      "sectionOrderCorrect": true,
+      "headingDelta": 0.05404827253807434,
+      "ctaDelta": 0.06347920094970745,
+      "heroMediaDelta": 0.050364862303175016,
+      "floatingCardDelta": 0.4303820340733092,
+      "editorialImageDelta": 0.10358686257562663,
+      "headingFontSizeDelta": 0,
+      "gridCompositionCorrect": true,
+      "overlapCorrect": true,
+      "overlapExpected": false,
+      "responsiveStackingCorrect": true,
+      "backgroundPresent": true,
+      "imageCropCorrect": true,
+      "residualEffectsPresent": true,
+      "contentComplete": true,
+      "editable": true,
+      "canvasRuntimeParity": true,
+      "horizontalOverflow": false,
+      "productionRendererUsed": true,
+      "compilerOutputUsed": true,
+      "heroMediaRolePresent": true
+    }
+  },
+  "certification": {
+    "architectureProof": true,
+    "acceptableFidelity": false,
+    "productionGradeFidelity": false,
+    "controllingCategory": "backgroundsAndColor",
+    "minimumScore": 63
+  },
+  "screenshotCertification": {
+    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/creative-agency/mobile/full.png",
+    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/creative-agency/mobile/full.png",
+    "pixelDifferenceRatio": 0.36634321099379924,
+    "certified": true
+  }
+}

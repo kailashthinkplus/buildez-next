@@ -1,0 +1,52 @@
+import { parseTsx } from "../ast/parser";
+import { normalizeTsx } from "../ast/normalize";
+import { buildDesignGraph } from "../design-graph/builder";
+import type { EvaluationBudgets } from "../interpreter/staticEvaluator";
+
+const FORBIDDEN: readonly [RegExp, string][] = [
+  [/\bimport\s*\(/, "DYNAMIC_IMPORT_REJECTED"],
+  [
+    /\buse(?:State|Effect|Memo|Callback|Ref|Reducer|Context|LayoutEffect)\s*\(/,
+    "HOOK_REJECTED",
+  ],
+  [/\bfetch\s*\(/, "NETWORK_ACCESS_REJECTED"],
+  [/\b(?:process\.env|import\.meta\.env)\b/, "ENVIRONMENT_ACCESS_REJECTED"],
+  [/https?:\/\//, "EXTERNAL_URL_REJECTED"],
+  [/<style\b/, "STYLE_ELEMENT_REJECTED"],
+];
+export function assessUntrustedSource(
+  source: string,
+  file = "security-fixture.tsx",
+  budgets: Partial<EvaluationBudgets> = {},
+) {
+  const findings = FORBIDDEN.flatMap(([pattern, code]) => {
+    const match = pattern.exec(source);
+    if (!match) return [];
+    const prefix = source.slice(0, match.index);
+    return [
+      {
+        code,
+        line: prefix.split("\n").length,
+        column: (prefix.match(/(?:^|\n)([^\n]*)$/)?.[1].length ?? 0) + 1,
+      },
+    ];
+  });
+  try {
+    const parsed = parseTsx(source, file);
+    const graph = buildDesignGraph(normalizeTsx(parsed), budgets);
+    for (const diagnostic of graph.diagnostics)
+      if (diagnostic.severity === "error")
+        findings.push({
+          code: diagnostic.code,
+          line: diagnostic.location.line,
+          column: diagnostic.location.column,
+        });
+  } catch {
+    findings.push({ code: "PARSE_REJECTED", line: 1, column: 1 });
+  }
+  return Object.freeze({
+    safe: findings.length === 0,
+    renderable: findings.length === 0,
+    findings: Object.freeze(findings),
+  });
+}

@@ -1,0 +1,580 @@
+import { callOpenAIChatCompletion, extractAssistantText } from "@/app/api/_lib/openai";
+import type { BuilderBlueprint, BuilderNode, BuilderTheme } from "../../types/blueprint";
+import { OPENAI_56_WEBSITE_BUILDER_PROFILE } from "../skills/openAi56WebsiteBuilder";
+import { assertCreativePatchCoverage, assertSemanticHydrationComplete, collectCreativeNodeIds, validateCreativePatchCoverage } from "./semanticHydrationValidation";
+import { WidgetPopulationRegistry } from "../../website-engine/builder-blueprint/widget-population";
+import { TypedWidgetHydrationSchemas } from "./typedWidgetHydration";
+
+export type V10CreativeEnrichmentInput = Readonly<{
+  generationRunId?: string;
+  prompt: string;
+  businessContext: Record<string, unknown>;
+  websiteSpec: unknown;
+  designResult: unknown;
+  componentResult: unknown;
+  compositionResult: unknown;
+  blueprint: BuilderBlueprint;
+}>;
+
+export type Enrichment = {
+  theme?: Partial<BuilderTheme>;
+  nodes?: Record<string, { props?: Record<string, unknown>; style?: Record<string, unknown> }>;
+  duplicateNodeIds?: string[];
+};
+
+function objectKeys(value: string, objectStart: number): string[] {
+  const keys: string[] = [];
+  let depth = 1;
+  let index = objectStart + 1;
+  while (index < value.length && depth > 0) {
+    if (value[index] === '"') {
+      const start = index;
+      index += 1;
+      while (index < value.length) {
+        if (value[index] === "\\") index += 2;
+        else if (value[index] === '"') { index += 1; break; }
+        else index += 1;
+      }
+      if (depth === 1 && /^\s*:/.test(value.slice(index))) {
+        try { keys.push(JSON.parse(value.slice(start, index))); } catch { /* parse() reports malformed JSON */ }
+      }
+      continue;
+    }
+    if (value[index] === "{") depth += 1;
+    if (value[index] === "}") depth -= 1;
+    index += 1;
+  }
+  return [...new Set(keys.filter((key, keyIndex) => keys.indexOf(key) !== keyIndex))];
+}
+
+function duplicateKeysFor(value: string, wrapper?: "nodes" | "patches" | "nodePatches") {
+  if (!wrapper) return objectKeys(value, value.indexOf("{"));
+  const match = new RegExp(`"${wrapper}"\\s*:\\s*\\{`).exec(value);
+  return match ? objectKeys(value, match.index + match[0].length - 1) : [];
+}
+
+class CreativeResponseShapeError extends Error {
+  constructor(message: string) { super(`CREATIVE_RESPONSE_SHAPE_INVALID: ${message}`); }
+}
+
+function plainRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function validatePatchShape(nodes: Record<string, unknown>) {
+  for (const [id, patch] of Object.entries(nodes)) {
+    if (!plainRecord(patch) || Object.keys(patch).some((key) => key !== "props") || !plainRecord(patch.props)) {
+      throw new CreativeResponseShapeError(`candidate patch ${id} is not a props-only object`);
+    }
+  }
+}
+
+export function normalizeEnrichmentResponse(
+  parsed: unknown,
+  expectedNodeIds: readonly string[],
+  duplicateNodeIds: readonly string[] = []
+): Enrichment {
+  if (!plainRecord(parsed)) throw new CreativeResponseShapeError(`expected ${expectedNodeIds.length} nodes; response is not an object`);
+  const expected = new Set(expectedNodeIds);
+  const keys = Object.keys(parsed);
+  const wrappers = (["nodes", "patches", "nodePatches"] as const).filter((key) => Object.prototype.hasOwnProperty.call(parsed, key));
+  let nodes: Record<string, unknown>;
+  let theme: Partial<BuilderTheme> | undefined;
+  if (wrappers.length > 1) throw new CreativeResponseShapeError(`expected ${expectedNodeIds.length} nodes; competing wrappers: ${wrappers.join(",")}`);
+  if (wrappers.length === 1) {
+    const wrapper = wrappers[0];
+    const allowed = new Set(wrapper === "nodes" ? ["nodes", "theme"] : [wrapper]);
+    const unrelated = keys.filter((key) => !allowed.has(key));
+    if (unrelated.length) throw new CreativeResponseShapeError(`expected ${expectedNodeIds.length} nodes; returned top-level keys: ${keys.slice(0, 8).join(",")}`);
+    if (!plainRecord(parsed[wrapper])) throw new CreativeResponseShapeError(`expected ${expectedNodeIds.length} nodes; ${wrapper} is not an object`);
+    if (wrapper === "nodes" && Object.prototype.hasOwnProperty.call(parsed, "theme") && !plainRecord(parsed.theme)) {
+      throw new CreativeResponseShapeError(`expected ${expectedNodeIds.length} nodes; theme is not an object`);
+    }
+    nodes = parsed[wrapper] as Record<string, unknown>;
+    theme = wrapper === "nodes" && plainRecord(parsed.theme) ? parsed.theme as Partial<BuilderTheme> : undefined;
+  } else {
+    const matching = keys.filter((key) => expected.has(key));
+    if (!keys.length || matching.length !== keys.length) {
+      throw new CreativeResponseShapeError(`expected ${expectedNodeIds.length} nodes; returned top-level keys: ${keys.slice(0, 8).join(",")}; candidate nodes: ${matching.length}`);
+    }
+    nodes = parsed;
+  }
+  validatePatchShape(nodes);
+  return { theme, nodes: nodes as Enrichment["nodes"], duplicateNodeIds: [...duplicateNodeIds] };
+}
+
+export function parseAndNormalizeEnrichment(value: string, expectedNodeIds: readonly string[]): Enrichment {
+  if (/```/.test(value)) throw new CreativeResponseShapeError(`expected ${expectedNodeIds.length} nodes; markdown wrappers are not allowed`);
+  const block = value.match(/```(?:json)?\s*([\s\S]*?)\s*```/i)?.[1] ?? value;
+  const start = block.indexOf("{");
+  const end = block.lastIndexOf("}");
+  if (start < 0 || end <= start) throw new Error("AI v10 enrichment did not return JSON.");
+  const json = block.slice(start, end + 1);
+  const parsed = JSON.parse(json) as unknown;
+  const record = plainRecord(parsed) ? parsed : {};
+  const wrapper = (["nodes", "patches", "nodePatches"] as const).find((key) => Object.prototype.hasOwnProperty.call(record, key));
+  return normalizeEnrichmentResponse(parsed, expectedNodeIds, duplicateKeysFor(json, wrapper));
+}
+
+function compactNodes(blueprint: BuilderBlueprint, ids: readonly string[]) {
+  return Object.fromEntries(ids.map((id) => [id, blueprint.nodes[id]]).filter((entry): entry is [string, BuilderNode] => Boolean(entry[1])).map(([id, node]) => [id, {
+    type: node.type,
+    parentId: node.parentId,
+    props: node.props,
+  }]));
+}
+
+function chunk<T>(values: readonly T[], size: number) {
+  const chunks: T[][] = [];
+  for (let index = 0; index < values.length; index += size) chunks.push(values.slice(index, index + size));
+  return chunks;
+}
+
+function compactValue(value: unknown, depth = 0): unknown {
+  if (typeof value === "string") return value.slice(0, 500);
+  if (typeof value === "number" || typeof value === "boolean" || value === null) return value;
+  if (Array.isArray(value)) return depth >= 4 ? [] : value.slice(0, 16).map((item) => compactValue(item, depth + 1));
+  if (!value || typeof value !== "object" || depth >= 4) return undefined;
+  return Object.fromEntries(Object.entries(value as Record<string, unknown>)
+    .slice(0, 24)
+    .map(([key, item]) => [key, compactValue(item, depth + 1)])
+    .filter(([, item]) => item !== undefined));
+}
+
+function select(value: unknown, keys: readonly string[]) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const record = value as Record<string, unknown>;
+  return Object.fromEntries(keys.filter((key) => record[key] !== undefined).map((key) => [key, compactValue(record[key])]));
+}
+
+export function buildCompactCreativeContext(input: V10CreativeEnrichmentInput) {
+  const ordered = Object.values(input.blueprint.nodes).filter((node)=>node.type === "section").map((node)=>({id:node.id,role:node.props?.role,purpose:node.props?.purpose}));
+  const majorHeadlines = Object.values(input.blueprint.nodes).filter((node)=>node.type === "heading" || node.type === "hero").map((node)=>node.props?.text ?? node.props?.title).filter(Boolean);
+  const ctaLabels = Object.values(input.blueprint.nodes).flatMap((node)=>[node.props?.primaryCta,node.props?.secondaryCta,node.type === "button" ? node.props?.text : undefined]).filter(Boolean);
+  return {
+    business: compactValue(input.businessContext),
+    specification: select(input.websiteSpec, ["business", "goals", "archetype", "sections", "contentRequirements", "designRules", "conversionRules", "responsiveRules", "factsUsed", "missingFacts"]),
+    design: select(input.designResult, ["designIntent", "designLanguage", "typographyProfile", "colorProfile", "spacingProfile", "layoutProfile", "motionProfile", "densityProfile", "designTokens"]),
+    components: select(input.componentResult, ["recommendedSelections", "componentFamilies", "componentCategories", "requiredFacts", "requiredAssets"]),
+    composition: select(input.compositionResult, ["orderedSectionSequence", "pageRhythm", "visualBreathing", "ctaCadence", "trustPlacement", "conversionJourney", "scrollNarrative", "mobileStacking", "densityTransitions"]),
+    pageHydration: { orderedSections:ordered, majorHeadlines, ctaLabels, adjacentSectionRule:"Keep each section distinct from its immediate neighbours.", widgetContracts:WidgetPopulationRegistry.all().map((contract)=>({widgetType:contract.widgetType,requiredProps:contract.requiredProps,minimumItems:contract.minimumItems,maximumItems:contract.maximumItems,requiredVerifiedFacts:contract.requiredVerifiedFacts,mediaSlots:contract.imageAssignmentSchema})), hydrationSchemas:TypedWidgetHydrationSchemas.map((schema)=>({id:schema.id,widgetType:schema.widgetType,allowedProps:schema.allowedProps,immutableProps:schema.immutableProps,collections:schema.collections})) },
+  };
+}
+
+async function mapWithConcurrency<T, R>(
+  values: readonly T[],
+  concurrency: number,
+  worker: (value: T, index: number) => Promise<R>
+) {
+  const results = new Array<R>(values.length);
+  let nextIndex = 0;
+  let stopped = false;
+  let firstError: unknown;
+  async function runWorker() {
+    while (!stopped && nextIndex < values.length) {
+      if (stopped) break;
+      const index = nextIndex;
+      nextIndex += 1;
+      try {
+        results[index] = await worker(values[index], index);
+      } catch (error) {
+        if (!stopped) {
+          stopped = true;
+          firstError = error;
+        }
+      }
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, values.length) }, () => runWorker()));
+  if (firstError) throw firstError;
+  return results;
+}
+
+export function resolveV10CreativeConcurrency(value = process.env.OPENAI_V10_ENRICHMENT_CONCURRENCY) {
+  const requested = Number(value || 2);
+  return Math.max(1, Math.min(4, Number.isFinite(requested) ? Math.floor(requested) : 2));
+}
+
+export function applyCreativeEnrichment(
+  blueprint: BuilderBlueprint,
+  enrichment: Enrichment
+): BuilderBlueprint {
+  assertCreativePatchCoverage(blueprint, enrichment);
+  const nodes = Object.fromEntries(Object.entries(blueprint.nodes).map(([id, node]) => {
+    const patch = enrichment.nodes?.[id];
+    if (!patch) return [id, node];
+    const nextProps = { ...(node.props || {}), ...(patch.props || {}) };
+    if (node.type === "image" && /^\{\{.+\}\}$/.test(String(nextProps.src || ""))) nextProps.src = "";
+    const next: BuilderNode = {
+      ...node,
+      props: nextProps,
+      style: node.style,
+    };
+    return [id, next];
+  }));
+  return {
+    ...blueprint,
+    theme: { ...blueprint.theme, ...(enrichment.theme || {}) } as BuilderTheme,
+    nodes,
+    metadata: {
+      ...blueprint.metadata,
+      updatedAt: new Date().toISOString(),
+      template: "ai-v10-website-engine",
+    },
+  };
+}
+
+export function resolveV10CompletionTokenBudget(value = process.env.OPENAI_V10_MAX_COMPLETION_TOKENS) {
+  const requested = Number(value || 8000);
+  if (!Number.isFinite(requested)) return 8000;
+  return Math.max(1024, Math.min(16384, Math.floor(requested)));
+}
+
+export type CreativeRecoveryDiagnostics = {
+  initialMissingNodes: string[];
+  recoveredNodes: string[];
+  recoveryAttempts: number;
+  recoveredSuccessfully: boolean;
+};
+
+export type CreativeResponseDiagnostics = {
+  normalizedShapeCount: number;
+  flatShapeNormalizedCount: number;
+  aliasShapeNormalizedCount: number;
+  shapeRecoveryAttempts: number;
+  totalCoverageMisses: number;
+  batchSplits: number;
+  batchCount: number;
+  completedBatches: number;
+  retriedBatches: number;
+  transientFailures: number;
+  finalFailures: number;
+  concurrencyUsed: number;
+};
+
+export type V10CreativeDependencies = Readonly<{
+  complete: typeof callOpenAIChatCompletion;
+  sleep: (milliseconds: number) => Promise<void>;
+  random: () => number;
+}>;
+
+const DEFAULT_CREATIVE_DEPENDENCIES: V10CreativeDependencies = {
+  complete: callOpenAIChatCompletion,
+  sleep: (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)),
+  random: Math.random,
+};
+
+function errorText(error: unknown) {
+  return error instanceof Error ? `${error.name} ${error.message}` : String(error);
+}
+
+export type CreativeErrorClassification = "invalid_api_key" | "model_permission" | "rate_limit" | "transient_provider_error" | "malformed_response";
+
+export function classifyCreativeError(error: unknown): CreativeErrorClassification {
+  const text = errorText(error).toLowerCase();
+  if (/invalid_api_key|incorrect api key|invalid authentication|api key.*invalid/.test(text)) return "invalid_api_key";
+  if (/permission_denied|insufficient permissions|does not have access to (?:the )?model|model.*(?:access|permission)|not permitted to use/.test(text)) return "model_permission";
+  if (/\b429\b|rate_limit|rate limit|too many requests|insufficient_quota/.test(text)) return "rate_limit";
+  if (/creative_response_shape_invalid|creative_json_failure|creative_empty_response|did not return json|json.*(?:parse|malformed)/.test(text)) return "malformed_response";
+  return "transient_provider_error";
+}
+
+/**
+ * Some OpenAI deployments can temporarily return authorization-style
+ * failures for an otherwise valid model/key combination.
+ * Keep explicit invalid keys and unknown model access failures fatal,
+ * but retry observed transient insufficient-permission responses.
+ */
+export function isTransientCreativeAuthorizationError(error: unknown) {
+  const text = errorText(error).toLowerCase();
+
+  return (
+    text.includes("insufficient permissions") &&
+    text.includes("gpt-5.6-sol")
+  );
+}
+
+export function isRetryableOpenAIError(error: unknown) {
+  const text = errorText(error).toLowerCase();
+
+  if (/invalid_api_key|incorrect api key|api key.*invalid/.test(text)) {
+    return false;
+  }
+
+  if (isTransientCreativeAuthorizationError(error)) {
+    return true;
+  }
+
+  if (/insufficient_quota|context_length_exceeded/.test(text)) return false;
+
+  const classification = classifyCreativeError(error);
+
+  if (classification === "model_permission" || classification === "malformed_response") {
+    return false;
+  }
+
+  if (classification === "rate_limit") {
+    return /\b429\b|rate_limit|rate limit|too many requests/.test(text);
+  }
+
+  return /\b(408|500|502|503|504)\b|timeout|timed out|abort|network request failed|fetch failed|econnreset|socket/.test(text);
+}
+
+function isOpenAIError(error: unknown) {
+  return /openai api error|network request failed|fetch failed|timeout|timed out|abort|econnreset|socket/i.test(errorText(error));
+}
+
+function maySplitBatch(error: unknown) {
+  const text = errorText(error);
+  return /creative_json_failure|creative_empty_response|timeout|timed out|abort|context_length_exceeded|\b(500|502|503|504)\b/i.test(text);
+}
+
+const CREATIVE_RETRY_DELAYS = Object.freeze([500, 1500, 3000]);
+
+async function completeWithRetry<T>(operation: () => Promise<T>, dependencies: V10CreativeDependencies, onTransientFailure: () => void): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      if (!isRetryableOpenAIError(error) || attempt === 3) throw error;
+      onTransientFailure();
+      await dependencies.sleep(CREATIVE_RETRY_DELAYS[attempt]);
+    }
+  }
+  throw lastError;
+}
+
+type RequestNodes = (ids: readonly string[], recovery: boolean) => Promise<Enrichment>;
+
+export async function recoverMissingNodes(args: {
+  blueprint: BuilderBlueprint;
+  missingNodeIds: readonly string[];
+  requestNodes: RequestNodes;
+}): Promise<{ enrichment: Enrichment; diagnostics: CreativeRecoveryDiagnostics }> {
+  const initialMissingNodes = [...new Set(args.missingNodeIds)];
+  const attempts = new Map(initialMissingNodes.map((id) => [id, 0]));
+  const merged: Enrichment = { nodes: {} };
+  let pending = initialMissingNodes;
+  let recoveryAttempts = 0;
+  while (pending.length) {
+    const exhausted = pending.filter((id) => (attempts.get(id) || 0) >= 2);
+    if (exhausted.length) throw new Error(`SEMANTIC_PATCH_RECOVERY_FAILED: ${exhausted.join(", ")}`);
+    pending.forEach((id) => attempts.set(id, (attempts.get(id) || 0) + 1));
+    recoveryAttempts += 1;
+    const recovery = await args.requestNodes(pending, true);
+    const coverage = validateCreativePatchCoverage(args.blueprint, recovery, pending);
+    const nonMissingIssues = coverage.issues.filter((issue) => !issue.startsWith("Missing required patch"));
+    if (nonMissingIssues.length) throw new Error(`SEMANTIC_PATCH_RECOVERY_FAILED: ${nonMissingIssues.join(" ")}`);
+    merged.nodes = { ...(merged.nodes || {}), ...(recovery.nodes || {}) };
+    pending = coverage.missingNodeIds;
+  }
+  return {
+    enrichment: merged,
+    diagnostics: {
+      initialMissingNodes,
+      recoveredNodes: initialMissingNodes,
+      recoveryAttempts,
+      recoveredSuccessfully: true,
+    },
+  };
+}
+
+export async function runV10CreativeEnrichment(
+  input: V10CreativeEnrichmentInput,
+  dependencies: V10CreativeDependencies = DEFAULT_CREATIVE_DEPENDENCIES
+): Promise<BuilderBlueprint> {
+  const model = process.env.OPENAI_V10_WEBSITE_MODEL || "gpt-5.6-sol";
+  const nodeIds = collectCreativeNodeIds(input.blueprint);
+  if (nodeIds.length === 0) return input.blueprint;
+  const batches = chunk(nodeIds, Math.max(4, Math.min(12, Number(process.env.OPENAI_V10_ENRICHMENT_BATCH_SIZE || 8))));
+  const creativeContext = buildCompactCreativeContext(input);
+  const creativeContextCharacters = JSON.stringify(creativeContext).length;
+  const concurrencyUsed = resolveV10CreativeConcurrency();
+  const retriedBatchIndexes = new Set<number>();
+
+  const diagnostics: CreativeRecoveryDiagnostics = { initialMissingNodes: [], recoveredNodes: [], recoveryAttempts: 0, recoveredSuccessfully: true };
+  const responseDiagnostics: CreativeResponseDiagnostics = {
+    normalizedShapeCount: 0, flatShapeNormalizedCount: 0, aliasShapeNormalizedCount: 0,
+    shapeRecoveryAttempts: 0, totalCoverageMisses: 0, batchSplits: 0,
+    batchCount: batches.length, completedBatches: 0, retriedBatches: 0,
+    transientFailures: 0, finalFailures: 0, concurrencyUsed,
+  };
+
+  async function enrichBatch(ids: readonly string[], batchIndex: number): Promise<Enrichment> {
+    const messages = [
+      {
+        role: "system",
+        content: `You enrich one content batch from a Website Engine-owned native Builder Blueprint. Return one compact JSON object only.\n${OPENAI_56_WEBSITE_BUILDER_PROFILE}\nReturn exactly one patch for every supplied node ID and no other IDs. Patch only props. Resolve every {{semantic.path}} token anywhere in each supplied node's props, including nested props, with usable customer-facing values. Do not return style, id, type, parentId, children, or root. The Website Engine already owns layout and responsive design. Heading and text nodes require non-empty text. Button nodes require non-empty text and url. Image nodes must return src as an empty string plus a detailed aiImagePrompt and truthful non-empty alt. Write polished, concise customer-facing copy. Never mention prompts, context, supplied information, verification status, missing facts, internal rules, source material, or what was not provided. Do not invent formal project names or factual claims. The first page heading remains h1 and later headings remain h2/h3. Keep the response compact enough to finish; no commentary or markdown.`,
+      },
+    ] as const;
+    async function requestNodes(requestedIds: readonly string[], recovery: boolean, shapeRecovery = false): Promise<Enrichment> {
+      const requestedNodes = compactNodes(input.blueprint, requestedIds);
+      if (requestedIds.some((id) => !input.blueprint.nodes[id]) || Object.keys(requestedNodes).length !== requestedIds.length) {
+        throw new Error(`CREATIVE_REQUEST_NODE_MISMATCH: requested ${requestedIds.length}; compacted ${Object.keys(requestedNodes).length}`);
+      }
+      try {
+        const requestKind = shapeRecovery ? "shape-recovery" : recovery ? "missing-recovery" : "initial";
+        const runId = input.generationRunId?.trim() || "run-unavailable";
+        let providerAttempt = 0;
+        const invoke = () => completeWithRetry(() => {
+          providerAttempt += 1;
+          return dependencies.complete({
+            debugLabel: `v10-creative:${runId}:creative-batch-${batchIndex + 1}:${requestKind}:attempt-${providerAttempt}:nodes-${requestedIds.length}:of-${batches.length}`,
+            model,
+            reasoningEffort: /^gpt-5\.6(?:-|$)/i.test(model) ? "none" : undefined,
+            maxCompletionTokens: Math.min(recovery ? 1200 : 3500, resolveV10CompletionTokenBudget()),
+            timeoutMs: Number(process.env.OPENAI_V10_CREATIVE_TIMEOUT_MS || 240000),
+            responseFormat: "json_object",
+            messages: [{
+              role: "system",
+              content: shapeRecovery
+                ? `The previous response did not use the required nodes wrapper or exact node IDs. Return JSON only with a top-level nodes object. Every key inside nodes MUST exactly match one requiredNodeIds entry byte-for-byte. Return every required ID exactly once. Props only. No theme, commentary, aliases, shortened IDs, or semantic paths.`
+                : `${messages[0].content}\nThe top-level object MUST contain a nodes property. nodes MUST be an object. Every key inside nodes MUST exactly match one requiredNodeIds entry byte-for-byte, including dots, underscores, and suffixes. Do not shorten, rename, or convert IDs into semantic paths. Do not return patches at the top level. Return every requested ID exactly once. ${recovery ? "Do not return theme during recovery." : ""}`,
+            }, {
+              role: "user",
+              content: JSON.stringify({
+                userPrompt: input.prompt,
+                creativeContext,
+                requiredNodeIds: requestedIds,
+                expectedShape: { nodes: { [requestedIds[0]]: { props: {} } } },
+                requiredOutput: { nodes: "Every supplied node ID MUST appear exactly once. Copy IDs byte-for-byte. Do not omit nodes. Do not return unknown node IDs. Return props only." },
+                recoveryRequest: recovery,
+                shapeRecoveryRequest: shapeRecovery,
+                batch: `${batchIndex + 1} of ${batches.length}`,
+                engineOwnedNodes: requestedNodes,
+              }),
+            }],
+          });
+        }, dependencies, () => {
+          responseDiagnostics.transientFailures += 1;
+          retriedBatchIndexes.add(batchIndex);
+          responseDiagnostics.retriedBatches = retriedBatchIndexes.size;
+        });
+        let completion: Awaited<ReturnType<typeof dependencies.complete>>;
+        try {
+          completion = await invoke();
+        } catch (error) {
+          const classification = classifyCreativeError(error);
+          const prefix = classification === "invalid_api_key"
+            ? "AI_V10_CREATIVE_INVALID_API_KEY"
+            : classification === "model_permission"
+              ? "AI_V10_CREATIVE_AUTHORIZATION_FAILED_AFTER_RETRY"
+              : classification === "rate_limit"
+                ? "AI_V10_CREATIVE_RATE_LIMIT_FAILED"
+                : "AI_V10_CREATIVE_TRANSIENT_PROVIDER_FAILED";
+          throw new Error(`${prefix}: batch ${batchIndex + 1} of ${batches.length}: ${errorText(error)}`);
+        }
+        const raw = extractAssistantText(completion);
+        if (!raw) throw new Error("CREATIVE_EMPTY_RESPONSE");
+        try {
+          const normalized = parseAndNormalizeEnrichment(raw, requestedIds);
+          const parsedRecord = JSON.parse(raw) as unknown;
+          if (plainRecord(parsedRecord)) {
+            if (!Object.prototype.hasOwnProperty.call(parsedRecord, "nodes")) {
+              if (Object.prototype.hasOwnProperty.call(parsedRecord, "patches") || Object.prototype.hasOwnProperty.call(parsedRecord, "nodePatches")) responseDiagnostics.aliasShapeNormalizedCount += 1;
+              else responseDiagnostics.flatShapeNormalizedCount += 1;
+            }
+          }
+          responseDiagnostics.normalizedShapeCount += 1;
+          return normalized;
+        } catch (error) {
+          if (error instanceof CreativeResponseShapeError) throw error;
+          throw new Error(`CREATIVE_JSON_FAILURE: ${errorText(error)}`);
+        }
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    try {
+      let enrichment: Enrichment;
+      try {
+        enrichment = await requestNodes(ids, false);
+      } catch (error) {
+        if (!(error instanceof CreativeResponseShapeError)) throw error;
+        responseDiagnostics.shapeRecoveryAttempts += 1;
+        try { enrichment = await requestNodes(ids, false, true); }
+        catch (recoveryError) { throw new Error(`CREATIVE_RESPONSE_SHAPE_RECOVERY_FAILED: ${errorText(recoveryError)}`); }
+      }
+      const coverage = validateCreativePatchCoverage(input.blueprint, enrichment, ids);
+      if (coverage.valid) return enrichment;
+      const nonMissingIssues = coverage.issues.filter((issue) => !issue.startsWith("Missing required patch"));
+      if (nonMissingIssues.length) throw new Error(`SEMANTIC_PATCH_COVERAGE_FAILED: ${nonMissingIssues.join(" ")}`);
+      if (coverage.missingNodeIds.length === ids.length) {
+        responseDiagnostics.totalCoverageMisses += 1;
+        responseDiagnostics.shapeRecoveryAttempts += 1;
+        let corrected: Enrichment;
+        try { corrected = await requestNodes(ids, false, true); }
+        catch (recoveryError) { throw new Error(`CREATIVE_RESPONSE_SHAPE_RECOVERY_FAILED: ${errorText(recoveryError)}`); }
+        const correctedCoverage = validateCreativePatchCoverage(input.blueprint, corrected, ids);
+        if (correctedCoverage.missingNodeIds.length === ids.length) throw new Error("CREATIVE_RESPONSE_SHAPE_RECOVERY_FAILED: zero exact node IDs returned");
+        enrichment = corrected;
+        if (correctedCoverage.valid) return corrected;
+        const correctedNonMissing = correctedCoverage.issues.filter((issue) => !issue.startsWith("Missing required patch"));
+        if (correctedNonMissing.length) throw new Error(`SEMANTIC_PATCH_COVERAGE_FAILED: ${correctedNonMissing.join(" ")}`);
+        const recovered = await recoverMissingNodes({ blueprint: input.blueprint, missingNodeIds: correctedCoverage.missingNodeIds, requestNodes });
+        diagnostics.initialMissingNodes.push(...recovered.diagnostics.initialMissingNodes);
+        diagnostics.recoveredNodes.push(...recovered.diagnostics.recoveredNodes);
+        diagnostics.recoveryAttempts += recovered.diagnostics.recoveryAttempts;
+        return { theme: corrected.theme, nodes: { ...(corrected.nodes || {}), ...(recovered.enrichment.nodes || {}) } };
+      }
+      const recovered = await recoverMissingNodes({ blueprint: input.blueprint, missingNodeIds: coverage.missingNodeIds, requestNodes });
+      diagnostics.initialMissingNodes.push(...recovered.diagnostics.initialMissingNodes);
+      diagnostics.recoveredNodes.push(...recovered.diagnostics.recoveredNodes);
+      diagnostics.recoveryAttempts += recovered.diagnostics.recoveryAttempts;
+      const merged = { theme: enrichment.theme, nodes: { ...(enrichment.nodes || {}), ...(recovered.enrichment.nodes || {}) } };
+      assertCreativePatchCoverage(input.blueprint, merged, ids);
+      return merged;
+    } catch (error) {
+      if (isOpenAIError(error) && !isRetryableOpenAIError(error)) throw error;
+      if (ids.length > 1 && maySplitBatch(error)) {
+        responseDiagnostics.batchSplits += 1;
+        const midpoint = Math.ceil(ids.length / 2);
+        const left = await enrichBatch(ids.slice(0, midpoint), batchIndex);
+        const right = await enrichBatch(ids.slice(midpoint), batchIndex);
+        return { theme: { ...(left.theme || {}), ...(right.theme || {}) }, nodes: { ...(left.nodes || {}), ...(right.nodes || {}) } };
+      }
+      throw error;
+    }
+  }
+
+  let enrichments: Enrichment[];
+  try {
+    enrichments = await mapWithConcurrency(batches, concurrencyUsed, async (ids, index) => {
+      const enrichment = await enrichBatch(ids, index);
+      responseDiagnostics.completedBatches += 1;
+      return enrichment;
+    });
+  } catch (error) {
+    responseDiagnostics.finalFailures += 1;
+    throw error;
+  }
+  const merged = enrichments.reduce<Enrichment>((result, enrichment) => ({
+    theme: { ...(result.theme || {}), ...(enrichment.theme || {}) },
+    nodes: { ...(result.nodes || {}), ...(enrichment.nodes || {}) },
+  }), {});
+  assertCreativePatchCoverage(input.blueprint, merged, nodeIds);
+  const hydrated = applyCreativeEnrichment(input.blueprint, merged);
+  assertSemanticHydrationComplete(hydrated, "creative-enrichment");
+  return {
+    ...hydrated,
+    metadata: {
+      ...hydrated.metadata,
+      creativeRecovery: {
+        initialMissingNodes: [...new Set(diagnostics.initialMissingNodes)],
+        recoveredNodes: [...new Set(diagnostics.recoveredNodes)],
+        recoveryAttempts: diagnostics.recoveryAttempts,
+        recoveredSuccessfully: diagnostics.recoveredSuccessfully,
+      },
+      creativeResponseDiagnostics: responseDiagnostics,
+      creativeRequestDiagnostics: {
+        semanticNodeCount: nodeIds.length,
+        batchCount: batches.length,
+        compactContextCharacters: creativeContextCharacters,
+        fullArtifactsRepeatedPerBatch: false,
+      },
+    },
+  };
+}
