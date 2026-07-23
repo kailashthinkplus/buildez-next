@@ -2,7 +2,14 @@ import ts from "typescript";
 
 export type ElementPatch =
   | Readonly<{ operation: "text"; value: string }>
-  | Readonly<{ operation: "attribute"; name: "className" | "src" | "alt" | "href" | "id"; value: string }>;
+  | Readonly<{ operation: "attribute"; name: "className" | "src" | "alt" | "href" | "id"; value: string }>
+  | Readonly<{ operation: "style"; name: StyleProperty; value: string }>;
+
+export type StyleProperty = "display" | "position" | "width" | "height" | "minWidth" | "maxWidth" | "minHeight" | "maxHeight"
+  | "marginTop" | "marginRight" | "marginBottom" | "marginLeft" | "paddingTop" | "paddingRight" | "paddingBottom" | "paddingLeft"
+  | "gap" | "flexDirection" | "alignItems" | "justifyContent" | "fontFamily" | "fontSize" | "fontWeight" | "lineHeight"
+  | "letterSpacing" | "textAlign" | "color" | "backgroundColor" | "borderColor" | "borderWidth" | "borderStyle"
+  | "borderRadius" | "boxShadow" | "opacity" | "overflow" | "zIndex";
 
 export function patchElementSource(content: string, sourceFile: string, sourceAnchor: string, patch: ElementPatch) {
   const anchor = Number(sourceAnchor);
@@ -19,6 +26,30 @@ export function patchElementSource(content: string, sourceFile: string, sourceAn
         matched = true;
         const properties = node.attributes.properties.filter((item) => !(ts.isJsxAttribute(item) && item.name.getText(parsed) === patch.name));
         if (patch.value) properties.push(ts.factory.createJsxAttribute(ts.factory.createIdentifier(patch.name), ts.factory.createStringLiteral(patch.value)));
+        const attributes = ts.factory.updateJsxAttributes(node.attributes, properties);
+        return ts.isJsxOpeningElement(node)
+          ? ts.factory.updateJsxOpeningElement(node, node.tagName, node.typeArguments, attributes)
+          : ts.factory.updateJsxSelfClosingElement(node, node.tagName, node.typeArguments, attributes);
+      }
+      if (patch.operation === "style" && (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && node.getStart(parsed) === anchor) {
+        const styleAttribute = node.attributes.properties.find((item) => ts.isJsxAttribute(item) && item.name.getText(parsed) === "style");
+        let assignments: ts.ObjectLiteralElementLike[] = [];
+        if (styleAttribute && ts.isJsxAttribute(styleAttribute)) {
+          const expression = styleAttribute.initializer && ts.isJsxExpression(styleAttribute.initializer) ? styleAttribute.initializer.expression : undefined;
+          if (!expression || !ts.isObjectLiteralExpression(expression)) throw new Error("Selected element uses a dynamic style expression");
+          assignments = [...expression.properties];
+        }
+        assignments = assignments.filter((item) => {
+          if (!ts.isPropertyAssignment(item) && !ts.isShorthandPropertyAssignment(item)) return true;
+          return item.name.getText(parsed).replace(/^["']|["']$/g, "") !== patch.name;
+        });
+        if (patch.value) assignments.push(ts.factory.createPropertyAssignment(ts.factory.createIdentifier(patch.name), ts.factory.createStringLiteral(patch.value)));
+        const properties = node.attributes.properties.filter((item) => item !== styleAttribute);
+        if (assignments.length) properties.push(ts.factory.createJsxAttribute(
+          ts.factory.createIdentifier("style"),
+          ts.factory.createJsxExpression(undefined, ts.factory.createObjectLiteralExpression(assignments, false)),
+        ));
+        matched = true;
         const attributes = ts.factory.updateJsxAttributes(node.attributes, properties);
         return ts.isJsxOpeningElement(node)
           ? ts.factory.updateJsxOpeningElement(node, node.tagName, node.typeArguments, attributes)

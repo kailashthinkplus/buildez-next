@@ -45,7 +45,7 @@ export default function V12AgentPanel({
 
   async function submit() {
     const value = prompt.trim();
-    if ((!value && attachments.length === 0) || !connected) return;
+    if (running || (!value && attachments.length === 0) || !connected) return;
     setPrompt("");
     const submittedAttachments = attachments;
     setAttachments([]);
@@ -82,15 +82,33 @@ export default function V12AgentPanel({
     </div>
 
     <div className="border-t border-white/10 p-3">
-      {attachments.length > 0 && <div className="mb-2 space-y-2">{attachments.map((file, index) => <div key={`${file.name}-${file.lastModified}`} className="flex items-center gap-2 rounded-lg border border-blue-400/20 bg-blue-500/10 px-3 py-2 text-xs text-blue-100"><FileText size={15}/><span className="min-w-0 flex-1 truncate">{file.name}</span><span className="text-blue-200/50">{Math.max(1, Math.round(file.size / 1024))} KB</span><button onClick={() => setAttachments(files => files.filter((_, itemIndex) => itemIndex !== index))} aria-label={`Remove ${file.name}`} className="rounded p-1 hover:bg-white/10"><X size={13}/></button></div>)}</div>}
-      <textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="What would you like to build or change?" className="h-28 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 text-sm outline-none focus:border-blue-400" />
+      {attachments.length > 0 && <div className="mb-2 grid grid-cols-2 gap-2">{attachments.map((file, index) => <AttachmentPreview key={`${file.name}-${file.lastModified}`} file={file} onRemove={() => setAttachments(files => files.filter((_, itemIndex) => itemIndex !== index))}/>)}</div>}
+      <textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); void submit(); } }} placeholder="What would you like to build or change?" aria-describedby="ai-composer-hint" className="h-28 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 text-sm outline-none focus:border-blue-400" />
+      <p id="ai-composer-hint" className="mt-1 px-1 text-[10px] text-white/30">Enter to send · Shift+Enter for a new line</p>
       <div className="mt-2 flex items-center gap-2">
         <input ref={fileInputRef} type="file" accept="application/pdf,image/png,image/jpeg,image/webp" multiple className="hidden" onChange={(event) => { const selected = Array.from(event.target.files ?? []).filter(file => file.size <= 20 * 1024 * 1024); setAttachments(current => [...current, ...selected].slice(0, 5)); event.target.value = ""; }}/>
         <button type="button" onClick={() => fileInputRef.current?.click()} aria-label="Attach design PDF or image" title="Attach design PDF or image" className="rounded-lg p-2 text-white/55 hover:bg-white/10"><Paperclip size={16}/></button>
         <select value={mode} onChange={(event) => setMode(event.target.value as "auto" | "discuss")} className="rounded-lg bg-white/5 px-2 py-2 text-xs"><option value="auto">Auto</option><option value="discuss">Discuss</option></select>
         <div className="flex-1"/>
-        {running ? <button onClick={onCancel} aria-label="Stop agent" className="rounded-lg bg-white px-3 py-2 text-black"><Square size={15}/></button> : <button onClick={submit} disabled={!connected || (!prompt.trim() && attachments.length === 0)} aria-label="Send message" className="rounded-lg bg-blue-600 px-3 py-2 text-white hover:bg-blue-500 disabled:opacity-30"><Send size={15}/></button>}
+        {running ? <button onClick={onCancel} aria-label="Stop agent" className="rounded-lg border border-red-400/30 bg-red-500/15 px-3 py-2 text-red-400 hover:bg-red-500/25"><Square size={15} fill="currentColor"/></button> : <button onClick={submit} disabled={!connected || (!prompt.trim() && attachments.length === 0)} aria-label="Send message" className="rounded-lg bg-blue-600 px-3 py-2 text-white hover:bg-blue-500 disabled:opacity-30"><Send size={15}/></button>}
       </div>
     </div>
   </aside>;
+}
+
+function AttachmentPreview({ file, onRemove }: { file: File; onRemove(): void }) {
+  const [previewUrl, setPreviewUrl] = useState("");
+  useEffect(() => {
+    if (!file.type.startsWith("image/")) { setPreviewUrl(""); return; }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+  return <div className="group relative overflow-hidden rounded-xl border border-blue-400/20 bg-blue-500/10">
+    <div className="grid h-24 place-items-center overflow-hidden bg-black/20">
+      {previewUrl ? <img src={previewUrl} alt={`Attachment preview: ${file.name}`} className="h-full w-full object-cover"/> : <FileText size={28} className="text-blue-200/60"/>}
+    </div>
+    <div className="p-2 text-[10px] text-blue-100"><div className="truncate font-medium">{file.name}</div><div className="mt-0.5 text-blue-200/45">{Math.max(1, Math.round(file.size / 1024))} KB</div></div>
+    <button onClick={onRemove} aria-label={`Remove ${file.name}`} className="absolute right-1.5 top-1.5 rounded-full bg-black/65 p-1 text-white/75 opacity-80 hover:bg-red-500 hover:text-white"><X size={12}/></button>
+  </div>;
 }

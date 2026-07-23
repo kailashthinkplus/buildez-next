@@ -5,6 +5,8 @@ export type EditableCapability = "text" | "richText" | "image" | "link" | "spaci
 export type BuilderSelection = Readonly<{
   elementId: string; kind: string; tagName: string; sourceFile: string; sourceAnchor: string;
   parentElementId?: string; textContent?: string; className?: string;
+  attributes?: Readonly<Record<string, string>>;
+  computedStyleSummary?: Readonly<Record<string, string>>;
   editableCapabilities: readonly EditableCapability[]; projectRevision: number;
   bounds: Readonly<{ top: number; left: number; width: number; height: number }>;
 }>;

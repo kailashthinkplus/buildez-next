@@ -32,6 +32,17 @@ test("source-backed text and attribute patches resolve exact JSX anchors", () =>
   assert.doesNotMatch(styled, /className="hero"/);
 });
 
+test("Inspector style values patch canonical JSX style objects", () => {
+  const anchor = source.indexOf("<h1");
+  const styled = patchElementSource(source, "src/Hero.tsx", String(anchor), { operation: "style", name: "fontSize", value: "48px" });
+  assert.match(styled, /style=\{\{ fontSize: "48px" \}\}/);
+  const existing = `export function Hero(){return <h1 style={{ color: "red", fontSize: "20px" }}>Hello</h1>}`;
+  const updated = patchElementSource(existing, "src/Hero.tsx", String(existing.indexOf("<h1")), { operation: "style", name: "fontSize", value: "32px" });
+  assert.match(updated, /color: "red"/);
+  assert.match(updated, /fontSize: "32px"/);
+  assert.doesNotMatch(updated, /fontSize: "20px"/);
+});
+
 test("a stale source anchor fails instead of editing a different node", () => {
   assert.throws(() => patchElementSource(source, "src/Hero.tsx", "99999", { operation: "text", value: "Wrong" }), /stale or unsupported/);
 });
@@ -54,4 +65,6 @@ test("overlay geometry does not create a mutation-observer feedback loop", () =>
   assert.match(runtime, /data-buildez-overlay/);
   assert.match(runtime, /attributeFilter:\["class","src","hidden"\]/);
   assert.doesNotMatch(runtime, /new MutationObserver\(refresh\)/);
+  assert.match(runtime, /parent · /);
+  assert.match(runtime, /parentBox/);
 });
