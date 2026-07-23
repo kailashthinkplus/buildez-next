@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 import {
   ArrowRight, BarChart3, Check, ChevronRight, FilePenLine, Lightbulb,
   LoaderCircle, Mail, MessageCircle, Search, Send, ShoppingBag, Sparkles,
@@ -57,13 +58,20 @@ export default function AIAgentsPage() {
 
     <section className="ai-simple-ask relative mt-7 overflow-hidden rounded-[26px] p-5 sm:p-7">
       <div className="ai-simple-glow pointer-events-none absolute inset-0"/>
-      <div className="relative">
-        <div className="flex items-center gap-2 text-sm font-semibold"><span className="grid h-9 w-9 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-500/20"><Sparkles size={17}/></span>Ask BuildEZ to help</div>
-        <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-blue-200/70 bg-white p-3 shadow-sm dark:border-blue-300/10 dark:bg-[#10182a] sm:flex-row">
-          <textarea value={prompt} onChange={event => setPrompt(event.target.value)} onKeyDown={event => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") start(); }} placeholder="For example: Write a promotion for my best-selling product…" className="min-h-16 flex-1 resize-none bg-transparent px-2 py-2 text-sm leading-6 outline-none placeholder:dashboard-faint"/>
-          <button onClick={() => start()} disabled={!prompt.trim() || working} className="flex h-11 shrink-0 items-center justify-center gap-2 self-end rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 disabled:opacity-40">{working ? <LoaderCircle size={16} className="animate-spin"/> : <Send size={16}/>}Get help</button>
+      <div className="relative grid items-center gap-6 lg:grid-cols-[1.08fr_.92fr]">
+        <div>
+          <div className="flex items-center gap-2 text-sm font-semibold"><span className="grid h-9 w-9 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-500/20"><Sparkles size={17}/></span>Ask BuildEZ to help</div>
+          <p className="mt-4 max-w-lg text-sm leading-6 dashboard-muted">Tell us what you need. Your AI helper can prepare the work while you stay in control and approve the result.</p>
+          <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-blue-200/70 bg-white p-3 shadow-sm dark:border-blue-300/10 dark:bg-[#10182a] sm:flex-row">
+            <textarea value={prompt} onChange={event => setPrompt(event.target.value)} onKeyDown={event => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") start(); }} placeholder="For example: Write a promotion for my best-selling product…" className="min-h-16 flex-1 resize-none bg-transparent px-2 py-2 text-sm leading-6 outline-none placeholder:text-slate-400"/>
+            <button onClick={() => start()} disabled={!prompt.trim() || working} className="flex h-11 shrink-0 items-center justify-center gap-2 self-end rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 disabled:opacity-40">{working ? <LoaderCircle size={16} className="animate-spin"/> : <Send size={16}/>}Get help</button>
+          </div>
+          {result && <div className="mt-4 flex items-start gap-3 rounded-xl border border-blue-200/60 bg-white/75 p-4 text-sm leading-6 text-slate-700 dark:border-blue-300/10 dark:bg-white/[.045] dark:text-slate-300"><Check className="mt-1 shrink-0 text-blue-500" size={16}/><p>{result}</p><button onClick={() => setResult("")} className="ml-auto shrink-0 dashboard-faint"><X size={15}/></button></div>}
         </div>
-        {result && <div className="mt-4 flex items-start gap-3 rounded-xl border border-blue-200/60 bg-white/75 p-4 text-sm leading-6 text-slate-700 dark:border-blue-300/10 dark:bg-white/[.045] dark:text-slate-300"><Check className="mt-1 shrink-0 text-blue-500" size={16}/><p>{result}</p><button onClick={() => setResult("")} className="ml-auto shrink-0 dashboard-faint"><X size={15}/></button></div>}
+        <div className="ai-helper-art relative min-h-[240px] overflow-hidden rounded-2xl border border-white/60 bg-white/50 shadow-xl shadow-blue-900/5 dark:border-white/10 dark:bg-white/[.04]">
+          <Image src="/ai-agents/ai-working-for-you.png" alt="AI helper preparing marketing, customer replies, sales insights, and weekly plans for your business" fill priority sizes="(max-width: 1024px) 100vw, 42vw" className="object-cover"/>
+          <div className="absolute inset-x-3 bottom-3 rounded-xl border border-white/70 bg-white/80 px-4 py-3 text-xs font-medium text-slate-700 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/65 dark:text-slate-200"><span className="mr-2 inline-block h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"/>Working across marketing, customers, sales, and planning</div>
+        </div>
       </div>
     </section>
 
