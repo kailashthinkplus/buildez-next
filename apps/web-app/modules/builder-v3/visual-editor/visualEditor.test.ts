@@ -44,6 +44,20 @@ test("Inspector style values patch canonical JSX style objects", () => {
   assert.doesNotMatch(updated, /fontSize: "20px"/);
 });
 
+test("connected components and child field mappings persist in source", () => {
+  const anchor = source.indexOf("<main");
+  const connected = patchElementSource(source, "src/Hero.tsx", String(anchor), {
+    operation: "connection", source: "products", sourceId: "featured", presentation: "carousel", limit: 6,
+  });
+  assert.match(connected, /data-buildez-source="products"/);
+  assert.match(connected, /data-buildez-source-id="featured"/);
+  assert.match(connected, /data-buildez-presentation="carousel"/);
+  assert.match(connected, /data-buildez-limit="6"/);
+  const childAnchor = source.indexOf("<h1");
+  const mapped = patchElementSource(source, "src/Hero.tsx", String(childAnchor), { operation: "field", field: "title" });
+  assert.match(mapped, /data-buildez-field="title"/);
+});
+
 test("a stale source anchor fails instead of editing a different node", () => {
   assert.throws(() => patchElementSource(source, "src/Hero.tsx", "99999", { operation: "text", value: "Wrong" }), /stale or unsupported/);
 });

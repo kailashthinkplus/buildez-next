@@ -17,7 +17,7 @@ function syntaxPath(node: ts.Node, source: ts.SourceFile) {
   return parts.reverse().join(".");
 }
 function capabilitiesFor(tag: string) {
-  const result = ["spacing", "layout", "background", "border", "responsive", "structural"];
+  const result = ["data", "spacing", "layout", "background", "border", "responsive", "structural"];
   if (/^(h[1-6]|p|span|label|button|a|li|blockquote)$/.test(tag)) result.push("text", "typography");
   if (tag === "img") result.push("image", "accessibility");
   if (tag === "a" || tag === "button") result.push("link", "accessibility");

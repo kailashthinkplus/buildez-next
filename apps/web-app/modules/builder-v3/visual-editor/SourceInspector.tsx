@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import { Code2, Monitor, RotateCcw, Smartphone, Tablet } from "lucide-react";
 import type { BuilderSelection } from "./contracts";
-import type { ElementPatch, StyleProperty } from "./sourcePatches";
+import type { ConnectedPresentation, ConnectedSource, ElementPatch, StyleProperty } from "./sourcePatches";
 
-const tabs = ["Content", "Layout", "Style", "Advanced"] as const;
+const tabs = ["Content", "Data", "Layout", "Style", "Advanced"] as const;
 export function SourceInspector({ selection, disabled, onPatch, onOpenSource }: {
   selection?: BuilderSelection; disabled?: boolean; onPatch(patch: ElementPatch): Promise<void>; onOpenSource(): void;
 }) {
@@ -13,11 +13,21 @@ export function SourceInspector({ selection, disabled, onPatch, onOpenSource }: 
   const [className, setClassName] = useState("");
   const [attributes, setAttributes] = useState<Record<string, string>>({});
   const [styles, setStyles] = useState<Record<string, string>>({});
+  const [source, setSource] = useState<ConnectedSource>("none");
+  const [sourceId, setSourceId] = useState("");
+  const [presentation, setPresentation] = useState<ConnectedPresentation>("grid");
+  const [limit, setLimit] = useState(8);
+  const [field, setField] = useState("");
   useEffect(() => {
     setText(selection?.textContent ?? "");
     setClassName(selection?.className ?? "");
     setAttributes({ ...(selection?.attributes ?? {}) });
     setStyles({ ...(selection?.computedStyleSummary ?? {}) });
+    setSource((selection?.attributes?.["data-buildez-source"] as ConnectedSource) || "none");
+    setSourceId(selection?.attributes?.["data-buildez-source-id"] ?? "");
+    setPresentation((selection?.attributes?.["data-buildez-presentation"] as ConnectedPresentation) || "grid");
+    setLimit(Number(selection?.attributes?.["data-buildez-limit"] || 8));
+    setField(selection?.attributes?.["data-buildez-field"] ?? "");
   }, [selection]);
   function commitAttribute(name: "src" | "alt" | "href" | "id", value: string) {
     if (value !== (selection?.attributes?.[name] ?? "")) void onPatch({ operation: "attribute", name, value });
@@ -27,13 +37,28 @@ export function SourceInspector({ selection, disabled, onPatch, onOpenSource }: 
   }
   return <aside className="flex h-full w-[300px] flex-col border-l border-white/10 bg-[#15171c]/95 shadow-2xl shadow-black/50 backdrop-blur-2xl">
     <div className="border-b border-white/10 px-4 py-3"><strong className="text-sm">{selection ? `${selection.tagName} · ${selection.kind}` : "Inspector"}</strong>{selection && <p className="mt-1 truncate text-[11px] text-white/35">{selection.sourceFile}</p>}</div>
-    <div className="grid grid-cols-4 border-b border-white/10 text-[11px] text-white/55">{tabs.map(value => <button key={value} onClick={() => setTab(value)} className={`border-b-2 px-1 py-3 ${tab === value ? "border-blue-400 text-white" : "border-transparent hover:text-white"}`}>{value}</button>)}</div>
+    <div className="grid grid-cols-5 border-b border-white/10 text-[10px] text-white/55">{tabs.map(value => <button key={value} onClick={() => setTab(value)} className={`border-b-2 px-1 py-3 ${tab === value ? "border-blue-400 text-white" : "border-transparent hover:text-white"}`}>{value}</button>)}</div>
     {!selection ? <div className="p-4 text-sm leading-6 text-white/40">Select an element in Edit mode to inspect source-backed controls.</div> :
     <div className="min-h-0 flex-1 space-y-5 overflow-auto p-4 text-sm">
       {tab === "Content" && <>
         {selection.editableCapabilities.includes("text") && <Field label="Text"><textarea value={text} onChange={event => setText(event.target.value)} onBlur={() => text !== selection.textContent && void onPatch({ operation: "text", value: text })} disabled={disabled} className="h-28"/></Field>}
         {selection.editableCapabilities.includes("image") && <><Field label="Image URL"><input value={attributes.src ?? ""} onChange={event => setAttributes(values => ({ ...values, src: event.target.value }))} onBlur={event => commitAttribute("src", event.target.value)}/></Field><Field label="Alt text"><input value={attributes.alt ?? ""} onChange={event => setAttributes(values => ({ ...values, alt: event.target.value }))} onBlur={event => commitAttribute("alt", event.target.value)}/></Field><button className="w-full rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium">Generate with AI</button></>}
         {selection.editableCapabilities.includes("link") && <Field label="Link"><input value={attributes.href ?? ""} onChange={event => setAttributes(values => ({ ...values, href: event.target.value }))} onBlur={event => commitAttribute("href", event.target.value)}/></Field>}
+      </>}
+      {tab === "Data" && <>
+        <Section title="Connected component"/>
+        <p className="text-xs leading-5 text-white/45">Connect this container to a live feed. Its child elements remain individually styleable.</p>
+        <Field label="Source"><select value={source} onChange={event => setSource(event.target.value as ConnectedSource)} className="w-full rounded-lg border border-white/10 bg-black/20 p-2.5"><option value="none">Not connected</option><option value="cms">CMS collection</option><option value="blog">Blog feed</option><option value="products">ShopEZ products</option></select></Field>
+        {source !== "none" && <>
+          <Field label={source === "products" ? "Collection ID (optional)" : "Collection ID"}><input value={sourceId} onChange={event => setSourceId(event.target.value)} placeholder={source === "products" ? "All active products" : "Choose a CMS collection"}/></Field>
+          <Field label="Display"><select value={presentation} onChange={event => setPresentation(event.target.value as ConnectedPresentation)} className="w-full rounded-lg border border-white/10 bg-black/20 p-2.5"><option value="grid">Grid</option><option value="list">List</option><option value="carousel">Carousel</option><option value="slider">Slider</option></select></Field>
+          <Field label="Maximum items"><input type="number" min={1} max={100} value={limit} onChange={event => setLimit(Number(event.target.value))}/></Field>
+        </>}
+        <button disabled={disabled} onClick={() => void onPatch({ operation: "connection", source, sourceId, presentation, limit })} className="w-full rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium disabled:opacity-40">{source === "none" ? "Disconnect component" : "Save connection"}</button>
+        <Section title="Child field mapping"/>
+        <p className="text-xs leading-5 text-white/45">Select a title, image, price, excerpt, link, or other child inside the component and map it to a feed field.</p>
+        <Field label="Field key"><input value={field} onChange={event => setField(event.target.value)} placeholder="title, image, price, excerpt…"/></Field>
+        <button disabled={disabled} onClick={() => void onPatch({ operation: "field", field })} className="w-full rounded-lg border border-white/10 px-3 py-2 text-sm font-medium disabled:opacity-40">{field ? "Save field mapping" : "Clear field mapping"}</button>
       </>}
       {tab === "Layout" && <>
         <Section title="Display & position"/>

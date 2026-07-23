@@ -2,8 +2,16 @@ import ts from "typescript";
 
 export type ElementPatch =
   | Readonly<{ operation: "text"; value: string }>
-  | Readonly<{ operation: "attribute"; name: "className" | "src" | "alt" | "href" | "id"; value: string }>
+  | Readonly<{ operation: "attribute"; name: EditableAttribute; value: string }>
+  | Readonly<{ operation: "connection"; source: ConnectedSource; sourceId: string; presentation: ConnectedPresentation; limit: number }>
+  | Readonly<{ operation: "field"; field: string }>
   | Readonly<{ operation: "style"; name: StyleProperty; value: string }>;
+
+export type ConnectedSource = "none" | "cms" | "blog" | "products";
+export type ConnectedPresentation = "list" | "grid" | "carousel" | "slider";
+export type EditableAttribute = "className" | "src" | "alt" | "href" | "id"
+  | "data-buildez-source" | "data-buildez-source-id" | "data-buildez-presentation"
+  | "data-buildez-limit" | "data-buildez-field";
 
 export type StyleProperty = "display" | "position" | "width" | "height" | "minWidth" | "maxWidth" | "minHeight" | "maxHeight"
   | "marginTop" | "marginRight" | "marginBottom" | "marginLeft" | "paddingTop" | "paddingRight" | "paddingBottom" | "paddingLeft"
@@ -18,6 +26,25 @@ export function patchElementSource(content: string, sourceFile: string, sourceAn
   let matched = false;
   const transformer: ts.TransformerFactory<ts.SourceFile> = (context) => {
     const visit = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      if ((patch.operation === "connection" || patch.operation === "field") && (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && node.getStart(parsed) === anchor) {
+        const updates: Record<string, string> = patch.operation === "field"
+          ? { "data-buildez-field": patch.field }
+          : {
+              "data-buildez-source": patch.source === "none" ? "" : patch.source,
+              "data-buildez-source-id": patch.source === "none" ? "" : patch.sourceId,
+              "data-buildez-presentation": patch.source === "none" ? "" : patch.presentation,
+              "data-buildez-limit": patch.source === "none" ? "" : String(Math.max(1, Math.min(100, patch.limit))),
+            };
+        const properties = node.attributes.properties.filter((item) => !(ts.isJsxAttribute(item) && Object.hasOwn(updates, item.name.getText(parsed))));
+        for (const [name, value] of Object.entries(updates)) {
+          if (value) properties.push(ts.factory.createJsxAttribute(ts.factory.createIdentifier(name), ts.factory.createStringLiteral(value)));
+        }
+        matched = true;
+        const attributes = ts.factory.updateJsxAttributes(node.attributes, properties);
+        return ts.isJsxOpeningElement(node)
+          ? ts.factory.updateJsxOpeningElement(node, node.tagName, node.typeArguments, attributes)
+          : ts.factory.updateJsxSelfClosingElement(node, node.tagName, node.typeArguments, attributes);
+      }
       if (patch.operation === "text" && ts.isJsxElement(node) && node.openingElement.getStart(parsed) === anchor) {
         matched = true;
         return ts.factory.updateJsxElement(node, node.openingElement, [ts.factory.createJsxText(patch.value)], node.closingElement);
