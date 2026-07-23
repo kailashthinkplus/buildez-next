@@ -47,3 +47,11 @@ test("editor runtime tolerates an empty iframe referrer", () => {
   assert.match(runtime, /__buildez_parent_origin/);
   assert.doesNotMatch(runtime, /PARENT_ORIGIN=new URL\(document\.referrer\)/);
 });
+
+test("overlay geometry does not create a mutation-observer feedback loop", () => {
+  const runtime = createBuilderRuntimeScript("session");
+  assert.match(runtime, /requestAnimationFrame\(refresh\)/);
+  assert.match(runtime, /data-buildez-overlay/);
+  assert.match(runtime, /attributeFilter:\["class","src","hidden"\]/);
+  assert.doesNotMatch(runtime, /new MutationObserver\(refresh\)/);
+});
