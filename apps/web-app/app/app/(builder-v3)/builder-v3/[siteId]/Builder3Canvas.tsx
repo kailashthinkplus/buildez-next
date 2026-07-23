@@ -76,6 +76,7 @@ export default function Builder3Canvas({ siteId, siteName }: { siteId: string; s
   const [mode, setMode] = useState<BuilderV3CanvasMode>("preview");
   const [device, setDevice] = useState<Device>("desktop");
   const [previewUrl, setPreviewUrl] = useState<string>();
+  const [builderOrigin, setBuilderOrigin] = useState("");
   const [previewSessionId, setPreviewSessionId] = useState<string>();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [selection, setSelection] = useState<BuilderSelection>();
@@ -96,6 +97,8 @@ export default function Builder3Canvas({ siteId, siteName }: { siteId: string; s
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
+
+  useEffect(() => setBuilderOrigin(window.location.origin), []);
 
   async function checkpoint(label: string) {
     const response = await fetch(`/api/builder-v3/projects/${siteId}/checkpoints`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ label }) });
@@ -187,6 +190,10 @@ export default function Builder3Canvas({ siteId, siteName }: { siteId: string; s
     if (!previewSessionId || !previewUrl) return;
     iframeRef.current?.contentWindow?.postMessage({ version: BUILDER_BRIDGE_VERSION, sessionId: previewSessionId, type, payload }, new URL(previewUrl).origin);
   }
+
+  const iframeUrl = previewUrl
+    && builderOrigin ? `${previewUrl}/?__buildez_parent_origin=${encodeURIComponent(builderOrigin)}`
+    : undefined;
 
   useEffect(() => {
     sendCanvas("BUILDEZ_EDIT_MODE_CHANGED", { mode });
@@ -352,8 +359,9 @@ export default function Builder3Canvas({ siteId, siteName }: { siteId: string; s
           {!previewUrl && !error && workspaceLoaded && (workspace?.files?.length ?? 0) > 0 && <div className="grid min-h-[700px] place-items-center bg-white text-sm text-slate-400"><div className="flex items-center gap-2"><span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"/>Preparing preview</div></div>}
           {!previewUrl && !error && workspaceLoaded && !agentRunning && !workspaceError && (workspace?.files?.length ?? 0) === 0 && <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>} 
           {error && <div className="grid h-full min-h-[700px] place-items-center p-8 text-center text-red-700"><div><strong>Preview unavailable</strong><p className="mt-2 text-sm">{error}</p></div></div>}
-          {previewUrl && <iframe ref={iframeRef} key={`${previewUrl}-${previewGeneration}`} title={`${siteName} ${mode}`} src={previewUrl} onLoad={() => sendCanvas("BUILDEZ_EDIT_MODE_CHANGED", { mode })} className="h-full min-h-[700px] w-full border-0" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-same-origin" />}
+          {iframeUrl && <iframe ref={iframeRef} key={`${previewUrl}-${previewGeneration}`} title={`${siteName} ${mode}`} src={iframeUrl} onLoad={() => sendCanvas("BUILDEZ_EDIT_MODE_CHANGED", { mode })} className="h-full min-h-[700px] w-full border-0" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-same-origin" />}
           {previewUrl && !agentRunning && workspace && (workspace.files?.length ?? 0) === 0 && <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>} 
+          {mode === "edit" && previewUrl && <div className="pointer-events-none absolute right-3 top-3 z-[150] rounded-md border border-blue-300/30 bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-lg">Edit mode · select an element</div>}
           {mode === "edit" && previewUrl && selection && <NodeToolbar selection={selection} onAction={handleNodeAction}/>}
           </div>
           </div>

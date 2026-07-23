@@ -4,6 +4,7 @@ import { instrumentTsxSource } from "./instrumentTsx";
 import { patchElementSource } from "./sourcePatches";
 import { validateBuilderBridgeMessage } from "./contracts";
 import { imageRequestNeedsClarification } from "../../ai-v12/imageIntent";
+import { createBuilderRuntimeScript } from "./runtimeScript";
 
 const source = `export function Hero(){return <main><h1 className="hero">Hello</h1><img src="/hero.jpg" /></main>}`;
 
@@ -38,4 +39,11 @@ test("a stale source anchor fails instead of editing a different node", () => {
 test("underspecified image requests pause for clarification", () => {
   assert.equal(imageRequestNeedsClarification("Generate an image"), true);
   assert.equal(imageRequestNeedsClarification("Generate a wide luxury skincare hero image with amber bottles and warm sunlight"), false);
+});
+
+test("editor runtime tolerates an empty iframe referrer", () => {
+  const runtime = createBuilderRuntimeScript("session");
+  assert.match(runtime, /document\.referrer\?new URL\(document\.referrer\)\.origin:""/);
+  assert.match(runtime, /__buildez_parent_origin/);
+  assert.doesNotMatch(runtime, /PARENT_ORIGIN=new URL\(document\.referrer\)/);
 });
