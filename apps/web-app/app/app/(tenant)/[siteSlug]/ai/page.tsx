@@ -1,139 +1,109 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  Activity, ArrowUpRight, Bot, BrainCircuit, ChevronRight, CircleDot,
-  Clock3, Command, Cpu, Gauge, LoaderCircle, MessageSquareText, Orbit, Play,
-  Plus, Radio, Send, ShieldCheck, Sparkles, Target, TrendingUp, WandSparkles, X,
-  type LucideIcon,
+  ArrowRight, BarChart3, Check, ChevronRight, FilePenLine, Lightbulb,
+  LoaderCircle, Mail, MessageCircle, Search, Send, ShoppingBag, Sparkles,
+  Target, Users, X, type LucideIcon,
 } from "lucide-react";
 import { useWorkspace } from "../../components/WorkspaceContext";
 
-type Agent = {
-  id: string; name: string; role: string; description: string; status: "active" | "training" | "paused";
-  icon: LucideIcon; color: string; glow: string; runs: number; success: number; saved: string;
-};
+type QuickAction = { title: string; help: string; prompt: string; icon: LucideIcon };
 
-const initialAgents: Agent[] = [
-  { id: "growth", name: "Growth Strategist", role: "Marketing", description: "Finds opportunities, plans campaigns, and turns traffic signals into growth experiments.", status: "active", icon: TrendingUp, color: "#3788ff", glow: "rgba(55,136,255,.28)", runs: 142, success: 96, saved: "18h" },
-  { id: "sales", name: "Sales Concierge", role: "Revenue", description: "Qualifies inbound leads, drafts replies, and keeps every promising conversation moving.", status: "active", icon: Target, color: "#38d9ff", glow: "rgba(56,217,255,.25)", runs: 89, success: 94, saved: "12h" },
-  { id: "content", name: "Content Director", role: "Brand", description: "Plans, creates, and repurposes on-brand content across your site and campaigns.", status: "active", icon: WandSparkles, color: "#75a7ff", glow: "rgba(117,167,255,.24)", runs: 217, success: 98, saved: "27h" },
-  { id: "support", name: "Customer Success", role: "Support", description: "Answers questions, identifies friction, and escalates the conversations that need a human.", status: "training", icon: MessageSquareText, color: "#5ee6a8", glow: "rgba(94,230,168,.22)", runs: 34, success: 91, saved: "7h" },
-  { id: "commerce", name: "Commerce Operator", role: "ShopEZ", description: "Monitors products, stock, customers, and orders to surface the next best action.", status: "paused", icon: Cpu, color: "#ffbd63", glow: "rgba(255,189,99,.22)", runs: 76, success: 93, saved: "10h" },
+const actions: QuickAction[] = [
+  { title: "Create marketing content", help: "Social posts, emails, and website copy", prompt: "Create marketing content for my business", icon: FilePenLine },
+  { title: "Follow up with leads", help: "Write personal replies for new enquiries", prompt: "Help me follow up with my newest leads", icon: Users },
+  { title: "Improve my website", help: "Find simple ways to get more enquiries", prompt: "Review my website and suggest the most important improvements", icon: Search },
+  { title: "Grow online sales", help: "Promote products and improve store results", prompt: "Help me find ways to grow my online sales", icon: ShoppingBag },
+  { title: "Plan this week", help: "Turn priorities into a practical action plan", prompt: "Help me plan the most important work for this week", icon: Target },
+  { title: "Reply to customers", help: "Draft clear, helpful customer responses", prompt: "Help me reply to a customer", icon: MessageCircle },
 ];
 
 export default function AIAgentsPage() {
   const { siteSlug } = useParams<{ siteSlug: string }>();
   const { currentWebsite } = useWorkspace();
-  const root = useRef<HTMLDivElement>(null);
-  const [agents, setAgents] = useState(initialAgents);
-  const [selected, setSelected] = useState("growth");
-  const [command, setCommand] = useState("");
-  const [running, setRunning] = useState(false);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [activity, setActivity] = useState([
-    ["Content Director", "Prepared a 4-week editorial plan", "2 min ago", "complete"],
-    ["Growth Strategist", "Found a conversion opportunity on the pricing page", "12 min ago", "insight"],
-    ["Sales Concierge", "Qualified 3 new leads from website forms", "28 min ago", "complete"],
-    ["Customer Success", "Learning from 18 recent support conversations", "1 hr ago", "training"],
-  ]);
-
-  useEffect(() => {
-    const node = root.current;
-    if (!node) return;
-    const move = (event: PointerEvent) => {
-      const box = node.getBoundingClientRect();
-      node.style.setProperty("--mx", `${((event.clientX - box.left) / box.width - .5) * 2}`);
-      node.style.setProperty("--my", `${((event.clientY - box.top) / box.height - .5) * 2}`);
-    };
-    node.addEventListener("pointermove", move);
-    return () => node.removeEventListener("pointermove", move);
+  const [prompt, setPrompt] = useState("");
+  const [working, setWorking] = useState(false);
+  const [result, setResult] = useState("");
+  const [briefingOpen, setBriefingOpen] = useState(true);
+  const business = currentWebsite?.name || siteSlug;
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    return hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   }, []);
 
-  const active = agents.filter(agent => agent.status === "active").length;
-  const totalRuns = agents.reduce((sum, agent) => sum + agent.runs, 0);
-  const average = Math.round(agents.reduce((sum, agent) => sum + agent.success, 0) / agents.length);
-  const chosen = agents.find(agent => agent.id === selected) ?? agents[0];
-  const chart = useMemo(() => [34, 48, 42, 67, 58, 76, 69, 91, 82, 104, 96, 124], []);
-
-  function runCommand() {
-    const value = command.trim();
-    if (!value || running) return;
-    setRunning(true);
+  function start(value = prompt) {
+    const task = value.trim();
+    if (!task || working) return;
+    setPrompt(task);
+    setWorking(true);
+    setResult("");
     setTimeout(() => {
-      setActivity(rows => [[chosen.name, value, "Just now", "complete"], ...rows]);
-      setCommand("");
-      setRunning(false);
-    }, 1200);
+      setWorking(false);
+      setResult(`I’m ready to help with “${task}”. I’ll use your website, brand, customers, and business information to prepare the next steps for your approval.`);
+    }, 900);
   }
 
-  return <div ref={root} className="agent-os relative mx-auto min-h-[calc(100vh-110px)] max-w-[1580px] overflow-hidden rounded-[30px] border border-white/10 text-white">
-    <div className="agent-aurora pointer-events-none absolute inset-0"/>
-    <div className="agent-grid pointer-events-none absolute inset-0"/>
-    <div className="agent-orb agent-orb-a pointer-events-none"/><div className="agent-orb agent-orb-b pointer-events-none"/>
-    <div className="relative z-10 p-5 sm:p-7 xl:p-9">
-      <header className="flex flex-wrap items-start justify-between gap-5">
-        <div>
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[.22em] text-blue-200/75"><span className="agent-live"/><Orbit size={14}/> BuildEZ AI Agents</div>
-          <h1 className="mt-3 text-3xl font-semibold tracking-[-.055em] sm:text-5xl">Meet your <span className="agent-gradient">AI business team.</span></h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300/70">Get everyday help with marketing, sales, content, customers, and your online store—all in one simple workspace for {currentWebsite?.name || siteSlug}.</p>
+  return <div className="ai-simple mx-auto max-w-[1380px] pb-14">
+    <header className="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <p className="text-sm font-medium text-blue-600 dark:text-blue-300">{greeting}</p>
+        <h1 className="mt-1 text-3xl font-semibold tracking-[-.045em]">What would you like to get done?</h1>
+        <p className="mt-2 text-sm dashboard-muted">Your BuildEZ AI team can help with everyday work for {business}.</p>
+      </div>
+      <button className="rounded-xl border dashboard-border px-4 py-2.5 text-sm dashboard-hover">Your AI team</button>
+    </header>
+
+    <section className="ai-simple-ask relative mt-7 overflow-hidden rounded-[26px] p-5 sm:p-7">
+      <div className="ai-simple-glow pointer-events-none absolute inset-0"/>
+      <div className="relative">
+        <div className="flex items-center gap-2 text-sm font-semibold"><span className="grid h-9 w-9 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-500/20"><Sparkles size={17}/></span>Ask BuildEZ to help</div>
+        <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-blue-200/70 bg-white p-3 shadow-sm dark:border-blue-300/10 dark:bg-[#10182a] sm:flex-row">
+          <textarea value={prompt} onChange={event => setPrompt(event.target.value)} onKeyDown={event => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") start(); }} placeholder="For example: Write a promotion for my best-selling product…" className="min-h-16 flex-1 resize-none bg-transparent px-2 py-2 text-sm leading-6 outline-none placeholder:dashboard-faint"/>
+          <button onClick={() => start()} disabled={!prompt.trim() || working} className="flex h-11 shrink-0 items-center justify-center gap-2 self-end rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 disabled:opacity-40">{working ? <LoaderCircle size={16} className="animate-spin"/> : <Send size={16}/>}Get help</button>
         </div>
-        <div className="flex items-center gap-2"><button className="agent-glass flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs text-slate-200"><ShieldCheck size={15} className="text-blue-300"/>AI preferences</button><button onClick={() => setCreateOpen(true)} className="agent-primary flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold"><Plus size={15}/>Add an AI helper</button></div>
-      </header>
+        {result && <div className="mt-4 flex items-start gap-3 rounded-xl border border-blue-200/60 bg-white/75 p-4 text-sm leading-6 text-slate-700 dark:border-blue-300/10 dark:bg-white/[.045] dark:text-slate-300"><Check className="mt-1 shrink-0 text-blue-500" size={16}/><p>{result}</p><button onClick={() => setResult("")} className="ml-auto shrink-0 dashboard-faint"><X size={15}/></button></div>}
+      </div>
+    </section>
 
-      <section className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Metric icon={Bot} label="AI helpers working" value={`${active}`} note={`${agents.length} available`} color="#3788ff"/>
-        <Metric icon={Activity} label="Jobs completed" value={totalRuns.toLocaleString()} note="+24% this month" color="#55b7ff"/>
-        <Metric icon={Gauge} label="Work completed well" value={`${average}%`} note="Across your AI team" color="#66d8bc"/>
-        <Metric icon={Clock3} label="Time saved" value="74h" note="This month" color="#75a7ff"/>
-      </section>
+    <section className="mt-8">
+      <div><h2 className="text-lg font-semibold">Popular ways I can help</h2><p className="mt-1 text-xs dashboard-muted">Choose a task to get started quickly.</p></div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{actions.map(action => <button key={action.title} onClick={() => { setPrompt(action.prompt); start(action.prompt); }} className="ai-task-card group flex items-center gap-4 rounded-2xl border dashboard-border p-4 text-left">
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-300"><action.icon size={19}/></span>
+        <span className="min-w-0"><strong className="text-sm font-semibold">{action.title}</strong><span className="mt-1 block text-xs dashboard-muted">{action.help}</span></span>
+        <ChevronRight size={16} className="ml-auto shrink-0 dashboard-faint transition group-hover:translate-x-1 group-hover:text-blue-500"/>
+      </button>)}</div>
+    </section>
 
-      <section className="mt-5 grid gap-5 xl:grid-cols-[1.35fr_.65fr]">
-        <div className="agent-glass agent-depth rounded-[24px] p-5 sm:p-6">
-          <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-sm font-semibold">What would you like help with?</p><p className="mt-1 text-xs text-slate-400">Choose a team member, then describe what you need in your own words.</p></div><span className="flex items-center gap-2 rounded-full border border-blue-300/15 bg-blue-300/[.07] px-3 py-1.5 text-[10px] font-semibold text-blue-200"><Radio size={11}/>READY TO HELP</span></div>
-          <div className="mt-5 flex gap-2 overflow-x-auto pb-2">{agents.map(agent => <button key={agent.id} onClick={() => setSelected(agent.id)} className={`agent-chip flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-xs ${selected === agent.id ? "active" : ""}`}><agent.icon size={14} style={{ color: agent.color }}/>{agent.name}</button>)}</div>
-          <div className="agent-command mt-3 rounded-2xl p-4">
-            <textarea value={command} onChange={event => setCommand(event.target.value)} onKeyDown={event => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") runCommand(); }} placeholder={`For example: Ask ${chosen.name} to plan next week's priorities…`} className="min-h-24 w-full resize-none bg-transparent text-sm leading-6 text-white outline-none placeholder:text-slate-500"/>
-            <div className="flex items-center justify-between border-t border-white/[.07] pt-3"><span className="flex items-center gap-1.5 text-[10px] text-slate-500"><Command size={11}/>⌘ Enter to send</span><button onClick={runCommand} disabled={!command.trim() || running} className="agent-primary flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold disabled:opacity-40">{running ? <LoaderCircle className="animate-spin" size={14}/> : <Send size={14}/>}Ask for help</button></div>
-          </div>
-          <div className="mt-5 grid grid-cols-12 gap-1.5">{chart.map((value, index) => <div key={index} className="flex h-24 items-end"><i className="agent-bar w-full rounded-t-md" style={{ height: `${value / 1.3}%`, animationDelay: `${index * 45}ms` }}/></div>)}</div>
-          <div className="mt-2 flex items-center justify-between text-[10px] text-slate-500"><span>Work completed · last 12 weeks</span><span className="text-blue-200">31.8% more time saved</span></div>
+    <section className="mt-8 grid gap-5 xl:grid-cols-[1.25fr_.75fr]">
+      <article className="dashboard-card rounded-2xl p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-4"><div><div className="flex items-center gap-2"><Lightbulb size={17} className="text-blue-500"/><h2 className="font-semibold">Today’s business briefing</h2></div><p className="mt-1 text-xs dashboard-muted">The few things worth your attention today.</p></div><button onClick={() => setBriefingOpen(value => !value)} className="rounded-lg px-3 py-2 text-xs dashboard-hover">{briefingOpen ? "Hide" : "Show"}</button></div>
+        {briefingOpen && <div className="mt-5 space-y-3">
+          <Brief icon={Users} title="3 new enquiries need a reply" detail="Following up today may improve your chance of converting them." action="Draft replies"/>
+          <Brief icon={BarChart3} title="Your services page is getting attention" detail="Visitors are viewing it, but the next step could be clearer." action="Suggest an improvement"/>
+          <Brief icon={Mail} title="This week’s customer email is not planned" detail="BuildEZ can draft one using your latest products or updates." action="Create email"/>
+        </div>}
+      </article>
+
+      <article className="dashboard-card rounded-2xl p-5 sm:p-6">
+        <h2 className="font-semibold">Recently completed</h2>
+        <p className="mt-1 text-xs dashboard-muted">Work prepared by your AI team.</p>
+        <div className="mt-5 space-y-1">
+          <Recent title="Homepage improvement ideas" time="Today"/>
+          <Recent title="Replies for new enquiries" time="Yesterday"/>
+          <Recent title="Weekend promotion copy" time="2 days ago"/>
         </div>
-
-        <div className="agent-glass agent-depth rounded-[24px] p-5 sm:p-6">
-          <div className="flex items-center justify-between"><div><p className="text-sm font-semibold">Recent work</p><p className="mt-1 text-xs text-slate-400">A simple view of what your AI team has done.</p></div><CircleDot size={17} className="animate-pulse text-blue-300"/></div>
-          <div className="mt-5 space-y-1">{activity.slice(0, 5).map(([name, task, time, state], index) => <div key={`${name}-${time}-${index}`} className="agent-activity flex gap-3 rounded-xl p-3"><span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${state === "training" ? "bg-amber-300" : state === "insight" ? "bg-violet-300" : "bg-cyan-300"}`}/><div className="min-w-0"><p className="text-[11px] font-semibold text-slate-200">{name}</p><p className="mt-1 text-xs leading-5 text-slate-400">{task}</p><p className="mt-1 text-[9px] text-slate-600">{time}</p></div></div>)}</div>
-        </div>
-      </section>
-
-      <section className="mt-5">
-        <div className="mb-4 flex items-end justify-between"><div><h2 className="text-lg font-semibold tracking-tight">Your AI team</h2><p className="mt-1 text-xs text-slate-400">Choose the right helper for each part of your business.</p></div><button className="flex items-center gap-1 text-xs text-blue-200">Browse more helpers <ChevronRight size={14}/></button></div>
-        <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">{agents.map(agent => <AgentCard key={agent.id} agent={agent} onToggle={() => setAgents(items => items.map(item => item.id === agent.id ? { ...item, status: item.status === "active" ? "paused" : "active" } : item))}/>)}</div>
-      </section>
-    </div>
-    {createOpen && <CreateAgent onClose={() => setCreateOpen(false)} onCreate={(name, role) => { setAgents(items => [...items, { id: crypto.randomUUID(), name, role, description: "A new AI helper getting ready to support the way your business works.", status: "training", icon: BrainCircuit, color: "#3788ff", glow: "rgba(55,136,255,.28)", runs: 0, success: 0, saved: "0h" }]); setCreateOpen(false); }}/>}
+        <button className="mt-4 flex w-full items-center justify-center gap-1 border-t dashboard-border pt-4 text-xs font-medium text-blue-600 dark:text-blue-300">View all completed work <ArrowRight size={13}/></button>
+      </article>
+    </section>
   </div>;
 }
 
-function Metric({ icon: Icon, label, value, note, color }: { icon: LucideIcon; label: string; value: string; note: string; color: string }) {
-  return <article className="agent-glass agent-metric rounded-2xl p-4"><div className="flex items-center justify-between"><span className="grid h-9 w-9 place-items-center rounded-xl" style={{ color, background: `${color}18`, boxShadow: `inset 0 0 0 1px ${color}22` }}><Icon size={17}/></span><ArrowUpRight size={14} className="text-slate-600"/></div><p className="mt-5 text-2xl font-semibold tracking-tight">{value}</p><div className="mt-1 flex items-center justify-between text-[10px]"><span className="text-slate-400">{label}</span><span style={{ color }}>{note}</span></div></article>;
+function Brief({ icon: Icon, title, detail, action }: { icon: LucideIcon; title: string; detail: string; action: string }) {
+  return <div className="ai-brief flex flex-col gap-3 rounded-xl p-4 sm:flex-row sm:items-center"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-500/10 text-blue-500"><Icon size={17}/></span><div className="min-w-0"><p className="text-sm font-medium">{title}</p><p className="mt-1 text-xs leading-5 dashboard-muted">{detail}</p></div><button className="shrink-0 rounded-lg border dashboard-border px-3 py-2 text-xs font-medium text-blue-600 dashboard-hover dark:text-blue-300">{action}</button></div>;
 }
 
-function AgentCard({ agent, onToggle }: { agent: Agent; onToggle(): void }) {
-  return <article className="agent-card group relative overflow-hidden rounded-[22px] border border-white/[.08] p-5" style={{ "--agent-color": agent.color, "--agent-glow": agent.glow } as React.CSSProperties}>
-    <div className="agent-card-glow pointer-events-none absolute inset-0"/><div className="relative">
-      <div className="flex items-start"><span className="agent-icon grid h-11 w-11 place-items-center rounded-2xl"><agent.icon size={20}/></span><div className="ml-3"><h3 className="text-sm font-semibold">{agent.name}</h3><p className="mt-1 text-[10px] uppercase tracking-[.16em] text-slate-500">{agent.role}</p></div><button onClick={onToggle} className={`ml-auto flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[9px] font-semibold ${agent.status === "active" ? "border-emerald-300/15 bg-emerald-300/[.07] text-emerald-200" : agent.status === "training" ? "border-amber-300/15 bg-amber-300/[.07] text-amber-200" : "border-white/10 bg-white/[.04] text-slate-400"}`}><i className={`h-1.5 w-1.5 rounded-full ${agent.status === "active" ? "animate-pulse bg-emerald-300" : agent.status === "training" ? "bg-amber-300" : "bg-slate-500"}`}/>{agent.status === "active" ? "Available" : agent.status === "training" ? "Getting ready" : "Paused"}</button></div>
-      <p className="mt-4 min-h-12 text-xs leading-5 text-slate-400">{agent.description}</p>
-      <div className="mt-5 grid grid-cols-3 gap-2 border-t border-white/[.06] pt-4"><Mini label="Jobs done" value={String(agent.runs)}/><Mini label="Done well" value={`${agent.success}%`}/><Mini label="Time saved" value={agent.saved}/></div>
-      <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/[.07] bg-white/[.035] py-2.5 text-xs text-slate-300 transition hover:border-white/15 hover:bg-white/[.07]"><Play size={13}/>Work with this helper</button>
-    </div>
-  </article>;
-}
-
-function Mini({ label, value }: { label: string; value: string }) { return <div><p className="text-sm font-semibold text-slate-200">{value}</p><p className="mt-1 text-[9px] text-slate-600">{label}</p></div>; }
-
-function CreateAgent({ onClose, onCreate }: { onClose(): void; onCreate(name: string, role: string): void }) {
-  const [name, setName] = useState(""); const [role, setRole] = useState("Operations");
-  return <div className="fixed inset-0 z-[1000] grid place-items-center bg-[#03040a]/75 p-5 backdrop-blur-xl" onMouseDown={event => event.target === event.currentTarget && onClose()}><div className="agent-glass w-full max-w-md rounded-[26px] border border-white/10 p-6 shadow-2xl"><div className="flex items-start justify-between"><div><span className="grid h-11 w-11 place-items-center rounded-2xl bg-blue-400/10 text-blue-300"><BrainCircuit/></span><h2 className="mt-4 text-xl font-semibold">Add an AI helper</h2><p className="mt-2 text-xs leading-5 text-slate-400">Choose the part of your business it will help with. BuildEZ will guide you through the rest.</p></div><button onClick={onClose} className="rounded-xl p-2 text-slate-500 hover:bg-white/5"><X size={17}/></button></div><label className="mt-6 block text-xs text-slate-400">Helper name<input autoFocus value={name} onChange={event => setName(event.target.value)} placeholder="e.g. My Finance Helper" className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-white outline-none focus:border-blue-400/50"/></label><label className="mt-4 block text-xs text-slate-400">What should it help with?<select value={role} onChange={event => setRole(event.target.value)} className="mt-2 w-full rounded-xl border border-white/10 bg-[#111528] px-3 py-3 text-sm text-white outline-none"><option>Day-to-day operations</option><option>Marketing</option><option>Sales</option><option>Customer support</option><option>Online store</option><option>Finance</option></select></label><button onClick={() => name.trim() && onCreate(name.trim(), role)} disabled={!name.trim()} className="agent-primary mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold disabled:opacity-40"><Sparkles size={15}/>Add to my AI team</button></div></div>;
+function Recent({ title, time }: { title: string; time: string }) {
+  return <button className="flex w-full items-center gap-3 rounded-xl p-3 text-left dashboard-hover"><span className="grid h-8 w-8 place-items-center rounded-full bg-emerald-500/10 text-emerald-500"><Check size={14}/></span><span className="min-w-0 flex-1 truncate text-sm">{title}</span><span className="text-[10px] dashboard-faint">{time}</span></button>;
 }
