@@ -7,7 +7,10 @@ function syntaxPath(node: ts.Node, source: ts.SourceFile) {
   const parts: number[] = [];
   let current: ts.Node | undefined = node;
   while (current?.parent) {
-    const siblings = current.parent.getChildren(source);
+    const siblings: ts.Node[] = [];
+    current.parent.forEachChild((child) => {
+      siblings.push(child);
+    });
     parts.push(siblings.indexOf(current));
     current = current.parent;
   }

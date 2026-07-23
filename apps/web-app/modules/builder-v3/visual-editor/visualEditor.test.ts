@@ -13,6 +13,7 @@ test("stable element identities survive ordinary text changes", () => {
   const second = instrumentTsxSource(source.replace("Hello", "Welcome"), "src/Hero.tsx", 5);
   const ids = (value: string) => [...value.matchAll(/data-buildez-id="([^"]+)"/g)].map(match => match[1]);
   assert.deepEqual(ids(first), ids(second));
+  assert.equal(new Set(ids(first)).size, ids(first).length);
   assert.match(first, /data-buildez-source-file="src\/Hero.tsx"/);
   assert.match(first, /data-buildez-capabilities="[^"]*text/);
 });
@@ -67,4 +68,6 @@ test("overlay geometry does not create a mutation-observer feedback loop", () =>
   assert.doesNotMatch(runtime, /new MutationObserver\(refresh\)/);
   assert.match(runtime, /parent · /);
   assert.match(runtime, /parentBox/);
+  assert.match(runtime, /data-buildez-selected/);
+  assert.match(runtime, /outline:2px solid #2563eb/);
 });
