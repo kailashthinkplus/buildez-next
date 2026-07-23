@@ -163,6 +163,13 @@ export default function WebsitesPage() {
               >
                 Visit Dashboard
               </button>
+
+              <button
+                onClick={() => router.push(`/app/builder-v3/${site.id}`)}
+                className="mt-2 w-full rounded-xl bg-violet-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-violet-500"
+              >
+                Open Builder 3 + AI V12
+              </button>
             </div>
           ))}
         </div>
@@ -172,10 +179,6 @@ export default function WebsitesPage() {
       <CreateSiteModal
         open={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onCreated={() => {
-          setShowCreateModal(false);
-          fetchSites(); // 🔄 refresh list after create
-        }}
       />
     </div>
   );

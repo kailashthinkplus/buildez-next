@@ -212,7 +212,8 @@ const isEnterprise = planCode === "ENTERPRISE";
               theme: { color: "#4F46E5" },
             };
 
-            new window.Razorpay(options).open();
+            const Razorpay = (window as typeof window & { Razorpay: new (options: Record<string, unknown>) => { open(): void } }).Razorpay;
+            new Razorpay(options).open();
             return {};
 
           } catch (err) {

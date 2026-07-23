@@ -351,7 +351,7 @@ export function compileDesignGraphToBlueprint(
     if (type === "container" && style.display === undefined)
       style.display = "block";
     if (type === "button") {
-      style.display ??= "inline";
+      style.display ??= "inline-block";
       style.backgroundColor ??= "transparent";
       style.color ??= "inherit";
       style.padding ??= 0;

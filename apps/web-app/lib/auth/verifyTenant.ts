@@ -2,7 +2,6 @@
 
 import { prisma } from "@buildez/db";
 import { getCurrentUser } from "./session";
-import { NextRequest } from "next/server";
 
 /**
  * verifyTenantAccess(req)
@@ -15,16 +14,18 @@ import { NextRequest } from "next/server";
  * - user owns tenant  OR
  * - user is a team member of tenant
  */
-export async function verifyTenantAccess(req: NextRequest) {
+export async function verifyTenantAccess(req: Request) {
   try {
     // 1) Authenticated user
     const user = await getCurrentUser(req);
     if (!user) return null;
 
     // 2) Read tenant ID from header or cookie
-    const tenantId =
-      req.headers.get("x-tenant-id") ||
-      req.cookies.get("tenant-id")?.value;
+    const cookieTenantId = req.headers.get("cookie")
+      ?.split(";")
+      .map((item) => item.trim().split("="))
+      .find(([name]) => name === "tenant-id")?.[1];
+    const tenantId = req.headers.get("x-tenant-id") || cookieTenantId;
 
     if (!tenantId) return null;
 

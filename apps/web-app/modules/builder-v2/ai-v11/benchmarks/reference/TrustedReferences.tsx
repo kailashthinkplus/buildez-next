@@ -17,7 +17,7 @@ type CorpusId = Exclude<
   V11VisualFixtureId,
   "luxury-real-estate" | "modern-saas" | "aznac-parity-single-file"
 >;
-const CORPUS: Record<
+const CORPUS: Partial<Record<
   CorpusId,
   {
     title: string;
@@ -29,7 +29,7 @@ const CORPUS: Record<
     editorial: string;
     tone: string;
   }
-> = {
+>> = {
   "editorial-architecture": {
     title: "Buildings drawn from light, weather, and place.",
     eyebrow: "Atelier North",
@@ -110,6 +110,7 @@ export function TrustedV11Reference({ id }: { id: V11VisualFixtureId }) {
 
 function CorpusReference({ id }: { id: CorpusId }) {
   const item = CORPUS[id];
+  if (!item) return <SaasReference />;
   return (
     <main className={`v11-ref ${id}`}>
       <section className={`corpus-hero ${item.tone}`} data-visual-role="hero">

@@ -14,7 +14,7 @@ export default async function AppEntry() {
   // 2️⃣ Load user
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { tenantId: true },
+    select: { tenantUsers: { select: { id: true }, take: 1 } },
   });
 
   if (!user) {
@@ -22,7 +22,7 @@ export default async function AppEntry() {
   }
 
   // 3️⃣ No tenant → onboarding
-  if (!user.tenantId) {
+  if (!user.tenantUsers.length) {
     redirect("/app/onboarding");
   }
 

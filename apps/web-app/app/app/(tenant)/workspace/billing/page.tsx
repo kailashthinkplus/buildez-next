@@ -38,7 +38,7 @@ export default function BillingPage() {
       <UpgradePlanModal
         open={showUpgrade}
         onClose={() => setShowUpgrade(false)}
-        onUpgraded={load}
+        currentPlan={subscription?.code ?? subscription?.planCode ?? null}
       />
 
       <div className="max-w-5xl mx-auto space-y-10">

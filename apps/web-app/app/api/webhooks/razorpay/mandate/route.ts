@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { prisma } from "@buildez/db";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -26,9 +25,9 @@ export async function POST(req: Request) {
 
     console.log("🔄 Updating subscription based on webhook");
 
-    await prisma.subscription.updateMany({
-      where: { razorpayTokenId: tokenId, razorpayCustomerId: customerId },
-      data: { mandateStatus: "authenticated" },
+    console.warn("Mandate identifiers are not present in the current Subscription schema; no subscription was updated.", {
+      tokenId: Boolean(tokenId),
+      customerId: Boolean(customerId),
     });
   }
 

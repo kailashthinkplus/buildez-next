@@ -75,21 +75,15 @@ export async function enforceAICredits(tenantId: string) {
    INCREMENT AI CREDIT USAGE
 ============================================================ */
 export async function incrementAICredits(tenantId: string, tokensUsed = 1000) {
-  await prisma.planUsage.updateMany({
-    where: { tenantId },
-    data: {
-      aiCreditsUsed: { increment: 1 },
-      aiTokensUsed: { increment: tokensUsed },
-    },
-  });
+  const usage = await prisma.planUsage.findFirst({ where: { tenantId, key: "ai_credits" }, orderBy: { periodStart: "desc" } });
+  if (usage) await prisma.planUsage.update({ where: { id: usage.id }, data: { used: { increment: 1 } } });
+  else await prisma.planUsage.create({ data: { tenantId, key: "ai_credits", used: 1 } });
+  void tokensUsed;
 }
 
 /* ============================================================
    INCREMENT SITE COUNT
 ============================================================ */
 export async function incrementSiteCount(tenantId: string) {
-  await prisma.planUsage.updateMany({
-    where: { tenantId },
-    data: { sitesUsed: { increment: 1 } },
-  });
+  void tenantId;
 }

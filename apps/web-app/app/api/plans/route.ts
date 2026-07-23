@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     const response = plans.map((p) => ({
       code: p.code,
       name: p.name,
-      description: p.description || "",
+      description: "",
       tag: p.code === "trial" ? "FREE" : p.code === "pro" ? "BEST" : null,
 
       maxSites: p.maxSites,

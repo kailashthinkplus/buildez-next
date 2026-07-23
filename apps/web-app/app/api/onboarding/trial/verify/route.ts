@@ -26,14 +26,12 @@ export async function POST(req: Request) {
     // Create subscription: starter trial
     await prisma.subscription.create({
       data: {
-        tenantId: onboarding.tenantId!,
+        user: { connect: { id: user.id } },
         planCode: "starter",
         billingCycle: "monthly",
         status: "trial_active",
-        razorpayCustomerId: customerId,
-        razorpayTokenId: tokenId,
-        mandateStatus: "authenticated",
-        trialEnds: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        paymentStatus: customerId && tokenId ? "mandate_authenticated" : "trial_pending",
+        startedAt: new Date(),
       },
     });
 

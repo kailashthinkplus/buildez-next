@@ -391,6 +391,7 @@ model Tenant {
   planUsages        PlanUsage[]
   AiEvent           AiEvent[]
   aiSnapshots       AIBlueprintSnapshot[]
+  v12Projects       V12Project[]
 
   aiSuspended Boolean  @default(false)
   createdAt   DateTime @default(now())
@@ -655,9 +656,78 @@ model Site {
   crmLeads         CrmLead[]
   crmApiKeys       CrmApiKey[]
   shop             Shop?
+  v12Project       V12Project?
 
   @@unique([tenantId, slug])
   @@index([tenantId])
+}
+
+// =======================================
+// V12 REACT PROJECT WORKSPACE
+// =======================================
+
+model V12Project {
+  id              String   @id @default(cuid())
+  siteId          String   @unique
+  tenantId        String
+  currentRevision Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  site        Site                   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  files       V12ProjectFile[]
+  revisions   V12ProjectRevision[]
+  checkpoints V12ProjectCheckpoint[]
+
+  @@index([tenantId])
+}
+
+model V12ProjectFile {
+  id          String   @id @default(cuid())
+  projectId   String
+  path        String
+  content     String
+  contentHash String
+  revision    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project V12Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, path])
+  @@index([projectId, revision])
+}
+
+model V12ProjectRevision {
+  id         String   @id @default(cuid())
+  projectId  String
+  sequence   Int
+  operations Json
+  createdBy  String?
+  createdAt  DateTime @default(now())
+
+  project     V12Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  checkpoints V12ProjectCheckpoint[]
+
+  @@unique([projectId, sequence])
+  @@index([projectId, createdAt])
+}
+
+model V12ProjectCheckpoint {
+  id         String   @id @default(cuid())
+  projectId  String
+  revisionId String
+  label      String?
+  snapshot   Json
+  createdBy  String?
+  createdAt  DateTime @default(now())
+
+  project  V12Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  revision V12ProjectRevision @relation(fields: [revisionId], references: [id], onDelete: Restrict)
+
+  @@index([projectId, createdAt])
+  @@index([revisionId])
 }
 
 // =======================================

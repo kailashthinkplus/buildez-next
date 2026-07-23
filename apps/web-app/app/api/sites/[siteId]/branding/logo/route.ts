@@ -102,8 +102,7 @@ export async function POST(
     /* ----------------------------------------------------------
        EXTRACT LOGO COLORS (ALWAYS)
     ---------------------------------------------------------- */
-    const extractedColors =
-      await extractLogoColors(logoUrl);
+    const extractedColors = extractLogoColors(Buffer.from(await file.arrayBuffer()));
 
     if (!extractedColors) {
       return NextResponse.json(
@@ -121,7 +120,7 @@ export async function POST(
 
       await prisma.site.update({
         where: { id: siteId },
-        data: { designTokens: tokens },
+        data: { designTokens: tokens as unknown as Prisma.InputJsonValue },
       });
 
       console.log(
@@ -162,7 +161,7 @@ export async function POST(
 
     await prisma.site.update({
       where: { id: siteId },
-      data: { designTokens: tokens },
+      data: { designTokens: tokens as unknown as Prisma.InputJsonValue },
     });
 
     console.log(

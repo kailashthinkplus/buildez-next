@@ -2,7 +2,6 @@
 
 import { NextResponse } from "next/server";
 import { ApiError } from "./errors";
-import { logAiEvent } from "../ai/logAiEvent";
 
 /* ============================================================
    GLOBAL API RESPONSE WRAPPER

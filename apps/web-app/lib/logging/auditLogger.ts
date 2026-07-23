@@ -1,6 +1,6 @@
 // /apps/web-app/lib/logging/auditLogger.ts
 
-import { prisma } from "@buildez/db";
+import { AuthProvider, prisma } from "@buildez/db";
 
 /* ============================================================
    1. AUTH LOGS
@@ -13,7 +13,7 @@ export async function logAuthEvent({
   ua,
 }: {
   userId?: string;
-  provider: string;
+  provider: AuthProvider;
   success: boolean;
   ip?: string | null;
   ua?: string | null;

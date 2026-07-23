@@ -160,9 +160,6 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
       data: {
         user: { connect: { id: user.id } }, // new relation requirement
 
-        tenantActiveId: null,
-        tenantHistoryId: null,
-
         planCode: onboarding.planCode,
         billingCycle: onboarding.billingCycle,
 

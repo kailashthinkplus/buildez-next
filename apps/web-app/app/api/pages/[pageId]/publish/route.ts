@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { NextResponse } from "next/server";
-import { prisma } from "@buildez/db";
+import { Prisma, prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
 
 /* 🔒 EXECUTION CONTEXT */
@@ -12,7 +12,7 @@ import {
   type ExecutionContext,
 } from "@/lib/context/resolveExecutionContext";
 
-import { resolveBlueprintTree } from "@/modules/builder/runtime/resolveBlueprintTree";
+import { resolveBlueprintTree, type BlueprintData } from "@/modules/builder/runtime/resolveBlueprintTree";
 import { isBuilderV2Blueprint } from "@/modules/builder-v2/runtime/isBuilderV2Blueprint";
 
 export async function POST(
@@ -36,11 +36,6 @@ export async function POST(
       // ✅ PASS WHAT resolveExecutionContext EXPECTS
       userId: auth.user.id,
       tenantId: auth.tenant.id,
-      role: auth.role,
-      permissions: auth.permissions,
-      isSuperAdmin: auth.isSuperAdmin,
-      isTenantAdmin: auth.isTenantAdmin,
-      isEditor: auth.isEditor,
     });
 
     console.log("🔐 [PUBLISH] Context resolved", {
@@ -72,7 +67,7 @@ export async function POST(
     const blueprintData = page.blueprint.data;
     const snapshotContent = isBuilderV2Blueprint(blueprintData)
       ? blueprintData
-      : resolveBlueprintTree(blueprintData);
+      : resolveBlueprintTree(blueprintData as unknown as BlueprintData);
 
     /* ----------------------------------------------------------
        TRANSACTION
@@ -103,7 +98,7 @@ export async function POST(
           pageId: page.id,
           title: page.title,
           slug: page.slug,
-          content: snapshotContent,
+          content: snapshotContent as unknown as Prisma.InputJsonValue,
         },
       });
 

@@ -24,44 +24,42 @@ export interface AiUsageParams {
 async function getTenantAiLimits(tenantId: string) {
   const sub = await prisma.subscription.findFirst({
     where: {
-      tenantId,
-      status: "active",
-    },
-    include: {
-      plan: true,
+      OR: [{ tenantActiveId: tenantId }, { tenantHistoryId: tenantId }],
+      status: "ACTIVE",
     },
   });
 
   if (!sub) {
     throw new ApiError(
+      "You must subscribe to a plan before using AI features.",
       403,
-      "NO_ACTIVE_PLAN",
-      "You must subscribe to a plan before using AI features."
+      "NO_ACTIVE_PLAN"
     );
   }
 
-  return {
-    plan: sub.plan,
-    aiLimit: sub.plan.aiCredits,
-  };
+  const plan = sub.planCode
+    ? await prisma.plan.findUnique({ where: { code: sub.planCode } })
+    : null;
+  if (!plan) throw new ApiError("The active subscription plan is unavailable.", 403, "PLAN_NOT_FOUND");
+
+  return { plan, aiLimit: plan.aiCredits };
 }
 
 /* ============================================================
    2. TRACK USAGE (PlanUsage)
 ============================================================ */
 async function getCurrentUsage(tenantId: string) {
-  let usage = await prisma.planUsage.findUnique({
-    where: { tenantId },
+  let usage = await prisma.planUsage.findFirst({
+    where: { tenantId, key: "ai_tokens" },
+    orderBy: { periodStart: "desc" },
   });
 
   if (!usage) {
     usage = await prisma.planUsage.create({
       data: {
         tenantId,
-        aiUsed: 0,
-        sitesUsed: 0,
-        pagesUsed: 0,
-        bandwidthUsed: 0,
+        key: "ai_tokens",
+        used: 0,
       },
     });
   }
@@ -115,11 +113,11 @@ export async function consumeAiCredits(params: AiUsageParams) {
   const usage = await getCurrentUsage(tenantId);
 
   // 3) Enforce limit
-  if (usage.aiUsed + totalTokens > aiLimit) {
+  if (usage.used + totalTokens > aiLimit) {
     throw new ApiError(
+      "You have reached your monthly AI usage limit.",
       429,
-      "AI_CREDITS_EXCEEDED",
-      "You have reached your monthly AI usage limit."
+      "AI_CREDITS_EXCEEDED"
     );
   }
 
@@ -128,17 +126,17 @@ export async function consumeAiCredits(params: AiUsageParams) {
 
   // 5) Update usage
   await prisma.planUsage.update({
-    where: { tenantId },
+    where: { id: usage.id },
     data: {
-      aiUsed: usage.aiUsed + totalTokens,
+      used: usage.used + totalTokens,
     },
   });
 
   return {
     success: true,
     used: totalTokens,
-    totalUsed: usage.aiUsed + totalTokens,
+    totalUsed: usage.used + totalTokens,
     limit: aiLimit,
-    remaining: aiLimit - (usage.aiUsed + totalTokens),
+    remaining: aiLimit - (usage.used + totalTokens),
   };
 }

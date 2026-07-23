@@ -784,7 +784,7 @@ function Heading({ node, ctx }: { node: BlueprintNode; ctx: RenderContext }) {
   const sel = useSelectable(node.id, ctx.selectedId, ctx.onSelect);
   const style = getNodeStyle(node, ctx);
   const className = node.props?.className || "";
-  const Tag = (node.props?.level ?? "h2") as keyof JSX.IntrinsicElements;
+  const Tag = (node.props?.level ?? "h2") as keyof React.JSX.IntrinsicElements;
   const [draft, setDraft] = useState(node.props?.text ?? "");
 
   useEffect(() => {

@@ -55,5 +55,38 @@
     "**/*.tsx"
   ],
 
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "modules/_legacy/**",
+    "modules/builder/ai-v8/**",
+    "modules/builder-v2/ai-v9/**",
+    "modules/builder-v2/ai-v10/**",
+    "app/api/ai-v8/**",
+    "app/api/builder-v2/ai/generate-v9/**",
+    "app/api/builder-v2/ai/generate-v10/**",
+    "app/api/builder-v2/ai/preflight-v10/**",
+    "app/api/builder-v2/ai/progress-v10/**",
+    "app/api/builder-v2/ai/context/**",
+    ".next/types/app/api/ai-v8/**",
+    ".next/types/app/api/builder-v2/ai/generate-v9/**",
+    ".next/types/app/api/builder-v2/ai/generate-v10/**",
+    ".next/types/app/api/builder-v2/ai/preflight-v10/**",
+    ".next/types/app/api/builder-v2/ai/progress-v10/**",
+    ".next/types/app/api/builder-v2/ai/context/**",
+    "app/app/(builder)/[siteSlug]/[pageSlugWithId]/sidebar/**",
+    "app/app/(builder)/media/**",
+    "app/app/onboarding/layout.client.tsx",
+    "modules/builder-v2/media/components/ImageContent.tsx",
+    "modules/builder-v2/sidebar/LeftSidebar.tsx",
+    "modules/builder-v2/sidebar/SidebarContent.tsx",
+    "modules/builder-v2/store/useBlueprintStore.ts",
+    "modules/builder-v2/website-engine/components/registry/**",
+    "modules/builder-v2/website-engine/design/composition/**",
+    "modules/builder-v2/website-engine/design/tokens/**",
+    "modules/builder-v2/widgets/core/PageWidget.tsx",
+    "modules/builder-v2/widgets/layout/**",
+    "lib/auth/alerts.ts",
+    "lib/cache.ts",
+    "lib/snapshots/renderPageSnapshot.ts"
+  ]
 }

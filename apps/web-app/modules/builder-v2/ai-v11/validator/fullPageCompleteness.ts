@@ -1,4 +1,4 @@
-import type { BuilderBlueprint } from "../../../types/blueprint";
+import type { BuilderBlueprint } from "../../types/blueprint";
 import type { DesignGraph, DesignGraphNode } from "../design-graph/schema";
 import type { FidelityDiagnostic } from "../diagnostics/fidelity";
 import { extractEmbeddedCss } from "../css-layer/embeddedCss";

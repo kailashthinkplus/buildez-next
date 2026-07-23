@@ -19,12 +19,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid OTP" }, { status: 401 });
   }
 
-  await db.otp.update({
+  await prisma.otp.update({
     where: { id: record.id },
     data: { consumed: true },
   });
 
-  const user = await db.user.findFirst({
+  const user = await prisma.user.findFirst({
     where: { email, role: "SUPER_ADMIN" },
   });
 
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
   }
 
   await createSession({
-    userId: user.id,
+    user,
     provider: AuthProvider.OTP,
     ttlHours: 4,
   });

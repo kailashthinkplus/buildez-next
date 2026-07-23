@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@buildez/db";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
 
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
@@ -19,8 +19,10 @@ import BuilderRoot from "./BuilderRoot";
 
 export default async function BuilderPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ siteSlug: string; pageSlugWithId: string }>;
+  searchParams: Promise<{ legacy?: string }>;
 }) {
   /* -------------------------------------------------------------
      PARAMS (NEXT 15 — MUST AWAIT)
@@ -91,6 +93,11 @@ export default async function BuilderPage({
   });
 
   if (!site) return notFound();
+
+  const query = await searchParams;
+  if (query.legacy !== "1") {
+    redirect(`/app/builder-v3/${site.id}?pageId=${pageId}`);
+  }
 
   /* -------------------------------------------------------------
      FIND PAGE (+ BLUEPRINT)

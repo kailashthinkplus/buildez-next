@@ -11,6 +11,14 @@ export default function PayNowModal({
   price = 0,
   features = [],
   onPayNow = async () => {},
+}: {
+  open?: boolean;
+  onClose?: () => void;
+  plan?: string;
+  billing?: string;
+  price?: number;
+  features?: string[];
+  onPayNow?: () => Promise<unknown>;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -33,7 +41,7 @@ export default function PayNowModal({
 
       // Auto close after showing success animation
       setTimeout(() => {
-        onClose(data);
+        onClose();
         setStatus("idle");
         setError("");
       }, 2200);
@@ -56,10 +64,7 @@ export default function PayNowModal({
       setStatus("idle");
 
       // Begin Razorpay flow
-      const result = await Promise.resolve().then(() => onPayNow());
-
-      // Razorpay UI opens → modal should keep showing loading
-      if (!result) console.log("⚠️ PayNowModal: onPayNow returned no result");
+      await Promise.resolve().then(() => onPayNow());
     } catch (err: any) {
       console.error("❌ PayNowModal ERROR:", err);
 
@@ -94,7 +99,7 @@ export default function PayNowModal({
         {/* CLOSE BUTTON */}
         {status === "idle" && (
           <button
-            onClick={() => onClose({ success: false })}
+            onClick={onClose}
             className="
               absolute right-4 top-4 p-2 rounded-full
               hover:bg-white/10 transition
@@ -158,7 +163,7 @@ export default function PayNowModal({
             </button>
 
             <button
-              onClick={() => onClose({ success: false })}
+              onClick={onClose}
               className="
                 mt-4 text-xs text-white/40 hover:text-white/60
               "

@@ -44,7 +44,7 @@ export async function resolveTenant(
 
     if (override) {
       const t = await prisma.tenant.findUnique({ where: { id: override } });
-      if (!t) throw new ApiError(404, "TENANT_NOT_FOUND", "Invalid tenant override.");
+      if (!t) throw new ApiError("Invalid tenant override.", 404, "TENANT_NOT_FOUND");
 
       return { tenantId: t.id, tenant: t, user, isSuperAdmin };
     }
@@ -62,8 +62,9 @@ export async function resolveTenant(
   /* ------------------------------------------------------------
      4. USER DEFAULT TENANT
   ------------------------------------------------------------ */
-  if (user?.tenantId) {
-    const t = await prisma.tenant.findUnique({ where: { id: user.tenantId } });
+  const defaultTenantId = user?.ownedTenants[0]?.id ?? user?.tenantUsers[0]?.id ?? user?.teamMemberships[0]?.team.tenantId;
+  if (defaultTenantId) {
+    const t = await prisma.tenant.findUnique({ where: { id: defaultTenantId } });
     if (t) return { tenantId: t.id, tenant: t, user, isSuperAdmin };
   }
 
@@ -85,9 +86,9 @@ export async function resolveTenant(
   ------------------------------------------------------------ */
   if (opts.require) {
     throw new ApiError(
+      "Unable to resolve tenant context.",
       400,
-      "TENANT_NOT_FOUND",
-      "Unable to resolve tenant context."
+      "TENANT_NOT_FOUND"
     );
   }
 

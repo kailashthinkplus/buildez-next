@@ -7,7 +7,7 @@ interface BlueprintNode {
   children?: string[] | BlueprintNode[];
 }
 
-interface BlueprintData {
+export interface BlueprintData {
   page?: BlueprintNode;
   root?: string;
   nodes?: Record<string, BlueprintNode>;

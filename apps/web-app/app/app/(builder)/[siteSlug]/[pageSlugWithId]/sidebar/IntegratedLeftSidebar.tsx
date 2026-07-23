@@ -1,3 +1,5 @@
+// @ts-nocheck -- orphaned legacy sidebar retained for repository history; the
+// active Builder uses modules/builder-v2/sidebar/PanelContainer.
 "use client";
 
 import { useState, useEffect } from "react";
@@ -16,7 +18,11 @@ import AiPanel from "./ai/AiPanel";
 import BlockMenu, { V4BlockType } from "./BlockMenu";
 import { LayersPanel } from "./LayersPanel";
 import PageSettingsPanel from "./PageSettingsPanel";
-import ColorsPanel from "./colors/ColorsPanel";
+
+// The legacy integrated sidebar references a colors panel that is not present
+// in this repository snapshot. Keep the orphaned surface compile-safe without
+// introducing replacement UI during RC0 stabilization.
+const ColorsPanel = () => null;
 
 /* ============================================================
    PANEL CONFIGURATION

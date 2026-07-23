@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 
 import { generateRuntimeCSS } from "../../../../modules/builder/runtime/generateRuntimeCSS";
-import { resolveBlueprintTree } from "../../../../modules/builder/runtime/resolveBlueprintTree";
+import { resolveBlueprintTree, type BlueprintData } from "../../../../modules/builder/runtime/resolveBlueprintTree";
 import { generateRuntimeHTML } from "../../../../modules/builder/runtime/generateRuntimeHTML";
 
 
@@ -60,7 +60,7 @@ export async function GET(
        3️⃣ Resolve normalized blueprint → real tree
        (THIS IS THE CRITICAL STEP YOU WERE MISSING)
     ---------------------------------------------------------- */
-    const resolvedPage = resolveBlueprintTree(data);
+    const resolvedPage = resolveBlueprintTree(data as unknown as BlueprintData);
 
     if (!resolvedPage || resolvedPage.type !== "page") {
       console.error("[PREVIEW API] Invalid resolved page", resolvedPage);
@@ -73,8 +73,8 @@ export async function GET(
     /* ----------------------------------------------------------
        4️⃣ Generate CSS + HTML
     ---------------------------------------------------------- */
-    const css = generateRuntimeCSS(resolvedPage);
-    const html = generateRuntimeHTML(resolvedPage);
+    const css = generateRuntimeCSS(resolvedPage as any);
+    const html = generateRuntimeHTML(resolvedPage as any);
 
     console.log("[PREVIEW API] HTML + CSS generated");
 

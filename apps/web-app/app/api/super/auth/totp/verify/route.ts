@@ -7,7 +7,7 @@ import { writeAuthLog } from "@/lib/auth/authLog";
 export async function POST(req: Request) {
   const { userId, code } = await req.json();
 
-  const user = await db.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user || !user.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

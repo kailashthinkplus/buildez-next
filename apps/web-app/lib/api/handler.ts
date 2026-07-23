@@ -24,7 +24,7 @@ export function apiHandler(
             error: err.message,
           }),
           {
-            status: err.status,
+            status: err.statusCode,
             headers: { "Content-Type": "application/json" },
           }
         );

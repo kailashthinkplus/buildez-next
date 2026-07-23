@@ -104,6 +104,26 @@ export type MediaAsset = $Result.DefaultSelection<Prisma.$MediaAssetPayload>
  */
 export type Site = $Result.DefaultSelection<Prisma.$SitePayload>
 /**
+ * Model V12Project
+ * 
+ */
+export type V12Project = $Result.DefaultSelection<Prisma.$V12ProjectPayload>
+/**
+ * Model V12ProjectFile
+ * 
+ */
+export type V12ProjectFile = $Result.DefaultSelection<Prisma.$V12ProjectFilePayload>
+/**
+ * Model V12ProjectRevision
+ * 
+ */
+export type V12ProjectRevision = $Result.DefaultSelection<Prisma.$V12ProjectRevisionPayload>
+/**
+ * Model V12ProjectCheckpoint
+ * 
+ */
+export type V12ProjectCheckpoint = $Result.DefaultSelection<Prisma.$V12ProjectCheckpointPayload>
+/**
  * Model Shop
  * 
  */
@@ -968,6 +988,46 @@ export class PrismaClient<
     * ```
     */
   get site(): Prisma.SiteDelegate<ExtArgs>;
+
+  /**
+   * `prisma.v12Project`: Exposes CRUD operations for the **V12Project** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more V12Projects
+    * const v12Projects = await prisma.v12Project.findMany()
+    * ```
+    */
+  get v12Project(): Prisma.V12ProjectDelegate<ExtArgs>;
+
+  /**
+   * `prisma.v12ProjectFile`: Exposes CRUD operations for the **V12ProjectFile** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more V12ProjectFiles
+    * const v12ProjectFiles = await prisma.v12ProjectFile.findMany()
+    * ```
+    */
+  get v12ProjectFile(): Prisma.V12ProjectFileDelegate<ExtArgs>;
+
+  /**
+   * `prisma.v12ProjectRevision`: Exposes CRUD operations for the **V12ProjectRevision** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more V12ProjectRevisions
+    * const v12ProjectRevisions = await prisma.v12ProjectRevision.findMany()
+    * ```
+    */
+  get v12ProjectRevision(): Prisma.V12ProjectRevisionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.v12ProjectCheckpoint`: Exposes CRUD operations for the **V12ProjectCheckpoint** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more V12ProjectCheckpoints
+    * const v12ProjectCheckpoints = await prisma.v12ProjectCheckpoint.findMany()
+    * ```
+    */
+  get v12ProjectCheckpoint(): Prisma.V12ProjectCheckpointDelegate<ExtArgs>;
 
   /**
    * `prisma.shop`: Exposes CRUD operations for the **Shop** model.
@@ -1887,6 +1947,10 @@ export namespace Prisma {
     ThemeAsset: 'ThemeAsset',
     MediaAsset: 'MediaAsset',
     Site: 'Site',
+    V12Project: 'V12Project',
+    V12ProjectFile: 'V12ProjectFile',
+    V12ProjectRevision: 'V12ProjectRevision',
+    V12ProjectCheckpoint: 'V12ProjectCheckpoint',
     Shop: 'Shop',
     ShopProduct: 'ShopProduct',
     ShopProductImage: 'ShopProductImage',
@@ -1948,7 +2012,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "userOnboarding" | "session" | "otp" | "authLog" | "verificationToken" | "refreshToken" | "loginAttempt" | "tenant" | "tenantEvent" | "team" | "teamMember" | "teamInvite" | "theme" | "themeVersion" | "themeAsset" | "mediaAsset" | "site" | "shop" | "shopProduct" | "shopProductImage" | "shopProductOption" | "shopProductVariant" | "shopCollection" | "shopCollectionProduct" | "shopCustomer" | "shopDiscount" | "shopOrder" | "shopOrderItem" | "shopPaymentIntegration" | "crmLead" | "crmCommunication" | "crmApiKey" | "cmsCollection" | "cmsEntry" | "siteLayout" | "domain" | "page" | "previewToken" | "aIBlueprintSnapshot" | "blueprint" | "blueprintHistory" | "plan" | "planPricing" | "planFeature" | "planUsage" | "subscription" | "siteSubscription" | "complianceAudit" | "systemNotification" | "siteSnapshot" | "pageSnapshot" | "siteRender" | "renderedPage" | "siteDomain" | "sslCertificate" | "trafficEvent" | "trafficRollupHourly" | "aiEvent" | "rateLimit" | "workspace" | "workspaceMember" | "aIMessage" | "aIConversation"
+      modelProps: "user" | "userOnboarding" | "session" | "otp" | "authLog" | "verificationToken" | "refreshToken" | "loginAttempt" | "tenant" | "tenantEvent" | "team" | "teamMember" | "teamInvite" | "theme" | "themeVersion" | "themeAsset" | "mediaAsset" | "site" | "v12Project" | "v12ProjectFile" | "v12ProjectRevision" | "v12ProjectCheckpoint" | "shop" | "shopProduct" | "shopProductImage" | "shopProductOption" | "shopProductVariant" | "shopCollection" | "shopCollectionProduct" | "shopCustomer" | "shopDiscount" | "shopOrder" | "shopOrderItem" | "shopPaymentIntegration" | "crmLead" | "crmCommunication" | "crmApiKey" | "cmsCollection" | "cmsEntry" | "siteLayout" | "domain" | "page" | "previewToken" | "aIBlueprintSnapshot" | "blueprint" | "blueprintHistory" | "plan" | "planPricing" | "planFeature" | "planUsage" | "subscription" | "siteSubscription" | "complianceAudit" | "systemNotification" | "siteSnapshot" | "pageSnapshot" | "siteRender" | "renderedPage" | "siteDomain" | "sslCertificate" | "trafficEvent" | "trafficRollupHourly" | "aiEvent" | "rateLimit" | "workspace" | "workspaceMember" | "aIMessage" | "aIConversation"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3209,6 +3273,286 @@ export namespace Prisma {
           count: {
             args: Prisma.SiteCountArgs<ExtArgs>
             result: $Utils.Optional<SiteCountAggregateOutputType> | number
+          }
+        }
+      }
+      V12Project: {
+        payload: Prisma.$V12ProjectPayload<ExtArgs>
+        fields: Prisma.V12ProjectFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.V12ProjectFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.V12ProjectFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectPayload>
+          }
+          findFirst: {
+            args: Prisma.V12ProjectFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.V12ProjectFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectPayload>
+          }
+          findMany: {
+            args: Prisma.V12ProjectFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectPayload>[]
+          }
+          create: {
+            args: Prisma.V12ProjectCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectPayload>
+          }
+          createMany: {
+            args: Prisma.V12ProjectCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.V12ProjectCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectPayload>[]
+          }
+          delete: {
+            args: Prisma.V12ProjectDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectPayload>
+          }
+          update: {
+            args: Prisma.V12ProjectUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectPayload>
+          }
+          deleteMany: {
+            args: Prisma.V12ProjectDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.V12ProjectUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.V12ProjectUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectPayload>
+          }
+          aggregate: {
+            args: Prisma.V12ProjectAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateV12Project>
+          }
+          groupBy: {
+            args: Prisma.V12ProjectGroupByArgs<ExtArgs>
+            result: $Utils.Optional<V12ProjectGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.V12ProjectCountArgs<ExtArgs>
+            result: $Utils.Optional<V12ProjectCountAggregateOutputType> | number
+          }
+        }
+      }
+      V12ProjectFile: {
+        payload: Prisma.$V12ProjectFilePayload<ExtArgs>
+        fields: Prisma.V12ProjectFileFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.V12ProjectFileFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectFilePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.V12ProjectFileFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectFilePayload>
+          }
+          findFirst: {
+            args: Prisma.V12ProjectFileFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectFilePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.V12ProjectFileFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectFilePayload>
+          }
+          findMany: {
+            args: Prisma.V12ProjectFileFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectFilePayload>[]
+          }
+          create: {
+            args: Prisma.V12ProjectFileCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectFilePayload>
+          }
+          createMany: {
+            args: Prisma.V12ProjectFileCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.V12ProjectFileCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectFilePayload>[]
+          }
+          delete: {
+            args: Prisma.V12ProjectFileDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectFilePayload>
+          }
+          update: {
+            args: Prisma.V12ProjectFileUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectFilePayload>
+          }
+          deleteMany: {
+            args: Prisma.V12ProjectFileDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.V12ProjectFileUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.V12ProjectFileUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectFilePayload>
+          }
+          aggregate: {
+            args: Prisma.V12ProjectFileAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateV12ProjectFile>
+          }
+          groupBy: {
+            args: Prisma.V12ProjectFileGroupByArgs<ExtArgs>
+            result: $Utils.Optional<V12ProjectFileGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.V12ProjectFileCountArgs<ExtArgs>
+            result: $Utils.Optional<V12ProjectFileCountAggregateOutputType> | number
+          }
+        }
+      }
+      V12ProjectRevision: {
+        payload: Prisma.$V12ProjectRevisionPayload<ExtArgs>
+        fields: Prisma.V12ProjectRevisionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.V12ProjectRevisionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectRevisionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.V12ProjectRevisionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectRevisionPayload>
+          }
+          findFirst: {
+            args: Prisma.V12ProjectRevisionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectRevisionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.V12ProjectRevisionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectRevisionPayload>
+          }
+          findMany: {
+            args: Prisma.V12ProjectRevisionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectRevisionPayload>[]
+          }
+          create: {
+            args: Prisma.V12ProjectRevisionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectRevisionPayload>
+          }
+          createMany: {
+            args: Prisma.V12ProjectRevisionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.V12ProjectRevisionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectRevisionPayload>[]
+          }
+          delete: {
+            args: Prisma.V12ProjectRevisionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectRevisionPayload>
+          }
+          update: {
+            args: Prisma.V12ProjectRevisionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectRevisionPayload>
+          }
+          deleteMany: {
+            args: Prisma.V12ProjectRevisionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.V12ProjectRevisionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.V12ProjectRevisionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectRevisionPayload>
+          }
+          aggregate: {
+            args: Prisma.V12ProjectRevisionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateV12ProjectRevision>
+          }
+          groupBy: {
+            args: Prisma.V12ProjectRevisionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<V12ProjectRevisionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.V12ProjectRevisionCountArgs<ExtArgs>
+            result: $Utils.Optional<V12ProjectRevisionCountAggregateOutputType> | number
+          }
+        }
+      }
+      V12ProjectCheckpoint: {
+        payload: Prisma.$V12ProjectCheckpointPayload<ExtArgs>
+        fields: Prisma.V12ProjectCheckpointFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.V12ProjectCheckpointFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectCheckpointPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.V12ProjectCheckpointFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectCheckpointPayload>
+          }
+          findFirst: {
+            args: Prisma.V12ProjectCheckpointFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectCheckpointPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.V12ProjectCheckpointFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectCheckpointPayload>
+          }
+          findMany: {
+            args: Prisma.V12ProjectCheckpointFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectCheckpointPayload>[]
+          }
+          create: {
+            args: Prisma.V12ProjectCheckpointCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectCheckpointPayload>
+          }
+          createMany: {
+            args: Prisma.V12ProjectCheckpointCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.V12ProjectCheckpointCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectCheckpointPayload>[]
+          }
+          delete: {
+            args: Prisma.V12ProjectCheckpointDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectCheckpointPayload>
+          }
+          update: {
+            args: Prisma.V12ProjectCheckpointUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectCheckpointPayload>
+          }
+          deleteMany: {
+            args: Prisma.V12ProjectCheckpointDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.V12ProjectCheckpointUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.V12ProjectCheckpointUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12ProjectCheckpointPayload>
+          }
+          aggregate: {
+            args: Prisma.V12ProjectCheckpointAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateV12ProjectCheckpoint>
+          }
+          groupBy: {
+            args: Prisma.V12ProjectCheckpointGroupByArgs<ExtArgs>
+            result: $Utils.Optional<V12ProjectCheckpointGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.V12ProjectCheckpointCountArgs<ExtArgs>
+            result: $Utils.Optional<V12ProjectCheckpointCountAggregateOutputType> | number
           }
         }
       }
@@ -6738,6 +7082,7 @@ export namespace Prisma {
     planUsages: number
     AiEvent: number
     aiSnapshots: number
+    v12Projects: number
   }
 
   export type TenantCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6756,6 +7101,7 @@ export namespace Prisma {
     planUsages?: boolean | TenantCountOutputTypeCountPlanUsagesArgs
     AiEvent?: boolean | TenantCountOutputTypeCountAiEventArgs
     aiSnapshots?: boolean | TenantCountOutputTypeCountAiSnapshotsArgs
+    v12Projects?: boolean | TenantCountOutputTypeCountV12ProjectsArgs
   }
 
   // Custom InputTypes
@@ -6872,6 +7218,13 @@ export namespace Prisma {
    */
   export type TenantCountOutputTypeCountAiSnapshotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AIBlueprintSnapshotWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountV12ProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: V12ProjectWhereInput
   }
 
 
@@ -7122,6 +7475,86 @@ export namespace Prisma {
    */
   export type SiteCountOutputTypeCountCrmApiKeysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CrmApiKeyWhereInput
+  }
+
+
+  /**
+   * Count Type V12ProjectCountOutputType
+   */
+
+  export type V12ProjectCountOutputType = {
+    files: number
+    revisions: number
+    checkpoints: number
+  }
+
+  export type V12ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    files?: boolean | V12ProjectCountOutputTypeCountFilesArgs
+    revisions?: boolean | V12ProjectCountOutputTypeCountRevisionsArgs
+    checkpoints?: boolean | V12ProjectCountOutputTypeCountCheckpointsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * V12ProjectCountOutputType without action
+   */
+  export type V12ProjectCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCountOutputType
+     */
+    select?: V12ProjectCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * V12ProjectCountOutputType without action
+   */
+  export type V12ProjectCountOutputTypeCountFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: V12ProjectFileWhereInput
+  }
+
+  /**
+   * V12ProjectCountOutputType without action
+   */
+  export type V12ProjectCountOutputTypeCountRevisionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: V12ProjectRevisionWhereInput
+  }
+
+  /**
+   * V12ProjectCountOutputType without action
+   */
+  export type V12ProjectCountOutputTypeCountCheckpointsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: V12ProjectCheckpointWhereInput
+  }
+
+
+  /**
+   * Count Type V12ProjectRevisionCountOutputType
+   */
+
+  export type V12ProjectRevisionCountOutputType = {
+    checkpoints: number
+  }
+
+  export type V12ProjectRevisionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    checkpoints?: boolean | V12ProjectRevisionCountOutputTypeCountCheckpointsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * V12ProjectRevisionCountOutputType without action
+   */
+  export type V12ProjectRevisionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevisionCountOutputType
+     */
+    select?: V12ProjectRevisionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * V12ProjectRevisionCountOutputType without action
+   */
+  export type V12ProjectRevisionCountOutputTypeCountCheckpointsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: V12ProjectCheckpointWhereInput
   }
 
 
@@ -16370,6 +16803,7 @@ export namespace Prisma {
     planUsages?: boolean | Tenant$planUsagesArgs<ExtArgs>
     AiEvent?: boolean | Tenant$AiEventArgs<ExtArgs>
     aiSnapshots?: boolean | Tenant$aiSnapshotsArgs<ExtArgs>
+    v12Projects?: boolean | Tenant$v12ProjectsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tenant"]>
 
@@ -16416,6 +16850,7 @@ export namespace Prisma {
     planUsages?: boolean | Tenant$planUsagesArgs<ExtArgs>
     AiEvent?: boolean | Tenant$AiEventArgs<ExtArgs>
     aiSnapshots?: boolean | Tenant$aiSnapshotsArgs<ExtArgs>
+    v12Projects?: boolean | Tenant$v12ProjectsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TenantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16442,6 +16877,7 @@ export namespace Prisma {
       planUsages: Prisma.$PlanUsagePayload<ExtArgs>[]
       AiEvent: Prisma.$AiEventPayload<ExtArgs>[]
       aiSnapshots: Prisma.$AIBlueprintSnapshotPayload<ExtArgs>[]
+      v12Projects: Prisma.$V12ProjectPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -16834,6 +17270,7 @@ export namespace Prisma {
     planUsages<T extends Tenant$planUsagesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$planUsagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlanUsagePayload<ExtArgs>, T, "findMany"> | Null>
     AiEvent<T extends Tenant$AiEventArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$AiEventArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiEventPayload<ExtArgs>, T, "findMany"> | Null>
     aiSnapshots<T extends Tenant$aiSnapshotsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$aiSnapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIBlueprintSnapshotPayload<ExtArgs>, T, "findMany"> | Null>
+    v12Projects<T extends Tenant$v12ProjectsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$v12ProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17517,6 +17954,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AIBlueprintSnapshotScalarFieldEnum | AIBlueprintSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.v12Projects
+   */
+  export type Tenant$v12ProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectInclude<ExtArgs> | null
+    where?: V12ProjectWhereInput
+    orderBy?: V12ProjectOrderByWithRelationInput | V12ProjectOrderByWithRelationInput[]
+    cursor?: V12ProjectWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: V12ProjectScalarFieldEnum | V12ProjectScalarFieldEnum[]
   }
 
   /**
@@ -25988,6 +26445,7 @@ export namespace Prisma {
     crmLeads?: boolean | Site$crmLeadsArgs<ExtArgs>
     crmApiKeys?: boolean | Site$crmApiKeysArgs<ExtArgs>
     shop?: boolean | Site$shopArgs<ExtArgs>
+    v12Project?: boolean | Site$v12ProjectArgs<ExtArgs>
     _count?: boolean | SiteCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["site"]>
 
@@ -26037,6 +26495,7 @@ export namespace Prisma {
     crmLeads?: boolean | Site$crmLeadsArgs<ExtArgs>
     crmApiKeys?: boolean | Site$crmApiKeysArgs<ExtArgs>
     shop?: boolean | Site$shopArgs<ExtArgs>
+    v12Project?: boolean | Site$v12ProjectArgs<ExtArgs>
     _count?: boolean | SiteCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SiteIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -26062,6 +26521,7 @@ export namespace Prisma {
       crmLeads: Prisma.$CrmLeadPayload<ExtArgs>[]
       crmApiKeys: Prisma.$CrmApiKeyPayload<ExtArgs>[]
       shop: Prisma.$ShopPayload<ExtArgs> | null
+      v12Project: Prisma.$V12ProjectPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -26455,6 +26915,7 @@ export namespace Prisma {
     crmLeads<T extends Site$crmLeadsArgs<ExtArgs> = {}>(args?: Subset<T, Site$crmLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CrmLeadPayload<ExtArgs>, T, "findMany"> | Null>
     crmApiKeys<T extends Site$crmApiKeysArgs<ExtArgs> = {}>(args?: Subset<T, Site$crmApiKeysArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CrmApiKeyPayload<ExtArgs>, T, "findMany"> | Null>
     shop<T extends Site$shopArgs<ExtArgs> = {}>(args?: Subset<T, Site$shopArgs<ExtArgs>>): Prisma__ShopClient<$Result.GetResult<Prisma.$ShopPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    v12Project<T extends Site$v12ProjectArgs<ExtArgs> = {}>(args?: Subset<T, Site$v12ProjectArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -27103,6 +27564,21 @@ export namespace Prisma {
   }
 
   /**
+   * Site.v12Project
+   */
+  export type Site$v12ProjectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectInclude<ExtArgs> | null
+    where?: V12ProjectWhereInput
+  }
+
+  /**
    * Site without action
    */
   export type SiteDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -27114,6 +27590,4028 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: SiteInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model V12Project
+   */
+
+  export type AggregateV12Project = {
+    _count: V12ProjectCountAggregateOutputType | null
+    _avg: V12ProjectAvgAggregateOutputType | null
+    _sum: V12ProjectSumAggregateOutputType | null
+    _min: V12ProjectMinAggregateOutputType | null
+    _max: V12ProjectMaxAggregateOutputType | null
+  }
+
+  export type V12ProjectAvgAggregateOutputType = {
+    currentRevision: number | null
+  }
+
+  export type V12ProjectSumAggregateOutputType = {
+    currentRevision: number | null
+  }
+
+  export type V12ProjectMinAggregateOutputType = {
+    id: string | null
+    siteId: string | null
+    tenantId: string | null
+    currentRevision: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type V12ProjectMaxAggregateOutputType = {
+    id: string | null
+    siteId: string | null
+    tenantId: string | null
+    currentRevision: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type V12ProjectCountAggregateOutputType = {
+    id: number
+    siteId: number
+    tenantId: number
+    currentRevision: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type V12ProjectAvgAggregateInputType = {
+    currentRevision?: true
+  }
+
+  export type V12ProjectSumAggregateInputType = {
+    currentRevision?: true
+  }
+
+  export type V12ProjectMinAggregateInputType = {
+    id?: true
+    siteId?: true
+    tenantId?: true
+    currentRevision?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type V12ProjectMaxAggregateInputType = {
+    id?: true
+    siteId?: true
+    tenantId?: true
+    currentRevision?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type V12ProjectCountAggregateInputType = {
+    id?: true
+    siteId?: true
+    tenantId?: true
+    currentRevision?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type V12ProjectAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which V12Project to aggregate.
+     */
+    where?: V12ProjectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12Projects to fetch.
+     */
+    orderBy?: V12ProjectOrderByWithRelationInput | V12ProjectOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: V12ProjectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12Projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12Projects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned V12Projects
+    **/
+    _count?: true | V12ProjectCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: V12ProjectAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: V12ProjectSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: V12ProjectMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: V12ProjectMaxAggregateInputType
+  }
+
+  export type GetV12ProjectAggregateType<T extends V12ProjectAggregateArgs> = {
+        [P in keyof T & keyof AggregateV12Project]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateV12Project[P]>
+      : GetScalarType<T[P], AggregateV12Project[P]>
+  }
+
+
+
+
+  export type V12ProjectGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: V12ProjectWhereInput
+    orderBy?: V12ProjectOrderByWithAggregationInput | V12ProjectOrderByWithAggregationInput[]
+    by: V12ProjectScalarFieldEnum[] | V12ProjectScalarFieldEnum
+    having?: V12ProjectScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: V12ProjectCountAggregateInputType | true
+    _avg?: V12ProjectAvgAggregateInputType
+    _sum?: V12ProjectSumAggregateInputType
+    _min?: V12ProjectMinAggregateInputType
+    _max?: V12ProjectMaxAggregateInputType
+  }
+
+  export type V12ProjectGroupByOutputType = {
+    id: string
+    siteId: string
+    tenantId: string
+    currentRevision: number
+    createdAt: Date
+    updatedAt: Date
+    _count: V12ProjectCountAggregateOutputType | null
+    _avg: V12ProjectAvgAggregateOutputType | null
+    _sum: V12ProjectSumAggregateOutputType | null
+    _min: V12ProjectMinAggregateOutputType | null
+    _max: V12ProjectMaxAggregateOutputType | null
+  }
+
+  type GetV12ProjectGroupByPayload<T extends V12ProjectGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<V12ProjectGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof V12ProjectGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], V12ProjectGroupByOutputType[P]>
+            : GetScalarType<T[P], V12ProjectGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type V12ProjectSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    siteId?: boolean
+    tenantId?: boolean
+    currentRevision?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    files?: boolean | V12Project$filesArgs<ExtArgs>
+    revisions?: boolean | V12Project$revisionsArgs<ExtArgs>
+    checkpoints?: boolean | V12Project$checkpointsArgs<ExtArgs>
+    _count?: boolean | V12ProjectCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["v12Project"]>
+
+  export type V12ProjectSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    siteId?: boolean
+    tenantId?: boolean
+    currentRevision?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["v12Project"]>
+
+  export type V12ProjectSelectScalar = {
+    id?: boolean
+    siteId?: boolean
+    tenantId?: boolean
+    currentRevision?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type V12ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    files?: boolean | V12Project$filesArgs<ExtArgs>
+    revisions?: boolean | V12Project$revisionsArgs<ExtArgs>
+    checkpoints?: boolean | V12Project$checkpointsArgs<ExtArgs>
+    _count?: boolean | V12ProjectCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type V12ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+
+  export type $V12ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "V12Project"
+    objects: {
+      site: Prisma.$SitePayload<ExtArgs>
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      files: Prisma.$V12ProjectFilePayload<ExtArgs>[]
+      revisions: Prisma.$V12ProjectRevisionPayload<ExtArgs>[]
+      checkpoints: Prisma.$V12ProjectCheckpointPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      siteId: string
+      tenantId: string
+      currentRevision: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["v12Project"]>
+    composites: {}
+  }
+
+  type V12ProjectGetPayload<S extends boolean | null | undefined | V12ProjectDefaultArgs> = $Result.GetResult<Prisma.$V12ProjectPayload, S>
+
+  type V12ProjectCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<V12ProjectFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: V12ProjectCountAggregateInputType | true
+    }
+
+  export interface V12ProjectDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['V12Project'], meta: { name: 'V12Project' } }
+    /**
+     * Find zero or one V12Project that matches the filter.
+     * @param {V12ProjectFindUniqueArgs} args - Arguments to find a V12Project
+     * @example
+     * // Get one V12Project
+     * const v12Project = await prisma.v12Project.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends V12ProjectFindUniqueArgs>(args: SelectSubset<T, V12ProjectFindUniqueArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one V12Project that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {V12ProjectFindUniqueOrThrowArgs} args - Arguments to find a V12Project
+     * @example
+     * // Get one V12Project
+     * const v12Project = await prisma.v12Project.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends V12ProjectFindUniqueOrThrowArgs>(args: SelectSubset<T, V12ProjectFindUniqueOrThrowArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first V12Project that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectFindFirstArgs} args - Arguments to find a V12Project
+     * @example
+     * // Get one V12Project
+     * const v12Project = await prisma.v12Project.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends V12ProjectFindFirstArgs>(args?: SelectSubset<T, V12ProjectFindFirstArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first V12Project that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectFindFirstOrThrowArgs} args - Arguments to find a V12Project
+     * @example
+     * // Get one V12Project
+     * const v12Project = await prisma.v12Project.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends V12ProjectFindFirstOrThrowArgs>(args?: SelectSubset<T, V12ProjectFindFirstOrThrowArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more V12Projects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all V12Projects
+     * const v12Projects = await prisma.v12Project.findMany()
+     * 
+     * // Get first 10 V12Projects
+     * const v12Projects = await prisma.v12Project.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const v12ProjectWithIdOnly = await prisma.v12Project.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends V12ProjectFindManyArgs>(args?: SelectSubset<T, V12ProjectFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a V12Project.
+     * @param {V12ProjectCreateArgs} args - Arguments to create a V12Project.
+     * @example
+     * // Create one V12Project
+     * const V12Project = await prisma.v12Project.create({
+     *   data: {
+     *     // ... data to create a V12Project
+     *   }
+     * })
+     * 
+     */
+    create<T extends V12ProjectCreateArgs>(args: SelectSubset<T, V12ProjectCreateArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many V12Projects.
+     * @param {V12ProjectCreateManyArgs} args - Arguments to create many V12Projects.
+     * @example
+     * // Create many V12Projects
+     * const v12Project = await prisma.v12Project.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends V12ProjectCreateManyArgs>(args?: SelectSubset<T, V12ProjectCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many V12Projects and returns the data saved in the database.
+     * @param {V12ProjectCreateManyAndReturnArgs} args - Arguments to create many V12Projects.
+     * @example
+     * // Create many V12Projects
+     * const v12Project = await prisma.v12Project.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many V12Projects and only return the `id`
+     * const v12ProjectWithIdOnly = await prisma.v12Project.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends V12ProjectCreateManyAndReturnArgs>(args?: SelectSubset<T, V12ProjectCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a V12Project.
+     * @param {V12ProjectDeleteArgs} args - Arguments to delete one V12Project.
+     * @example
+     * // Delete one V12Project
+     * const V12Project = await prisma.v12Project.delete({
+     *   where: {
+     *     // ... filter to delete one V12Project
+     *   }
+     * })
+     * 
+     */
+    delete<T extends V12ProjectDeleteArgs>(args: SelectSubset<T, V12ProjectDeleteArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one V12Project.
+     * @param {V12ProjectUpdateArgs} args - Arguments to update one V12Project.
+     * @example
+     * // Update one V12Project
+     * const v12Project = await prisma.v12Project.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends V12ProjectUpdateArgs>(args: SelectSubset<T, V12ProjectUpdateArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more V12Projects.
+     * @param {V12ProjectDeleteManyArgs} args - Arguments to filter V12Projects to delete.
+     * @example
+     * // Delete a few V12Projects
+     * const { count } = await prisma.v12Project.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends V12ProjectDeleteManyArgs>(args?: SelectSubset<T, V12ProjectDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more V12Projects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many V12Projects
+     * const v12Project = await prisma.v12Project.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends V12ProjectUpdateManyArgs>(args: SelectSubset<T, V12ProjectUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one V12Project.
+     * @param {V12ProjectUpsertArgs} args - Arguments to update or create a V12Project.
+     * @example
+     * // Update or create a V12Project
+     * const v12Project = await prisma.v12Project.upsert({
+     *   create: {
+     *     // ... data to create a V12Project
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the V12Project we want to update
+     *   }
+     * })
+     */
+    upsert<T extends V12ProjectUpsertArgs>(args: SelectSubset<T, V12ProjectUpsertArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of V12Projects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectCountArgs} args - Arguments to filter V12Projects to count.
+     * @example
+     * // Count the number of V12Projects
+     * const count = await prisma.v12Project.count({
+     *   where: {
+     *     // ... the filter for the V12Projects we want to count
+     *   }
+     * })
+    **/
+    count<T extends V12ProjectCountArgs>(
+      args?: Subset<T, V12ProjectCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], V12ProjectCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a V12Project.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends V12ProjectAggregateArgs>(args: Subset<T, V12ProjectAggregateArgs>): Prisma.PrismaPromise<GetV12ProjectAggregateType<T>>
+
+    /**
+     * Group by V12Project.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends V12ProjectGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: V12ProjectGroupByArgs['orderBy'] }
+        : { orderBy?: V12ProjectGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, V12ProjectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetV12ProjectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the V12Project model
+   */
+  readonly fields: V12ProjectFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for V12Project.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__V12ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    site<T extends SiteDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SiteDefaultArgs<ExtArgs>>): Prisma__SiteClient<$Result.GetResult<Prisma.$SitePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    files<T extends V12Project$filesArgs<ExtArgs> = {}>(args?: Subset<T, V12Project$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectFilePayload<ExtArgs>, T, "findMany"> | Null>
+    revisions<T extends V12Project$revisionsArgs<ExtArgs> = {}>(args?: Subset<T, V12Project$revisionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectRevisionPayload<ExtArgs>, T, "findMany"> | Null>
+    checkpoints<T extends V12Project$checkpointsArgs<ExtArgs> = {}>(args?: Subset<T, V12Project$checkpointsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectCheckpointPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the V12Project model
+   */ 
+  interface V12ProjectFieldRefs {
+    readonly id: FieldRef<"V12Project", 'String'>
+    readonly siteId: FieldRef<"V12Project", 'String'>
+    readonly tenantId: FieldRef<"V12Project", 'String'>
+    readonly currentRevision: FieldRef<"V12Project", 'Int'>
+    readonly createdAt: FieldRef<"V12Project", 'DateTime'>
+    readonly updatedAt: FieldRef<"V12Project", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * V12Project findUnique
+   */
+  export type V12ProjectFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectInclude<ExtArgs> | null
+    /**
+     * Filter, which V12Project to fetch.
+     */
+    where: V12ProjectWhereUniqueInput
+  }
+
+  /**
+   * V12Project findUniqueOrThrow
+   */
+  export type V12ProjectFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectInclude<ExtArgs> | null
+    /**
+     * Filter, which V12Project to fetch.
+     */
+    where: V12ProjectWhereUniqueInput
+  }
+
+  /**
+   * V12Project findFirst
+   */
+  export type V12ProjectFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectInclude<ExtArgs> | null
+    /**
+     * Filter, which V12Project to fetch.
+     */
+    where?: V12ProjectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12Projects to fetch.
+     */
+    orderBy?: V12ProjectOrderByWithRelationInput | V12ProjectOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for V12Projects.
+     */
+    cursor?: V12ProjectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12Projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12Projects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of V12Projects.
+     */
+    distinct?: V12ProjectScalarFieldEnum | V12ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * V12Project findFirstOrThrow
+   */
+  export type V12ProjectFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectInclude<ExtArgs> | null
+    /**
+     * Filter, which V12Project to fetch.
+     */
+    where?: V12ProjectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12Projects to fetch.
+     */
+    orderBy?: V12ProjectOrderByWithRelationInput | V12ProjectOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for V12Projects.
+     */
+    cursor?: V12ProjectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12Projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12Projects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of V12Projects.
+     */
+    distinct?: V12ProjectScalarFieldEnum | V12ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * V12Project findMany
+   */
+  export type V12ProjectFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectInclude<ExtArgs> | null
+    /**
+     * Filter, which V12Projects to fetch.
+     */
+    where?: V12ProjectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12Projects to fetch.
+     */
+    orderBy?: V12ProjectOrderByWithRelationInput | V12ProjectOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing V12Projects.
+     */
+    cursor?: V12ProjectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12Projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12Projects.
+     */
+    skip?: number
+    distinct?: V12ProjectScalarFieldEnum | V12ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * V12Project create
+   */
+  export type V12ProjectCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectInclude<ExtArgs> | null
+    /**
+     * The data needed to create a V12Project.
+     */
+    data: XOR<V12ProjectCreateInput, V12ProjectUncheckedCreateInput>
+  }
+
+  /**
+   * V12Project createMany
+   */
+  export type V12ProjectCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many V12Projects.
+     */
+    data: V12ProjectCreateManyInput | V12ProjectCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * V12Project createManyAndReturn
+   */
+  export type V12ProjectCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many V12Projects.
+     */
+    data: V12ProjectCreateManyInput | V12ProjectCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * V12Project update
+   */
+  export type V12ProjectUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectInclude<ExtArgs> | null
+    /**
+     * The data needed to update a V12Project.
+     */
+    data: XOR<V12ProjectUpdateInput, V12ProjectUncheckedUpdateInput>
+    /**
+     * Choose, which V12Project to update.
+     */
+    where: V12ProjectWhereUniqueInput
+  }
+
+  /**
+   * V12Project updateMany
+   */
+  export type V12ProjectUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update V12Projects.
+     */
+    data: XOR<V12ProjectUpdateManyMutationInput, V12ProjectUncheckedUpdateManyInput>
+    /**
+     * Filter which V12Projects to update
+     */
+    where?: V12ProjectWhereInput
+  }
+
+  /**
+   * V12Project upsert
+   */
+  export type V12ProjectUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectInclude<ExtArgs> | null
+    /**
+     * The filter to search for the V12Project to update in case it exists.
+     */
+    where: V12ProjectWhereUniqueInput
+    /**
+     * In case the V12Project found by the `where` argument doesn't exist, create a new V12Project with this data.
+     */
+    create: XOR<V12ProjectCreateInput, V12ProjectUncheckedCreateInput>
+    /**
+     * In case the V12Project was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<V12ProjectUpdateInput, V12ProjectUncheckedUpdateInput>
+  }
+
+  /**
+   * V12Project delete
+   */
+  export type V12ProjectDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectInclude<ExtArgs> | null
+    /**
+     * Filter which V12Project to delete.
+     */
+    where: V12ProjectWhereUniqueInput
+  }
+
+  /**
+   * V12Project deleteMany
+   */
+  export type V12ProjectDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which V12Projects to delete
+     */
+    where?: V12ProjectWhereInput
+  }
+
+  /**
+   * V12Project.files
+   */
+  export type V12Project$filesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectFile
+     */
+    select?: V12ProjectFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectFileInclude<ExtArgs> | null
+    where?: V12ProjectFileWhereInput
+    orderBy?: V12ProjectFileOrderByWithRelationInput | V12ProjectFileOrderByWithRelationInput[]
+    cursor?: V12ProjectFileWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: V12ProjectFileScalarFieldEnum | V12ProjectFileScalarFieldEnum[]
+  }
+
+  /**
+   * V12Project.revisions
+   */
+  export type V12Project$revisionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevision
+     */
+    select?: V12ProjectRevisionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectRevisionInclude<ExtArgs> | null
+    where?: V12ProjectRevisionWhereInput
+    orderBy?: V12ProjectRevisionOrderByWithRelationInput | V12ProjectRevisionOrderByWithRelationInput[]
+    cursor?: V12ProjectRevisionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: V12ProjectRevisionScalarFieldEnum | V12ProjectRevisionScalarFieldEnum[]
+  }
+
+  /**
+   * V12Project.checkpoints
+   */
+  export type V12Project$checkpointsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointInclude<ExtArgs> | null
+    where?: V12ProjectCheckpointWhereInput
+    orderBy?: V12ProjectCheckpointOrderByWithRelationInput | V12ProjectCheckpointOrderByWithRelationInput[]
+    cursor?: V12ProjectCheckpointWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: V12ProjectCheckpointScalarFieldEnum | V12ProjectCheckpointScalarFieldEnum[]
+  }
+
+  /**
+   * V12Project without action
+   */
+  export type V12ProjectDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12Project
+     */
+    select?: V12ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model V12ProjectFile
+   */
+
+  export type AggregateV12ProjectFile = {
+    _count: V12ProjectFileCountAggregateOutputType | null
+    _avg: V12ProjectFileAvgAggregateOutputType | null
+    _sum: V12ProjectFileSumAggregateOutputType | null
+    _min: V12ProjectFileMinAggregateOutputType | null
+    _max: V12ProjectFileMaxAggregateOutputType | null
+  }
+
+  export type V12ProjectFileAvgAggregateOutputType = {
+    revision: number | null
+  }
+
+  export type V12ProjectFileSumAggregateOutputType = {
+    revision: number | null
+  }
+
+  export type V12ProjectFileMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    path: string | null
+    content: string | null
+    contentHash: string | null
+    revision: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type V12ProjectFileMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    path: string | null
+    content: string | null
+    contentHash: string | null
+    revision: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type V12ProjectFileCountAggregateOutputType = {
+    id: number
+    projectId: number
+    path: number
+    content: number
+    contentHash: number
+    revision: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type V12ProjectFileAvgAggregateInputType = {
+    revision?: true
+  }
+
+  export type V12ProjectFileSumAggregateInputType = {
+    revision?: true
+  }
+
+  export type V12ProjectFileMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    path?: true
+    content?: true
+    contentHash?: true
+    revision?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type V12ProjectFileMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    path?: true
+    content?: true
+    contentHash?: true
+    revision?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type V12ProjectFileCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    path?: true
+    content?: true
+    contentHash?: true
+    revision?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type V12ProjectFileAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which V12ProjectFile to aggregate.
+     */
+    where?: V12ProjectFileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12ProjectFiles to fetch.
+     */
+    orderBy?: V12ProjectFileOrderByWithRelationInput | V12ProjectFileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: V12ProjectFileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12ProjectFiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12ProjectFiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned V12ProjectFiles
+    **/
+    _count?: true | V12ProjectFileCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: V12ProjectFileAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: V12ProjectFileSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: V12ProjectFileMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: V12ProjectFileMaxAggregateInputType
+  }
+
+  export type GetV12ProjectFileAggregateType<T extends V12ProjectFileAggregateArgs> = {
+        [P in keyof T & keyof AggregateV12ProjectFile]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateV12ProjectFile[P]>
+      : GetScalarType<T[P], AggregateV12ProjectFile[P]>
+  }
+
+
+
+
+  export type V12ProjectFileGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: V12ProjectFileWhereInput
+    orderBy?: V12ProjectFileOrderByWithAggregationInput | V12ProjectFileOrderByWithAggregationInput[]
+    by: V12ProjectFileScalarFieldEnum[] | V12ProjectFileScalarFieldEnum
+    having?: V12ProjectFileScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: V12ProjectFileCountAggregateInputType | true
+    _avg?: V12ProjectFileAvgAggregateInputType
+    _sum?: V12ProjectFileSumAggregateInputType
+    _min?: V12ProjectFileMinAggregateInputType
+    _max?: V12ProjectFileMaxAggregateInputType
+  }
+
+  export type V12ProjectFileGroupByOutputType = {
+    id: string
+    projectId: string
+    path: string
+    content: string
+    contentHash: string
+    revision: number
+    createdAt: Date
+    updatedAt: Date
+    _count: V12ProjectFileCountAggregateOutputType | null
+    _avg: V12ProjectFileAvgAggregateOutputType | null
+    _sum: V12ProjectFileSumAggregateOutputType | null
+    _min: V12ProjectFileMinAggregateOutputType | null
+    _max: V12ProjectFileMaxAggregateOutputType | null
+  }
+
+  type GetV12ProjectFileGroupByPayload<T extends V12ProjectFileGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<V12ProjectFileGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof V12ProjectFileGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], V12ProjectFileGroupByOutputType[P]>
+            : GetScalarType<T[P], V12ProjectFileGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type V12ProjectFileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    path?: boolean
+    content?: boolean
+    contentHash?: boolean
+    revision?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | V12ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["v12ProjectFile"]>
+
+  export type V12ProjectFileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    path?: boolean
+    content?: boolean
+    contentHash?: boolean
+    revision?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | V12ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["v12ProjectFile"]>
+
+  export type V12ProjectFileSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    path?: boolean
+    content?: boolean
+    contentHash?: boolean
+    revision?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type V12ProjectFileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | V12ProjectDefaultArgs<ExtArgs>
+  }
+  export type V12ProjectFileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | V12ProjectDefaultArgs<ExtArgs>
+  }
+
+  export type $V12ProjectFilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "V12ProjectFile"
+    objects: {
+      project: Prisma.$V12ProjectPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      path: string
+      content: string
+      contentHash: string
+      revision: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["v12ProjectFile"]>
+    composites: {}
+  }
+
+  type V12ProjectFileGetPayload<S extends boolean | null | undefined | V12ProjectFileDefaultArgs> = $Result.GetResult<Prisma.$V12ProjectFilePayload, S>
+
+  type V12ProjectFileCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<V12ProjectFileFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: V12ProjectFileCountAggregateInputType | true
+    }
+
+  export interface V12ProjectFileDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['V12ProjectFile'], meta: { name: 'V12ProjectFile' } }
+    /**
+     * Find zero or one V12ProjectFile that matches the filter.
+     * @param {V12ProjectFileFindUniqueArgs} args - Arguments to find a V12ProjectFile
+     * @example
+     * // Get one V12ProjectFile
+     * const v12ProjectFile = await prisma.v12ProjectFile.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends V12ProjectFileFindUniqueArgs>(args: SelectSubset<T, V12ProjectFileFindUniqueArgs<ExtArgs>>): Prisma__V12ProjectFileClient<$Result.GetResult<Prisma.$V12ProjectFilePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one V12ProjectFile that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {V12ProjectFileFindUniqueOrThrowArgs} args - Arguments to find a V12ProjectFile
+     * @example
+     * // Get one V12ProjectFile
+     * const v12ProjectFile = await prisma.v12ProjectFile.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends V12ProjectFileFindUniqueOrThrowArgs>(args: SelectSubset<T, V12ProjectFileFindUniqueOrThrowArgs<ExtArgs>>): Prisma__V12ProjectFileClient<$Result.GetResult<Prisma.$V12ProjectFilePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first V12ProjectFile that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectFileFindFirstArgs} args - Arguments to find a V12ProjectFile
+     * @example
+     * // Get one V12ProjectFile
+     * const v12ProjectFile = await prisma.v12ProjectFile.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends V12ProjectFileFindFirstArgs>(args?: SelectSubset<T, V12ProjectFileFindFirstArgs<ExtArgs>>): Prisma__V12ProjectFileClient<$Result.GetResult<Prisma.$V12ProjectFilePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first V12ProjectFile that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectFileFindFirstOrThrowArgs} args - Arguments to find a V12ProjectFile
+     * @example
+     * // Get one V12ProjectFile
+     * const v12ProjectFile = await prisma.v12ProjectFile.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends V12ProjectFileFindFirstOrThrowArgs>(args?: SelectSubset<T, V12ProjectFileFindFirstOrThrowArgs<ExtArgs>>): Prisma__V12ProjectFileClient<$Result.GetResult<Prisma.$V12ProjectFilePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more V12ProjectFiles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectFileFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all V12ProjectFiles
+     * const v12ProjectFiles = await prisma.v12ProjectFile.findMany()
+     * 
+     * // Get first 10 V12ProjectFiles
+     * const v12ProjectFiles = await prisma.v12ProjectFile.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const v12ProjectFileWithIdOnly = await prisma.v12ProjectFile.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends V12ProjectFileFindManyArgs>(args?: SelectSubset<T, V12ProjectFileFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectFilePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a V12ProjectFile.
+     * @param {V12ProjectFileCreateArgs} args - Arguments to create a V12ProjectFile.
+     * @example
+     * // Create one V12ProjectFile
+     * const V12ProjectFile = await prisma.v12ProjectFile.create({
+     *   data: {
+     *     // ... data to create a V12ProjectFile
+     *   }
+     * })
+     * 
+     */
+    create<T extends V12ProjectFileCreateArgs>(args: SelectSubset<T, V12ProjectFileCreateArgs<ExtArgs>>): Prisma__V12ProjectFileClient<$Result.GetResult<Prisma.$V12ProjectFilePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many V12ProjectFiles.
+     * @param {V12ProjectFileCreateManyArgs} args - Arguments to create many V12ProjectFiles.
+     * @example
+     * // Create many V12ProjectFiles
+     * const v12ProjectFile = await prisma.v12ProjectFile.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends V12ProjectFileCreateManyArgs>(args?: SelectSubset<T, V12ProjectFileCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many V12ProjectFiles and returns the data saved in the database.
+     * @param {V12ProjectFileCreateManyAndReturnArgs} args - Arguments to create many V12ProjectFiles.
+     * @example
+     * // Create many V12ProjectFiles
+     * const v12ProjectFile = await prisma.v12ProjectFile.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many V12ProjectFiles and only return the `id`
+     * const v12ProjectFileWithIdOnly = await prisma.v12ProjectFile.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends V12ProjectFileCreateManyAndReturnArgs>(args?: SelectSubset<T, V12ProjectFileCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectFilePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a V12ProjectFile.
+     * @param {V12ProjectFileDeleteArgs} args - Arguments to delete one V12ProjectFile.
+     * @example
+     * // Delete one V12ProjectFile
+     * const V12ProjectFile = await prisma.v12ProjectFile.delete({
+     *   where: {
+     *     // ... filter to delete one V12ProjectFile
+     *   }
+     * })
+     * 
+     */
+    delete<T extends V12ProjectFileDeleteArgs>(args: SelectSubset<T, V12ProjectFileDeleteArgs<ExtArgs>>): Prisma__V12ProjectFileClient<$Result.GetResult<Prisma.$V12ProjectFilePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one V12ProjectFile.
+     * @param {V12ProjectFileUpdateArgs} args - Arguments to update one V12ProjectFile.
+     * @example
+     * // Update one V12ProjectFile
+     * const v12ProjectFile = await prisma.v12ProjectFile.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends V12ProjectFileUpdateArgs>(args: SelectSubset<T, V12ProjectFileUpdateArgs<ExtArgs>>): Prisma__V12ProjectFileClient<$Result.GetResult<Prisma.$V12ProjectFilePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more V12ProjectFiles.
+     * @param {V12ProjectFileDeleteManyArgs} args - Arguments to filter V12ProjectFiles to delete.
+     * @example
+     * // Delete a few V12ProjectFiles
+     * const { count } = await prisma.v12ProjectFile.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends V12ProjectFileDeleteManyArgs>(args?: SelectSubset<T, V12ProjectFileDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more V12ProjectFiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectFileUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many V12ProjectFiles
+     * const v12ProjectFile = await prisma.v12ProjectFile.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends V12ProjectFileUpdateManyArgs>(args: SelectSubset<T, V12ProjectFileUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one V12ProjectFile.
+     * @param {V12ProjectFileUpsertArgs} args - Arguments to update or create a V12ProjectFile.
+     * @example
+     * // Update or create a V12ProjectFile
+     * const v12ProjectFile = await prisma.v12ProjectFile.upsert({
+     *   create: {
+     *     // ... data to create a V12ProjectFile
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the V12ProjectFile we want to update
+     *   }
+     * })
+     */
+    upsert<T extends V12ProjectFileUpsertArgs>(args: SelectSubset<T, V12ProjectFileUpsertArgs<ExtArgs>>): Prisma__V12ProjectFileClient<$Result.GetResult<Prisma.$V12ProjectFilePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of V12ProjectFiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectFileCountArgs} args - Arguments to filter V12ProjectFiles to count.
+     * @example
+     * // Count the number of V12ProjectFiles
+     * const count = await prisma.v12ProjectFile.count({
+     *   where: {
+     *     // ... the filter for the V12ProjectFiles we want to count
+     *   }
+     * })
+    **/
+    count<T extends V12ProjectFileCountArgs>(
+      args?: Subset<T, V12ProjectFileCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], V12ProjectFileCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a V12ProjectFile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectFileAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends V12ProjectFileAggregateArgs>(args: Subset<T, V12ProjectFileAggregateArgs>): Prisma.PrismaPromise<GetV12ProjectFileAggregateType<T>>
+
+    /**
+     * Group by V12ProjectFile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectFileGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends V12ProjectFileGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: V12ProjectFileGroupByArgs['orderBy'] }
+        : { orderBy?: V12ProjectFileGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, V12ProjectFileGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetV12ProjectFileGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the V12ProjectFile model
+   */
+  readonly fields: V12ProjectFileFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for V12ProjectFile.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__V12ProjectFileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends V12ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, V12ProjectDefaultArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the V12ProjectFile model
+   */ 
+  interface V12ProjectFileFieldRefs {
+    readonly id: FieldRef<"V12ProjectFile", 'String'>
+    readonly projectId: FieldRef<"V12ProjectFile", 'String'>
+    readonly path: FieldRef<"V12ProjectFile", 'String'>
+    readonly content: FieldRef<"V12ProjectFile", 'String'>
+    readonly contentHash: FieldRef<"V12ProjectFile", 'String'>
+    readonly revision: FieldRef<"V12ProjectFile", 'Int'>
+    readonly createdAt: FieldRef<"V12ProjectFile", 'DateTime'>
+    readonly updatedAt: FieldRef<"V12ProjectFile", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * V12ProjectFile findUnique
+   */
+  export type V12ProjectFileFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectFile
+     */
+    select?: V12ProjectFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectFileInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectFile to fetch.
+     */
+    where: V12ProjectFileWhereUniqueInput
+  }
+
+  /**
+   * V12ProjectFile findUniqueOrThrow
+   */
+  export type V12ProjectFileFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectFile
+     */
+    select?: V12ProjectFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectFileInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectFile to fetch.
+     */
+    where: V12ProjectFileWhereUniqueInput
+  }
+
+  /**
+   * V12ProjectFile findFirst
+   */
+  export type V12ProjectFileFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectFile
+     */
+    select?: V12ProjectFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectFileInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectFile to fetch.
+     */
+    where?: V12ProjectFileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12ProjectFiles to fetch.
+     */
+    orderBy?: V12ProjectFileOrderByWithRelationInput | V12ProjectFileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for V12ProjectFiles.
+     */
+    cursor?: V12ProjectFileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12ProjectFiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12ProjectFiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of V12ProjectFiles.
+     */
+    distinct?: V12ProjectFileScalarFieldEnum | V12ProjectFileScalarFieldEnum[]
+  }
+
+  /**
+   * V12ProjectFile findFirstOrThrow
+   */
+  export type V12ProjectFileFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectFile
+     */
+    select?: V12ProjectFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectFileInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectFile to fetch.
+     */
+    where?: V12ProjectFileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12ProjectFiles to fetch.
+     */
+    orderBy?: V12ProjectFileOrderByWithRelationInput | V12ProjectFileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for V12ProjectFiles.
+     */
+    cursor?: V12ProjectFileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12ProjectFiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12ProjectFiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of V12ProjectFiles.
+     */
+    distinct?: V12ProjectFileScalarFieldEnum | V12ProjectFileScalarFieldEnum[]
+  }
+
+  /**
+   * V12ProjectFile findMany
+   */
+  export type V12ProjectFileFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectFile
+     */
+    select?: V12ProjectFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectFileInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectFiles to fetch.
+     */
+    where?: V12ProjectFileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12ProjectFiles to fetch.
+     */
+    orderBy?: V12ProjectFileOrderByWithRelationInput | V12ProjectFileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing V12ProjectFiles.
+     */
+    cursor?: V12ProjectFileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12ProjectFiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12ProjectFiles.
+     */
+    skip?: number
+    distinct?: V12ProjectFileScalarFieldEnum | V12ProjectFileScalarFieldEnum[]
+  }
+
+  /**
+   * V12ProjectFile create
+   */
+  export type V12ProjectFileCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectFile
+     */
+    select?: V12ProjectFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectFileInclude<ExtArgs> | null
+    /**
+     * The data needed to create a V12ProjectFile.
+     */
+    data: XOR<V12ProjectFileCreateInput, V12ProjectFileUncheckedCreateInput>
+  }
+
+  /**
+   * V12ProjectFile createMany
+   */
+  export type V12ProjectFileCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many V12ProjectFiles.
+     */
+    data: V12ProjectFileCreateManyInput | V12ProjectFileCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * V12ProjectFile createManyAndReturn
+   */
+  export type V12ProjectFileCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectFile
+     */
+    select?: V12ProjectFileSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many V12ProjectFiles.
+     */
+    data: V12ProjectFileCreateManyInput | V12ProjectFileCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectFileIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * V12ProjectFile update
+   */
+  export type V12ProjectFileUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectFile
+     */
+    select?: V12ProjectFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectFileInclude<ExtArgs> | null
+    /**
+     * The data needed to update a V12ProjectFile.
+     */
+    data: XOR<V12ProjectFileUpdateInput, V12ProjectFileUncheckedUpdateInput>
+    /**
+     * Choose, which V12ProjectFile to update.
+     */
+    where: V12ProjectFileWhereUniqueInput
+  }
+
+  /**
+   * V12ProjectFile updateMany
+   */
+  export type V12ProjectFileUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update V12ProjectFiles.
+     */
+    data: XOR<V12ProjectFileUpdateManyMutationInput, V12ProjectFileUncheckedUpdateManyInput>
+    /**
+     * Filter which V12ProjectFiles to update
+     */
+    where?: V12ProjectFileWhereInput
+  }
+
+  /**
+   * V12ProjectFile upsert
+   */
+  export type V12ProjectFileUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectFile
+     */
+    select?: V12ProjectFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectFileInclude<ExtArgs> | null
+    /**
+     * The filter to search for the V12ProjectFile to update in case it exists.
+     */
+    where: V12ProjectFileWhereUniqueInput
+    /**
+     * In case the V12ProjectFile found by the `where` argument doesn't exist, create a new V12ProjectFile with this data.
+     */
+    create: XOR<V12ProjectFileCreateInput, V12ProjectFileUncheckedCreateInput>
+    /**
+     * In case the V12ProjectFile was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<V12ProjectFileUpdateInput, V12ProjectFileUncheckedUpdateInput>
+  }
+
+  /**
+   * V12ProjectFile delete
+   */
+  export type V12ProjectFileDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectFile
+     */
+    select?: V12ProjectFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectFileInclude<ExtArgs> | null
+    /**
+     * Filter which V12ProjectFile to delete.
+     */
+    where: V12ProjectFileWhereUniqueInput
+  }
+
+  /**
+   * V12ProjectFile deleteMany
+   */
+  export type V12ProjectFileDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which V12ProjectFiles to delete
+     */
+    where?: V12ProjectFileWhereInput
+  }
+
+  /**
+   * V12ProjectFile without action
+   */
+  export type V12ProjectFileDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectFile
+     */
+    select?: V12ProjectFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectFileInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model V12ProjectRevision
+   */
+
+  export type AggregateV12ProjectRevision = {
+    _count: V12ProjectRevisionCountAggregateOutputType | null
+    _avg: V12ProjectRevisionAvgAggregateOutputType | null
+    _sum: V12ProjectRevisionSumAggregateOutputType | null
+    _min: V12ProjectRevisionMinAggregateOutputType | null
+    _max: V12ProjectRevisionMaxAggregateOutputType | null
+  }
+
+  export type V12ProjectRevisionAvgAggregateOutputType = {
+    sequence: number | null
+  }
+
+  export type V12ProjectRevisionSumAggregateOutputType = {
+    sequence: number | null
+  }
+
+  export type V12ProjectRevisionMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    sequence: number | null
+    createdBy: string | null
+    createdAt: Date | null
+  }
+
+  export type V12ProjectRevisionMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    sequence: number | null
+    createdBy: string | null
+    createdAt: Date | null
+  }
+
+  export type V12ProjectRevisionCountAggregateOutputType = {
+    id: number
+    projectId: number
+    sequence: number
+    operations: number
+    createdBy: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type V12ProjectRevisionAvgAggregateInputType = {
+    sequence?: true
+  }
+
+  export type V12ProjectRevisionSumAggregateInputType = {
+    sequence?: true
+  }
+
+  export type V12ProjectRevisionMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    sequence?: true
+    createdBy?: true
+    createdAt?: true
+  }
+
+  export type V12ProjectRevisionMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    sequence?: true
+    createdBy?: true
+    createdAt?: true
+  }
+
+  export type V12ProjectRevisionCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    sequence?: true
+    operations?: true
+    createdBy?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type V12ProjectRevisionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which V12ProjectRevision to aggregate.
+     */
+    where?: V12ProjectRevisionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12ProjectRevisions to fetch.
+     */
+    orderBy?: V12ProjectRevisionOrderByWithRelationInput | V12ProjectRevisionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: V12ProjectRevisionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12ProjectRevisions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12ProjectRevisions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned V12ProjectRevisions
+    **/
+    _count?: true | V12ProjectRevisionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: V12ProjectRevisionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: V12ProjectRevisionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: V12ProjectRevisionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: V12ProjectRevisionMaxAggregateInputType
+  }
+
+  export type GetV12ProjectRevisionAggregateType<T extends V12ProjectRevisionAggregateArgs> = {
+        [P in keyof T & keyof AggregateV12ProjectRevision]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateV12ProjectRevision[P]>
+      : GetScalarType<T[P], AggregateV12ProjectRevision[P]>
+  }
+
+
+
+
+  export type V12ProjectRevisionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: V12ProjectRevisionWhereInput
+    orderBy?: V12ProjectRevisionOrderByWithAggregationInput | V12ProjectRevisionOrderByWithAggregationInput[]
+    by: V12ProjectRevisionScalarFieldEnum[] | V12ProjectRevisionScalarFieldEnum
+    having?: V12ProjectRevisionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: V12ProjectRevisionCountAggregateInputType | true
+    _avg?: V12ProjectRevisionAvgAggregateInputType
+    _sum?: V12ProjectRevisionSumAggregateInputType
+    _min?: V12ProjectRevisionMinAggregateInputType
+    _max?: V12ProjectRevisionMaxAggregateInputType
+  }
+
+  export type V12ProjectRevisionGroupByOutputType = {
+    id: string
+    projectId: string
+    sequence: number
+    operations: JsonValue
+    createdBy: string | null
+    createdAt: Date
+    _count: V12ProjectRevisionCountAggregateOutputType | null
+    _avg: V12ProjectRevisionAvgAggregateOutputType | null
+    _sum: V12ProjectRevisionSumAggregateOutputType | null
+    _min: V12ProjectRevisionMinAggregateOutputType | null
+    _max: V12ProjectRevisionMaxAggregateOutputType | null
+  }
+
+  type GetV12ProjectRevisionGroupByPayload<T extends V12ProjectRevisionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<V12ProjectRevisionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof V12ProjectRevisionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], V12ProjectRevisionGroupByOutputType[P]>
+            : GetScalarType<T[P], V12ProjectRevisionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type V12ProjectRevisionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    sequence?: boolean
+    operations?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    project?: boolean | V12ProjectDefaultArgs<ExtArgs>
+    checkpoints?: boolean | V12ProjectRevision$checkpointsArgs<ExtArgs>
+    _count?: boolean | V12ProjectRevisionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["v12ProjectRevision"]>
+
+  export type V12ProjectRevisionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    sequence?: boolean
+    operations?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    project?: boolean | V12ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["v12ProjectRevision"]>
+
+  export type V12ProjectRevisionSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    sequence?: boolean
+    operations?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+  }
+
+  export type V12ProjectRevisionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | V12ProjectDefaultArgs<ExtArgs>
+    checkpoints?: boolean | V12ProjectRevision$checkpointsArgs<ExtArgs>
+    _count?: boolean | V12ProjectRevisionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type V12ProjectRevisionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | V12ProjectDefaultArgs<ExtArgs>
+  }
+
+  export type $V12ProjectRevisionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "V12ProjectRevision"
+    objects: {
+      project: Prisma.$V12ProjectPayload<ExtArgs>
+      checkpoints: Prisma.$V12ProjectCheckpointPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      sequence: number
+      operations: Prisma.JsonValue
+      createdBy: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["v12ProjectRevision"]>
+    composites: {}
+  }
+
+  type V12ProjectRevisionGetPayload<S extends boolean | null | undefined | V12ProjectRevisionDefaultArgs> = $Result.GetResult<Prisma.$V12ProjectRevisionPayload, S>
+
+  type V12ProjectRevisionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<V12ProjectRevisionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: V12ProjectRevisionCountAggregateInputType | true
+    }
+
+  export interface V12ProjectRevisionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['V12ProjectRevision'], meta: { name: 'V12ProjectRevision' } }
+    /**
+     * Find zero or one V12ProjectRevision that matches the filter.
+     * @param {V12ProjectRevisionFindUniqueArgs} args - Arguments to find a V12ProjectRevision
+     * @example
+     * // Get one V12ProjectRevision
+     * const v12ProjectRevision = await prisma.v12ProjectRevision.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends V12ProjectRevisionFindUniqueArgs>(args: SelectSubset<T, V12ProjectRevisionFindUniqueArgs<ExtArgs>>): Prisma__V12ProjectRevisionClient<$Result.GetResult<Prisma.$V12ProjectRevisionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one V12ProjectRevision that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {V12ProjectRevisionFindUniqueOrThrowArgs} args - Arguments to find a V12ProjectRevision
+     * @example
+     * // Get one V12ProjectRevision
+     * const v12ProjectRevision = await prisma.v12ProjectRevision.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends V12ProjectRevisionFindUniqueOrThrowArgs>(args: SelectSubset<T, V12ProjectRevisionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__V12ProjectRevisionClient<$Result.GetResult<Prisma.$V12ProjectRevisionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first V12ProjectRevision that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectRevisionFindFirstArgs} args - Arguments to find a V12ProjectRevision
+     * @example
+     * // Get one V12ProjectRevision
+     * const v12ProjectRevision = await prisma.v12ProjectRevision.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends V12ProjectRevisionFindFirstArgs>(args?: SelectSubset<T, V12ProjectRevisionFindFirstArgs<ExtArgs>>): Prisma__V12ProjectRevisionClient<$Result.GetResult<Prisma.$V12ProjectRevisionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first V12ProjectRevision that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectRevisionFindFirstOrThrowArgs} args - Arguments to find a V12ProjectRevision
+     * @example
+     * // Get one V12ProjectRevision
+     * const v12ProjectRevision = await prisma.v12ProjectRevision.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends V12ProjectRevisionFindFirstOrThrowArgs>(args?: SelectSubset<T, V12ProjectRevisionFindFirstOrThrowArgs<ExtArgs>>): Prisma__V12ProjectRevisionClient<$Result.GetResult<Prisma.$V12ProjectRevisionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more V12ProjectRevisions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectRevisionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all V12ProjectRevisions
+     * const v12ProjectRevisions = await prisma.v12ProjectRevision.findMany()
+     * 
+     * // Get first 10 V12ProjectRevisions
+     * const v12ProjectRevisions = await prisma.v12ProjectRevision.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const v12ProjectRevisionWithIdOnly = await prisma.v12ProjectRevision.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends V12ProjectRevisionFindManyArgs>(args?: SelectSubset<T, V12ProjectRevisionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectRevisionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a V12ProjectRevision.
+     * @param {V12ProjectRevisionCreateArgs} args - Arguments to create a V12ProjectRevision.
+     * @example
+     * // Create one V12ProjectRevision
+     * const V12ProjectRevision = await prisma.v12ProjectRevision.create({
+     *   data: {
+     *     // ... data to create a V12ProjectRevision
+     *   }
+     * })
+     * 
+     */
+    create<T extends V12ProjectRevisionCreateArgs>(args: SelectSubset<T, V12ProjectRevisionCreateArgs<ExtArgs>>): Prisma__V12ProjectRevisionClient<$Result.GetResult<Prisma.$V12ProjectRevisionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many V12ProjectRevisions.
+     * @param {V12ProjectRevisionCreateManyArgs} args - Arguments to create many V12ProjectRevisions.
+     * @example
+     * // Create many V12ProjectRevisions
+     * const v12ProjectRevision = await prisma.v12ProjectRevision.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends V12ProjectRevisionCreateManyArgs>(args?: SelectSubset<T, V12ProjectRevisionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many V12ProjectRevisions and returns the data saved in the database.
+     * @param {V12ProjectRevisionCreateManyAndReturnArgs} args - Arguments to create many V12ProjectRevisions.
+     * @example
+     * // Create many V12ProjectRevisions
+     * const v12ProjectRevision = await prisma.v12ProjectRevision.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many V12ProjectRevisions and only return the `id`
+     * const v12ProjectRevisionWithIdOnly = await prisma.v12ProjectRevision.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends V12ProjectRevisionCreateManyAndReturnArgs>(args?: SelectSubset<T, V12ProjectRevisionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectRevisionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a V12ProjectRevision.
+     * @param {V12ProjectRevisionDeleteArgs} args - Arguments to delete one V12ProjectRevision.
+     * @example
+     * // Delete one V12ProjectRevision
+     * const V12ProjectRevision = await prisma.v12ProjectRevision.delete({
+     *   where: {
+     *     // ... filter to delete one V12ProjectRevision
+     *   }
+     * })
+     * 
+     */
+    delete<T extends V12ProjectRevisionDeleteArgs>(args: SelectSubset<T, V12ProjectRevisionDeleteArgs<ExtArgs>>): Prisma__V12ProjectRevisionClient<$Result.GetResult<Prisma.$V12ProjectRevisionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one V12ProjectRevision.
+     * @param {V12ProjectRevisionUpdateArgs} args - Arguments to update one V12ProjectRevision.
+     * @example
+     * // Update one V12ProjectRevision
+     * const v12ProjectRevision = await prisma.v12ProjectRevision.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends V12ProjectRevisionUpdateArgs>(args: SelectSubset<T, V12ProjectRevisionUpdateArgs<ExtArgs>>): Prisma__V12ProjectRevisionClient<$Result.GetResult<Prisma.$V12ProjectRevisionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more V12ProjectRevisions.
+     * @param {V12ProjectRevisionDeleteManyArgs} args - Arguments to filter V12ProjectRevisions to delete.
+     * @example
+     * // Delete a few V12ProjectRevisions
+     * const { count } = await prisma.v12ProjectRevision.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends V12ProjectRevisionDeleteManyArgs>(args?: SelectSubset<T, V12ProjectRevisionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more V12ProjectRevisions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectRevisionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many V12ProjectRevisions
+     * const v12ProjectRevision = await prisma.v12ProjectRevision.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends V12ProjectRevisionUpdateManyArgs>(args: SelectSubset<T, V12ProjectRevisionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one V12ProjectRevision.
+     * @param {V12ProjectRevisionUpsertArgs} args - Arguments to update or create a V12ProjectRevision.
+     * @example
+     * // Update or create a V12ProjectRevision
+     * const v12ProjectRevision = await prisma.v12ProjectRevision.upsert({
+     *   create: {
+     *     // ... data to create a V12ProjectRevision
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the V12ProjectRevision we want to update
+     *   }
+     * })
+     */
+    upsert<T extends V12ProjectRevisionUpsertArgs>(args: SelectSubset<T, V12ProjectRevisionUpsertArgs<ExtArgs>>): Prisma__V12ProjectRevisionClient<$Result.GetResult<Prisma.$V12ProjectRevisionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of V12ProjectRevisions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectRevisionCountArgs} args - Arguments to filter V12ProjectRevisions to count.
+     * @example
+     * // Count the number of V12ProjectRevisions
+     * const count = await prisma.v12ProjectRevision.count({
+     *   where: {
+     *     // ... the filter for the V12ProjectRevisions we want to count
+     *   }
+     * })
+    **/
+    count<T extends V12ProjectRevisionCountArgs>(
+      args?: Subset<T, V12ProjectRevisionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], V12ProjectRevisionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a V12ProjectRevision.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectRevisionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends V12ProjectRevisionAggregateArgs>(args: Subset<T, V12ProjectRevisionAggregateArgs>): Prisma.PrismaPromise<GetV12ProjectRevisionAggregateType<T>>
+
+    /**
+     * Group by V12ProjectRevision.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectRevisionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends V12ProjectRevisionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: V12ProjectRevisionGroupByArgs['orderBy'] }
+        : { orderBy?: V12ProjectRevisionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, V12ProjectRevisionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetV12ProjectRevisionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the V12ProjectRevision model
+   */
+  readonly fields: V12ProjectRevisionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for V12ProjectRevision.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__V12ProjectRevisionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends V12ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, V12ProjectDefaultArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    checkpoints<T extends V12ProjectRevision$checkpointsArgs<ExtArgs> = {}>(args?: Subset<T, V12ProjectRevision$checkpointsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectCheckpointPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the V12ProjectRevision model
+   */ 
+  interface V12ProjectRevisionFieldRefs {
+    readonly id: FieldRef<"V12ProjectRevision", 'String'>
+    readonly projectId: FieldRef<"V12ProjectRevision", 'String'>
+    readonly sequence: FieldRef<"V12ProjectRevision", 'Int'>
+    readonly operations: FieldRef<"V12ProjectRevision", 'Json'>
+    readonly createdBy: FieldRef<"V12ProjectRevision", 'String'>
+    readonly createdAt: FieldRef<"V12ProjectRevision", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * V12ProjectRevision findUnique
+   */
+  export type V12ProjectRevisionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevision
+     */
+    select?: V12ProjectRevisionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectRevisionInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectRevision to fetch.
+     */
+    where: V12ProjectRevisionWhereUniqueInput
+  }
+
+  /**
+   * V12ProjectRevision findUniqueOrThrow
+   */
+  export type V12ProjectRevisionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevision
+     */
+    select?: V12ProjectRevisionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectRevisionInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectRevision to fetch.
+     */
+    where: V12ProjectRevisionWhereUniqueInput
+  }
+
+  /**
+   * V12ProjectRevision findFirst
+   */
+  export type V12ProjectRevisionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevision
+     */
+    select?: V12ProjectRevisionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectRevisionInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectRevision to fetch.
+     */
+    where?: V12ProjectRevisionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12ProjectRevisions to fetch.
+     */
+    orderBy?: V12ProjectRevisionOrderByWithRelationInput | V12ProjectRevisionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for V12ProjectRevisions.
+     */
+    cursor?: V12ProjectRevisionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12ProjectRevisions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12ProjectRevisions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of V12ProjectRevisions.
+     */
+    distinct?: V12ProjectRevisionScalarFieldEnum | V12ProjectRevisionScalarFieldEnum[]
+  }
+
+  /**
+   * V12ProjectRevision findFirstOrThrow
+   */
+  export type V12ProjectRevisionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevision
+     */
+    select?: V12ProjectRevisionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectRevisionInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectRevision to fetch.
+     */
+    where?: V12ProjectRevisionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12ProjectRevisions to fetch.
+     */
+    orderBy?: V12ProjectRevisionOrderByWithRelationInput | V12ProjectRevisionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for V12ProjectRevisions.
+     */
+    cursor?: V12ProjectRevisionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12ProjectRevisions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12ProjectRevisions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of V12ProjectRevisions.
+     */
+    distinct?: V12ProjectRevisionScalarFieldEnum | V12ProjectRevisionScalarFieldEnum[]
+  }
+
+  /**
+   * V12ProjectRevision findMany
+   */
+  export type V12ProjectRevisionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevision
+     */
+    select?: V12ProjectRevisionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectRevisionInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectRevisions to fetch.
+     */
+    where?: V12ProjectRevisionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12ProjectRevisions to fetch.
+     */
+    orderBy?: V12ProjectRevisionOrderByWithRelationInput | V12ProjectRevisionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing V12ProjectRevisions.
+     */
+    cursor?: V12ProjectRevisionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12ProjectRevisions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12ProjectRevisions.
+     */
+    skip?: number
+    distinct?: V12ProjectRevisionScalarFieldEnum | V12ProjectRevisionScalarFieldEnum[]
+  }
+
+  /**
+   * V12ProjectRevision create
+   */
+  export type V12ProjectRevisionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevision
+     */
+    select?: V12ProjectRevisionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectRevisionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a V12ProjectRevision.
+     */
+    data: XOR<V12ProjectRevisionCreateInput, V12ProjectRevisionUncheckedCreateInput>
+  }
+
+  /**
+   * V12ProjectRevision createMany
+   */
+  export type V12ProjectRevisionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many V12ProjectRevisions.
+     */
+    data: V12ProjectRevisionCreateManyInput | V12ProjectRevisionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * V12ProjectRevision createManyAndReturn
+   */
+  export type V12ProjectRevisionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevision
+     */
+    select?: V12ProjectRevisionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many V12ProjectRevisions.
+     */
+    data: V12ProjectRevisionCreateManyInput | V12ProjectRevisionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectRevisionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * V12ProjectRevision update
+   */
+  export type V12ProjectRevisionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevision
+     */
+    select?: V12ProjectRevisionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectRevisionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a V12ProjectRevision.
+     */
+    data: XOR<V12ProjectRevisionUpdateInput, V12ProjectRevisionUncheckedUpdateInput>
+    /**
+     * Choose, which V12ProjectRevision to update.
+     */
+    where: V12ProjectRevisionWhereUniqueInput
+  }
+
+  /**
+   * V12ProjectRevision updateMany
+   */
+  export type V12ProjectRevisionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update V12ProjectRevisions.
+     */
+    data: XOR<V12ProjectRevisionUpdateManyMutationInput, V12ProjectRevisionUncheckedUpdateManyInput>
+    /**
+     * Filter which V12ProjectRevisions to update
+     */
+    where?: V12ProjectRevisionWhereInput
+  }
+
+  /**
+   * V12ProjectRevision upsert
+   */
+  export type V12ProjectRevisionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevision
+     */
+    select?: V12ProjectRevisionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectRevisionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the V12ProjectRevision to update in case it exists.
+     */
+    where: V12ProjectRevisionWhereUniqueInput
+    /**
+     * In case the V12ProjectRevision found by the `where` argument doesn't exist, create a new V12ProjectRevision with this data.
+     */
+    create: XOR<V12ProjectRevisionCreateInput, V12ProjectRevisionUncheckedCreateInput>
+    /**
+     * In case the V12ProjectRevision was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<V12ProjectRevisionUpdateInput, V12ProjectRevisionUncheckedUpdateInput>
+  }
+
+  /**
+   * V12ProjectRevision delete
+   */
+  export type V12ProjectRevisionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevision
+     */
+    select?: V12ProjectRevisionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectRevisionInclude<ExtArgs> | null
+    /**
+     * Filter which V12ProjectRevision to delete.
+     */
+    where: V12ProjectRevisionWhereUniqueInput
+  }
+
+  /**
+   * V12ProjectRevision deleteMany
+   */
+  export type V12ProjectRevisionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which V12ProjectRevisions to delete
+     */
+    where?: V12ProjectRevisionWhereInput
+  }
+
+  /**
+   * V12ProjectRevision.checkpoints
+   */
+  export type V12ProjectRevision$checkpointsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointInclude<ExtArgs> | null
+    where?: V12ProjectCheckpointWhereInput
+    orderBy?: V12ProjectCheckpointOrderByWithRelationInput | V12ProjectCheckpointOrderByWithRelationInput[]
+    cursor?: V12ProjectCheckpointWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: V12ProjectCheckpointScalarFieldEnum | V12ProjectCheckpointScalarFieldEnum[]
+  }
+
+  /**
+   * V12ProjectRevision without action
+   */
+  export type V12ProjectRevisionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectRevision
+     */
+    select?: V12ProjectRevisionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectRevisionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model V12ProjectCheckpoint
+   */
+
+  export type AggregateV12ProjectCheckpoint = {
+    _count: V12ProjectCheckpointCountAggregateOutputType | null
+    _min: V12ProjectCheckpointMinAggregateOutputType | null
+    _max: V12ProjectCheckpointMaxAggregateOutputType | null
+  }
+
+  export type V12ProjectCheckpointMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    revisionId: string | null
+    label: string | null
+    createdBy: string | null
+    createdAt: Date | null
+  }
+
+  export type V12ProjectCheckpointMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    revisionId: string | null
+    label: string | null
+    createdBy: string | null
+    createdAt: Date | null
+  }
+
+  export type V12ProjectCheckpointCountAggregateOutputType = {
+    id: number
+    projectId: number
+    revisionId: number
+    label: number
+    snapshot: number
+    createdBy: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type V12ProjectCheckpointMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    revisionId?: true
+    label?: true
+    createdBy?: true
+    createdAt?: true
+  }
+
+  export type V12ProjectCheckpointMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    revisionId?: true
+    label?: true
+    createdBy?: true
+    createdAt?: true
+  }
+
+  export type V12ProjectCheckpointCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    revisionId?: true
+    label?: true
+    snapshot?: true
+    createdBy?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type V12ProjectCheckpointAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which V12ProjectCheckpoint to aggregate.
+     */
+    where?: V12ProjectCheckpointWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12ProjectCheckpoints to fetch.
+     */
+    orderBy?: V12ProjectCheckpointOrderByWithRelationInput | V12ProjectCheckpointOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: V12ProjectCheckpointWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12ProjectCheckpoints from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12ProjectCheckpoints.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned V12ProjectCheckpoints
+    **/
+    _count?: true | V12ProjectCheckpointCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: V12ProjectCheckpointMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: V12ProjectCheckpointMaxAggregateInputType
+  }
+
+  export type GetV12ProjectCheckpointAggregateType<T extends V12ProjectCheckpointAggregateArgs> = {
+        [P in keyof T & keyof AggregateV12ProjectCheckpoint]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateV12ProjectCheckpoint[P]>
+      : GetScalarType<T[P], AggregateV12ProjectCheckpoint[P]>
+  }
+
+
+
+
+  export type V12ProjectCheckpointGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: V12ProjectCheckpointWhereInput
+    orderBy?: V12ProjectCheckpointOrderByWithAggregationInput | V12ProjectCheckpointOrderByWithAggregationInput[]
+    by: V12ProjectCheckpointScalarFieldEnum[] | V12ProjectCheckpointScalarFieldEnum
+    having?: V12ProjectCheckpointScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: V12ProjectCheckpointCountAggregateInputType | true
+    _min?: V12ProjectCheckpointMinAggregateInputType
+    _max?: V12ProjectCheckpointMaxAggregateInputType
+  }
+
+  export type V12ProjectCheckpointGroupByOutputType = {
+    id: string
+    projectId: string
+    revisionId: string
+    label: string | null
+    snapshot: JsonValue
+    createdBy: string | null
+    createdAt: Date
+    _count: V12ProjectCheckpointCountAggregateOutputType | null
+    _min: V12ProjectCheckpointMinAggregateOutputType | null
+    _max: V12ProjectCheckpointMaxAggregateOutputType | null
+  }
+
+  type GetV12ProjectCheckpointGroupByPayload<T extends V12ProjectCheckpointGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<V12ProjectCheckpointGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof V12ProjectCheckpointGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], V12ProjectCheckpointGroupByOutputType[P]>
+            : GetScalarType<T[P], V12ProjectCheckpointGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type V12ProjectCheckpointSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    revisionId?: boolean
+    label?: boolean
+    snapshot?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    project?: boolean | V12ProjectDefaultArgs<ExtArgs>
+    revision?: boolean | V12ProjectRevisionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["v12ProjectCheckpoint"]>
+
+  export type V12ProjectCheckpointSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    revisionId?: boolean
+    label?: boolean
+    snapshot?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    project?: boolean | V12ProjectDefaultArgs<ExtArgs>
+    revision?: boolean | V12ProjectRevisionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["v12ProjectCheckpoint"]>
+
+  export type V12ProjectCheckpointSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    revisionId?: boolean
+    label?: boolean
+    snapshot?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+  }
+
+  export type V12ProjectCheckpointInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | V12ProjectDefaultArgs<ExtArgs>
+    revision?: boolean | V12ProjectRevisionDefaultArgs<ExtArgs>
+  }
+  export type V12ProjectCheckpointIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | V12ProjectDefaultArgs<ExtArgs>
+    revision?: boolean | V12ProjectRevisionDefaultArgs<ExtArgs>
+  }
+
+  export type $V12ProjectCheckpointPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "V12ProjectCheckpoint"
+    objects: {
+      project: Prisma.$V12ProjectPayload<ExtArgs>
+      revision: Prisma.$V12ProjectRevisionPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      revisionId: string
+      label: string | null
+      snapshot: Prisma.JsonValue
+      createdBy: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["v12ProjectCheckpoint"]>
+    composites: {}
+  }
+
+  type V12ProjectCheckpointGetPayload<S extends boolean | null | undefined | V12ProjectCheckpointDefaultArgs> = $Result.GetResult<Prisma.$V12ProjectCheckpointPayload, S>
+
+  type V12ProjectCheckpointCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<V12ProjectCheckpointFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: V12ProjectCheckpointCountAggregateInputType | true
+    }
+
+  export interface V12ProjectCheckpointDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['V12ProjectCheckpoint'], meta: { name: 'V12ProjectCheckpoint' } }
+    /**
+     * Find zero or one V12ProjectCheckpoint that matches the filter.
+     * @param {V12ProjectCheckpointFindUniqueArgs} args - Arguments to find a V12ProjectCheckpoint
+     * @example
+     * // Get one V12ProjectCheckpoint
+     * const v12ProjectCheckpoint = await prisma.v12ProjectCheckpoint.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends V12ProjectCheckpointFindUniqueArgs>(args: SelectSubset<T, V12ProjectCheckpointFindUniqueArgs<ExtArgs>>): Prisma__V12ProjectCheckpointClient<$Result.GetResult<Prisma.$V12ProjectCheckpointPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one V12ProjectCheckpoint that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {V12ProjectCheckpointFindUniqueOrThrowArgs} args - Arguments to find a V12ProjectCheckpoint
+     * @example
+     * // Get one V12ProjectCheckpoint
+     * const v12ProjectCheckpoint = await prisma.v12ProjectCheckpoint.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends V12ProjectCheckpointFindUniqueOrThrowArgs>(args: SelectSubset<T, V12ProjectCheckpointFindUniqueOrThrowArgs<ExtArgs>>): Prisma__V12ProjectCheckpointClient<$Result.GetResult<Prisma.$V12ProjectCheckpointPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first V12ProjectCheckpoint that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectCheckpointFindFirstArgs} args - Arguments to find a V12ProjectCheckpoint
+     * @example
+     * // Get one V12ProjectCheckpoint
+     * const v12ProjectCheckpoint = await prisma.v12ProjectCheckpoint.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends V12ProjectCheckpointFindFirstArgs>(args?: SelectSubset<T, V12ProjectCheckpointFindFirstArgs<ExtArgs>>): Prisma__V12ProjectCheckpointClient<$Result.GetResult<Prisma.$V12ProjectCheckpointPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first V12ProjectCheckpoint that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectCheckpointFindFirstOrThrowArgs} args - Arguments to find a V12ProjectCheckpoint
+     * @example
+     * // Get one V12ProjectCheckpoint
+     * const v12ProjectCheckpoint = await prisma.v12ProjectCheckpoint.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends V12ProjectCheckpointFindFirstOrThrowArgs>(args?: SelectSubset<T, V12ProjectCheckpointFindFirstOrThrowArgs<ExtArgs>>): Prisma__V12ProjectCheckpointClient<$Result.GetResult<Prisma.$V12ProjectCheckpointPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more V12ProjectCheckpoints that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectCheckpointFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all V12ProjectCheckpoints
+     * const v12ProjectCheckpoints = await prisma.v12ProjectCheckpoint.findMany()
+     * 
+     * // Get first 10 V12ProjectCheckpoints
+     * const v12ProjectCheckpoints = await prisma.v12ProjectCheckpoint.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const v12ProjectCheckpointWithIdOnly = await prisma.v12ProjectCheckpoint.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends V12ProjectCheckpointFindManyArgs>(args?: SelectSubset<T, V12ProjectCheckpointFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectCheckpointPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a V12ProjectCheckpoint.
+     * @param {V12ProjectCheckpointCreateArgs} args - Arguments to create a V12ProjectCheckpoint.
+     * @example
+     * // Create one V12ProjectCheckpoint
+     * const V12ProjectCheckpoint = await prisma.v12ProjectCheckpoint.create({
+     *   data: {
+     *     // ... data to create a V12ProjectCheckpoint
+     *   }
+     * })
+     * 
+     */
+    create<T extends V12ProjectCheckpointCreateArgs>(args: SelectSubset<T, V12ProjectCheckpointCreateArgs<ExtArgs>>): Prisma__V12ProjectCheckpointClient<$Result.GetResult<Prisma.$V12ProjectCheckpointPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many V12ProjectCheckpoints.
+     * @param {V12ProjectCheckpointCreateManyArgs} args - Arguments to create many V12ProjectCheckpoints.
+     * @example
+     * // Create many V12ProjectCheckpoints
+     * const v12ProjectCheckpoint = await prisma.v12ProjectCheckpoint.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends V12ProjectCheckpointCreateManyArgs>(args?: SelectSubset<T, V12ProjectCheckpointCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many V12ProjectCheckpoints and returns the data saved in the database.
+     * @param {V12ProjectCheckpointCreateManyAndReturnArgs} args - Arguments to create many V12ProjectCheckpoints.
+     * @example
+     * // Create many V12ProjectCheckpoints
+     * const v12ProjectCheckpoint = await prisma.v12ProjectCheckpoint.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many V12ProjectCheckpoints and only return the `id`
+     * const v12ProjectCheckpointWithIdOnly = await prisma.v12ProjectCheckpoint.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends V12ProjectCheckpointCreateManyAndReturnArgs>(args?: SelectSubset<T, V12ProjectCheckpointCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectCheckpointPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a V12ProjectCheckpoint.
+     * @param {V12ProjectCheckpointDeleteArgs} args - Arguments to delete one V12ProjectCheckpoint.
+     * @example
+     * // Delete one V12ProjectCheckpoint
+     * const V12ProjectCheckpoint = await prisma.v12ProjectCheckpoint.delete({
+     *   where: {
+     *     // ... filter to delete one V12ProjectCheckpoint
+     *   }
+     * })
+     * 
+     */
+    delete<T extends V12ProjectCheckpointDeleteArgs>(args: SelectSubset<T, V12ProjectCheckpointDeleteArgs<ExtArgs>>): Prisma__V12ProjectCheckpointClient<$Result.GetResult<Prisma.$V12ProjectCheckpointPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one V12ProjectCheckpoint.
+     * @param {V12ProjectCheckpointUpdateArgs} args - Arguments to update one V12ProjectCheckpoint.
+     * @example
+     * // Update one V12ProjectCheckpoint
+     * const v12ProjectCheckpoint = await prisma.v12ProjectCheckpoint.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends V12ProjectCheckpointUpdateArgs>(args: SelectSubset<T, V12ProjectCheckpointUpdateArgs<ExtArgs>>): Prisma__V12ProjectCheckpointClient<$Result.GetResult<Prisma.$V12ProjectCheckpointPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more V12ProjectCheckpoints.
+     * @param {V12ProjectCheckpointDeleteManyArgs} args - Arguments to filter V12ProjectCheckpoints to delete.
+     * @example
+     * // Delete a few V12ProjectCheckpoints
+     * const { count } = await prisma.v12ProjectCheckpoint.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends V12ProjectCheckpointDeleteManyArgs>(args?: SelectSubset<T, V12ProjectCheckpointDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more V12ProjectCheckpoints.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectCheckpointUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many V12ProjectCheckpoints
+     * const v12ProjectCheckpoint = await prisma.v12ProjectCheckpoint.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends V12ProjectCheckpointUpdateManyArgs>(args: SelectSubset<T, V12ProjectCheckpointUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one V12ProjectCheckpoint.
+     * @param {V12ProjectCheckpointUpsertArgs} args - Arguments to update or create a V12ProjectCheckpoint.
+     * @example
+     * // Update or create a V12ProjectCheckpoint
+     * const v12ProjectCheckpoint = await prisma.v12ProjectCheckpoint.upsert({
+     *   create: {
+     *     // ... data to create a V12ProjectCheckpoint
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the V12ProjectCheckpoint we want to update
+     *   }
+     * })
+     */
+    upsert<T extends V12ProjectCheckpointUpsertArgs>(args: SelectSubset<T, V12ProjectCheckpointUpsertArgs<ExtArgs>>): Prisma__V12ProjectCheckpointClient<$Result.GetResult<Prisma.$V12ProjectCheckpointPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of V12ProjectCheckpoints.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectCheckpointCountArgs} args - Arguments to filter V12ProjectCheckpoints to count.
+     * @example
+     * // Count the number of V12ProjectCheckpoints
+     * const count = await prisma.v12ProjectCheckpoint.count({
+     *   where: {
+     *     // ... the filter for the V12ProjectCheckpoints we want to count
+     *   }
+     * })
+    **/
+    count<T extends V12ProjectCheckpointCountArgs>(
+      args?: Subset<T, V12ProjectCheckpointCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], V12ProjectCheckpointCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a V12ProjectCheckpoint.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectCheckpointAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends V12ProjectCheckpointAggregateArgs>(args: Subset<T, V12ProjectCheckpointAggregateArgs>): Prisma.PrismaPromise<GetV12ProjectCheckpointAggregateType<T>>
+
+    /**
+     * Group by V12ProjectCheckpoint.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12ProjectCheckpointGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends V12ProjectCheckpointGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: V12ProjectCheckpointGroupByArgs['orderBy'] }
+        : { orderBy?: V12ProjectCheckpointGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, V12ProjectCheckpointGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetV12ProjectCheckpointGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the V12ProjectCheckpoint model
+   */
+  readonly fields: V12ProjectCheckpointFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for V12ProjectCheckpoint.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__V12ProjectCheckpointClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends V12ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, V12ProjectDefaultArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    revision<T extends V12ProjectRevisionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, V12ProjectRevisionDefaultArgs<ExtArgs>>): Prisma__V12ProjectRevisionClient<$Result.GetResult<Prisma.$V12ProjectRevisionPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the V12ProjectCheckpoint model
+   */ 
+  interface V12ProjectCheckpointFieldRefs {
+    readonly id: FieldRef<"V12ProjectCheckpoint", 'String'>
+    readonly projectId: FieldRef<"V12ProjectCheckpoint", 'String'>
+    readonly revisionId: FieldRef<"V12ProjectCheckpoint", 'String'>
+    readonly label: FieldRef<"V12ProjectCheckpoint", 'String'>
+    readonly snapshot: FieldRef<"V12ProjectCheckpoint", 'Json'>
+    readonly createdBy: FieldRef<"V12ProjectCheckpoint", 'String'>
+    readonly createdAt: FieldRef<"V12ProjectCheckpoint", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * V12ProjectCheckpoint findUnique
+   */
+  export type V12ProjectCheckpointFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectCheckpoint to fetch.
+     */
+    where: V12ProjectCheckpointWhereUniqueInput
+  }
+
+  /**
+   * V12ProjectCheckpoint findUniqueOrThrow
+   */
+  export type V12ProjectCheckpointFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectCheckpoint to fetch.
+     */
+    where: V12ProjectCheckpointWhereUniqueInput
+  }
+
+  /**
+   * V12ProjectCheckpoint findFirst
+   */
+  export type V12ProjectCheckpointFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectCheckpoint to fetch.
+     */
+    where?: V12ProjectCheckpointWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12ProjectCheckpoints to fetch.
+     */
+    orderBy?: V12ProjectCheckpointOrderByWithRelationInput | V12ProjectCheckpointOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for V12ProjectCheckpoints.
+     */
+    cursor?: V12ProjectCheckpointWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12ProjectCheckpoints from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12ProjectCheckpoints.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of V12ProjectCheckpoints.
+     */
+    distinct?: V12ProjectCheckpointScalarFieldEnum | V12ProjectCheckpointScalarFieldEnum[]
+  }
+
+  /**
+   * V12ProjectCheckpoint findFirstOrThrow
+   */
+  export type V12ProjectCheckpointFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectCheckpoint to fetch.
+     */
+    where?: V12ProjectCheckpointWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12ProjectCheckpoints to fetch.
+     */
+    orderBy?: V12ProjectCheckpointOrderByWithRelationInput | V12ProjectCheckpointOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for V12ProjectCheckpoints.
+     */
+    cursor?: V12ProjectCheckpointWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12ProjectCheckpoints from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12ProjectCheckpoints.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of V12ProjectCheckpoints.
+     */
+    distinct?: V12ProjectCheckpointScalarFieldEnum | V12ProjectCheckpointScalarFieldEnum[]
+  }
+
+  /**
+   * V12ProjectCheckpoint findMany
+   */
+  export type V12ProjectCheckpointFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointInclude<ExtArgs> | null
+    /**
+     * Filter, which V12ProjectCheckpoints to fetch.
+     */
+    where?: V12ProjectCheckpointWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12ProjectCheckpoints to fetch.
+     */
+    orderBy?: V12ProjectCheckpointOrderByWithRelationInput | V12ProjectCheckpointOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing V12ProjectCheckpoints.
+     */
+    cursor?: V12ProjectCheckpointWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12ProjectCheckpoints from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12ProjectCheckpoints.
+     */
+    skip?: number
+    distinct?: V12ProjectCheckpointScalarFieldEnum | V12ProjectCheckpointScalarFieldEnum[]
+  }
+
+  /**
+   * V12ProjectCheckpoint create
+   */
+  export type V12ProjectCheckpointCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointInclude<ExtArgs> | null
+    /**
+     * The data needed to create a V12ProjectCheckpoint.
+     */
+    data: XOR<V12ProjectCheckpointCreateInput, V12ProjectCheckpointUncheckedCreateInput>
+  }
+
+  /**
+   * V12ProjectCheckpoint createMany
+   */
+  export type V12ProjectCheckpointCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many V12ProjectCheckpoints.
+     */
+    data: V12ProjectCheckpointCreateManyInput | V12ProjectCheckpointCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * V12ProjectCheckpoint createManyAndReturn
+   */
+  export type V12ProjectCheckpointCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many V12ProjectCheckpoints.
+     */
+    data: V12ProjectCheckpointCreateManyInput | V12ProjectCheckpointCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * V12ProjectCheckpoint update
+   */
+  export type V12ProjectCheckpointUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointInclude<ExtArgs> | null
+    /**
+     * The data needed to update a V12ProjectCheckpoint.
+     */
+    data: XOR<V12ProjectCheckpointUpdateInput, V12ProjectCheckpointUncheckedUpdateInput>
+    /**
+     * Choose, which V12ProjectCheckpoint to update.
+     */
+    where: V12ProjectCheckpointWhereUniqueInput
+  }
+
+  /**
+   * V12ProjectCheckpoint updateMany
+   */
+  export type V12ProjectCheckpointUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update V12ProjectCheckpoints.
+     */
+    data: XOR<V12ProjectCheckpointUpdateManyMutationInput, V12ProjectCheckpointUncheckedUpdateManyInput>
+    /**
+     * Filter which V12ProjectCheckpoints to update
+     */
+    where?: V12ProjectCheckpointWhereInput
+  }
+
+  /**
+   * V12ProjectCheckpoint upsert
+   */
+  export type V12ProjectCheckpointUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointInclude<ExtArgs> | null
+    /**
+     * The filter to search for the V12ProjectCheckpoint to update in case it exists.
+     */
+    where: V12ProjectCheckpointWhereUniqueInput
+    /**
+     * In case the V12ProjectCheckpoint found by the `where` argument doesn't exist, create a new V12ProjectCheckpoint with this data.
+     */
+    create: XOR<V12ProjectCheckpointCreateInput, V12ProjectCheckpointUncheckedCreateInput>
+    /**
+     * In case the V12ProjectCheckpoint was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<V12ProjectCheckpointUpdateInput, V12ProjectCheckpointUncheckedUpdateInput>
+  }
+
+  /**
+   * V12ProjectCheckpoint delete
+   */
+  export type V12ProjectCheckpointDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointInclude<ExtArgs> | null
+    /**
+     * Filter which V12ProjectCheckpoint to delete.
+     */
+    where: V12ProjectCheckpointWhereUniqueInput
+  }
+
+  /**
+   * V12ProjectCheckpoint deleteMany
+   */
+  export type V12ProjectCheckpointDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which V12ProjectCheckpoints to delete
+     */
+    where?: V12ProjectCheckpointWhereInput
+  }
+
+  /**
+   * V12ProjectCheckpoint without action
+   */
+  export type V12ProjectCheckpointDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12ProjectCheckpoint
+     */
+    select?: V12ProjectCheckpointSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V12ProjectCheckpointInclude<ExtArgs> | null
   }
 
 
@@ -74098,6 +78596,57 @@ export namespace Prisma {
   export type SiteScalarFieldEnum = (typeof SiteScalarFieldEnum)[keyof typeof SiteScalarFieldEnum]
 
 
+  export const V12ProjectScalarFieldEnum: {
+    id: 'id',
+    siteId: 'siteId',
+    tenantId: 'tenantId',
+    currentRevision: 'currentRevision',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type V12ProjectScalarFieldEnum = (typeof V12ProjectScalarFieldEnum)[keyof typeof V12ProjectScalarFieldEnum]
+
+
+  export const V12ProjectFileScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    path: 'path',
+    content: 'content',
+    contentHash: 'contentHash',
+    revision: 'revision',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type V12ProjectFileScalarFieldEnum = (typeof V12ProjectFileScalarFieldEnum)[keyof typeof V12ProjectFileScalarFieldEnum]
+
+
+  export const V12ProjectRevisionScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    sequence: 'sequence',
+    operations: 'operations',
+    createdBy: 'createdBy',
+    createdAt: 'createdAt'
+  };
+
+  export type V12ProjectRevisionScalarFieldEnum = (typeof V12ProjectRevisionScalarFieldEnum)[keyof typeof V12ProjectRevisionScalarFieldEnum]
+
+
+  export const V12ProjectCheckpointScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    revisionId: 'revisionId',
+    label: 'label',
+    snapshot: 'snapshot',
+    createdBy: 'createdBy',
+    createdAt: 'createdAt'
+  };
+
+  export type V12ProjectCheckpointScalarFieldEnum = (typeof V12ProjectCheckpointScalarFieldEnum)[keyof typeof V12ProjectCheckpointScalarFieldEnum]
+
+
   export const ShopScalarFieldEnum: {
     id: 'id',
     siteId: 'siteId',
@@ -76034,6 +80583,7 @@ export namespace Prisma {
     planUsages?: PlanUsageListRelationFilter
     AiEvent?: AiEventListRelationFilter
     aiSnapshots?: AIBlueprintSnapshotListRelationFilter
+    v12Projects?: V12ProjectListRelationFilter
   }
 
   export type TenantOrderByWithRelationInput = {
@@ -76063,6 +80613,7 @@ export namespace Prisma {
     planUsages?: PlanUsageOrderByRelationAggregateInput
     AiEvent?: AiEventOrderByRelationAggregateInput
     aiSnapshots?: AIBlueprintSnapshotOrderByRelationAggregateInput
+    v12Projects?: V12ProjectOrderByRelationAggregateInput
   }
 
   export type TenantWhereUniqueInput = Prisma.AtLeast<{
@@ -76095,6 +80646,7 @@ export namespace Prisma {
     planUsages?: PlanUsageListRelationFilter
     AiEvent?: AiEventListRelationFilter
     aiSnapshots?: AIBlueprintSnapshotListRelationFilter
+    v12Projects?: V12ProjectListRelationFilter
   }, "id" | "subscriptionId">
 
   export type TenantOrderByWithAggregationInput = {
@@ -76853,6 +81405,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadListRelationFilter
     crmApiKeys?: CrmApiKeyListRelationFilter
     shop?: XOR<ShopNullableRelationFilter, ShopWhereInput> | null
+    v12Project?: XOR<V12ProjectNullableRelationFilter, V12ProjectWhereInput> | null
   }
 
   export type SiteOrderByWithRelationInput = {
@@ -76883,6 +81436,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadOrderByRelationAggregateInput
     crmApiKeys?: CrmApiKeyOrderByRelationAggregateInput
     shop?: ShopOrderByWithRelationInput
+    v12Project?: V12ProjectOrderByWithRelationInput
   }
 
   export type SiteWhereUniqueInput = Prisma.AtLeast<{
@@ -76917,6 +81471,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadListRelationFilter
     crmApiKeys?: CrmApiKeyListRelationFilter
     shop?: XOR<ShopNullableRelationFilter, ShopWhereInput> | null
+    v12Project?: XOR<V12ProjectNullableRelationFilter, V12ProjectWhereInput> | null
   }, "id" | "tenantId_slug">
 
   export type SiteOrderByWithAggregationInput = {
@@ -76951,6 +81506,287 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Site"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Site"> | Date | string
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Site"> | Date | string | null
+  }
+
+  export type V12ProjectWhereInput = {
+    AND?: V12ProjectWhereInput | V12ProjectWhereInput[]
+    OR?: V12ProjectWhereInput[]
+    NOT?: V12ProjectWhereInput | V12ProjectWhereInput[]
+    id?: StringFilter<"V12Project"> | string
+    siteId?: StringFilter<"V12Project"> | string
+    tenantId?: StringFilter<"V12Project"> | string
+    currentRevision?: IntFilter<"V12Project"> | number
+    createdAt?: DateTimeFilter<"V12Project"> | Date | string
+    updatedAt?: DateTimeFilter<"V12Project"> | Date | string
+    site?: XOR<SiteRelationFilter, SiteWhereInput>
+    tenant?: XOR<TenantRelationFilter, TenantWhereInput>
+    files?: V12ProjectFileListRelationFilter
+    revisions?: V12ProjectRevisionListRelationFilter
+    checkpoints?: V12ProjectCheckpointListRelationFilter
+  }
+
+  export type V12ProjectOrderByWithRelationInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    currentRevision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    site?: SiteOrderByWithRelationInput
+    tenant?: TenantOrderByWithRelationInput
+    files?: V12ProjectFileOrderByRelationAggregateInput
+    revisions?: V12ProjectRevisionOrderByRelationAggregateInput
+    checkpoints?: V12ProjectCheckpointOrderByRelationAggregateInput
+  }
+
+  export type V12ProjectWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    siteId?: string
+    AND?: V12ProjectWhereInput | V12ProjectWhereInput[]
+    OR?: V12ProjectWhereInput[]
+    NOT?: V12ProjectWhereInput | V12ProjectWhereInput[]
+    tenantId?: StringFilter<"V12Project"> | string
+    currentRevision?: IntFilter<"V12Project"> | number
+    createdAt?: DateTimeFilter<"V12Project"> | Date | string
+    updatedAt?: DateTimeFilter<"V12Project"> | Date | string
+    site?: XOR<SiteRelationFilter, SiteWhereInput>
+    tenant?: XOR<TenantRelationFilter, TenantWhereInput>
+    files?: V12ProjectFileListRelationFilter
+    revisions?: V12ProjectRevisionListRelationFilter
+    checkpoints?: V12ProjectCheckpointListRelationFilter
+  }, "id" | "siteId">
+
+  export type V12ProjectOrderByWithAggregationInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    currentRevision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: V12ProjectCountOrderByAggregateInput
+    _avg?: V12ProjectAvgOrderByAggregateInput
+    _max?: V12ProjectMaxOrderByAggregateInput
+    _min?: V12ProjectMinOrderByAggregateInput
+    _sum?: V12ProjectSumOrderByAggregateInput
+  }
+
+  export type V12ProjectScalarWhereWithAggregatesInput = {
+    AND?: V12ProjectScalarWhereWithAggregatesInput | V12ProjectScalarWhereWithAggregatesInput[]
+    OR?: V12ProjectScalarWhereWithAggregatesInput[]
+    NOT?: V12ProjectScalarWhereWithAggregatesInput | V12ProjectScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"V12Project"> | string
+    siteId?: StringWithAggregatesFilter<"V12Project"> | string
+    tenantId?: StringWithAggregatesFilter<"V12Project"> | string
+    currentRevision?: IntWithAggregatesFilter<"V12Project"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"V12Project"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"V12Project"> | Date | string
+  }
+
+  export type V12ProjectFileWhereInput = {
+    AND?: V12ProjectFileWhereInput | V12ProjectFileWhereInput[]
+    OR?: V12ProjectFileWhereInput[]
+    NOT?: V12ProjectFileWhereInput | V12ProjectFileWhereInput[]
+    id?: StringFilter<"V12ProjectFile"> | string
+    projectId?: StringFilter<"V12ProjectFile"> | string
+    path?: StringFilter<"V12ProjectFile"> | string
+    content?: StringFilter<"V12ProjectFile"> | string
+    contentHash?: StringFilter<"V12ProjectFile"> | string
+    revision?: IntFilter<"V12ProjectFile"> | number
+    createdAt?: DateTimeFilter<"V12ProjectFile"> | Date | string
+    updatedAt?: DateTimeFilter<"V12ProjectFile"> | Date | string
+    project?: XOR<V12ProjectRelationFilter, V12ProjectWhereInput>
+  }
+
+  export type V12ProjectFileOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    path?: SortOrder
+    content?: SortOrder
+    contentHash?: SortOrder
+    revision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    project?: V12ProjectOrderByWithRelationInput
+  }
+
+  export type V12ProjectFileWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    projectId_path?: V12ProjectFileProjectIdPathCompoundUniqueInput
+    AND?: V12ProjectFileWhereInput | V12ProjectFileWhereInput[]
+    OR?: V12ProjectFileWhereInput[]
+    NOT?: V12ProjectFileWhereInput | V12ProjectFileWhereInput[]
+    projectId?: StringFilter<"V12ProjectFile"> | string
+    path?: StringFilter<"V12ProjectFile"> | string
+    content?: StringFilter<"V12ProjectFile"> | string
+    contentHash?: StringFilter<"V12ProjectFile"> | string
+    revision?: IntFilter<"V12ProjectFile"> | number
+    createdAt?: DateTimeFilter<"V12ProjectFile"> | Date | string
+    updatedAt?: DateTimeFilter<"V12ProjectFile"> | Date | string
+    project?: XOR<V12ProjectRelationFilter, V12ProjectWhereInput>
+  }, "id" | "projectId_path">
+
+  export type V12ProjectFileOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    path?: SortOrder
+    content?: SortOrder
+    contentHash?: SortOrder
+    revision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: V12ProjectFileCountOrderByAggregateInput
+    _avg?: V12ProjectFileAvgOrderByAggregateInput
+    _max?: V12ProjectFileMaxOrderByAggregateInput
+    _min?: V12ProjectFileMinOrderByAggregateInput
+    _sum?: V12ProjectFileSumOrderByAggregateInput
+  }
+
+  export type V12ProjectFileScalarWhereWithAggregatesInput = {
+    AND?: V12ProjectFileScalarWhereWithAggregatesInput | V12ProjectFileScalarWhereWithAggregatesInput[]
+    OR?: V12ProjectFileScalarWhereWithAggregatesInput[]
+    NOT?: V12ProjectFileScalarWhereWithAggregatesInput | V12ProjectFileScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"V12ProjectFile"> | string
+    projectId?: StringWithAggregatesFilter<"V12ProjectFile"> | string
+    path?: StringWithAggregatesFilter<"V12ProjectFile"> | string
+    content?: StringWithAggregatesFilter<"V12ProjectFile"> | string
+    contentHash?: StringWithAggregatesFilter<"V12ProjectFile"> | string
+    revision?: IntWithAggregatesFilter<"V12ProjectFile"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"V12ProjectFile"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"V12ProjectFile"> | Date | string
+  }
+
+  export type V12ProjectRevisionWhereInput = {
+    AND?: V12ProjectRevisionWhereInput | V12ProjectRevisionWhereInput[]
+    OR?: V12ProjectRevisionWhereInput[]
+    NOT?: V12ProjectRevisionWhereInput | V12ProjectRevisionWhereInput[]
+    id?: StringFilter<"V12ProjectRevision"> | string
+    projectId?: StringFilter<"V12ProjectRevision"> | string
+    sequence?: IntFilter<"V12ProjectRevision"> | number
+    operations?: JsonFilter<"V12ProjectRevision">
+    createdBy?: StringNullableFilter<"V12ProjectRevision"> | string | null
+    createdAt?: DateTimeFilter<"V12ProjectRevision"> | Date | string
+    project?: XOR<V12ProjectRelationFilter, V12ProjectWhereInput>
+    checkpoints?: V12ProjectCheckpointListRelationFilter
+  }
+
+  export type V12ProjectRevisionOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    sequence?: SortOrder
+    operations?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    project?: V12ProjectOrderByWithRelationInput
+    checkpoints?: V12ProjectCheckpointOrderByRelationAggregateInput
+  }
+
+  export type V12ProjectRevisionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    projectId_sequence?: V12ProjectRevisionProjectIdSequenceCompoundUniqueInput
+    AND?: V12ProjectRevisionWhereInput | V12ProjectRevisionWhereInput[]
+    OR?: V12ProjectRevisionWhereInput[]
+    NOT?: V12ProjectRevisionWhereInput | V12ProjectRevisionWhereInput[]
+    projectId?: StringFilter<"V12ProjectRevision"> | string
+    sequence?: IntFilter<"V12ProjectRevision"> | number
+    operations?: JsonFilter<"V12ProjectRevision">
+    createdBy?: StringNullableFilter<"V12ProjectRevision"> | string | null
+    createdAt?: DateTimeFilter<"V12ProjectRevision"> | Date | string
+    project?: XOR<V12ProjectRelationFilter, V12ProjectWhereInput>
+    checkpoints?: V12ProjectCheckpointListRelationFilter
+  }, "id" | "projectId_sequence">
+
+  export type V12ProjectRevisionOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    sequence?: SortOrder
+    operations?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: V12ProjectRevisionCountOrderByAggregateInput
+    _avg?: V12ProjectRevisionAvgOrderByAggregateInput
+    _max?: V12ProjectRevisionMaxOrderByAggregateInput
+    _min?: V12ProjectRevisionMinOrderByAggregateInput
+    _sum?: V12ProjectRevisionSumOrderByAggregateInput
+  }
+
+  export type V12ProjectRevisionScalarWhereWithAggregatesInput = {
+    AND?: V12ProjectRevisionScalarWhereWithAggregatesInput | V12ProjectRevisionScalarWhereWithAggregatesInput[]
+    OR?: V12ProjectRevisionScalarWhereWithAggregatesInput[]
+    NOT?: V12ProjectRevisionScalarWhereWithAggregatesInput | V12ProjectRevisionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"V12ProjectRevision"> | string
+    projectId?: StringWithAggregatesFilter<"V12ProjectRevision"> | string
+    sequence?: IntWithAggregatesFilter<"V12ProjectRevision"> | number
+    operations?: JsonWithAggregatesFilter<"V12ProjectRevision">
+    createdBy?: StringNullableWithAggregatesFilter<"V12ProjectRevision"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"V12ProjectRevision"> | Date | string
+  }
+
+  export type V12ProjectCheckpointWhereInput = {
+    AND?: V12ProjectCheckpointWhereInput | V12ProjectCheckpointWhereInput[]
+    OR?: V12ProjectCheckpointWhereInput[]
+    NOT?: V12ProjectCheckpointWhereInput | V12ProjectCheckpointWhereInput[]
+    id?: StringFilter<"V12ProjectCheckpoint"> | string
+    projectId?: StringFilter<"V12ProjectCheckpoint"> | string
+    revisionId?: StringFilter<"V12ProjectCheckpoint"> | string
+    label?: StringNullableFilter<"V12ProjectCheckpoint"> | string | null
+    snapshot?: JsonFilter<"V12ProjectCheckpoint">
+    createdBy?: StringNullableFilter<"V12ProjectCheckpoint"> | string | null
+    createdAt?: DateTimeFilter<"V12ProjectCheckpoint"> | Date | string
+    project?: XOR<V12ProjectRelationFilter, V12ProjectWhereInput>
+    revision?: XOR<V12ProjectRevisionRelationFilter, V12ProjectRevisionWhereInput>
+  }
+
+  export type V12ProjectCheckpointOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    revisionId?: SortOrder
+    label?: SortOrderInput | SortOrder
+    snapshot?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    project?: V12ProjectOrderByWithRelationInput
+    revision?: V12ProjectRevisionOrderByWithRelationInput
+  }
+
+  export type V12ProjectCheckpointWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: V12ProjectCheckpointWhereInput | V12ProjectCheckpointWhereInput[]
+    OR?: V12ProjectCheckpointWhereInput[]
+    NOT?: V12ProjectCheckpointWhereInput | V12ProjectCheckpointWhereInput[]
+    projectId?: StringFilter<"V12ProjectCheckpoint"> | string
+    revisionId?: StringFilter<"V12ProjectCheckpoint"> | string
+    label?: StringNullableFilter<"V12ProjectCheckpoint"> | string | null
+    snapshot?: JsonFilter<"V12ProjectCheckpoint">
+    createdBy?: StringNullableFilter<"V12ProjectCheckpoint"> | string | null
+    createdAt?: DateTimeFilter<"V12ProjectCheckpoint"> | Date | string
+    project?: XOR<V12ProjectRelationFilter, V12ProjectWhereInput>
+    revision?: XOR<V12ProjectRevisionRelationFilter, V12ProjectRevisionWhereInput>
+  }, "id">
+
+  export type V12ProjectCheckpointOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    revisionId?: SortOrder
+    label?: SortOrderInput | SortOrder
+    snapshot?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: V12ProjectCheckpointCountOrderByAggregateInput
+    _max?: V12ProjectCheckpointMaxOrderByAggregateInput
+    _min?: V12ProjectCheckpointMinOrderByAggregateInput
+  }
+
+  export type V12ProjectCheckpointScalarWhereWithAggregatesInput = {
+    AND?: V12ProjectCheckpointScalarWhereWithAggregatesInput | V12ProjectCheckpointScalarWhereWithAggregatesInput[]
+    OR?: V12ProjectCheckpointScalarWhereWithAggregatesInput[]
+    NOT?: V12ProjectCheckpointScalarWhereWithAggregatesInput | V12ProjectCheckpointScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"V12ProjectCheckpoint"> | string
+    projectId?: StringWithAggregatesFilter<"V12ProjectCheckpoint"> | string
+    revisionId?: StringWithAggregatesFilter<"V12ProjectCheckpoint"> | string
+    label?: StringNullableWithAggregatesFilter<"V12ProjectCheckpoint"> | string | null
+    snapshot?: JsonWithAggregatesFilter<"V12ProjectCheckpoint">
+    createdBy?: StringNullableWithAggregatesFilter<"V12ProjectCheckpoint"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"V12ProjectCheckpoint"> | Date | string
   }
 
   export type ShopWhereInput = {
@@ -81505,6 +86341,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateInput = {
@@ -81533,6 +86370,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUpdateInput = {
@@ -81561,6 +86399,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateInput = {
@@ -81589,6 +86428,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateManyInput = {
@@ -82425,6 +87265,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateInput = {
@@ -82454,6 +87295,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUpdateInput = {
@@ -82483,6 +87325,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateInput = {
@@ -82512,6 +87355,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteCreateManyInput = {
@@ -82553,6 +87397,289 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type V12ProjectCreateInput = {
+    id?: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    site: SiteCreateNestedOneWithoutV12ProjectInput
+    tenant: TenantCreateNestedOneWithoutV12ProjectsInput
+    files?: V12ProjectFileCreateNestedManyWithoutProjectInput
+    revisions?: V12ProjectRevisionCreateNestedManyWithoutProjectInput
+    checkpoints?: V12ProjectCheckpointCreateNestedManyWithoutProjectInput
+  }
+
+  export type V12ProjectUncheckedCreateInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    files?: V12ProjectFileUncheckedCreateNestedManyWithoutProjectInput
+    revisions?: V12ProjectRevisionUncheckedCreateNestedManyWithoutProjectInput
+    checkpoints?: V12ProjectCheckpointUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type V12ProjectUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    site?: SiteUpdateOneRequiredWithoutV12ProjectNestedInput
+    tenant?: TenantUpdateOneRequiredWithoutV12ProjectsNestedInput
+    files?: V12ProjectFileUpdateManyWithoutProjectNestedInput
+    revisions?: V12ProjectRevisionUpdateManyWithoutProjectNestedInput
+    checkpoints?: V12ProjectCheckpointUpdateManyWithoutProjectNestedInput
+  }
+
+  export type V12ProjectUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    files?: V12ProjectFileUncheckedUpdateManyWithoutProjectNestedInput
+    revisions?: V12ProjectRevisionUncheckedUpdateManyWithoutProjectNestedInput
+    checkpoints?: V12ProjectCheckpointUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type V12ProjectCreateManyInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type V12ProjectUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectFileCreateInput = {
+    id?: string
+    path: string
+    content: string
+    contentHash: string
+    revision: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: V12ProjectCreateNestedOneWithoutFilesInput
+  }
+
+  export type V12ProjectFileUncheckedCreateInput = {
+    id?: string
+    projectId: string
+    path: string
+    content: string
+    contentHash: string
+    revision: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type V12ProjectFileUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: V12ProjectUpdateOneRequiredWithoutFilesNestedInput
+  }
+
+  export type V12ProjectFileUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectFileCreateManyInput = {
+    id?: string
+    projectId: string
+    path: string
+    content: string
+    contentHash: string
+    revision: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type V12ProjectFileUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectFileUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectRevisionCreateInput = {
+    id?: string
+    sequence: number
+    operations: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    project: V12ProjectCreateNestedOneWithoutRevisionsInput
+    checkpoints?: V12ProjectCheckpointCreateNestedManyWithoutRevisionInput
+  }
+
+  export type V12ProjectRevisionUncheckedCreateInput = {
+    id?: string
+    projectId: string
+    sequence: number
+    operations: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    checkpoints?: V12ProjectCheckpointUncheckedCreateNestedManyWithoutRevisionInput
+  }
+
+  export type V12ProjectRevisionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    operations?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: V12ProjectUpdateOneRequiredWithoutRevisionsNestedInput
+    checkpoints?: V12ProjectCheckpointUpdateManyWithoutRevisionNestedInput
+  }
+
+  export type V12ProjectRevisionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    operations?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkpoints?: V12ProjectCheckpointUncheckedUpdateManyWithoutRevisionNestedInput
+  }
+
+  export type V12ProjectRevisionCreateManyInput = {
+    id?: string
+    projectId: string
+    sequence: number
+    operations: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type V12ProjectRevisionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    operations?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectRevisionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    operations?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectCheckpointCreateInput = {
+    id?: string
+    label?: string | null
+    snapshot: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    project: V12ProjectCreateNestedOneWithoutCheckpointsInput
+    revision: V12ProjectRevisionCreateNestedOneWithoutCheckpointsInput
+  }
+
+  export type V12ProjectCheckpointUncheckedCreateInput = {
+    id?: string
+    projectId: string
+    revisionId: string
+    label?: string | null
+    snapshot: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type V12ProjectCheckpointUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    snapshot?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: V12ProjectUpdateOneRequiredWithoutCheckpointsNestedInput
+    revision?: V12ProjectRevisionUpdateOneRequiredWithoutCheckpointsNestedInput
+  }
+
+  export type V12ProjectCheckpointUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    revisionId?: StringFieldUpdateOperationsInput | string
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    snapshot?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectCheckpointCreateManyInput = {
+    id?: string
+    projectId: string
+    revisionId: string
+    label?: string | null
+    snapshot: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type V12ProjectCheckpointUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    snapshot?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectCheckpointUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    revisionId?: StringFieldUpdateOperationsInput | string
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    snapshot?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShopCreateInput = {
@@ -87335,6 +92462,12 @@ export namespace Prisma {
     none?: AIBlueprintSnapshotWhereInput
   }
 
+  export type V12ProjectListRelationFilter = {
+    every?: V12ProjectWhereInput
+    some?: V12ProjectWhereInput
+    none?: V12ProjectWhereInput
+  }
+
   export type UserOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -87384,6 +92517,10 @@ export namespace Prisma {
   }
 
   export type AIBlueprintSnapshotOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type V12ProjectOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -88053,6 +93190,11 @@ export namespace Prisma {
     isNot?: ShopWhereInput | null
   }
 
+  export type V12ProjectNullableRelationFilter = {
+    is?: V12ProjectWhereInput | null
+    isNot?: V12ProjectWhereInput | null
+  }
+
   export type PageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -88124,6 +93266,240 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumSiteStatusFilter<$PrismaModel>
     _max?: NestedEnumSiteStatusFilter<$PrismaModel>
+  }
+
+  export type V12ProjectFileListRelationFilter = {
+    every?: V12ProjectFileWhereInput
+    some?: V12ProjectFileWhereInput
+    none?: V12ProjectFileWhereInput
+  }
+
+  export type V12ProjectRevisionListRelationFilter = {
+    every?: V12ProjectRevisionWhereInput
+    some?: V12ProjectRevisionWhereInput
+    none?: V12ProjectRevisionWhereInput
+  }
+
+  export type V12ProjectCheckpointListRelationFilter = {
+    every?: V12ProjectCheckpointWhereInput
+    some?: V12ProjectCheckpointWhereInput
+    none?: V12ProjectCheckpointWhereInput
+  }
+
+  export type V12ProjectFileOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type V12ProjectRevisionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type V12ProjectCheckpointOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type V12ProjectCountOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    currentRevision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type V12ProjectAvgOrderByAggregateInput = {
+    currentRevision?: SortOrder
+  }
+
+  export type V12ProjectMaxOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    currentRevision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type V12ProjectMinOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    currentRevision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type V12ProjectSumOrderByAggregateInput = {
+    currentRevision?: SortOrder
+  }
+
+  export type V12ProjectRelationFilter = {
+    is?: V12ProjectWhereInput
+    isNot?: V12ProjectWhereInput
+  }
+
+  export type V12ProjectFileProjectIdPathCompoundUniqueInput = {
+    projectId: string
+    path: string
+  }
+
+  export type V12ProjectFileCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    path?: SortOrder
+    content?: SortOrder
+    contentHash?: SortOrder
+    revision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type V12ProjectFileAvgOrderByAggregateInput = {
+    revision?: SortOrder
+  }
+
+  export type V12ProjectFileMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    path?: SortOrder
+    content?: SortOrder
+    contentHash?: SortOrder
+    revision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type V12ProjectFileMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    path?: SortOrder
+    content?: SortOrder
+    contentHash?: SortOrder
+    revision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type V12ProjectFileSumOrderByAggregateInput = {
+    revision?: SortOrder
+  }
+  export type JsonFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type V12ProjectRevisionProjectIdSequenceCompoundUniqueInput = {
+    projectId: string
+    sequence: number
+  }
+
+  export type V12ProjectRevisionCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    sequence?: SortOrder
+    operations?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type V12ProjectRevisionAvgOrderByAggregateInput = {
+    sequence?: SortOrder
+  }
+
+  export type V12ProjectRevisionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    sequence?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type V12ProjectRevisionMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    sequence?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type V12ProjectRevisionSumOrderByAggregateInput = {
+    sequence?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type V12ProjectRevisionRelationFilter = {
+    is?: V12ProjectRevisionWhereInput
+    isNot?: V12ProjectRevisionWhereInput
+  }
+
+  export type V12ProjectCheckpointCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    revisionId?: SortOrder
+    label?: SortOrder
+    snapshot?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type V12ProjectCheckpointMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    revisionId?: SortOrder
+    label?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type V12ProjectCheckpointMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    revisionId?: SortOrder
+    label?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type DecimalFilter<$PrismaModel = never> = {
@@ -88774,28 +94150,6 @@ export namespace Prisma {
     notIn?: $Enums.ShopFulfillmentStatus[] | ListEnumShopFulfillmentStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumShopFulfillmentStatusFilter<$PrismaModel> | $Enums.ShopFulfillmentStatus
   }
-  export type JsonFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type EnumShopPaymentProviderNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.ShopPaymentProvider | EnumShopPaymentProviderFieldRefInput<$PrismaModel> | null
@@ -88942,31 +94296,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumShopFulfillmentStatusFilter<$PrismaModel>
     _max?: NestedEnumShopFulfillmentStatusFilter<$PrismaModel>
-  }
-  export type JsonWithAggregatesFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedJsonFilter<$PrismaModel>
-    _max?: NestedJsonFilter<$PrismaModel>
   }
 
   export type EnumShopPaymentProviderNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -91474,6 +96803,13 @@ export namespace Prisma {
     connect?: AIBlueprintSnapshotWhereUniqueInput | AIBlueprintSnapshotWhereUniqueInput[]
   }
 
+  export type V12ProjectCreateNestedManyWithoutTenantInput = {
+    create?: XOR<V12ProjectCreateWithoutTenantInput, V12ProjectUncheckedCreateWithoutTenantInput> | V12ProjectCreateWithoutTenantInput[] | V12ProjectUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutTenantInput | V12ProjectCreateOrConnectWithoutTenantInput[]
+    createMany?: V12ProjectCreateManyTenantInputEnvelope
+    connect?: V12ProjectWhereUniqueInput | V12ProjectWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutTenantUsersInput = {
     create?: XOR<UserCreateWithoutTenantUsersInput, UserUncheckedCreateWithoutTenantUsersInput> | UserCreateWithoutTenantUsersInput[] | UserUncheckedCreateWithoutTenantUsersInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantUsersInput | UserCreateOrConnectWithoutTenantUsersInput[]
@@ -91582,6 +96918,13 @@ export namespace Prisma {
     connectOrCreate?: AIBlueprintSnapshotCreateOrConnectWithoutTenantInput | AIBlueprintSnapshotCreateOrConnectWithoutTenantInput[]
     createMany?: AIBlueprintSnapshotCreateManyTenantInputEnvelope
     connect?: AIBlueprintSnapshotWhereUniqueInput | AIBlueprintSnapshotWhereUniqueInput[]
+  }
+
+  export type V12ProjectUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<V12ProjectCreateWithoutTenantInput, V12ProjectUncheckedCreateWithoutTenantInput> | V12ProjectCreateWithoutTenantInput[] | V12ProjectUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutTenantInput | V12ProjectCreateOrConnectWithoutTenantInput[]
+    createMany?: V12ProjectCreateManyTenantInputEnvelope
+    connect?: V12ProjectWhereUniqueInput | V12ProjectWhereUniqueInput[]
   }
 
   export type UserUpdateOneWithoutOwnedTenantsNestedInput = {
@@ -91813,6 +97156,20 @@ export namespace Prisma {
     deleteMany?: AIBlueprintSnapshotScalarWhereInput | AIBlueprintSnapshotScalarWhereInput[]
   }
 
+  export type V12ProjectUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<V12ProjectCreateWithoutTenantInput, V12ProjectUncheckedCreateWithoutTenantInput> | V12ProjectCreateWithoutTenantInput[] | V12ProjectUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutTenantInput | V12ProjectCreateOrConnectWithoutTenantInput[]
+    upsert?: V12ProjectUpsertWithWhereUniqueWithoutTenantInput | V12ProjectUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: V12ProjectCreateManyTenantInputEnvelope
+    set?: V12ProjectWhereUniqueInput | V12ProjectWhereUniqueInput[]
+    disconnect?: V12ProjectWhereUniqueInput | V12ProjectWhereUniqueInput[]
+    delete?: V12ProjectWhereUniqueInput | V12ProjectWhereUniqueInput[]
+    connect?: V12ProjectWhereUniqueInput | V12ProjectWhereUniqueInput[]
+    update?: V12ProjectUpdateWithWhereUniqueWithoutTenantInput | V12ProjectUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: V12ProjectUpdateManyWithWhereWithoutTenantInput | V12ProjectUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: V12ProjectScalarWhereInput | V12ProjectScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutTenantUsersNestedInput = {
     create?: XOR<UserCreateWithoutTenantUsersInput, UserUncheckedCreateWithoutTenantUsersInput> | UserCreateWithoutTenantUsersInput[] | UserUncheckedCreateWithoutTenantUsersInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantUsersInput | UserCreateOrConnectWithoutTenantUsersInput[]
@@ -92030,6 +97387,20 @@ export namespace Prisma {
     update?: AIBlueprintSnapshotUpdateWithWhereUniqueWithoutTenantInput | AIBlueprintSnapshotUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: AIBlueprintSnapshotUpdateManyWithWhereWithoutTenantInput | AIBlueprintSnapshotUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: AIBlueprintSnapshotScalarWhereInput | AIBlueprintSnapshotScalarWhereInput[]
+  }
+
+  export type V12ProjectUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<V12ProjectCreateWithoutTenantInput, V12ProjectUncheckedCreateWithoutTenantInput> | V12ProjectCreateWithoutTenantInput[] | V12ProjectUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutTenantInput | V12ProjectCreateOrConnectWithoutTenantInput[]
+    upsert?: V12ProjectUpsertWithWhereUniqueWithoutTenantInput | V12ProjectUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: V12ProjectCreateManyTenantInputEnvelope
+    set?: V12ProjectWhereUniqueInput | V12ProjectWhereUniqueInput[]
+    disconnect?: V12ProjectWhereUniqueInput | V12ProjectWhereUniqueInput[]
+    delete?: V12ProjectWhereUniqueInput | V12ProjectWhereUniqueInput[]
+    connect?: V12ProjectWhereUniqueInput | V12ProjectWhereUniqueInput[]
+    update?: V12ProjectUpdateWithWhereUniqueWithoutTenantInput | V12ProjectUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: V12ProjectUpdateManyWithWhereWithoutTenantInput | V12ProjectUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: V12ProjectScalarWhereInput | V12ProjectScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutEventsInput = {
@@ -92550,6 +97921,12 @@ export namespace Prisma {
     connect?: ShopWhereUniqueInput
   }
 
+  export type V12ProjectCreateNestedOneWithoutSiteInput = {
+    create?: XOR<V12ProjectCreateWithoutSiteInput, V12ProjectUncheckedCreateWithoutSiteInput>
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutSiteInput
+    connect?: V12ProjectWhereUniqueInput
+  }
+
   export type SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput = {
     create?: XOR<SiteSubscriptionCreateWithoutSiteInput, SiteSubscriptionUncheckedCreateWithoutSiteInput> | SiteSubscriptionCreateWithoutSiteInput[] | SiteSubscriptionUncheckedCreateWithoutSiteInput[]
     connectOrCreate?: SiteSubscriptionCreateOrConnectWithoutSiteInput | SiteSubscriptionCreateOrConnectWithoutSiteInput[]
@@ -92651,6 +98028,12 @@ export namespace Prisma {
     create?: XOR<ShopCreateWithoutSiteInput, ShopUncheckedCreateWithoutSiteInput>
     connectOrCreate?: ShopCreateOrConnectWithoutSiteInput
     connect?: ShopWhereUniqueInput
+  }
+
+  export type V12ProjectUncheckedCreateNestedOneWithoutSiteInput = {
+    create?: XOR<V12ProjectCreateWithoutSiteInput, V12ProjectUncheckedCreateWithoutSiteInput>
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutSiteInput
+    connect?: V12ProjectWhereUniqueInput
   }
 
   export type EnumSiteStatusFieldUpdateOperationsInput = {
@@ -92867,6 +98250,16 @@ export namespace Prisma {
     update?: XOR<XOR<ShopUpdateToOneWithWhereWithoutSiteInput, ShopUpdateWithoutSiteInput>, ShopUncheckedUpdateWithoutSiteInput>
   }
 
+  export type V12ProjectUpdateOneWithoutSiteNestedInput = {
+    create?: XOR<V12ProjectCreateWithoutSiteInput, V12ProjectUncheckedCreateWithoutSiteInput>
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutSiteInput
+    upsert?: V12ProjectUpsertWithoutSiteInput
+    disconnect?: V12ProjectWhereInput | boolean
+    delete?: V12ProjectWhereInput | boolean
+    connect?: V12ProjectWhereUniqueInput
+    update?: XOR<XOR<V12ProjectUpdateToOneWithWhereWithoutSiteInput, V12ProjectUpdateWithoutSiteInput>, V12ProjectUncheckedUpdateWithoutSiteInput>
+  }
+
   export type SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput = {
     create?: XOR<SiteSubscriptionCreateWithoutSiteInput, SiteSubscriptionUncheckedCreateWithoutSiteInput> | SiteSubscriptionCreateWithoutSiteInput[] | SiteSubscriptionUncheckedCreateWithoutSiteInput[]
     connectOrCreate?: SiteSubscriptionCreateOrConnectWithoutSiteInput | SiteSubscriptionCreateOrConnectWithoutSiteInput[]
@@ -93067,6 +98460,268 @@ export namespace Prisma {
     delete?: ShopWhereInput | boolean
     connect?: ShopWhereUniqueInput
     update?: XOR<XOR<ShopUpdateToOneWithWhereWithoutSiteInput, ShopUpdateWithoutSiteInput>, ShopUncheckedUpdateWithoutSiteInput>
+  }
+
+  export type V12ProjectUncheckedUpdateOneWithoutSiteNestedInput = {
+    create?: XOR<V12ProjectCreateWithoutSiteInput, V12ProjectUncheckedCreateWithoutSiteInput>
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutSiteInput
+    upsert?: V12ProjectUpsertWithoutSiteInput
+    disconnect?: V12ProjectWhereInput | boolean
+    delete?: V12ProjectWhereInput | boolean
+    connect?: V12ProjectWhereUniqueInput
+    update?: XOR<XOR<V12ProjectUpdateToOneWithWhereWithoutSiteInput, V12ProjectUpdateWithoutSiteInput>, V12ProjectUncheckedUpdateWithoutSiteInput>
+  }
+
+  export type SiteCreateNestedOneWithoutV12ProjectInput = {
+    create?: XOR<SiteCreateWithoutV12ProjectInput, SiteUncheckedCreateWithoutV12ProjectInput>
+    connectOrCreate?: SiteCreateOrConnectWithoutV12ProjectInput
+    connect?: SiteWhereUniqueInput
+  }
+
+  export type TenantCreateNestedOneWithoutV12ProjectsInput = {
+    create?: XOR<TenantCreateWithoutV12ProjectsInput, TenantUncheckedCreateWithoutV12ProjectsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutV12ProjectsInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type V12ProjectFileCreateNestedManyWithoutProjectInput = {
+    create?: XOR<V12ProjectFileCreateWithoutProjectInput, V12ProjectFileUncheckedCreateWithoutProjectInput> | V12ProjectFileCreateWithoutProjectInput[] | V12ProjectFileUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: V12ProjectFileCreateOrConnectWithoutProjectInput | V12ProjectFileCreateOrConnectWithoutProjectInput[]
+    createMany?: V12ProjectFileCreateManyProjectInputEnvelope
+    connect?: V12ProjectFileWhereUniqueInput | V12ProjectFileWhereUniqueInput[]
+  }
+
+  export type V12ProjectRevisionCreateNestedManyWithoutProjectInput = {
+    create?: XOR<V12ProjectRevisionCreateWithoutProjectInput, V12ProjectRevisionUncheckedCreateWithoutProjectInput> | V12ProjectRevisionCreateWithoutProjectInput[] | V12ProjectRevisionUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: V12ProjectRevisionCreateOrConnectWithoutProjectInput | V12ProjectRevisionCreateOrConnectWithoutProjectInput[]
+    createMany?: V12ProjectRevisionCreateManyProjectInputEnvelope
+    connect?: V12ProjectRevisionWhereUniqueInput | V12ProjectRevisionWhereUniqueInput[]
+  }
+
+  export type V12ProjectCheckpointCreateNestedManyWithoutProjectInput = {
+    create?: XOR<V12ProjectCheckpointCreateWithoutProjectInput, V12ProjectCheckpointUncheckedCreateWithoutProjectInput> | V12ProjectCheckpointCreateWithoutProjectInput[] | V12ProjectCheckpointUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: V12ProjectCheckpointCreateOrConnectWithoutProjectInput | V12ProjectCheckpointCreateOrConnectWithoutProjectInput[]
+    createMany?: V12ProjectCheckpointCreateManyProjectInputEnvelope
+    connect?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+  }
+
+  export type V12ProjectFileUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<V12ProjectFileCreateWithoutProjectInput, V12ProjectFileUncheckedCreateWithoutProjectInput> | V12ProjectFileCreateWithoutProjectInput[] | V12ProjectFileUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: V12ProjectFileCreateOrConnectWithoutProjectInput | V12ProjectFileCreateOrConnectWithoutProjectInput[]
+    createMany?: V12ProjectFileCreateManyProjectInputEnvelope
+    connect?: V12ProjectFileWhereUniqueInput | V12ProjectFileWhereUniqueInput[]
+  }
+
+  export type V12ProjectRevisionUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<V12ProjectRevisionCreateWithoutProjectInput, V12ProjectRevisionUncheckedCreateWithoutProjectInput> | V12ProjectRevisionCreateWithoutProjectInput[] | V12ProjectRevisionUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: V12ProjectRevisionCreateOrConnectWithoutProjectInput | V12ProjectRevisionCreateOrConnectWithoutProjectInput[]
+    createMany?: V12ProjectRevisionCreateManyProjectInputEnvelope
+    connect?: V12ProjectRevisionWhereUniqueInput | V12ProjectRevisionWhereUniqueInput[]
+  }
+
+  export type V12ProjectCheckpointUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<V12ProjectCheckpointCreateWithoutProjectInput, V12ProjectCheckpointUncheckedCreateWithoutProjectInput> | V12ProjectCheckpointCreateWithoutProjectInput[] | V12ProjectCheckpointUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: V12ProjectCheckpointCreateOrConnectWithoutProjectInput | V12ProjectCheckpointCreateOrConnectWithoutProjectInput[]
+    createMany?: V12ProjectCheckpointCreateManyProjectInputEnvelope
+    connect?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+  }
+
+  export type SiteUpdateOneRequiredWithoutV12ProjectNestedInput = {
+    create?: XOR<SiteCreateWithoutV12ProjectInput, SiteUncheckedCreateWithoutV12ProjectInput>
+    connectOrCreate?: SiteCreateOrConnectWithoutV12ProjectInput
+    upsert?: SiteUpsertWithoutV12ProjectInput
+    connect?: SiteWhereUniqueInput
+    update?: XOR<XOR<SiteUpdateToOneWithWhereWithoutV12ProjectInput, SiteUpdateWithoutV12ProjectInput>, SiteUncheckedUpdateWithoutV12ProjectInput>
+  }
+
+  export type TenantUpdateOneRequiredWithoutV12ProjectsNestedInput = {
+    create?: XOR<TenantCreateWithoutV12ProjectsInput, TenantUncheckedCreateWithoutV12ProjectsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutV12ProjectsInput
+    upsert?: TenantUpsertWithoutV12ProjectsInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutV12ProjectsInput, TenantUpdateWithoutV12ProjectsInput>, TenantUncheckedUpdateWithoutV12ProjectsInput>
+  }
+
+  export type V12ProjectFileUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<V12ProjectFileCreateWithoutProjectInput, V12ProjectFileUncheckedCreateWithoutProjectInput> | V12ProjectFileCreateWithoutProjectInput[] | V12ProjectFileUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: V12ProjectFileCreateOrConnectWithoutProjectInput | V12ProjectFileCreateOrConnectWithoutProjectInput[]
+    upsert?: V12ProjectFileUpsertWithWhereUniqueWithoutProjectInput | V12ProjectFileUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: V12ProjectFileCreateManyProjectInputEnvelope
+    set?: V12ProjectFileWhereUniqueInput | V12ProjectFileWhereUniqueInput[]
+    disconnect?: V12ProjectFileWhereUniqueInput | V12ProjectFileWhereUniqueInput[]
+    delete?: V12ProjectFileWhereUniqueInput | V12ProjectFileWhereUniqueInput[]
+    connect?: V12ProjectFileWhereUniqueInput | V12ProjectFileWhereUniqueInput[]
+    update?: V12ProjectFileUpdateWithWhereUniqueWithoutProjectInput | V12ProjectFileUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: V12ProjectFileUpdateManyWithWhereWithoutProjectInput | V12ProjectFileUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: V12ProjectFileScalarWhereInput | V12ProjectFileScalarWhereInput[]
+  }
+
+  export type V12ProjectRevisionUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<V12ProjectRevisionCreateWithoutProjectInput, V12ProjectRevisionUncheckedCreateWithoutProjectInput> | V12ProjectRevisionCreateWithoutProjectInput[] | V12ProjectRevisionUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: V12ProjectRevisionCreateOrConnectWithoutProjectInput | V12ProjectRevisionCreateOrConnectWithoutProjectInput[]
+    upsert?: V12ProjectRevisionUpsertWithWhereUniqueWithoutProjectInput | V12ProjectRevisionUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: V12ProjectRevisionCreateManyProjectInputEnvelope
+    set?: V12ProjectRevisionWhereUniqueInput | V12ProjectRevisionWhereUniqueInput[]
+    disconnect?: V12ProjectRevisionWhereUniqueInput | V12ProjectRevisionWhereUniqueInput[]
+    delete?: V12ProjectRevisionWhereUniqueInput | V12ProjectRevisionWhereUniqueInput[]
+    connect?: V12ProjectRevisionWhereUniqueInput | V12ProjectRevisionWhereUniqueInput[]
+    update?: V12ProjectRevisionUpdateWithWhereUniqueWithoutProjectInput | V12ProjectRevisionUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: V12ProjectRevisionUpdateManyWithWhereWithoutProjectInput | V12ProjectRevisionUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: V12ProjectRevisionScalarWhereInput | V12ProjectRevisionScalarWhereInput[]
+  }
+
+  export type V12ProjectCheckpointUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<V12ProjectCheckpointCreateWithoutProjectInput, V12ProjectCheckpointUncheckedCreateWithoutProjectInput> | V12ProjectCheckpointCreateWithoutProjectInput[] | V12ProjectCheckpointUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: V12ProjectCheckpointCreateOrConnectWithoutProjectInput | V12ProjectCheckpointCreateOrConnectWithoutProjectInput[]
+    upsert?: V12ProjectCheckpointUpsertWithWhereUniqueWithoutProjectInput | V12ProjectCheckpointUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: V12ProjectCheckpointCreateManyProjectInputEnvelope
+    set?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    disconnect?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    delete?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    connect?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    update?: V12ProjectCheckpointUpdateWithWhereUniqueWithoutProjectInput | V12ProjectCheckpointUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: V12ProjectCheckpointUpdateManyWithWhereWithoutProjectInput | V12ProjectCheckpointUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: V12ProjectCheckpointScalarWhereInput | V12ProjectCheckpointScalarWhereInput[]
+  }
+
+  export type V12ProjectFileUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<V12ProjectFileCreateWithoutProjectInput, V12ProjectFileUncheckedCreateWithoutProjectInput> | V12ProjectFileCreateWithoutProjectInput[] | V12ProjectFileUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: V12ProjectFileCreateOrConnectWithoutProjectInput | V12ProjectFileCreateOrConnectWithoutProjectInput[]
+    upsert?: V12ProjectFileUpsertWithWhereUniqueWithoutProjectInput | V12ProjectFileUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: V12ProjectFileCreateManyProjectInputEnvelope
+    set?: V12ProjectFileWhereUniqueInput | V12ProjectFileWhereUniqueInput[]
+    disconnect?: V12ProjectFileWhereUniqueInput | V12ProjectFileWhereUniqueInput[]
+    delete?: V12ProjectFileWhereUniqueInput | V12ProjectFileWhereUniqueInput[]
+    connect?: V12ProjectFileWhereUniqueInput | V12ProjectFileWhereUniqueInput[]
+    update?: V12ProjectFileUpdateWithWhereUniqueWithoutProjectInput | V12ProjectFileUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: V12ProjectFileUpdateManyWithWhereWithoutProjectInput | V12ProjectFileUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: V12ProjectFileScalarWhereInput | V12ProjectFileScalarWhereInput[]
+  }
+
+  export type V12ProjectRevisionUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<V12ProjectRevisionCreateWithoutProjectInput, V12ProjectRevisionUncheckedCreateWithoutProjectInput> | V12ProjectRevisionCreateWithoutProjectInput[] | V12ProjectRevisionUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: V12ProjectRevisionCreateOrConnectWithoutProjectInput | V12ProjectRevisionCreateOrConnectWithoutProjectInput[]
+    upsert?: V12ProjectRevisionUpsertWithWhereUniqueWithoutProjectInput | V12ProjectRevisionUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: V12ProjectRevisionCreateManyProjectInputEnvelope
+    set?: V12ProjectRevisionWhereUniqueInput | V12ProjectRevisionWhereUniqueInput[]
+    disconnect?: V12ProjectRevisionWhereUniqueInput | V12ProjectRevisionWhereUniqueInput[]
+    delete?: V12ProjectRevisionWhereUniqueInput | V12ProjectRevisionWhereUniqueInput[]
+    connect?: V12ProjectRevisionWhereUniqueInput | V12ProjectRevisionWhereUniqueInput[]
+    update?: V12ProjectRevisionUpdateWithWhereUniqueWithoutProjectInput | V12ProjectRevisionUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: V12ProjectRevisionUpdateManyWithWhereWithoutProjectInput | V12ProjectRevisionUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: V12ProjectRevisionScalarWhereInput | V12ProjectRevisionScalarWhereInput[]
+  }
+
+  export type V12ProjectCheckpointUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<V12ProjectCheckpointCreateWithoutProjectInput, V12ProjectCheckpointUncheckedCreateWithoutProjectInput> | V12ProjectCheckpointCreateWithoutProjectInput[] | V12ProjectCheckpointUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: V12ProjectCheckpointCreateOrConnectWithoutProjectInput | V12ProjectCheckpointCreateOrConnectWithoutProjectInput[]
+    upsert?: V12ProjectCheckpointUpsertWithWhereUniqueWithoutProjectInput | V12ProjectCheckpointUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: V12ProjectCheckpointCreateManyProjectInputEnvelope
+    set?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    disconnect?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    delete?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    connect?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    update?: V12ProjectCheckpointUpdateWithWhereUniqueWithoutProjectInput | V12ProjectCheckpointUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: V12ProjectCheckpointUpdateManyWithWhereWithoutProjectInput | V12ProjectCheckpointUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: V12ProjectCheckpointScalarWhereInput | V12ProjectCheckpointScalarWhereInput[]
+  }
+
+  export type V12ProjectCreateNestedOneWithoutFilesInput = {
+    create?: XOR<V12ProjectCreateWithoutFilesInput, V12ProjectUncheckedCreateWithoutFilesInput>
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutFilesInput
+    connect?: V12ProjectWhereUniqueInput
+  }
+
+  export type V12ProjectUpdateOneRequiredWithoutFilesNestedInput = {
+    create?: XOR<V12ProjectCreateWithoutFilesInput, V12ProjectUncheckedCreateWithoutFilesInput>
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutFilesInput
+    upsert?: V12ProjectUpsertWithoutFilesInput
+    connect?: V12ProjectWhereUniqueInput
+    update?: XOR<XOR<V12ProjectUpdateToOneWithWhereWithoutFilesInput, V12ProjectUpdateWithoutFilesInput>, V12ProjectUncheckedUpdateWithoutFilesInput>
+  }
+
+  export type V12ProjectCreateNestedOneWithoutRevisionsInput = {
+    create?: XOR<V12ProjectCreateWithoutRevisionsInput, V12ProjectUncheckedCreateWithoutRevisionsInput>
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutRevisionsInput
+    connect?: V12ProjectWhereUniqueInput
+  }
+
+  export type V12ProjectCheckpointCreateNestedManyWithoutRevisionInput = {
+    create?: XOR<V12ProjectCheckpointCreateWithoutRevisionInput, V12ProjectCheckpointUncheckedCreateWithoutRevisionInput> | V12ProjectCheckpointCreateWithoutRevisionInput[] | V12ProjectCheckpointUncheckedCreateWithoutRevisionInput[]
+    connectOrCreate?: V12ProjectCheckpointCreateOrConnectWithoutRevisionInput | V12ProjectCheckpointCreateOrConnectWithoutRevisionInput[]
+    createMany?: V12ProjectCheckpointCreateManyRevisionInputEnvelope
+    connect?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+  }
+
+  export type V12ProjectCheckpointUncheckedCreateNestedManyWithoutRevisionInput = {
+    create?: XOR<V12ProjectCheckpointCreateWithoutRevisionInput, V12ProjectCheckpointUncheckedCreateWithoutRevisionInput> | V12ProjectCheckpointCreateWithoutRevisionInput[] | V12ProjectCheckpointUncheckedCreateWithoutRevisionInput[]
+    connectOrCreate?: V12ProjectCheckpointCreateOrConnectWithoutRevisionInput | V12ProjectCheckpointCreateOrConnectWithoutRevisionInput[]
+    createMany?: V12ProjectCheckpointCreateManyRevisionInputEnvelope
+    connect?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+  }
+
+  export type V12ProjectUpdateOneRequiredWithoutRevisionsNestedInput = {
+    create?: XOR<V12ProjectCreateWithoutRevisionsInput, V12ProjectUncheckedCreateWithoutRevisionsInput>
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutRevisionsInput
+    upsert?: V12ProjectUpsertWithoutRevisionsInput
+    connect?: V12ProjectWhereUniqueInput
+    update?: XOR<XOR<V12ProjectUpdateToOneWithWhereWithoutRevisionsInput, V12ProjectUpdateWithoutRevisionsInput>, V12ProjectUncheckedUpdateWithoutRevisionsInput>
+  }
+
+  export type V12ProjectCheckpointUpdateManyWithoutRevisionNestedInput = {
+    create?: XOR<V12ProjectCheckpointCreateWithoutRevisionInput, V12ProjectCheckpointUncheckedCreateWithoutRevisionInput> | V12ProjectCheckpointCreateWithoutRevisionInput[] | V12ProjectCheckpointUncheckedCreateWithoutRevisionInput[]
+    connectOrCreate?: V12ProjectCheckpointCreateOrConnectWithoutRevisionInput | V12ProjectCheckpointCreateOrConnectWithoutRevisionInput[]
+    upsert?: V12ProjectCheckpointUpsertWithWhereUniqueWithoutRevisionInput | V12ProjectCheckpointUpsertWithWhereUniqueWithoutRevisionInput[]
+    createMany?: V12ProjectCheckpointCreateManyRevisionInputEnvelope
+    set?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    disconnect?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    delete?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    connect?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    update?: V12ProjectCheckpointUpdateWithWhereUniqueWithoutRevisionInput | V12ProjectCheckpointUpdateWithWhereUniqueWithoutRevisionInput[]
+    updateMany?: V12ProjectCheckpointUpdateManyWithWhereWithoutRevisionInput | V12ProjectCheckpointUpdateManyWithWhereWithoutRevisionInput[]
+    deleteMany?: V12ProjectCheckpointScalarWhereInput | V12ProjectCheckpointScalarWhereInput[]
+  }
+
+  export type V12ProjectCheckpointUncheckedUpdateManyWithoutRevisionNestedInput = {
+    create?: XOR<V12ProjectCheckpointCreateWithoutRevisionInput, V12ProjectCheckpointUncheckedCreateWithoutRevisionInput> | V12ProjectCheckpointCreateWithoutRevisionInput[] | V12ProjectCheckpointUncheckedCreateWithoutRevisionInput[]
+    connectOrCreate?: V12ProjectCheckpointCreateOrConnectWithoutRevisionInput | V12ProjectCheckpointCreateOrConnectWithoutRevisionInput[]
+    upsert?: V12ProjectCheckpointUpsertWithWhereUniqueWithoutRevisionInput | V12ProjectCheckpointUpsertWithWhereUniqueWithoutRevisionInput[]
+    createMany?: V12ProjectCheckpointCreateManyRevisionInputEnvelope
+    set?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    disconnect?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    delete?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    connect?: V12ProjectCheckpointWhereUniqueInput | V12ProjectCheckpointWhereUniqueInput[]
+    update?: V12ProjectCheckpointUpdateWithWhereUniqueWithoutRevisionInput | V12ProjectCheckpointUpdateWithWhereUniqueWithoutRevisionInput[]
+    updateMany?: V12ProjectCheckpointUpdateManyWithWhereWithoutRevisionInput | V12ProjectCheckpointUpdateManyWithWhereWithoutRevisionInput[]
+    deleteMany?: V12ProjectCheckpointScalarWhereInput | V12ProjectCheckpointScalarWhereInput[]
+  }
+
+  export type V12ProjectCreateNestedOneWithoutCheckpointsInput = {
+    create?: XOR<V12ProjectCreateWithoutCheckpointsInput, V12ProjectUncheckedCreateWithoutCheckpointsInput>
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutCheckpointsInput
+    connect?: V12ProjectWhereUniqueInput
+  }
+
+  export type V12ProjectRevisionCreateNestedOneWithoutCheckpointsInput = {
+    create?: XOR<V12ProjectRevisionCreateWithoutCheckpointsInput, V12ProjectRevisionUncheckedCreateWithoutCheckpointsInput>
+    connectOrCreate?: V12ProjectRevisionCreateOrConnectWithoutCheckpointsInput
+    connect?: V12ProjectRevisionWhereUniqueInput
+  }
+
+  export type V12ProjectUpdateOneRequiredWithoutCheckpointsNestedInput = {
+    create?: XOR<V12ProjectCreateWithoutCheckpointsInput, V12ProjectUncheckedCreateWithoutCheckpointsInput>
+    connectOrCreate?: V12ProjectCreateOrConnectWithoutCheckpointsInput
+    upsert?: V12ProjectUpsertWithoutCheckpointsInput
+    connect?: V12ProjectWhereUniqueInput
+    update?: XOR<XOR<V12ProjectUpdateToOneWithWhereWithoutCheckpointsInput, V12ProjectUpdateWithoutCheckpointsInput>, V12ProjectUncheckedUpdateWithoutCheckpointsInput>
+  }
+
+  export type V12ProjectRevisionUpdateOneRequiredWithoutCheckpointsNestedInput = {
+    create?: XOR<V12ProjectRevisionCreateWithoutCheckpointsInput, V12ProjectRevisionUncheckedCreateWithoutCheckpointsInput>
+    connectOrCreate?: V12ProjectRevisionCreateOrConnectWithoutCheckpointsInput
+    upsert?: V12ProjectRevisionUpsertWithoutCheckpointsInput
+    connect?: V12ProjectRevisionWhereUniqueInput
+    update?: XOR<XOR<V12ProjectRevisionUpdateToOneWithWhereWithoutCheckpointsInput, V12ProjectRevisionUpdateWithoutCheckpointsInput>, V12ProjectRevisionUncheckedUpdateWithoutCheckpointsInput>
   }
 
   export type SiteCreateNestedOneWithoutShopInput = {
@@ -95735,6 +101390,28 @@ export namespace Prisma {
     _min?: NestedEnumSiteStatusFilter<$PrismaModel>
     _max?: NestedEnumSiteStatusFilter<$PrismaModel>
   }
+  export type NestedJsonFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedDecimalFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
@@ -95880,28 +101557,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumShopFulfillmentStatusFilter<$PrismaModel>
     _max?: NestedEnumShopFulfillmentStatusFilter<$PrismaModel>
-  }
-  export type NestedJsonFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type NestedEnumShopPaymentProviderNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -96423,6 +102078,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutOwnerInput = {
@@ -96450,6 +102106,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutOwnerInput = {
@@ -96487,6 +102144,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutUsersInput = {
@@ -96514,6 +102172,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutUsersInput = {
@@ -98417,6 +104076,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutTenantInput = {
@@ -98445,6 +104105,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutTenantInput = {
@@ -98762,6 +104423,38 @@ export namespace Prisma {
 
   export type AIBlueprintSnapshotCreateManyTenantInputEnvelope = {
     data: AIBlueprintSnapshotCreateManyTenantInput | AIBlueprintSnapshotCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type V12ProjectCreateWithoutTenantInput = {
+    id?: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    site: SiteCreateNestedOneWithoutV12ProjectInput
+    files?: V12ProjectFileCreateNestedManyWithoutProjectInput
+    revisions?: V12ProjectRevisionCreateNestedManyWithoutProjectInput
+    checkpoints?: V12ProjectCheckpointCreateNestedManyWithoutProjectInput
+  }
+
+  export type V12ProjectUncheckedCreateWithoutTenantInput = {
+    id?: string
+    siteId: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    files?: V12ProjectFileUncheckedCreateNestedManyWithoutProjectInput
+    revisions?: V12ProjectRevisionUncheckedCreateNestedManyWithoutProjectInput
+    checkpoints?: V12ProjectCheckpointUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type V12ProjectCreateOrConnectWithoutTenantInput = {
+    where: V12ProjectWhereUniqueInput
+    create: XOR<V12ProjectCreateWithoutTenantInput, V12ProjectUncheckedCreateWithoutTenantInput>
+  }
+
+  export type V12ProjectCreateManyTenantInputEnvelope = {
+    data: V12ProjectCreateManyTenantInput | V12ProjectCreateManyTenantInput[]
     skipDuplicates?: boolean
   }
 
@@ -99342,6 +105035,34 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"AIBlueprintSnapshot"> | Date | string
   }
 
+  export type V12ProjectUpsertWithWhereUniqueWithoutTenantInput = {
+    where: V12ProjectWhereUniqueInput
+    update: XOR<V12ProjectUpdateWithoutTenantInput, V12ProjectUncheckedUpdateWithoutTenantInput>
+    create: XOR<V12ProjectCreateWithoutTenantInput, V12ProjectUncheckedCreateWithoutTenantInput>
+  }
+
+  export type V12ProjectUpdateWithWhereUniqueWithoutTenantInput = {
+    where: V12ProjectWhereUniqueInput
+    data: XOR<V12ProjectUpdateWithoutTenantInput, V12ProjectUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type V12ProjectUpdateManyWithWhereWithoutTenantInput = {
+    where: V12ProjectScalarWhereInput
+    data: XOR<V12ProjectUpdateManyMutationInput, V12ProjectUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type V12ProjectScalarWhereInput = {
+    AND?: V12ProjectScalarWhereInput | V12ProjectScalarWhereInput[]
+    OR?: V12ProjectScalarWhereInput[]
+    NOT?: V12ProjectScalarWhereInput | V12ProjectScalarWhereInput[]
+    id?: StringFilter<"V12Project"> | string
+    siteId?: StringFilter<"V12Project"> | string
+    tenantId?: StringFilter<"V12Project"> | string
+    currentRevision?: IntFilter<"V12Project"> | number
+    createdAt?: DateTimeFilter<"V12Project"> | Date | string
+    updatedAt?: DateTimeFilter<"V12Project"> | Date | string
+  }
+
   export type TenantCreateWithoutEventsInput = {
     id?: string
     name: string
@@ -99367,6 +105088,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutEventsInput = {
@@ -99394,6 +105116,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutEventsInput = {
@@ -99437,6 +105160,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutEventsInput = {
@@ -99464,6 +105188,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutTeamsInput = {
@@ -99491,6 +105216,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTeamsInput = {
@@ -99518,6 +105244,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTeamsInput = {
@@ -99619,6 +105346,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTeamsInput = {
@@ -99646,6 +105374,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TeamMemberUpsertWithWhereUniqueWithoutTeamInput = {
@@ -100008,6 +105737,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutThemesInput = {
@@ -100035,6 +105765,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutThemesInput = {
@@ -100146,6 +105877,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutThemesInput = {
@@ -100173,6 +105905,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ThemeVersionUpsertWithWhereUniqueWithoutThemeInput = {
@@ -100516,6 +106249,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutMediaAssetsInput = {
@@ -100544,6 +106278,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutMediaAssetsInput = {
@@ -100673,6 +106408,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutMediaAssetsInput = {
@@ -100701,6 +106437,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type UserUpsertWithoutMediaAssetsInput = {
@@ -100819,6 +106556,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSitesInput = {
@@ -100846,6 +106584,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSitesInput = {
@@ -101401,6 +107140,33 @@ export namespace Prisma {
     create: XOR<ShopCreateWithoutSiteInput, ShopUncheckedCreateWithoutSiteInput>
   }
 
+  export type V12ProjectCreateWithoutSiteInput = {
+    id?: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutV12ProjectsInput
+    files?: V12ProjectFileCreateNestedManyWithoutProjectInput
+    revisions?: V12ProjectRevisionCreateNestedManyWithoutProjectInput
+    checkpoints?: V12ProjectCheckpointCreateNestedManyWithoutProjectInput
+  }
+
+  export type V12ProjectUncheckedCreateWithoutSiteInput = {
+    id?: string
+    tenantId: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    files?: V12ProjectFileUncheckedCreateNestedManyWithoutProjectInput
+    revisions?: V12ProjectRevisionUncheckedCreateNestedManyWithoutProjectInput
+    checkpoints?: V12ProjectCheckpointUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type V12ProjectCreateOrConnectWithoutSiteInput = {
+    where: V12ProjectWhereUniqueInput
+    create: XOR<V12ProjectCreateWithoutSiteInput, V12ProjectUncheckedCreateWithoutSiteInput>
+  }
+
   export type TenantUpsertWithoutSitesInput = {
     update: XOR<TenantUpdateWithoutSitesInput, TenantUncheckedUpdateWithoutSitesInput>
     create: XOR<TenantCreateWithoutSitesInput, TenantUncheckedCreateWithoutSitesInput>
@@ -101437,6 +107203,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSitesInput = {
@@ -101464,6 +107231,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SiteSubscriptionUpsertWithWhereUniqueWithoutSiteInput = {
@@ -101843,6 +107611,748 @@ export namespace Prisma {
     payments?: ShopPaymentIntegrationUncheckedUpdateManyWithoutShopNestedInput
   }
 
+  export type V12ProjectUpsertWithoutSiteInput = {
+    update: XOR<V12ProjectUpdateWithoutSiteInput, V12ProjectUncheckedUpdateWithoutSiteInput>
+    create: XOR<V12ProjectCreateWithoutSiteInput, V12ProjectUncheckedCreateWithoutSiteInput>
+    where?: V12ProjectWhereInput
+  }
+
+  export type V12ProjectUpdateToOneWithWhereWithoutSiteInput = {
+    where?: V12ProjectWhereInput
+    data: XOR<V12ProjectUpdateWithoutSiteInput, V12ProjectUncheckedUpdateWithoutSiteInput>
+  }
+
+  export type V12ProjectUpdateWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutV12ProjectsNestedInput
+    files?: V12ProjectFileUpdateManyWithoutProjectNestedInput
+    revisions?: V12ProjectRevisionUpdateManyWithoutProjectNestedInput
+    checkpoints?: V12ProjectCheckpointUpdateManyWithoutProjectNestedInput
+  }
+
+  export type V12ProjectUncheckedUpdateWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    files?: V12ProjectFileUncheckedUpdateManyWithoutProjectNestedInput
+    revisions?: V12ProjectRevisionUncheckedUpdateManyWithoutProjectNestedInput
+    checkpoints?: V12ProjectCheckpointUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type SiteCreateWithoutV12ProjectInput = {
+    id?: string
+    logoUrl?: string | null
+    name: string
+    slug: string
+    status?: $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutSitesInput
+    subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
+    pages?: PageCreateNestedManyWithoutSiteInput
+    complianceAudits?: ComplianceAuditCreateNestedManyWithoutSiteInput
+    snapshots?: SiteSnapshotCreateNestedManyWithoutSiteInput
+    renders?: SiteRenderCreateNestedManyWithoutSiteInput
+    domains?: SiteDomainCreateNestedManyWithoutSiteInput
+    blueprints?: BlueprintCreateNestedManyWithoutSiteInput
+    legacyDomains?: DomainCreateNestedManyWithoutSiteInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
+    layout?: SiteLayoutCreateNestedOneWithoutSiteInput
+    aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
+    crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
+    crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    shop?: ShopCreateNestedOneWithoutSiteInput
+  }
+
+  export type SiteUncheckedCreateWithoutV12ProjectInput = {
+    id?: string
+    tenantId: string
+    logoUrl?: string | null
+    name: string
+    slug: string
+    status?: $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
+    pages?: PageUncheckedCreateNestedManyWithoutSiteInput
+    complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
+    snapshots?: SiteSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    renders?: SiteRenderUncheckedCreateNestedManyWithoutSiteInput
+    domains?: SiteDomainUncheckedCreateNestedManyWithoutSiteInput
+    blueprints?: BlueprintUncheckedCreateNestedManyWithoutSiteInput
+    legacyDomains?: DomainUncheckedCreateNestedManyWithoutSiteInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
+    layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
+    crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
+    crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+  }
+
+  export type SiteCreateOrConnectWithoutV12ProjectInput = {
+    where: SiteWhereUniqueInput
+    create: XOR<SiteCreateWithoutV12ProjectInput, SiteUncheckedCreateWithoutV12ProjectInput>
+  }
+
+  export type TenantCreateWithoutV12ProjectsInput = {
+    id?: string
+    name: string
+    domain?: string | null
+    isActive?: boolean
+    subscriptionId?: string | null
+    aiSuspended?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner?: UserCreateNestedOneWithoutOwnedTenantsInput
+    users?: UserCreateNestedManyWithoutTenantUsersInput
+    subscription?: SubscriptionCreateNestedOneWithoutTenantActiveInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutTenantHistoryInput
+    teams?: TeamCreateNestedManyWithoutTenantInput
+    themes?: ThemeCreateNestedManyWithoutTenantInput
+    sites?: SiteCreateNestedManyWithoutTenantInput
+    events?: TenantEventCreateNestedManyWithoutTenantInput
+    complianceAudits?: ComplianceAuditCreateNestedManyWithoutTenantInput
+    siteSnapshots?: SiteSnapshotCreateNestedManyWithoutTenantInput
+    siteRenders?: SiteRenderCreateNestedManyWithoutTenantInput
+    siteDomains?: SiteDomainCreateNestedManyWithoutTenantInput
+    siteSubscriptions?: SiteSubscriptionCreateNestedManyWithoutTenantInput
+    blueprints?: BlueprintCreateNestedManyWithoutTenantInput
+    planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
+    AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutV12ProjectsInput = {
+    id?: string
+    name: string
+    domain?: string | null
+    isActive?: boolean
+    ownerId?: string | null
+    subscriptionId?: string | null
+    aiSuspended?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantUsersInput
+    subscription?: SubscriptionUncheckedCreateNestedOneWithoutTenantActiveInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutTenantHistoryInput
+    teams?: TeamUncheckedCreateNestedManyWithoutTenantInput
+    themes?: ThemeUncheckedCreateNestedManyWithoutTenantInput
+    sites?: SiteUncheckedCreateNestedManyWithoutTenantInput
+    events?: TenantEventUncheckedCreateNestedManyWithoutTenantInput
+    complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutTenantInput
+    siteSnapshots?: SiteSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    siteRenders?: SiteRenderUncheckedCreateNestedManyWithoutTenantInput
+    siteDomains?: SiteDomainUncheckedCreateNestedManyWithoutTenantInput
+    siteSubscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutTenantInput
+    blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
+    planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
+    AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutV12ProjectsInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutV12ProjectsInput, TenantUncheckedCreateWithoutV12ProjectsInput>
+  }
+
+  export type V12ProjectFileCreateWithoutProjectInput = {
+    id?: string
+    path: string
+    content: string
+    contentHash: string
+    revision: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type V12ProjectFileUncheckedCreateWithoutProjectInput = {
+    id?: string
+    path: string
+    content: string
+    contentHash: string
+    revision: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type V12ProjectFileCreateOrConnectWithoutProjectInput = {
+    where: V12ProjectFileWhereUniqueInput
+    create: XOR<V12ProjectFileCreateWithoutProjectInput, V12ProjectFileUncheckedCreateWithoutProjectInput>
+  }
+
+  export type V12ProjectFileCreateManyProjectInputEnvelope = {
+    data: V12ProjectFileCreateManyProjectInput | V12ProjectFileCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type V12ProjectRevisionCreateWithoutProjectInput = {
+    id?: string
+    sequence: number
+    operations: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    checkpoints?: V12ProjectCheckpointCreateNestedManyWithoutRevisionInput
+  }
+
+  export type V12ProjectRevisionUncheckedCreateWithoutProjectInput = {
+    id?: string
+    sequence: number
+    operations: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    checkpoints?: V12ProjectCheckpointUncheckedCreateNestedManyWithoutRevisionInput
+  }
+
+  export type V12ProjectRevisionCreateOrConnectWithoutProjectInput = {
+    where: V12ProjectRevisionWhereUniqueInput
+    create: XOR<V12ProjectRevisionCreateWithoutProjectInput, V12ProjectRevisionUncheckedCreateWithoutProjectInput>
+  }
+
+  export type V12ProjectRevisionCreateManyProjectInputEnvelope = {
+    data: V12ProjectRevisionCreateManyProjectInput | V12ProjectRevisionCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type V12ProjectCheckpointCreateWithoutProjectInput = {
+    id?: string
+    label?: string | null
+    snapshot: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    revision: V12ProjectRevisionCreateNestedOneWithoutCheckpointsInput
+  }
+
+  export type V12ProjectCheckpointUncheckedCreateWithoutProjectInput = {
+    id?: string
+    revisionId: string
+    label?: string | null
+    snapshot: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type V12ProjectCheckpointCreateOrConnectWithoutProjectInput = {
+    where: V12ProjectCheckpointWhereUniqueInput
+    create: XOR<V12ProjectCheckpointCreateWithoutProjectInput, V12ProjectCheckpointUncheckedCreateWithoutProjectInput>
+  }
+
+  export type V12ProjectCheckpointCreateManyProjectInputEnvelope = {
+    data: V12ProjectCheckpointCreateManyProjectInput | V12ProjectCheckpointCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SiteUpsertWithoutV12ProjectInput = {
+    update: XOR<SiteUpdateWithoutV12ProjectInput, SiteUncheckedUpdateWithoutV12ProjectInput>
+    create: XOR<SiteCreateWithoutV12ProjectInput, SiteUncheckedCreateWithoutV12ProjectInput>
+    where?: SiteWhereInput
+  }
+
+  export type SiteUpdateToOneWithWhereWithoutV12ProjectInput = {
+    where?: SiteWhereInput
+    data: XOR<SiteUpdateWithoutV12ProjectInput, SiteUncheckedUpdateWithoutV12ProjectInput>
+  }
+
+  export type SiteUpdateWithoutV12ProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
+    subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
+    pages?: PageUpdateManyWithoutSiteNestedInput
+    complianceAudits?: ComplianceAuditUpdateManyWithoutSiteNestedInput
+    snapshots?: SiteSnapshotUpdateManyWithoutSiteNestedInput
+    renders?: SiteRenderUpdateManyWithoutSiteNestedInput
+    domains?: SiteDomainUpdateManyWithoutSiteNestedInput
+    blueprints?: BlueprintUpdateManyWithoutSiteNestedInput
+    legacyDomains?: DomainUpdateManyWithoutSiteNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
+    layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
+    crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
+    crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    shop?: ShopUpdateOneWithoutSiteNestedInput
+  }
+
+  export type SiteUncheckedUpdateWithoutV12ProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
+    pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
+    complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
+    snapshots?: SiteSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    renders?: SiteRenderUncheckedUpdateManyWithoutSiteNestedInput
+    domains?: SiteDomainUncheckedUpdateManyWithoutSiteNestedInput
+    blueprints?: BlueprintUncheckedUpdateManyWithoutSiteNestedInput
+    legacyDomains?: DomainUncheckedUpdateManyWithoutSiteNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
+    layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
+    crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
+    crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+  }
+
+  export type TenantUpsertWithoutV12ProjectsInput = {
+    update: XOR<TenantUpdateWithoutV12ProjectsInput, TenantUncheckedUpdateWithoutV12ProjectsInput>
+    create: XOR<TenantCreateWithoutV12ProjectsInput, TenantUncheckedCreateWithoutV12ProjectsInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutV12ProjectsInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutV12ProjectsInput, TenantUncheckedUpdateWithoutV12ProjectsInput>
+  }
+
+  export type TenantUpdateWithoutV12ProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSuspended?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneWithoutOwnedTenantsNestedInput
+    users?: UserUpdateManyWithoutTenantUsersNestedInput
+    subscription?: SubscriptionUpdateOneWithoutTenantActiveNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutTenantHistoryNestedInput
+    teams?: TeamUpdateManyWithoutTenantNestedInput
+    themes?: ThemeUpdateManyWithoutTenantNestedInput
+    sites?: SiteUpdateManyWithoutTenantNestedInput
+    events?: TenantEventUpdateManyWithoutTenantNestedInput
+    complianceAudits?: ComplianceAuditUpdateManyWithoutTenantNestedInput
+    siteSnapshots?: SiteSnapshotUpdateManyWithoutTenantNestedInput
+    siteRenders?: SiteRenderUpdateManyWithoutTenantNestedInput
+    siteDomains?: SiteDomainUpdateManyWithoutTenantNestedInput
+    siteSubscriptions?: SiteSubscriptionUpdateManyWithoutTenantNestedInput
+    blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
+    planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
+    AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutV12ProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSuspended?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantUsersNestedInput
+    subscription?: SubscriptionUncheckedUpdateOneWithoutTenantActiveNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutTenantHistoryNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutTenantNestedInput
+    themes?: ThemeUncheckedUpdateManyWithoutTenantNestedInput
+    sites?: SiteUncheckedUpdateManyWithoutTenantNestedInput
+    events?: TenantEventUncheckedUpdateManyWithoutTenantNestedInput
+    complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutTenantNestedInput
+    siteSnapshots?: SiteSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    siteRenders?: SiteRenderUncheckedUpdateManyWithoutTenantNestedInput
+    siteDomains?: SiteDomainUncheckedUpdateManyWithoutTenantNestedInput
+    siteSubscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
+    blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
+    planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
+    AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type V12ProjectFileUpsertWithWhereUniqueWithoutProjectInput = {
+    where: V12ProjectFileWhereUniqueInput
+    update: XOR<V12ProjectFileUpdateWithoutProjectInput, V12ProjectFileUncheckedUpdateWithoutProjectInput>
+    create: XOR<V12ProjectFileCreateWithoutProjectInput, V12ProjectFileUncheckedCreateWithoutProjectInput>
+  }
+
+  export type V12ProjectFileUpdateWithWhereUniqueWithoutProjectInput = {
+    where: V12ProjectFileWhereUniqueInput
+    data: XOR<V12ProjectFileUpdateWithoutProjectInput, V12ProjectFileUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type V12ProjectFileUpdateManyWithWhereWithoutProjectInput = {
+    where: V12ProjectFileScalarWhereInput
+    data: XOR<V12ProjectFileUpdateManyMutationInput, V12ProjectFileUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type V12ProjectFileScalarWhereInput = {
+    AND?: V12ProjectFileScalarWhereInput | V12ProjectFileScalarWhereInput[]
+    OR?: V12ProjectFileScalarWhereInput[]
+    NOT?: V12ProjectFileScalarWhereInput | V12ProjectFileScalarWhereInput[]
+    id?: StringFilter<"V12ProjectFile"> | string
+    projectId?: StringFilter<"V12ProjectFile"> | string
+    path?: StringFilter<"V12ProjectFile"> | string
+    content?: StringFilter<"V12ProjectFile"> | string
+    contentHash?: StringFilter<"V12ProjectFile"> | string
+    revision?: IntFilter<"V12ProjectFile"> | number
+    createdAt?: DateTimeFilter<"V12ProjectFile"> | Date | string
+    updatedAt?: DateTimeFilter<"V12ProjectFile"> | Date | string
+  }
+
+  export type V12ProjectRevisionUpsertWithWhereUniqueWithoutProjectInput = {
+    where: V12ProjectRevisionWhereUniqueInput
+    update: XOR<V12ProjectRevisionUpdateWithoutProjectInput, V12ProjectRevisionUncheckedUpdateWithoutProjectInput>
+    create: XOR<V12ProjectRevisionCreateWithoutProjectInput, V12ProjectRevisionUncheckedCreateWithoutProjectInput>
+  }
+
+  export type V12ProjectRevisionUpdateWithWhereUniqueWithoutProjectInput = {
+    where: V12ProjectRevisionWhereUniqueInput
+    data: XOR<V12ProjectRevisionUpdateWithoutProjectInput, V12ProjectRevisionUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type V12ProjectRevisionUpdateManyWithWhereWithoutProjectInput = {
+    where: V12ProjectRevisionScalarWhereInput
+    data: XOR<V12ProjectRevisionUpdateManyMutationInput, V12ProjectRevisionUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type V12ProjectRevisionScalarWhereInput = {
+    AND?: V12ProjectRevisionScalarWhereInput | V12ProjectRevisionScalarWhereInput[]
+    OR?: V12ProjectRevisionScalarWhereInput[]
+    NOT?: V12ProjectRevisionScalarWhereInput | V12ProjectRevisionScalarWhereInput[]
+    id?: StringFilter<"V12ProjectRevision"> | string
+    projectId?: StringFilter<"V12ProjectRevision"> | string
+    sequence?: IntFilter<"V12ProjectRevision"> | number
+    operations?: JsonFilter<"V12ProjectRevision">
+    createdBy?: StringNullableFilter<"V12ProjectRevision"> | string | null
+    createdAt?: DateTimeFilter<"V12ProjectRevision"> | Date | string
+  }
+
+  export type V12ProjectCheckpointUpsertWithWhereUniqueWithoutProjectInput = {
+    where: V12ProjectCheckpointWhereUniqueInput
+    update: XOR<V12ProjectCheckpointUpdateWithoutProjectInput, V12ProjectCheckpointUncheckedUpdateWithoutProjectInput>
+    create: XOR<V12ProjectCheckpointCreateWithoutProjectInput, V12ProjectCheckpointUncheckedCreateWithoutProjectInput>
+  }
+
+  export type V12ProjectCheckpointUpdateWithWhereUniqueWithoutProjectInput = {
+    where: V12ProjectCheckpointWhereUniqueInput
+    data: XOR<V12ProjectCheckpointUpdateWithoutProjectInput, V12ProjectCheckpointUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type V12ProjectCheckpointUpdateManyWithWhereWithoutProjectInput = {
+    where: V12ProjectCheckpointScalarWhereInput
+    data: XOR<V12ProjectCheckpointUpdateManyMutationInput, V12ProjectCheckpointUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type V12ProjectCheckpointScalarWhereInput = {
+    AND?: V12ProjectCheckpointScalarWhereInput | V12ProjectCheckpointScalarWhereInput[]
+    OR?: V12ProjectCheckpointScalarWhereInput[]
+    NOT?: V12ProjectCheckpointScalarWhereInput | V12ProjectCheckpointScalarWhereInput[]
+    id?: StringFilter<"V12ProjectCheckpoint"> | string
+    projectId?: StringFilter<"V12ProjectCheckpoint"> | string
+    revisionId?: StringFilter<"V12ProjectCheckpoint"> | string
+    label?: StringNullableFilter<"V12ProjectCheckpoint"> | string | null
+    snapshot?: JsonFilter<"V12ProjectCheckpoint">
+    createdBy?: StringNullableFilter<"V12ProjectCheckpoint"> | string | null
+    createdAt?: DateTimeFilter<"V12ProjectCheckpoint"> | Date | string
+  }
+
+  export type V12ProjectCreateWithoutFilesInput = {
+    id?: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    site: SiteCreateNestedOneWithoutV12ProjectInput
+    tenant: TenantCreateNestedOneWithoutV12ProjectsInput
+    revisions?: V12ProjectRevisionCreateNestedManyWithoutProjectInput
+    checkpoints?: V12ProjectCheckpointCreateNestedManyWithoutProjectInput
+  }
+
+  export type V12ProjectUncheckedCreateWithoutFilesInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    revisions?: V12ProjectRevisionUncheckedCreateNestedManyWithoutProjectInput
+    checkpoints?: V12ProjectCheckpointUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type V12ProjectCreateOrConnectWithoutFilesInput = {
+    where: V12ProjectWhereUniqueInput
+    create: XOR<V12ProjectCreateWithoutFilesInput, V12ProjectUncheckedCreateWithoutFilesInput>
+  }
+
+  export type V12ProjectUpsertWithoutFilesInput = {
+    update: XOR<V12ProjectUpdateWithoutFilesInput, V12ProjectUncheckedUpdateWithoutFilesInput>
+    create: XOR<V12ProjectCreateWithoutFilesInput, V12ProjectUncheckedCreateWithoutFilesInput>
+    where?: V12ProjectWhereInput
+  }
+
+  export type V12ProjectUpdateToOneWithWhereWithoutFilesInput = {
+    where?: V12ProjectWhereInput
+    data: XOR<V12ProjectUpdateWithoutFilesInput, V12ProjectUncheckedUpdateWithoutFilesInput>
+  }
+
+  export type V12ProjectUpdateWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    site?: SiteUpdateOneRequiredWithoutV12ProjectNestedInput
+    tenant?: TenantUpdateOneRequiredWithoutV12ProjectsNestedInput
+    revisions?: V12ProjectRevisionUpdateManyWithoutProjectNestedInput
+    checkpoints?: V12ProjectCheckpointUpdateManyWithoutProjectNestedInput
+  }
+
+  export type V12ProjectUncheckedUpdateWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    revisions?: V12ProjectRevisionUncheckedUpdateManyWithoutProjectNestedInput
+    checkpoints?: V12ProjectCheckpointUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type V12ProjectCreateWithoutRevisionsInput = {
+    id?: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    site: SiteCreateNestedOneWithoutV12ProjectInput
+    tenant: TenantCreateNestedOneWithoutV12ProjectsInput
+    files?: V12ProjectFileCreateNestedManyWithoutProjectInput
+    checkpoints?: V12ProjectCheckpointCreateNestedManyWithoutProjectInput
+  }
+
+  export type V12ProjectUncheckedCreateWithoutRevisionsInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    files?: V12ProjectFileUncheckedCreateNestedManyWithoutProjectInput
+    checkpoints?: V12ProjectCheckpointUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type V12ProjectCreateOrConnectWithoutRevisionsInput = {
+    where: V12ProjectWhereUniqueInput
+    create: XOR<V12ProjectCreateWithoutRevisionsInput, V12ProjectUncheckedCreateWithoutRevisionsInput>
+  }
+
+  export type V12ProjectCheckpointCreateWithoutRevisionInput = {
+    id?: string
+    label?: string | null
+    snapshot: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    project: V12ProjectCreateNestedOneWithoutCheckpointsInput
+  }
+
+  export type V12ProjectCheckpointUncheckedCreateWithoutRevisionInput = {
+    id?: string
+    projectId: string
+    label?: string | null
+    snapshot: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type V12ProjectCheckpointCreateOrConnectWithoutRevisionInput = {
+    where: V12ProjectCheckpointWhereUniqueInput
+    create: XOR<V12ProjectCheckpointCreateWithoutRevisionInput, V12ProjectCheckpointUncheckedCreateWithoutRevisionInput>
+  }
+
+  export type V12ProjectCheckpointCreateManyRevisionInputEnvelope = {
+    data: V12ProjectCheckpointCreateManyRevisionInput | V12ProjectCheckpointCreateManyRevisionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type V12ProjectUpsertWithoutRevisionsInput = {
+    update: XOR<V12ProjectUpdateWithoutRevisionsInput, V12ProjectUncheckedUpdateWithoutRevisionsInput>
+    create: XOR<V12ProjectCreateWithoutRevisionsInput, V12ProjectUncheckedCreateWithoutRevisionsInput>
+    where?: V12ProjectWhereInput
+  }
+
+  export type V12ProjectUpdateToOneWithWhereWithoutRevisionsInput = {
+    where?: V12ProjectWhereInput
+    data: XOR<V12ProjectUpdateWithoutRevisionsInput, V12ProjectUncheckedUpdateWithoutRevisionsInput>
+  }
+
+  export type V12ProjectUpdateWithoutRevisionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    site?: SiteUpdateOneRequiredWithoutV12ProjectNestedInput
+    tenant?: TenantUpdateOneRequiredWithoutV12ProjectsNestedInput
+    files?: V12ProjectFileUpdateManyWithoutProjectNestedInput
+    checkpoints?: V12ProjectCheckpointUpdateManyWithoutProjectNestedInput
+  }
+
+  export type V12ProjectUncheckedUpdateWithoutRevisionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    files?: V12ProjectFileUncheckedUpdateManyWithoutProjectNestedInput
+    checkpoints?: V12ProjectCheckpointUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type V12ProjectCheckpointUpsertWithWhereUniqueWithoutRevisionInput = {
+    where: V12ProjectCheckpointWhereUniqueInput
+    update: XOR<V12ProjectCheckpointUpdateWithoutRevisionInput, V12ProjectCheckpointUncheckedUpdateWithoutRevisionInput>
+    create: XOR<V12ProjectCheckpointCreateWithoutRevisionInput, V12ProjectCheckpointUncheckedCreateWithoutRevisionInput>
+  }
+
+  export type V12ProjectCheckpointUpdateWithWhereUniqueWithoutRevisionInput = {
+    where: V12ProjectCheckpointWhereUniqueInput
+    data: XOR<V12ProjectCheckpointUpdateWithoutRevisionInput, V12ProjectCheckpointUncheckedUpdateWithoutRevisionInput>
+  }
+
+  export type V12ProjectCheckpointUpdateManyWithWhereWithoutRevisionInput = {
+    where: V12ProjectCheckpointScalarWhereInput
+    data: XOR<V12ProjectCheckpointUpdateManyMutationInput, V12ProjectCheckpointUncheckedUpdateManyWithoutRevisionInput>
+  }
+
+  export type V12ProjectCreateWithoutCheckpointsInput = {
+    id?: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    site: SiteCreateNestedOneWithoutV12ProjectInput
+    tenant: TenantCreateNestedOneWithoutV12ProjectsInput
+    files?: V12ProjectFileCreateNestedManyWithoutProjectInput
+    revisions?: V12ProjectRevisionCreateNestedManyWithoutProjectInput
+  }
+
+  export type V12ProjectUncheckedCreateWithoutCheckpointsInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    files?: V12ProjectFileUncheckedCreateNestedManyWithoutProjectInput
+    revisions?: V12ProjectRevisionUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type V12ProjectCreateOrConnectWithoutCheckpointsInput = {
+    where: V12ProjectWhereUniqueInput
+    create: XOR<V12ProjectCreateWithoutCheckpointsInput, V12ProjectUncheckedCreateWithoutCheckpointsInput>
+  }
+
+  export type V12ProjectRevisionCreateWithoutCheckpointsInput = {
+    id?: string
+    sequence: number
+    operations: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    project: V12ProjectCreateNestedOneWithoutRevisionsInput
+  }
+
+  export type V12ProjectRevisionUncheckedCreateWithoutCheckpointsInput = {
+    id?: string
+    projectId: string
+    sequence: number
+    operations: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type V12ProjectRevisionCreateOrConnectWithoutCheckpointsInput = {
+    where: V12ProjectRevisionWhereUniqueInput
+    create: XOR<V12ProjectRevisionCreateWithoutCheckpointsInput, V12ProjectRevisionUncheckedCreateWithoutCheckpointsInput>
+  }
+
+  export type V12ProjectUpsertWithoutCheckpointsInput = {
+    update: XOR<V12ProjectUpdateWithoutCheckpointsInput, V12ProjectUncheckedUpdateWithoutCheckpointsInput>
+    create: XOR<V12ProjectCreateWithoutCheckpointsInput, V12ProjectUncheckedCreateWithoutCheckpointsInput>
+    where?: V12ProjectWhereInput
+  }
+
+  export type V12ProjectUpdateToOneWithWhereWithoutCheckpointsInput = {
+    where?: V12ProjectWhereInput
+    data: XOR<V12ProjectUpdateWithoutCheckpointsInput, V12ProjectUncheckedUpdateWithoutCheckpointsInput>
+  }
+
+  export type V12ProjectUpdateWithoutCheckpointsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    site?: SiteUpdateOneRequiredWithoutV12ProjectNestedInput
+    tenant?: TenantUpdateOneRequiredWithoutV12ProjectsNestedInput
+    files?: V12ProjectFileUpdateManyWithoutProjectNestedInput
+    revisions?: V12ProjectRevisionUpdateManyWithoutProjectNestedInput
+  }
+
+  export type V12ProjectUncheckedUpdateWithoutCheckpointsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    files?: V12ProjectFileUncheckedUpdateManyWithoutProjectNestedInput
+    revisions?: V12ProjectRevisionUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type V12ProjectRevisionUpsertWithoutCheckpointsInput = {
+    update: XOR<V12ProjectRevisionUpdateWithoutCheckpointsInput, V12ProjectRevisionUncheckedUpdateWithoutCheckpointsInput>
+    create: XOR<V12ProjectRevisionCreateWithoutCheckpointsInput, V12ProjectRevisionUncheckedCreateWithoutCheckpointsInput>
+    where?: V12ProjectRevisionWhereInput
+  }
+
+  export type V12ProjectRevisionUpdateToOneWithWhereWithoutCheckpointsInput = {
+    where?: V12ProjectRevisionWhereInput
+    data: XOR<V12ProjectRevisionUpdateWithoutCheckpointsInput, V12ProjectRevisionUncheckedUpdateWithoutCheckpointsInput>
+  }
+
+  export type V12ProjectRevisionUpdateWithoutCheckpointsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    operations?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: V12ProjectUpdateOneRequiredWithoutRevisionsNestedInput
+  }
+
+  export type V12ProjectRevisionUncheckedUpdateWithoutCheckpointsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    operations?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SiteCreateWithoutShopInput = {
     id?: string
     logoUrl?: string | null
@@ -101869,6 +108379,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutShopInput = {
@@ -101897,6 +108408,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutShopInput = {
@@ -102199,6 +108711,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutShopInput = {
@@ -102227,6 +108740,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type ShopProductUpsertWithWhereUniqueWithoutShopInput = {
@@ -104612,6 +111126,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutCrmLeadsInput = {
@@ -104640,6 +111155,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutCrmLeadsInput = {
@@ -104714,6 +111230,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutCrmLeadsInput = {
@@ -104742,6 +111259,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type CrmCommunicationUpsertWithWhereUniqueWithoutLeadInput = {
@@ -104912,6 +111430,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutCrmApiKeysInput = {
@@ -104940,6 +111459,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutCrmApiKeysInput = {
@@ -104984,6 +111504,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutCrmApiKeysInput = {
@@ -105012,6 +111533,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteCreateWithoutCmsCollectionsInput = {
@@ -105040,6 +111562,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutCmsCollectionsInput = {
@@ -105068,6 +111591,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutCmsCollectionsInput = {
@@ -105138,6 +111662,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutCmsCollectionsInput = {
@@ -105166,6 +111691,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type CmsEntryUpsertWithWhereUniqueWithoutCollectionInput = {
@@ -105286,6 +111812,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutLayoutInput = {
@@ -105314,6 +111841,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutLayoutInput = {
@@ -105358,6 +111886,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutLayoutInput = {
@@ -105386,6 +111915,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteCreateWithoutLegacyDomainsInput = {
@@ -105414,6 +111944,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutLegacyDomainsInput = {
@@ -105442,6 +111973,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutLegacyDomainsInput = {
@@ -105486,6 +112018,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutLegacyDomainsInput = {
@@ -105514,6 +112047,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteCreateWithoutPagesInput = {
@@ -105542,6 +112076,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutPagesInput = {
@@ -105570,6 +112105,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutPagesInput = {
@@ -105689,6 +112225,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutPagesInput = {
@@ -105717,6 +112254,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type BlueprintUpsertWithoutPageInput = {
@@ -105956,6 +112494,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutAiSnapshotsInput = {
@@ -105984,6 +112523,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutAiSnapshotsInput = {
@@ -106016,6 +112556,7 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutAiSnapshotsInput = {
@@ -106043,6 +112584,7 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutAiSnapshotsInput = {
@@ -106136,6 +112678,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutAiSnapshotsInput = {
@@ -106164,6 +112707,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutAiSnapshotsInput = {
@@ -106202,6 +112746,7 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutAiSnapshotsInput = {
@@ -106229,6 +112774,7 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PageCreateWithoutBlueprintInput = {
@@ -106300,6 +112846,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutBlueprintsInput = {
@@ -106328,6 +112875,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutBlueprintsInput = {
@@ -106360,6 +112908,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutBlueprintsInput = {
@@ -106387,6 +112936,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutBlueprintsInput = {
@@ -106512,6 +113062,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutBlueprintsInput = {
@@ -106540,6 +113091,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutBlueprintsInput = {
@@ -106578,6 +113130,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutBlueprintsInput = {
@@ -106605,6 +113158,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type BlueprintHistoryUpsertWithWhereUniqueWithoutBlueprintInput = {
@@ -107112,6 +113666,7 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPlanUsagesInput = {
@@ -107139,6 +113694,7 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPlanUsagesInput = {
@@ -107182,6 +113738,7 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPlanUsagesInput = {
@@ -107209,6 +113766,7 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutSubscriptionInput = {
@@ -107236,6 +113794,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSubscriptionInput = {
@@ -107263,6 +113822,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSubscriptionInput = {
@@ -107295,6 +113855,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSubscriptionsInput = {
@@ -107322,6 +113883,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSubscriptionsInput = {
@@ -107485,6 +114047,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSubscriptionInput = {
@@ -107512,6 +114075,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUpsertWithoutSubscriptionsInput = {
@@ -107550,6 +114114,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSubscriptionsInput = {
@@ -107577,6 +114142,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutSubscriptionInput = {
@@ -107737,6 +114303,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutSubscriptionsInput = {
@@ -107765,6 +114332,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutSubscriptionsInput = {
@@ -107797,6 +114365,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSiteSubscriptionsInput = {
@@ -107824,6 +114393,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSiteSubscriptionsInput = {
@@ -107903,6 +114473,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutSubscriptionsInput = {
@@ -107931,6 +114502,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutSiteSubscriptionsInput = {
@@ -107969,6 +114541,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSiteSubscriptionsInput = {
@@ -107996,6 +114569,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PlanUpsertWithoutSiteSubscriptionsInput = {
@@ -108065,6 +114639,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutComplianceAuditsInput = {
@@ -108093,6 +114668,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutComplianceAuditsInput = {
@@ -108125,6 +114701,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutComplianceAuditsInput = {
@@ -108152,6 +114729,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutComplianceAuditsInput = {
@@ -108196,6 +114774,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutComplianceAuditsInput = {
@@ -108224,6 +114803,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutComplianceAuditsInput = {
@@ -108262,6 +114842,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutComplianceAuditsInput = {
@@ -108289,6 +114870,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SiteCreateWithoutSnapshotsInput = {
@@ -108317,6 +114899,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutSnapshotsInput = {
@@ -108345,6 +114928,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutSnapshotsInput = {
@@ -108377,6 +114961,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSiteSnapshotsInput = {
@@ -108404,6 +114989,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSiteSnapshotsInput = {
@@ -108506,6 +115092,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutSnapshotsInput = {
@@ -108534,6 +115121,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutSiteSnapshotsInput = {
@@ -108572,6 +115160,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSiteSnapshotsInput = {
@@ -108599,6 +115188,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PageSnapshotUpsertWithWhereUniqueWithoutSiteSnapshotInput = {
@@ -108732,6 +115322,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutRendersInput = {
@@ -108760,6 +115351,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutRendersInput = {
@@ -108792,6 +115384,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSiteRendersInput = {
@@ -108819,6 +115412,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSiteRendersInput = {
@@ -108922,6 +115516,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutRendersInput = {
@@ -108950,6 +115545,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutSiteRendersInput = {
@@ -108988,6 +115584,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSiteRendersInput = {
@@ -109015,6 +115612,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SiteSnapshotUpsertWithoutRendersInput = {
@@ -109163,6 +115761,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutDomainsInput = {
@@ -109191,6 +115790,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutDomainsInput = {
@@ -109223,6 +115823,7 @@ export namespace Prisma {
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSiteDomainsInput = {
@@ -109250,6 +115851,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSiteDomainsInput = {
@@ -109294,6 +115896,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutDomainsInput = {
@@ -109322,6 +115925,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutSiteDomainsInput = {
@@ -109360,6 +115964,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSiteDomainsInput = {
@@ -109387,6 +115992,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutAiEventInput = {
@@ -109414,6 +116020,7 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutAiEventInput = {
@@ -109441,6 +116048,7 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutAiEventInput = {
@@ -109569,6 +116177,7 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutAiEventInput = {
@@ -109596,6 +116205,7 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutAiEventInput = {
@@ -110587,6 +117197,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutOwnerInput = {
@@ -110614,6 +117225,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateManyWithoutOwnerInput = {
@@ -110652,6 +117264,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutUsersInput = {
@@ -110679,6 +117292,7 @@ export namespace Prisma {
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateManyWithoutUsersInput = {
@@ -110903,6 +117517,14 @@ export namespace Prisma {
     siteId: string
     blueprint: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+  }
+
+  export type V12ProjectCreateManyTenantInput = {
+    id?: string
+    siteId: string
+    currentRevision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type UserUpdateWithoutTenantUsersInput = {
@@ -111164,6 +117786,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutTenantInput = {
@@ -111192,6 +117815,7 @@ export namespace Prisma {
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateManyWithoutTenantInput = {
@@ -111513,6 +118137,36 @@ export namespace Prisma {
     siteId?: StringFieldUpdateOperationsInput | string
     blueprint?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    site?: SiteUpdateOneRequiredWithoutV12ProjectNestedInput
+    files?: V12ProjectFileUpdateManyWithoutProjectNestedInput
+    revisions?: V12ProjectRevisionUpdateManyWithoutProjectNestedInput
+    checkpoints?: V12ProjectCheckpointUpdateManyWithoutProjectNestedInput
+  }
+
+  export type V12ProjectUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    files?: V12ProjectFileUncheckedUpdateManyWithoutProjectNestedInput
+    revisions?: V12ProjectRevisionUncheckedUpdateManyWithoutProjectNestedInput
+    checkpoints?: V12ProjectCheckpointUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type V12ProjectUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    currentRevision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TeamMemberCreateManyTeamInput = {
@@ -112401,6 +119055,152 @@ export namespace Prisma {
     lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type V12ProjectFileCreateManyProjectInput = {
+    id?: string
+    path: string
+    content: string
+    contentHash: string
+    revision: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type V12ProjectRevisionCreateManyProjectInput = {
+    id?: string
+    sequence: number
+    operations: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type V12ProjectCheckpointCreateManyProjectInput = {
+    id?: string
+    revisionId: string
+    label?: string | null
+    snapshot: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type V12ProjectFileUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectFileUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectFileUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectRevisionUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    operations?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkpoints?: V12ProjectCheckpointUpdateManyWithoutRevisionNestedInput
+  }
+
+  export type V12ProjectRevisionUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    operations?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkpoints?: V12ProjectCheckpointUncheckedUpdateManyWithoutRevisionNestedInput
+  }
+
+  export type V12ProjectRevisionUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    operations?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectCheckpointUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    snapshot?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    revision?: V12ProjectRevisionUpdateOneRequiredWithoutCheckpointsNestedInput
+  }
+
+  export type V12ProjectCheckpointUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    revisionId?: StringFieldUpdateOperationsInput | string
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    snapshot?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectCheckpointUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    revisionId?: StringFieldUpdateOperationsInput | string
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    snapshot?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectCheckpointCreateManyRevisionInput = {
+    id?: string
+    projectId: string
+    label?: string | null
+    snapshot: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type V12ProjectCheckpointUpdateWithoutRevisionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    snapshot?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: V12ProjectUpdateOneRequiredWithoutCheckpointsNestedInput
+  }
+
+  export type V12ProjectCheckpointUncheckedUpdateWithoutRevisionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    snapshot?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12ProjectCheckpointUncheckedUpdateManyWithoutRevisionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    snapshot?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShopProductCreateManyShopInput = {
@@ -113867,6 +120667,14 @@ export namespace Prisma {
      */
     export type SiteCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SiteCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use V12ProjectCountOutputTypeDefaultArgs instead
+     */
+    export type V12ProjectCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = V12ProjectCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use V12ProjectRevisionCountOutputTypeDefaultArgs instead
+     */
+    export type V12ProjectRevisionCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = V12ProjectRevisionCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use ShopCountOutputTypeDefaultArgs instead
      */
     export type ShopCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ShopCountOutputTypeDefaultArgs<ExtArgs>
@@ -114002,6 +120810,22 @@ export namespace Prisma {
      * @deprecated Use SiteDefaultArgs instead
      */
     export type SiteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SiteDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use V12ProjectDefaultArgs instead
+     */
+    export type V12ProjectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = V12ProjectDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use V12ProjectFileDefaultArgs instead
+     */
+    export type V12ProjectFileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = V12ProjectFileDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use V12ProjectRevisionDefaultArgs instead
+     */
+    export type V12ProjectRevisionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = V12ProjectRevisionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use V12ProjectCheckpointDefaultArgs instead
+     */
+    export type V12ProjectCheckpointArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = V12ProjectCheckpointDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ShopDefaultArgs instead
      */

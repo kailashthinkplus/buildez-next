@@ -4,16 +4,15 @@ import { prisma } from "@buildez/db";
 
 export async function getTenantPlan(tenantId: string) {
   const subscription = await prisma.subscription.findFirst({
-    where: { tenantId, status: "active" },
-    include: {
-      plan: true,
-    },
+    where: { tenantActiveId: tenantId, status: "ACTIVE" },
   });
 
   if (!subscription) return null;
 
-  return {
-    subscription,
-    plan: subscription.plan,
-  };
+  const plan = subscription.planCode
+    ? await prisma.plan.findUnique({ where: { code: subscription.planCode } })
+    : null;
+  if (!plan) return null;
+
+  return { subscription, plan };
 }

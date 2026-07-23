@@ -36,13 +36,20 @@ export default function PageActionsDropdown({ page }: any) {
         >
           {/* EDIT */}
           <Link
-            href={`/app/${page.site?.slug}/${page.slug}-${page.id}`}
+            href={`/app/builder-v3/${page.site?.id}?pageId=${page.id}`}
             className="
               block px-4 py-2 text-sm
               hover:bg-gray-100 dark:hover:bg-white/10
             "
           >
-            Edit
+            Edit in Builder 3
+          </Link>
+
+          <Link
+            href={`/app/${page.site?.slug}/${page.slug}-${page.id}?legacy=1`}
+            className="block px-4 py-2 text-xs text-gray-500 hover:bg-gray-100 dark:text-white/45 dark:hover:bg-white/10"
+          >
+            Open legacy Builder 2
           </Link>
 
           {/* PUBLISH */}

@@ -1,8 +1,8 @@
-import type { WebsiteSpec } from "../specification";
+import type { WebsiteSpec } from "../sdk";
 import type { AssetRequirement } from "./types";
 
 export function inferAssetRequirements(spec: WebsiteSpec): AssetRequirement[] {
-  if (spec.business.industry !== "real-estate") return [];
+  if (spec.business.industryId !== "real-estate") return [];
 
   return [
     {

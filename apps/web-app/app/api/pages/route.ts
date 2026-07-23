@@ -1,7 +1,7 @@
 // /apps/web-app/app/api/pages/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@buildez/db";
+import { Prisma, prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 
@@ -102,7 +102,7 @@ export const GET = async (request: NextRequest) => {
     /* -------------------------------------------
        WHERE clause
     ------------------------------------------ */
-    const where = {
+    const where: Prisma.PageWhereInput = {
       siteId: { in: siteIds },
       deletedAt: trash ? { not: null } : null,
       ...(search
@@ -124,7 +124,7 @@ export const GET = async (request: NextRequest) => {
         take,
         orderBy: { createdAt: "desc" },
         include: {
-          site: { select: { slug: true } },
+          site: { select: { id: true, slug: true } },
         },
       }),
       prisma.page.count({ where }),
@@ -272,7 +272,7 @@ while (
         status: "DRAFT",
       },
       include: {
-        site: { select: { slug: true } },
+        site: { select: { id: true, slug: true } },
       },
     });
 

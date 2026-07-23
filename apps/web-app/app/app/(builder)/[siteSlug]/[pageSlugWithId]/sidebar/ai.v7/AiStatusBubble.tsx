@@ -7,7 +7,7 @@ import {
   AIRuntimeState,
   subscribeAIRuntime,
   getAIRuntimeElapsedSeconds,
-} from "@/modules/builder/ai/state/aiRuntime.store";
+} from "@/modules/_legacy/builder-v2/ai-v6/state/aiRuntime.store";
 
 /* ============================================================
    AI STATUS BUBBLE

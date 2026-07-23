@@ -56,11 +56,11 @@ export async function getSession(): Promise<AuthSession | null> {
   ------------------------------ */
   let tenant = null;
 
-  if (user.tenantId) {
-    tenant = await prisma.tenant.findUnique({
-      where: { id: user.tenantId },
-    });
-  }
+  tenant = await prisma.tenant.findFirst({
+    where: {
+      OR: [{ ownerId: user.id }, { users: { some: { id: user.id } } }],
+    },
+  });
 
   /* ------------------------------
      4️⃣ Onboarding

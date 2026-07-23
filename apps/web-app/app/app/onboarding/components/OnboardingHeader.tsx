@@ -8,6 +8,7 @@ import OnboardingSidebar from "./OnboardingSidebar";
 import ThemeToggle from "../../components/ThemeToggle";
 
 export default function OnboardingHeader() {
+  const { step, accountType } = useOnboarding();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
@@ -166,7 +167,7 @@ export default function OnboardingHeader() {
               <X size={22} />
             </button>
 
-            <OnboardingSidebar mobileMode />
+            <OnboardingSidebar activeStep={step} accountType={accountType} mobileMode />
           </div>
         </div>
       )}

@@ -82,7 +82,7 @@ function renderNode(
 
     case "heading": {
       const Tag =
-        (node.props?.level as keyof JSX.IntrinsicElements) ||
+        (node.props?.level as keyof React.JSX.IntrinsicElements) ||
         "h2";
 
       return (

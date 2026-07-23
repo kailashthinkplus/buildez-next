@@ -50,11 +50,11 @@ export async function applyRateLimit({
   // Too many requests
   if (existing.count >= limit) {
     throw new ApiError(
-      429,
-      "RATE_LIMIT_EXCEEDED",
       `Too many requests. Try again after ${Math.ceil(
         (existing.resetAt.getTime() - now.getTime()) / 1000
-      )} seconds.`
+      )} seconds.`,
+      429,
+      "RATE_LIMIT_EXCEEDED"
     );
   }
 

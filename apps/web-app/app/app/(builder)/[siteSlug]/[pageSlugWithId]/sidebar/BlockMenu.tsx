@@ -38,7 +38,7 @@ interface BlockDef {
   type: V4BlockType;
   title: string;
   description: string;
-  icon: React.ComponentType<{ size?: number }>;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
 }
 
 /* ============================================================

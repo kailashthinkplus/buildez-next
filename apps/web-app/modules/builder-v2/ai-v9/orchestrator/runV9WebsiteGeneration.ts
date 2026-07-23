@@ -376,7 +376,7 @@ workflow.brandContext = {
     source: researchResult.research.source,
     url: researchResult.research.url,
     warnings: researchResult.warnings,
-    signals: researchResult.research.signals,
+    signals: (researchResult.research as Record<string, unknown>).signals,
   });
   workflow.logs.push(
     log({
@@ -816,7 +816,6 @@ workflow.brandContext = {
 
     const fallbackBlueprint = createFallbackBlueprint({
       ...workflow,
-      blueprint: undefined,
     });
     const fallbackWorkflow = {
       ...workflow,
@@ -885,6 +884,7 @@ workflow.brandContext = {
   if (skipImageAgent || remainingMs() <= responseReserveMs) {
     imageResult = {
       targets: 0,
+      applied: 0,
       warnings: [
         skipImageAgent
           ? "Skipped image agent by configuration; aiImagePrompt/backgroundPrompt values remain on the blueprint."
@@ -918,6 +918,7 @@ workflow.brandContext = {
         error instanceof Error ? error.message : "Image hydration failed.";
       imageResult = {
         targets: 0,
+        applied: 0,
         warnings: [
           `${message}; preserving aiImagePrompt/backgroundPrompt values and returning blueprint without blocking.`,
         ],

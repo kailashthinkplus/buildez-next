@@ -16,15 +16,18 @@ export async function checkPlanLimit(
   // 1. Load current tenant plan
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
-    select: { planId: true },
+    select: {
+      subscription: { select: { planCode: true } },
+    },
   });
 
   if (!tenant) throw new NotFoundError("Tenant not found");
 
   const plan = await prisma.plan.findUnique({
-    where: { id: tenant.planId || "" },
+    where: { code: tenant.subscription?.planCode || "" },
     select: {
-      limits: true, // JSON structure containing { pages: X, sites: X, ... }
+      maxPages: true,
+      maxSites: true,
     },
   });
 
@@ -33,7 +36,7 @@ export async function checkPlanLimit(
     return true;
   }
 
-  const maxAllowed = plan.limits?.[type];
+  const maxAllowed = type === "pages" ? plan.maxPages : type === "sites" ? plan.maxSites : -1;
 
   // Unlimited case
   if (!maxAllowed || maxAllowed === -1) return true;
@@ -42,7 +45,7 @@ export async function checkPlanLimit(
   let currentCount = 0;
 
   if (type === "pages") {
-    currentCount = await prisma.page.count({ where: { tenantId } });
+    currentCount = await prisma.page.count({ where: { site: { tenantId } } });
   }
 
   if (type === "sites") {

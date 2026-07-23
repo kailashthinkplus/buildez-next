@@ -122,8 +122,8 @@ export async function renderPage({
 
   console.log("🌳 BLUEPRINT ROOT KEYS:", Object.keys(blueprintTree));
 
-  const html = generateRuntimeHTML(blueprintTree);
-  const css = generateRuntimeCSS(blueprintTree);
+  const html = generateRuntimeHTML(blueprintTree as any);
+  const css = generateRuntimeCSS(blueprintTree as any);
 
   console.log("🧾 HTML LENGTH:", html?.length || 0);
   console.log("🎨 CSS LENGTH:", css?.length || 0);

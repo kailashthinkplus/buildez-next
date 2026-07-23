@@ -597,7 +597,7 @@ async function uploadBase64ToR2(base64: string, workflow: V9Workflow) {
   return `${publicUrl.replace(/\/$/, "")}/${key}`;
 }
 
-async function generatePrimaryImage(prompt: string, workflow: V9Workflow) {
+async function generatePrimaryImage(prompt: string, workflow: V9Workflow): Promise<string> {
   const provider = imageProvider();
 
   if (provider === "auto") {
@@ -721,7 +721,7 @@ async function generateOpenAIImage(prompt: string, workflow: V9Workflow) {
   throw new Error("OpenAI image API did not return image data");
 }
 
-async function generateFluxImage(prompt: string, workflow: V9Workflow) {
+async function generateFluxImage(prompt: string, workflow: V9Workflow): Promise<never> {
   const { finalPrompt, negativePrompt } = architecturePromptProfile(prompt, workflow);
 
   logBuilderDebug("ai-v9:image-generation-request", {

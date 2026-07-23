@@ -101,7 +101,7 @@ export interface BuilderStyle {
 
   fontFamily?: string;
 
-  fontSize?: ResponsiveStyleValue<number>;
+  fontSize?: ResponsiveStyleValue<string | number>;
 
   fontWeight?: number;
 
@@ -171,9 +171,7 @@ export interface BuilderStyle {
     | "inline-block"
     | "none";
 
-  flexDirection?:
-    | "row"
-    | "column";
+  flexDirection?: ResponsiveStyleValue<"row" | "column">;
 
   justifyContent?: string;
 
@@ -317,6 +315,8 @@ export interface BuilderMetadata {
   template?: string;
 
   industry?: string;
+
+  sectionContract?: unknown;
 
   creativeRecovery?: {
     initialMissingNodes: string[];

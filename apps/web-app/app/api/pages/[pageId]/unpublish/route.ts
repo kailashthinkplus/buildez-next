@@ -27,16 +27,11 @@ export async function POST(
     const execCtx: ExecutionContext = await resolveExecutionContext({
       req,
       scope: "page",
-      source: "unpublish",
+      source: "publish",
       query: { pageId },
 
       userId: auth.user.id,
       tenantId: auth.tenant.id,
-      role: auth.role,
-      permissions: auth.permissions,
-      isSuperAdmin: auth.isSuperAdmin,
-      isTenantAdmin: auth.isTenantAdmin,
-      isEditor: auth.isEditor,
     });
 
     console.log("🔐 [UNPUBLISH] Context resolved", {

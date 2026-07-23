@@ -373,6 +373,45 @@ exports.Prisma.SiteScalarFieldEnum = {
   deletedAt: 'deletedAt'
 };
 
+exports.Prisma.V12ProjectScalarFieldEnum = {
+  id: 'id',
+  siteId: 'siteId',
+  tenantId: 'tenantId',
+  currentRevision: 'currentRevision',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.V12ProjectFileScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  path: 'path',
+  content: 'content',
+  contentHash: 'contentHash',
+  revision: 'revision',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.V12ProjectRevisionScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  sequence: 'sequence',
+  operations: 'operations',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.V12ProjectCheckpointScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  revisionId: 'revisionId',
+  label: 'label',
+  snapshot: 'snapshot',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ShopScalarFieldEnum = {
   id: 'id',
   siteId: 'siteId',
@@ -1137,6 +1176,10 @@ exports.Prisma.ModelName = {
   ThemeAsset: 'ThemeAsset',
   MediaAsset: 'MediaAsset',
   Site: 'Site',
+  V12Project: 'V12Project',
+  V12ProjectFile: 'V12ProjectFile',
+  V12ProjectRevision: 'V12ProjectRevision',
+  V12ProjectCheckpoint: 'V12ProjectCheckpoint',
   Shop: 'Shop',
   ShopProduct: 'ShopProduct',
   ShopProductImage: 'ShopProductImage',

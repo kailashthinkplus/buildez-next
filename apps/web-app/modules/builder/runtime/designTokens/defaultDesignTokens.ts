@@ -1,13 +1,18 @@
 import { DesignTokens } from
   "@/modules/builder/runtime/designTokens/designTokens.types";
+import { generateDefaultDesignTokens } from
+  "@/modules/builder/runtime/designTokens/generateDefaultDesignTokens";
 
 /* ============================================================
    DEFAULT DESIGN TOKENS (SERVER ONLY)
 ============================================================ */
 
 export function getDefaultDesignTokens(): DesignTokens {
+  const defaults = generateDefaultDesignTokens();
+
   return {
     colors: {
+      ...defaults.colors,
       background: "#020617",
       surface: "#020617",
       textPrimary: "#e5e7eb",
@@ -17,9 +22,11 @@ export function getDefaultDesignTokens(): DesignTokens {
       primary: "#3b82f6",
       primaryHover: "#2563eb",
       onPrimary: "#ffffff",
+      accent: "#6366f1",
     },
 
     typography: {
+      ...defaults.typography,
       fontFamily:
         "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
 
@@ -35,11 +42,16 @@ export function getDefaultDesignTokens(): DesignTokens {
     },
 
     spacing: {
+      ...defaults.spacing,
       sectionY: 96,
       containerX: 24,
       blockGap: 16,
       radius: 12,
     },
+
+    shadows: defaults.shadows,
+
+    radius: defaults.radius,
 
     buttons: {
       radius: 10,
