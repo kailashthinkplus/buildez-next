@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
     data: {
       shopId: access.shop.id, title: body.title.trim(), handle, description: body.description || "", vendor: body.vendor || null,
       productType: body.productType || null, status: body.status || "DRAFT", tags: Array.isArray(body.tags) ? body.tags : [],
+      storySections: Array.isArray(body.storySections) ? body.storySections : [],
       images: { create: (body.images || []).filter((x: string) => /^https?:\/\//.test(x)).map((url: string, position: number) => ({ url, position })) },
       options: { create: (body.options || []).map((o: { name: string; values: string[] }, position: number) => ({ name: o.name, values: o.values, position })) },
       variants: { create: (body.variants?.length ? body.variants : [{ title: "Default", price: body.price || 0, inventory: body.inventory || 0 }]).map((v: Record<string, unknown>, position: number) => ({ title: String(v.title || "Default"), sku: v.sku ? String(v.sku) : null, price: money(v.price), compareAtPrice: v.compareAtPrice ? money(v.compareAtPrice) : null, inventory: Math.max(0, Number(v.inventory) || 0), optionValues: (v.optionValues || undefined) as object | undefined, position })) },

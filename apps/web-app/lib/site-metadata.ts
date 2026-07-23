@@ -8,7 +8,7 @@ export async function metadataForSite(siteSlug: string, pageSlug = "home"): Prom
   const settings = (site.settings || {}) as Settings; const page = site.pages[0]; const pageMeta = (page?.metadata || {}) as Settings;
   const title = String(pageMeta.seoTitle || settings.seoTitle || page?.title || site.name);
   const description = String(pageMeta.seoDescription || settings.seoDescription || "");
-  const canonical = String(settings.canonicalUrl || ""); const socialImage = String(settings.socialImageUrl || ""); const favicon = String(settings.faviconUrl || "");
+  const canonical = String(settings.canonicalUrl || ""); const socialImage = String(pageMeta.socialImageUrl || settings.socialImageUrl || ""); const favicon = String(pageMeta.faviconUrl || settings.faviconUrl || "");
   return {
     title, description,
     keywords: String(settings.seoKeywords || "").split(",").map(x => x.trim()).filter(Boolean),

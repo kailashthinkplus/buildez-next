@@ -19,6 +19,12 @@ import {
   Search,
   CircleHelp,
   ExternalLink,
+  Package,
+  ReceiptText,
+  Percent,
+  CreditCard,
+  UsersRound,
+  ListTree,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useWorkspace } from "../WorkspaceContext";
@@ -42,10 +48,21 @@ export function SiteSidebar({
         { name: "Dashboard", href: `${base}/dashboard`, icon: LayoutDashboard },
         { name: "Pages", href: `${base}/pages`, icon: FileText },
         { name: "Media", href: `${base}/media`, icon: ImageIcon },
-        { name: "CMS", href: `${base}/cms`, icon: Database },
+        { name: "CMS", href: `${base}/cms`, icon: Database, children: [
+          { name: "Collections", href: `${base}/cms?view=collections`, icon: ListTree },
+          { name: "Content entries", href: `${base}/cms?view=entries`, icon: FileText },
+        ] },
         { name: "Themes", href: `${base}/themes`, icon: Brush },
         { name: "Apps", href: `${base}/apps`, icon: Puzzle },
-        { name: "Shopez", href: `${base}/shopez`, icon: ShoppingBag },
+        { name: "Shopez", href: `${base}/shopez`, icon: ShoppingBag, children: [
+          { name: "Overview", href: `${base}/shopez?view=overview`, icon: LayoutDashboard },
+          { name: "Products", href: `${base}/shopez?view=products`, icon: Package },
+          { name: "Orders", href: `${base}/shopez?view=orders`, icon: ReceiptText },
+          { name: "Customers", href: `${base}/shopez?view=customers`, icon: UsersRound },
+          { name: "Discounts", href: `${base}/shopez?view=discounts`, icon: Percent },
+          { name: "Payments", href: `${base}/shopez?view=payments`, icon: CreditCard },
+          { name: "Settings", href: `${base}/shopez?view=settings`, icon: Settings },
+        ] },
       ],
     },
     {
@@ -90,21 +107,14 @@ export function SiteSidebar({
           </div>
 
           <div className="flex flex-col gap-1">
-            {section.links.map(({ name, href, icon: Icon }) => {
-              const active = pathname === href;
+            {section.links.map(({ name, href, icon: Icon, children }) => {
+              const pathOnly = href.split("?")[0];
+              const active = pathname === pathOnly;
               return (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${
-                    active
-                      ? "dashboard-nav-active"
-                      : "dashboard-muted dashboard-hover"
-                  }`}
-                >
-                  <Icon size={18} />
-                  {name}
-                </Link>
+                <div key={href}>
+                  <Link href={href} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${active ? "dashboard-nav-active" : "dashboard-muted dashboard-hover"}`}><Icon size={18}/>{name}</Link>
+                  {active && children?.length ? <div className="ml-5 mt-1 space-y-0.5 border-l dashboard-border pl-2">{children.map(child => <Link key={child.href} href={child.href} className="flex items-center gap-2 rounded-lg px-2 py-2 text-xs dashboard-muted dashboard-hover"><child.icon size={14}/>{child.name}</Link>)}</div> : null}
+                </div>
               );
             })}
           </div>

@@ -774,6 +774,7 @@ model ShopProduct {
   tags            String[]          @default([])
   seoTitle        String?
   seoDescription  String?
+  storySections   Json?
   trackQuantity   Boolean           @default(true)
   continueSelling Boolean           @default(false)
   createdAt       DateTime          @default(now())

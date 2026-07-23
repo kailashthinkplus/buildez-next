@@ -71,7 +71,8 @@ function BlankCanvasGreeting({ onAI, onBlocks }: { onAI(): void; onBlocks(): voi
   </div>;
 }
 
-export default function Builder3Canvas({ siteId, siteName }: { siteId: string; siteName: string }) {
+type BuilderPage = { id: string; title: string; slug: string; status: "DRAFT" | "PUBLISHED"; seoTitle: string; seoDescription: string; faviconUrl: string };
+export default function Builder3Canvas({ siteId, siteName, page }: { siteId: string; siteName: string; page?: BuilderPage }) {
   const router = useRouter();
   const [mode, setMode] = useState<BuilderV3CanvasMode>("preview");
   const [device, setDevice] = useState<Device>("desktop");
@@ -93,6 +94,8 @@ export default function Builder3Canvas({ siteId, siteName }: { siteId: string; s
   const [darkCanvas, setDarkCanvas] = useState(true);
   const [siteMenuOpen, setSiteMenuOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [pageStatus, setPageStatus] = useState<"DRAFT" | "PUBLISHED">(page?.status ?? "DRAFT");
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [undoStack, setUndoStack] = useState<string[]>([]);
@@ -115,6 +118,21 @@ export default function Builder3Canvas({ siteId, siteName }: { siteId: string; s
     try { await checkpoint("Manual save"); setSavedAt(new Date()); setSaveModalOpen(true); }
     catch (reason) { setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.failed", title: "Save failed", detail: reason instanceof Error ? reason.message : "Could not save", timestamp: new Date().toISOString() }]); }
     finally { setSaving(false); }
+  }
+
+  async function publishNow() {
+    if (!page?.id || publishing || saving) return;
+    setPublishing(true);
+    try {
+      await checkpoint("Before publish");
+      const response = await fetch(`/api/pages/${page.id}/publish`, { method: "POST" });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(apiErrorMessage(payload, "Could not publish page"));
+      setPageStatus("PUBLISHED"); setSavedAt(new Date());
+      setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.completed", title: "Page published", detail: `${page.title} is now live`, timestamp: new Date().toISOString() }]);
+    } catch (reason) {
+      setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.failed", title: "Publish failed", detail: reason instanceof Error ? reason.message : "Could not publish page", timestamp: new Date().toISOString() }]);
+    } finally { setPublishing(false); }
   }
 
   async function restoreHistory(direction: "undo" | "redo") {
@@ -248,7 +266,7 @@ export default function Builder3Canvas({ siteId, siteName }: { siteId: string; s
           <button onClick={() => router.push("/app/workspace/websites")} aria-label="Back to websites" className="rounded-xl p-2 text-white/70 transition hover:bg-white/10 hover:text-white"><ArrowLeft size={20}/></button>
           <Image src="/buildez-logo-dark.svg" alt="BuildEZ" width={138} height={46} priority className="mt-1 h-11 w-auto"/>
           <div className="relative"><button onClick={() => setSiteMenuOpen(open => !open)} className="ml-2 flex min-w-0 items-center gap-1.5 text-sm font-medium text-white/85 transition hover:text-white"><span className="max-w-[145px] truncate">{siteName}</span><ChevronDown size={14} className={`text-white/40 transition ${siteMenuOpen ? "rotate-180" : ""}`}/></button>{siteMenuOpen && <div className="absolute left-2 top-full z-[20000] mt-4 w-56 rounded-xl border border-white/10 bg-[#0b0d12] p-2 shadow-2xl"><button onClick={() => router.push("/app/workspace/websites")} className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/70 hover:bg-white/10 hover:text-white">All websites</button><button onClick={() => { setSiteMenuOpen(false); setLeftPanel("settings"); }} className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/70 hover:bg-white/10 hover:text-white">Website settings</button></div>}</div>
-          <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-xs text-blue-400">Draft</span>
+          <span className={`rounded-full border px-2 py-0.5 text-xs ${pageStatus === "PUBLISHED" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400" : "border-blue-500/20 bg-blue-500/10 text-blue-400"}`}>{pageStatus === "PUBLISHED" ? "Published" : "Draft"}</span>
         </div>
 
         <div className="flex flex-1 items-center justify-center gap-3">
@@ -269,7 +287,8 @@ export default function Builder3Canvas({ siteId, siteName }: { siteId: string; s
             <button onClick={() => setMode("preview")} className={`flex items-center gap-1.5 rounded-[9px] px-3 py-1.5 text-sm transition ${mode === "preview" ? "bg-blue-500/25 text-blue-300 shadow-sm" : "text-white/55 hover:text-white"}`}><Eye size={15}/>Preview</button>
           </div>
           <div className="flex items-center gap-2 whitespace-nowrap text-sm text-white/70">{saving ? <Loader2 size={16} className="animate-spin"/> : savedAt ? <Check size={16} className="text-emerald-300"/> : <Cloud size={16}/>} {saving ? "Saving" : savedAt ? "Saved" : "Auto-saved"}</div>
-          <button onClick={() => void saveNow()} disabled={!workspace?.revision || saving} className="whitespace-nowrap rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-1.5 text-sm font-medium text-white transition hover:from-orange-600 hover:to-orange-700 disabled:cursor-not-allowed disabled:opacity-40">Save</button>
+          <button onClick={() => void saveNow()} disabled={!workspace?.revision || saving} className="whitespace-nowrap rounded-xl border border-white/10 bg-white/[0.08] px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40">Save</button>
+          <button onClick={() => void publishNow()} disabled={!page?.id || publishing || saving} className="whitespace-nowrap rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40">{publishing ? "Publishing…" : pageStatus === "PUBLISHED" ? "Republish" : "Publish"}</button>
         </div>
       </header>
 

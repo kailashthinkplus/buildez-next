@@ -137,11 +137,13 @@ export const GET = async (request: NextRequest) => {
       const seoMetadata = asRecord(metadata.seo);
       const seoTitle = asString(metadata.seoTitle);
       const seoDescription = asString(metadata.seoDescription);
+      const faviconUrl = asString(metadata.faviconUrl);
       const requiredFields = [
         page.title,
         page.slug,
         seoTitle,
         seoDescription,
+        faviconUrl,
       ];
       const requiredFieldsCompleted = requiredFields.filter(Boolean).length;
       const requiredFieldsTotal = requiredFields.length;
@@ -153,6 +155,7 @@ export const GET = async (request: NextRequest) => {
         ...page,
         seoTitle,
         seoDescription,
+        faviconUrl,
         screenshotUrl:
           asString(metadata.screenshotUrl) ||
           asString(metadata.thumbnailUrl) ||
@@ -267,9 +270,14 @@ while (
     const page = await prisma.page.create({
       data: {
         siteId: site.id,
-        title,
+        title: title.trim(),
         slug,
         status: "DRAFT",
+        metadata: {
+          seoTitle: typeof body.seoTitle === "string" ? body.seoTitle : title.trim(),
+          seoDescription: typeof body.seoDescription === "string" ? body.seoDescription : "",
+          faviconUrl: typeof body.faviconUrl === "string" ? body.faviconUrl : "",
+        },
       },
       include: {
         site: { select: { id: true, slug: true } },

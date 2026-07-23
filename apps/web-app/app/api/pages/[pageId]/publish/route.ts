@@ -57,17 +57,22 @@ export async function POST(
       },
     });
 
-    if (!page?.blueprint?.data) {
+    if (!page) {
       return NextResponse.json(
-        { error: "Invalid page or blueprint" },
+        { error: "Invalid page" },
         { status: 400 }
       );
     }
 
-    const blueprintData = page.blueprint.data;
-    const snapshotContent = isBuilderV2Blueprint(blueprintData)
-      ? blueprintData
-      : resolveBlueprintTree(blueprintData as unknown as BlueprintData);
+    const blueprintData = page.blueprint?.data;
+    const project = !blueprintData ? await prisma.v12Project.findUnique({
+      where: { siteId: execCtx.siteId },
+      include: { files: { select: { path: true, contentHash: true, revision: true }, orderBy: { path: "asc" } } },
+    }) : null;
+    if (!blueprintData && !project?.files.length) return NextResponse.json({ error: "Page has no publishable source" }, { status: 400 });
+    const snapshotContent = blueprintData
+      ? (isBuilderV2Blueprint(blueprintData) ? blueprintData : resolveBlueprintTree(blueprintData as unknown as BlueprintData))
+      : { version: 12, renderMode: "REACT", projectId: project!.id, revision: project!.currentRevision, files: project!.files };
 
     /* ----------------------------------------------------------
        TRANSACTION

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Database, FilePlus2, MoreVertical, Plus, Save, Settings2, Trash2, X } from "lucide-react";
+import { Database, FilePlus2, Plus, Save, Settings2, Trash2, X } from "lucide-react";
 import { useWorkspace } from "../../components/WorkspaceContext";
 import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
 
@@ -19,7 +19,6 @@ export default function CmsPage() {
   const [editing, setEditing] = useState<Entry | null>(null);
   const [creatingCollection, setCreatingCollection] = useState(false);
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
-  const [collectionMenu, setCollectionMenu] = useState("");
   const selected = useMemo(() => collections.find((item) => item.id === selectedId), [collections, selectedId]);
 
   const loadCollections = async () => { if (!siteId) return; const r = await fetch(`/api/cms/collections?siteId=${siteId}`); const b = await r.json(); setCollections(b.collections || []); setSelectedId((id) => id || b.collections?.[0]?.id || ""); };
@@ -27,13 +26,9 @@ export default function CmsPage() {
   useEffect(() => { loadCollections(); }, [siteId]);
   useEffect(() => { loadEntries(); setEditing(null); }, [selectedId]);
 
-  return <div className="flex min-h-full bg-transparent" onClick={() => setCollectionMenu("")}>
-    <aside className="w-72 shrink-0 border-r dashboard-border px-4 py-6">
-      <div className="mb-5 flex items-center justify-between"><div><h1 className="text-xl font-semibold">CMS</h1><p className="mt-1 text-xs dashboard-muted">Structured site content</p></div><Database className="text-blue-500" /></div>
-      <button onClick={() => setCreatingCollection(true)} className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-3 py-2.5 text-sm font-medium text-white hover:bg-blue-500"><Plus size={16}/> New collection</button>
-      <div className="space-y-1.5">{collections.map((c) => <div key={c.id} className={`group relative flex items-center rounded-xl transition ${selectedId === c.id ? "dashboard-nav-active" : "dashboard-muted dashboard-hover"}`}><button onClick={() => setSelectedId(c.id)} className="min-w-0 flex-1 px-3 py-3 text-left"><div className="truncate pr-1 text-sm font-medium">{c.name}</div><div className="mt-1 text-xs opacity-60">{c._count?.entries || 0} entries · {c.fields.length} fields</div></button><button aria-label={`Open ${c.name} menu`} onClick={(e) => { e.stopPropagation(); setCollectionMenu(collectionMenu === c.id ? "" : c.id); }} className="mr-2 rounded-lg p-2 opacity-55 transition hover:bg-black/10 hover:opacity-100 dark:hover:bg-white/10"><MoreVertical size={17}/></button>{collectionMenu === c.id && <div onClick={(e) => e.stopPropagation()} className="absolute right-2 top-11 z-30 w-48 overflow-hidden rounded-xl border dashboard-border dashboard-card p-1.5 shadow-xl"><button onClick={() => { setEditingCollection(c); setCollectionMenu(""); }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm dashboard-hover"><Settings2 size={15}/> Collection settings</button></div>}</div>)}</div>
-    </aside>
-    <main className="min-w-0 flex-1 px-6 py-8 md:px-10 lg:px-12">
+  return <div className="min-h-full bg-transparent">
+    <main className="min-w-0 px-6 py-8 md:px-10 lg:px-12">
+      <div className="mx-auto mb-7 flex max-w-6xl flex-wrap items-center gap-3"><div className="mr-auto"><h1 className="flex items-center gap-2 text-2xl font-semibold"><Database className="text-blue-500"/>Content management</h1><p className="mt-1 text-sm dashboard-muted">Collections and entries now use the main site navigation.</p></div><select value={selectedId} onChange={event=>setSelectedId(event.target.value)} className="dashboard-input min-w-56 rounded-xl px-3 py-2.5 text-sm">{collections.map(collection=><option key={collection.id} value={collection.id}>{collection.name} · {collection._count?.entries||0} entries</option>)}</select>{selected&&<button onClick={()=>setEditingCollection(selected)} className="rounded-xl border dashboard-border p-2.5" aria-label="Collection settings"><Settings2 size={17}/></button>}<button onClick={() => setCreatingCollection(true)} className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white"><Plus size={16}/>New collection</button></div>
       {selected ? <div className="mx-auto w-full max-w-6xl"><div className="mb-6 flex flex-wrap items-start justify-between gap-4"><div className="min-w-0"><h2 className="truncate text-2xl font-semibold tracking-tight">{selected.name}</h2><p className="mt-1.5 max-w-2xl text-sm dashboard-muted">{selected.description || "Manage structured content entries."}</p></div><button onClick={() => setEditing({ id: "", data: {}, status: "DRAFT", updatedAt: "" })} className="flex shrink-0 items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-500"><FilePlus2 size={16}/> Add entry</button></div>
       <div className="overflow-hidden rounded-2xl dashboard-card"><div className="hidden grid-cols-[minmax(0,1fr)_120px_150px_32px] gap-4 border-b dashboard-border px-6 py-3.5 text-xs font-semibold uppercase dashboard-faint sm:grid"><span>Entry</span><span>Status</span><span>Updated</span><span/></div>{entries.length ? entries.map((entry) => <button key={entry.id} onClick={() => setEditing(entry)} className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b dashboard-border px-5 py-4 text-left last:border-0 dashboard-hover sm:grid-cols-[minmax(0,1fr)_120px_150px_32px] sm:gap-4 sm:px-6"><span className="truncate text-sm font-medium">{String(entry.data[selected.fields[0]?.key] || "Untitled entry")}</span><span className={`hidden w-fit rounded-full px-2.5 py-1 text-[11px] font-medium sm:block ${entry.status === "PUBLISHED" ? "bg-emerald-500/15 text-emerald-500" : "bg-amber-500/15 text-amber-500"}`}>{entry.status}</span><span className="hidden text-xs dashboard-muted sm:block">{new Date(entry.updatedAt).toLocaleDateString()}</span><span className="dashboard-muted">›</span></button>) : <div className="px-6 py-16 text-center dashboard-muted"><Database className="mx-auto mb-3 opacity-40"/><p className="text-sm font-medium">No entries yet</p><p className="mt-1 text-xs opacity-70">Add your first entry to populate website widgets.</p></div>}</div></div> : <div className="grid h-full place-items-center dashboard-muted">Create a collection to get started.</div>}
     </main>

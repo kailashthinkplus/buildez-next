@@ -32912,6 +32912,7 @@ export namespace Prisma {
     tags: number
     seoTitle: number
     seoDescription: number
+    storySections: number
     trackQuantity: number
     continueSelling: number
     createdAt: number
@@ -32966,6 +32967,7 @@ export namespace Prisma {
     tags?: true
     seoTitle?: true
     seoDescription?: true
+    storySections?: true
     trackQuantity?: true
     continueSelling?: true
     createdAt?: true
@@ -33057,6 +33059,7 @@ export namespace Prisma {
     tags: string[]
     seoTitle: string | null
     seoDescription: string | null
+    storySections: JsonValue | null
     trackQuantity: boolean
     continueSelling: boolean
     createdAt: Date
@@ -33092,6 +33095,7 @@ export namespace Prisma {
     tags?: boolean
     seoTitle?: boolean
     seoDescription?: boolean
+    storySections?: boolean
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: boolean
@@ -33117,6 +33121,7 @@ export namespace Prisma {
     tags?: boolean
     seoTitle?: boolean
     seoDescription?: boolean
+    storySections?: boolean
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: boolean
@@ -33136,6 +33141,7 @@ export namespace Prisma {
     tags?: boolean
     seoTitle?: boolean
     seoDescription?: boolean
+    storySections?: boolean
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: boolean
@@ -33177,6 +33183,7 @@ export namespace Prisma {
       tags: string[]
       seoTitle: string | null
       seoDescription: string | null
+      storySections: Prisma.JsonValue | null
       trackQuantity: boolean
       continueSelling: boolean
       createdAt: Date
@@ -33591,6 +33598,7 @@ export namespace Prisma {
     readonly tags: FieldRef<"ShopProduct", 'String[]'>
     readonly seoTitle: FieldRef<"ShopProduct", 'String'>
     readonly seoDescription: FieldRef<"ShopProduct", 'String'>
+    readonly storySections: FieldRef<"ShopProduct", 'Json'>
     readonly trackQuantity: FieldRef<"ShopProduct", 'Boolean'>
     readonly continueSelling: FieldRef<"ShopProduct", 'Boolean'>
     readonly createdAt: FieldRef<"ShopProduct", 'DateTime'>
@@ -78680,6 +78688,7 @@ export namespace Prisma {
     tags: 'tags',
     seoTitle: 'seoTitle',
     seoDescription: 'seoDescription',
+    storySections: 'storySections',
     trackQuantity: 'trackQuantity',
     continueSelling: 'continueSelling',
     createdAt: 'createdAt',
@@ -81929,6 +81938,7 @@ export namespace Prisma {
     tags?: StringNullableListFilter<"ShopProduct">
     seoTitle?: StringNullableFilter<"ShopProduct"> | string | null
     seoDescription?: StringNullableFilter<"ShopProduct"> | string | null
+    storySections?: JsonNullableFilter<"ShopProduct">
     trackQuantity?: BoolFilter<"ShopProduct"> | boolean
     continueSelling?: BoolFilter<"ShopProduct"> | boolean
     createdAt?: DateTimeFilter<"ShopProduct"> | Date | string
@@ -81953,6 +81963,7 @@ export namespace Prisma {
     tags?: SortOrder
     seoTitle?: SortOrderInput | SortOrder
     seoDescription?: SortOrderInput | SortOrder
+    storySections?: SortOrderInput | SortOrder
     trackQuantity?: SortOrder
     continueSelling?: SortOrder
     createdAt?: SortOrder
@@ -81981,6 +81992,7 @@ export namespace Prisma {
     tags?: StringNullableListFilter<"ShopProduct">
     seoTitle?: StringNullableFilter<"ShopProduct"> | string | null
     seoDescription?: StringNullableFilter<"ShopProduct"> | string | null
+    storySections?: JsonNullableFilter<"ShopProduct">
     trackQuantity?: BoolFilter<"ShopProduct"> | boolean
     continueSelling?: BoolFilter<"ShopProduct"> | boolean
     createdAt?: DateTimeFilter<"ShopProduct"> | Date | string
@@ -82005,6 +82017,7 @@ export namespace Prisma {
     tags?: SortOrder
     seoTitle?: SortOrderInput | SortOrder
     seoDescription?: SortOrderInput | SortOrder
+    storySections?: SortOrderInput | SortOrder
     trackQuantity?: SortOrder
     continueSelling?: SortOrder
     createdAt?: SortOrder
@@ -82029,6 +82042,7 @@ export namespace Prisma {
     tags?: StringNullableListFilter<"ShopProduct">
     seoTitle?: StringNullableWithAggregatesFilter<"ShopProduct"> | string | null
     seoDescription?: StringNullableWithAggregatesFilter<"ShopProduct"> | string | null
+    storySections?: JsonNullableWithAggregatesFilter<"ShopProduct">
     trackQuantity?: BoolWithAggregatesFilter<"ShopProduct"> | boolean
     continueSelling?: BoolWithAggregatesFilter<"ShopProduct"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"ShopProduct"> | Date | string
@@ -87842,6 +87856,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -87866,6 +87881,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -87888,6 +87904,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -87912,6 +87929,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -87935,6 +87953,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -87952,6 +87971,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -87970,6 +87990,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -93761,6 +93782,7 @@ export namespace Prisma {
     tags?: SortOrder
     seoTitle?: SortOrder
     seoDescription?: SortOrder
+    storySections?: SortOrder
     trackQuantity?: SortOrder
     continueSelling?: SortOrder
     createdAt?: SortOrder
@@ -108427,6 +108449,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -108449,6 +108472,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -108774,6 +108798,7 @@ export namespace Prisma {
     tags?: StringNullableListFilter<"ShopProduct">
     seoTitle?: StringNullableFilter<"ShopProduct"> | string | null
     seoDescription?: StringNullableFilter<"ShopProduct"> | string | null
+    storySections?: JsonNullableFilter<"ShopProduct">
     trackQuantity?: BoolFilter<"ShopProduct"> | boolean
     continueSelling?: BoolFilter<"ShopProduct"> | boolean
     createdAt?: DateTimeFilter<"ShopProduct"> | Date | string
@@ -109359,6 +109384,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -109382,6 +109408,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -109419,6 +109446,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -109442,6 +109470,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -109463,6 +109492,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -109486,6 +109516,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -109523,6 +109554,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -109546,6 +109578,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -109567,6 +109600,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -109590,6 +109624,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -109661,6 +109696,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -109684,6 +109720,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -109888,6 +109925,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -109911,6 +109949,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -109977,6 +110016,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -110000,6 +110040,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -110758,6 +110799,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -110781,6 +110823,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -110918,6 +110961,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -110941,6 +110985,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -119214,6 +119259,7 @@ export namespace Prisma {
     tags?: ShopProductCreatetagsInput | string[]
     seoTitle?: string | null
     seoDescription?: string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: boolean
     continueSelling?: boolean
     createdAt?: Date | string
@@ -119304,6 +119350,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -119326,6 +119373,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -119348,6 +119396,7 @@ export namespace Prisma {
     tags?: ShopProductUpdatetagsInput | string[]
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
     seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    storySections?: NullableJsonNullValueInput | InputJsonValue
     trackQuantity?: BoolFieldUpdateOperationsInput | boolean
     continueSelling?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

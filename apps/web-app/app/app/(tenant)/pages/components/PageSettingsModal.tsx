@@ -15,6 +15,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
   const [seoDescription, setSeoDescription] = useState(
     page?.seoDescription || ""
   );
+  const [faviconUrl, setFaviconUrl] = useState(page?.faviconUrl || "");
 
   useEffect(() => {
     if (page) {
@@ -22,6 +23,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
       setSlug(page.slug);
       setSeoTitle(page.seoTitle || "");
       setSeoDescription(page.seoDescription || "");
+      setFaviconUrl(page.faviconUrl || "");
     }
   }, [page]);
 
@@ -34,6 +36,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
       slug,
       seoTitle,
       seoDescription,
+      faviconUrl,
     });
 
     if (!result.success) {
@@ -137,6 +140,13 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
                 dashboard-input
               "
             />
+          </div>
+          <div>
+            <label className="text-sm dashboard-muted">Page favicon URL</label>
+            <div className="mt-1 flex items-center gap-3">
+              <span className="grid h-10 w-10 place-items-center overflow-hidden rounded-lg dashboard-subtle">{faviconUrl ? <img src={faviconUrl} alt="" className="h-full w-full object-cover"/> : "★"}</span>
+              <input value={faviconUrl} onChange={(e) => setFaviconUrl(e.target.value)} placeholder="https://…/favicon.png" className="dashboard-input flex-1 rounded-xl px-3 py-2"/>
+            </div>
           </div>
         </div>
 

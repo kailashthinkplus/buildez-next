@@ -100,6 +100,7 @@ export async function GET(
         siteSlug: page.site.slug,
         seoTitle: String(asRecord(page.metadata).seoTitle ?? ""),
         seoDescription: String(asRecord(page.metadata).seoDescription ?? ""),
+        faviconUrl: String(asRecord(page.metadata).faviconUrl ?? ""),
         blueprint: page.blueprint?.data ?? null,
       },
     };
@@ -166,13 +167,15 @@ export async function PATCH(
 
     if (
       typeof body.seoTitle === "string" ||
-      typeof body.seoDescription === "string"
+      typeof body.seoDescription === "string" ||
+      typeof body.faviconUrl === "string"
     ) {
       updates.metadata = {
         ...asRecord(existing.metadata),
         seoTitle: typeof body.seoTitle === "string" ? body.seoTitle : undefined,
         seoDescription:
           typeof body.seoDescription === "string" ? body.seoDescription : undefined,
+        faviconUrl: typeof body.faviconUrl === "string" ? body.faviconUrl : undefined,
       };
     }
 
@@ -204,6 +207,7 @@ export async function PATCH(
       status: updated.status,
       seoTitle: String(metadata.seoTitle ?? ""),
       seoDescription: String(metadata.seoDescription ?? ""),
+      faviconUrl: String(metadata.faviconUrl ?? ""),
       blueprint:
         updated.blueprint?.data ?? {
           page: { props: {}, children: [] },

@@ -442,6 +442,7 @@ exports.Prisma.ShopProductScalarFieldEnum = {
   tags: 'tags',
   seoTitle: 'seoTitle',
   seoDescription: 'seoDescription',
+  storySections: 'storySections',
   trackQuantity: 'trackQuantity',
   continueSelling: 'continueSelling',
   createdAt: 'createdAt',
