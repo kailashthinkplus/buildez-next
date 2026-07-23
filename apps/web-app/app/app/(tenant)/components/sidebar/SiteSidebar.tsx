@@ -70,7 +70,7 @@ export function SiteSidebar({
       links: [
         { name: "Analytics", href: `${base}/analytics`, icon: BarChart3 },
         { name: "CRM", href: `${base}/crm`, icon: ContactRound },
-        { name: "AI Tools", href: `${base}/ai`, icon: Bot },
+        { name: "AI Agents", href: `${base}/ai`, icon: Bot },
         { name: "Forms", href: `${base}/forms`, icon: Layers },
       ],
     },
