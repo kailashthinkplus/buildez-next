@@ -7,7 +7,7 @@
     "start": "next start",
     "replay:v11": "node --import tsx scripts/replay-v11-source.ts",
     "typecheck:builder": "tsc -p tsconfig.builder.json --noEmit",
-    "test:v12:rc1": "node --import tsx --test modules/v12-boundaries.test.ts",
+    "test:v12:rc1": "node --import tsx --test modules/v12-boundaries.test.ts modules/builder-v3/visual-editor/visualEditor.test.ts",
     "test:builder": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__ -name '*.test.ts' -print)",
     "test:builder:rc-t1": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/commands modules/builder-v2/__tests__/serialization modules/builder-v2/__tests__/rc-t1 -name '*.test.ts' -print)",
     "test:builder:rc-t2": "node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__/canvas modules/builder-v2/__tests__/layout modules/builder-v2/__tests__/responsive modules/builder-v2/__tests__/parity modules/builder-v2/__tests__/workspace modules/builder-v2/__tests__/rc-t2 -name '*.test.ts' -print)",

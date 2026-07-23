@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { readProjectFile, listProjectFiles } from "../project-workspace";
 import { validatePreviewProjectPaths } from "./previewContract";
+import { createBuilderRuntimeScript, instrumentTsxSource } from "../visual-editor";
 
 const BLANK_PROJECT_FILES = {
   "package.json": JSON.stringify({ private: true, type: "module", dependencies: { "@vitejs/plugin-react": "latest", vite: "latest", react: "latest", "react-dom": "latest" } }, null, 2),
@@ -23,6 +24,7 @@ export async function materializePreviewProject(input: {
   siteId: string;
   tenantId: string;
   sandboxRoot: string;
+  sessionId: string;
 }) {
   const files = await listProjectFiles(input.siteId, input.tenantId);
   const isBlankProject = files.length === 0;
@@ -31,14 +33,18 @@ export async function materializePreviewProject(input: {
   const sandboxRoot = path.resolve(input.sandboxRoot);
   if (!projectRoot.startsWith(`${sandboxRoot}${path.sep}`)) throw new Error("Preview sandbox escape rejected");
 
+  const projectRevision = files.reduce((maximum, file) => Math.max(maximum, file.revision), 0);
   for (const projectPath of paths) {
     const target = path.resolve(projectRoot, projectPath);
     if (!target.startsWith(`${projectRoot}${path.sep}`)) throw new Error("Preview file escaped project sandbox");
     await mkdir(path.dirname(target), { recursive: true });
-    const content = isBlankProject
+    let content = isBlankProject
       ? BLANK_PROJECT_FILES[projectPath as keyof typeof BLANK_PROJECT_FILES]
       : (await readProjectFile(input.siteId, input.tenantId, projectPath)).content;
+    if (/\.[jt]sx$/.test(projectPath)) content = instrumentTsxSource(content, projectPath, projectRevision);
+    if (projectPath === "index.html") content = content.replace("</body>", '<script src="/__buildez_editor.js"></script></body>');
     await writeFile(target, content, { encoding: "utf8", flag: "w" });
   }
+  await writeFile(path.join(projectRoot, "__buildez_editor.js"), createBuilderRuntimeScript(input.sessionId), "utf8");
   return { projectRoot, fileCount: paths.length };
 }

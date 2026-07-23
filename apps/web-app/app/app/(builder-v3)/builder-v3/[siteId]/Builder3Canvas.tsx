@@ -11,6 +11,10 @@ import {
 
 import type { BuilderV3CanvasMode } from "@/modules/builder-v3/canvas";
 import { V12AgentPanel, type V12AgentEvent } from "@/modules/builder-v3/agent-ui";
+import { BUILDER_BRIDGE_VERSION, validateBuilderBridgeMessage, type BuilderSelection } from "@/modules/builder-v3/visual-editor/contracts";
+import { NodeToolbar } from "@/modules/builder-v3/visual-editor/NodeToolbar";
+import { SourceInspector } from "@/modules/builder-v3/visual-editor/SourceInspector";
+import type { ElementPatch } from "@/modules/builder-v3/visual-editor/sourcePatches";
 
 type Device = "desktop" | "tablet" | "mobile";
 const widths: Record<Device, string> = { desktop: "100%", tablet: "768px", mobile: "390px" };
@@ -72,6 +76,9 @@ export default function Builder3Canvas({ siteId, siteName }: { siteId: string; s
   const [mode, setMode] = useState<BuilderV3CanvasMode>("preview");
   const [device, setDevice] = useState<Device>("desktop");
   const [previewUrl, setPreviewUrl] = useState<string>();
+  const [previewSessionId, setPreviewSessionId] = useState<string>();
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [selection, setSelection] = useState<BuilderSelection>();
   const [error, setError] = useState<string>();
   const [workspace, setWorkspace] = useState<{ revision?: number; files?: unknown[] }>();
   const [workspaceError, setWorkspaceError] = useState<string>();
@@ -150,7 +157,7 @@ export default function Builder3Canvas({ siteId, siteName }: { siteId: string; s
         const preview = payload?.data && typeof payload.data === "object" ? payload.data : payload;
         if (typeof preview?.sessionId !== "string" || typeof preview?.url !== "string") throw new Error("Preview server returned an invalid session.");
         createdSessionId = preview.sessionId;
-        if (!disposed) setPreviewUrl(preview.url);
+        if (!disposed) { setPreviewUrl(preview.url); setPreviewSessionId(preview.sessionId); }
       })
       .catch((reason) => { if (!disposed) setError(reason instanceof Error ? reason.message : "Preview failed to start"); });
     return () => {
@@ -158,6 +165,62 @@ export default function Builder3Canvas({ siteId, siteName }: { siteId: string; s
       if (createdSessionId) void fetch("/api/builder-v3/preview/start", { method: "DELETE", headers: { "content-type": "application/json" }, body: JSON.stringify({ sessionId: createdSessionId }), keepalive: true });
     };
   }, [siteId, previewGeneration]);
+
+  useEffect(() => {
+    if (!previewSessionId || !previewUrl) return;
+    const previewOrigin = new URL(previewUrl).origin;
+    const receive = (event: MessageEvent) => {
+      if (event.origin !== previewOrigin || event.source !== iframeRef.current?.contentWindow) return;
+      if (!validateBuilderBridgeMessage(event.data, { sessionId: previewSessionId, direction: "to-builder" })) return;
+      if (event.data.type === "BUILDEZ_ELEMENT_SELECTED" || event.data.type === "BUILDEZ_ELEMENT_BOUNDS_CHANGED") setSelection(event.data.payload as BuilderSelection);
+      if (event.data.type === "BUILDEZ_SELECTION_CLEARED") setSelection(undefined);
+      if (event.data.type === "BUILDEZ_INLINE_EDIT_COMMITTED") {
+        const payload = event.data.payload as BuilderSelection & { value?: string };
+        if (typeof payload.value === "string") void applyElementPatch(payload, { operation: "text", value: payload.value });
+      }
+    };
+    window.addEventListener("message", receive);
+    return () => window.removeEventListener("message", receive);
+  }, [previewSessionId, previewUrl, workspace?.revision]);
+
+  function sendCanvas(type: string, payload: unknown = {}) {
+    if (!previewSessionId || !previewUrl) return;
+    iframeRef.current?.contentWindow?.postMessage({ version: BUILDER_BRIDGE_VERSION, sessionId: previewSessionId, type, payload }, new URL(previewUrl).origin);
+  }
+
+  useEffect(() => {
+    sendCanvas("BUILDEZ_EDIT_MODE_CHANGED", { mode });
+    if (mode === "preview") setSelection(undefined);
+  }, [mode, previewSessionId, previewUrl]);
+
+  async function applyElementPatch(target: BuilderSelection, patch: ElementPatch) {
+    if (workspace?.revision === undefined) return;
+    setSaving(true);
+    try {
+      const before = await checkpoint(`Before ${patch.operation} edit`);
+      const response = await fetch(`/api/builder-v3/projects/${siteId}/element`, {
+        method: "PUT", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ sourceFile: target.sourceFile, sourceAnchor: target.sourceAnchor, expectedRevision: workspace.revision, patch }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(apiErrorMessage(payload, "Element edit failed"));
+      const data = payload?.data && typeof payload.data === "object" ? payload.data : payload;
+      setUndoStack(items => [...items, before]); setRedoStack([]); setWorkspace(current => ({ ...current, revision: data.revision }));
+      setSelection(undefined); setPreviewGeneration(value => value + 1); setSavedAt(new Date());
+    } catch (reason) {
+      setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.failed", title: "Source edit failed", detail: reason instanceof Error ? reason.message : "Unknown error", timestamp: new Date().toISOString() }]);
+    } finally { setSaving(false); }
+  }
+
+  function handleNodeAction(action: string) {
+    if (!selection) return;
+    if (action === "parent") sendCanvas("BUILDEZ_REQUEST_PARENT_SELECTION");
+    else if (action === "source") setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.completed", title: `Source: ${selection.sourceFile}`, detail: `Anchor ${selection.sourceAnchor}`, timestamp: new Date().toISOString() }]);
+    else if (action === "ai" || action === "image") {
+      setLeftPanel("ai");
+      setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "message", role: "assistant", title: action === "image" ? "Describe the image you need for the selected element." : `Editing selected ${selection.tagName}`, detail: `${selection.sourceFile} · ${selection.elementId}`, timestamp: new Date().toISOString() }]);
+    }
+  }
 
   useEffect(() => {
     fetch(`/api/builder-v3/projects/${siteId}/tree`)
@@ -289,23 +352,13 @@ export default function Builder3Canvas({ siteId, siteName }: { siteId: string; s
           {!previewUrl && !error && workspaceLoaded && (workspace?.files?.length ?? 0) > 0 && <div className="grid min-h-[700px] place-items-center bg-white text-sm text-slate-400"><div className="flex items-center gap-2"><span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"/>Preparing preview</div></div>}
           {!previewUrl && !error && workspaceLoaded && !agentRunning && !workspaceError && (workspace?.files?.length ?? 0) === 0 && <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>} 
           {error && <div className="grid h-full min-h-[700px] place-items-center p-8 text-center text-red-700"><div><strong>Preview unavailable</strong><p className="mt-2 text-sm">{error}</p></div></div>}
-          {previewUrl && <iframe key={`${previewUrl}-${previewGeneration}`} title={`${siteName} ${mode}`} src={previewUrl} className="h-full min-h-[700px] w-full border-0" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-same-origin" />}
+          {previewUrl && <iframe ref={iframeRef} key={`${previewUrl}-${previewGeneration}`} title={`${siteName} ${mode}`} src={previewUrl} onLoad={() => sendCanvas("BUILDEZ_EDIT_MODE_CHANGED", { mode })} className="h-full min-h-[700px] w-full border-0" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-same-origin" />}
           {previewUrl && !agentRunning && workspace && (workspace.files?.length ?? 0) === 0 && <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>} 
-          {mode === "edit" && previewUrl && <div className="pointer-events-none absolute inset-x-0 top-0 border-t-2 border-blue-500"><span className="absolute right-2 top-2 rounded bg-blue-600 px-2 py-1 text-xs text-white">Edit overlay</span></div>}
+          {mode === "edit" && previewUrl && selection && <NodeToolbar selection={selection} onAction={handleNodeAction}/>}
           </div>
           </div>
         </main>
-        <aside className="absolute inset-y-0 right-0 z-[115] w-[280px] border-l border-white/10 bg-[#15171c]/95 shadow-2xl shadow-black/50 backdrop-blur-2xl">
-          <div className="flex h-12 items-center border-b border-white/10 px-4"><strong className="text-sm">Inspector</strong></div>
-          <div className="grid grid-cols-3 border-b border-white/10 text-xs text-white/55">
-            <button className="border-b-2 border-blue-400 px-2 py-3 text-white">Content</button>
-            <button className="px-2 py-3 hover:text-white">Design</button>
-            <button className="px-2 py-3 hover:text-white">Settings</button>
-          </div>
-          <div className="p-4 text-sm leading-6 text-white/40">
-            {mode === "edit" ? "Select an element in the canvas to inspect and edit its source-mapped properties." : "Switch to Edit mode and select an element to open its controls."}
-          </div>
-        </aside>
+        <div className="absolute inset-y-0 right-0 z-[115]"><SourceInspector selection={mode === "edit" ? selection : undefined} disabled={saving} onPatch={patch => selection ? applyElementPatch(selection, patch) : Promise.resolve()} onOpenSource={() => selection && handleNodeAction("source")}/></div>
       </section>
       {saveModalOpen && <div role="dialog" aria-modal="true" aria-labelledby="save-dialog-title" className="fixed inset-0 z-[30000] grid place-items-center bg-black/65 p-5 backdrop-blur-sm" onMouseDown={(event) => { if (event.target === event.currentTarget) setSaveModalOpen(false); }}>
         <div className="w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#11141c] text-white shadow-2xl shadow-black/60">

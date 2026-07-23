@@ -29,6 +29,7 @@ export default function V12AgentPanel({
 }) {
   const [prompt, setPrompt] = useState("");
   const [mode, setMode] = useState<"auto" | "discuss">("auto");
+  const [context, setContext] = useState<"Website" | "Page" | "Selected element" | "Image">("Website");
   const [attachments, setAttachments] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [elapsed, setElapsed] = useState(0);
@@ -58,6 +59,7 @@ export default function V12AgentPanel({
     </div>
 
     <div className="min-h-0 flex-1 space-y-3 overflow-auto p-4">
+      <div className="flex flex-wrap gap-1.5">{(["Website", "Page", "Selected element", "Image"] as const).map(value => <button key={value} onClick={() => setContext(value)} className={`rounded-full border px-2.5 py-1 text-[11px] ${context === value ? "border-blue-400/40 bg-blue-500/15 text-blue-200" : "border-white/10 text-white/40"}`}>{value}</button>)}</div>
       {!events.length && <div className="rounded-xl border border-dashed border-white/10 p-4 text-sm leading-6 text-white/45">Describe the website, page, or focused change you want. Agent activity will appear here only after a real operation occurs.</div>}
       {events.map((event) => event.type === "message" ? (
         <div key={event.id} className={`flex ${event.role === "assistant" ? "mr-6 justify-start" : "ml-8 justify-end"}`}>
