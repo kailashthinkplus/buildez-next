@@ -1,6 +1,7 @@
 import { getOrCreateProject, importProjectFiles, listProjectFiles, readProjectFile } from "../builder-v3/project-workspace";
 import { validatePreviewProjectPaths } from "../builder-v3/preview";
 import { IMAGE_CLARIFICATION_MESSAGE, imageRequestNeedsClarification } from "./imageIntent";
+import { buildShopezPrompt } from "./shopezPrompt";
 import { prisma } from "@buildez/db";
 
 type AgentFile = { path: string; content: string };
@@ -33,6 +34,9 @@ export async function runV12Agent(input: { siteId: string; tenantId: string; use
   if (!apiKey) throw new Error("OpenAI is not configured.");
   const project = await getOrCreateProject(input.siteId, input.tenantId);
   const site = await prisma.site.findFirst({ where: { id: input.siteId, tenantId: input.tenantId }, select: { slug: true, shop: { select: { id: true, isPublished: true } } } });
+  const commercePrompt = site?.shop
+    ? buildShopezPrompt(site.slug)
+    : "";
   const metadata = await listProjectFiles(input.siteId, input.tenantId);
   const currentFiles = await Promise.all(metadata.map(async file => ({ path: file.path, content: (await readProjectFile(input.siteId, input.tenantId, file.path)).content })));
   input.onProgress?.("Workspace loaded", `${currentFiles.length} existing files · revision ${project.currentRevision}`);
@@ -51,7 +55,7 @@ export async function runV12Agent(input: { siteId: string; tenantId: string; use
     headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({ model: process.env.OPENAI_V12_MODEL || "gpt-5.6-sol", reasoning: { effort: "high" }, max_output_tokens: 30000, text: { format: { type: "json_schema", name: "buildez_agent_result", strict: true, schema: { type: "object", additionalProperties: false, properties: { message: { type: "string" }, files: { type: "array", items: { type: "object", additionalProperties: false, properties: { path: { type: "string" }, content: { type: "string" } }, required: ["path", "content"] } } }, required: ["message", "files"] } } }, input: [{ role: "user", content: [
       ...references,
-      { type: "input_text", text: `You are BuildEZ, an autonomous senior website designer and frontend engineer. ${action} Reproduce attached designs with high visual fidelity: hierarchy, geometry, typography, color, spacing, imagery placement, interaction and responsive behavior. For complete-site requests, create all materially required pages, shared navigation, real routes, and src/buildez.pages.json as the canonical page registry with stable id, name, slug, route, sourceFile, componentName, title, description, status, order, includeInNavigation, isHomepage, createdAt, and updatedAt for every page. Never return phantom registry entries or dead navigation links. ${site?.shop ? `This site uses ShopEZ commerce. Never hardcode products, prices, inventory, collections, cart totals, or checkout data. Load the canonical storefront contract from /api/public/shopez/store?siteSlug=${site.slug} and render product, category, product-detail, cart, and checkout experiences from that response.` : ""}\n\nUSER REQUEST:\n${input.prompt || "Recreate the attached design."}\n\nCURRENT PROJECT:\n${currentProject}\n\nReturn JSON only: {"message":"specific completion summary","files":[{"path":"package.json","content":"..."},{"path":"index.html","content":"..."},{"path":"src/main.tsx","content":"..."}, ...]}. Return a complete runnable Vite React TypeScript project, never patches or markdown. Required: package.json, index.html, src/main.tsx. Keep dependencies minimal and produce polished responsive UI.` },
+      { type: "input_text", text: `You are BuildEZ, an autonomous senior website designer and frontend engineer. ${action} Reproduce attached designs with high visual fidelity: hierarchy, geometry, typography, color, spacing, imagery placement, interaction and responsive behavior. For complete-site requests, create all materially required pages, shared navigation, real routes, and src/buildez.pages.json as the canonical page registry with stable id, name, slug, route, sourceFile, componentName, title, description, status, order, includeInNavigation, isHomepage, createdAt, and updatedAt for every page. Never return phantom registry entries or dead navigation links. ${commercePrompt}\n\nUSER REQUEST:\n${input.prompt || "Recreate the attached design."}\n\nCURRENT PROJECT:\n${currentProject}\n\nReturn JSON only: {"message":"specific completion summary","files":[{"path":"package.json","content":"..."},{"path":"index.html","content":"..."},{"path":"src/main.tsx","content":"..."}, ...]}. Return a complete runnable Vite React TypeScript project, never patches or markdown. Required: package.json, index.html, src/main.tsx. Keep dependencies minimal and produce polished responsive UI.` },
     ] }] }),
     cache: "no-store",
     signal: requestSignal,

@@ -189,11 +189,7 @@ export function TenantHeader({
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
-                className="
-                  absolute right-4 top-16 w-48
-                  rounded-xl dashboard-card-strong p-2 shadow-xl
-                  backdrop-blur-xl z-50
-                "
+                className="absolute right-4 top-16 w-48 rounded-xl dashboard-card-strong p-2 shadow-xl z-[9999] isolate !bg-[#071018] dark:!bg-[#071018] !bg-none opacity-100 border border-slate-700/80 text-slate-100 shadow-2xl shadow-black/80"
               >
                 <Link
                   href="/app/profile"
