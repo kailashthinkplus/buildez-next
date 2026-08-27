@@ -2,7 +2,6 @@
 
 import "./globals.css";
 import { ThemeProvider } from "@/app/providers/theme-provider";
-import Script from "next/script";
 
 export const metadata = {
   title: "BuildEZ",
@@ -17,13 +16,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="theme-transition">
-
-        {/* ⭐ Load Razorpay Checkout (Fixes: window.Razorpay is not a constructor) */}
-        <Script
-          src="https://checkout.razorpay.com/v1/checkout.js"
-          strategy="beforeInteractive"
-        />
-
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

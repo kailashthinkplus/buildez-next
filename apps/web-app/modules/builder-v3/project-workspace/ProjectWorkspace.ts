@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { syncActivePreviewProjectFile } from "../preview/PreviewSessionManager";
 
 import { Prisma, prisma } from "@buildez/db";
 
@@ -53,7 +54,7 @@ export async function writeProjectFile(input: {
   const path = normalizeProjectPath(input.path);
   const contentHash = hashContent(input.content);
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const latestProject = await tx.v12Project.findUniqueOrThrow({ where: { id: project.id } });
     if (
       input.expectedRevision !== undefined &&
@@ -84,8 +85,31 @@ export async function writeProjectFile(input: {
       create: { projectId: project.id, path, content: input.content, contentHash, revision: revision.sequence },
       update: { content: input.content, contentHash, revision: revision.sequence },
     });
-    return { file, revision: revision.sequence, changed: true };
+    return {
+      file,
+      revision: revision.sequence,
+      changed: true,
+    };
   });
+
+  /*
+   * Canonical persistence has completed successfully.
+   *
+   * Now mirror only the changed file into the active materialized
+   * preview. Vite observes this filesystem write and performs HMR,
+   * so the iframe does not need to be recreated.
+   */
+  if (result.changed) {
+    await syncActivePreviewProjectFile({
+      siteId: input.siteId,
+      tenantId: input.tenantId,
+      path,
+      content: input.content,
+      projectRevision: result.revision,
+    });
+  }
+
+  return result;
 }
 
 export async function createProjectCheckpoint(input: {
@@ -263,10 +287,13 @@ export async function importProjectFiles(input: {
   expectedRevision: number;
   label?: string;
 }) {
-  if (!input.files.length || input.files.length > 500) throw new Error("Project import must contain 1 to 500 files");
+  if (!input.files.length || input.files.length > 2_000) throw new Error("Project import must contain 1 to 2,000 source files");
   const normalized = input.files.map((file) => ({ path: normalizeProjectPath(file.path), content: file.content }));
   if (new Set(normalized.map((file) => file.path)).size !== normalized.length) throw new Error("Project import contains duplicate paths");
-  if (normalized.some((file) => typeof file.content !== "string" || file.content.length > 2_000_000)) throw new Error("Project import contains an invalid file");
+  if (normalized.some((file) => typeof file.content !== "string" || file.content.length > 5_000_000)) throw new Error("Project import contains an invalid source file");
+  if (normalized.reduce((total, file) => total + file.content.length, 0) > 100_000_000) {
+    throw new Error("Project source exceeds the 100 MB workspace limit. Build output and media should not be included.");
+  }
   const project = await getOrCreateProject(input.siteId, input.tenantId);
 
   return prisma.$transaction(async (tx) => {

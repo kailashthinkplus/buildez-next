@@ -210,7 +210,7 @@ test("preserves safe per-element CSS when a sibling declaration is rejected", ()
   );
   const customCss = String((card?.props.advanced as any)?.customCss ?? "");
 
-  assert.match(customCss, /selector\s*\{[^}]*backdrop-filter:\s*blur\(12px\)/s);
+  assert.match(customCss, /selector\s*\{[^}]*backdrop-filter:\s*blur\(12px\)/);
   assert.doesNotMatch(customCss, /behavior|unsafe\.htc/);
   assert.ok(
     result.compilation.diagnostics.some(
@@ -220,7 +220,7 @@ test("preserves safe per-element CSS when a sibling declaration is rejected", ()
   assert.equal(validateBlueprint(result.compilation.blueprint).valid, true);
   assert.match(
     collectRenderCustomCss(result.compilation.blueprint),
-    new RegExp(`\\[data-node-id="${card?.id}"\\][^{]*\\{[^}]*backdrop-filter`, "s"),
+    new RegExp(`\\[data-node-id="${card?.id}"\\][^{]*\\{[^}]*backdrop-filter`),
   );
 });
 
@@ -236,7 +236,7 @@ test("lowers root CSS variables to inheritable page custom CSS", () => {
   const page = result.compilation.blueprint.nodes[result.compilation.blueprint.root];
   const pageCss = String((page.props.advanced as any)?.customCss ?? "");
 
-  assert.match(pageCss, /selector\s*\{[^}]*--surface:\s*#fafaf8/s);
+  assert.match(pageCss, /selector\s*\{[^}]*--surface:\s*#fafaf8/);
   assert.match(pageCss, /--ink:\s*#2a2726/);
   assert.ok(
     !result.compilation.diagnostics.some(
@@ -262,7 +262,7 @@ test("lowers a safe universal box-sizing reset onto every editable node", () => 
   for (const node of Object.values(blueprint.nodes)) {
     assert.match(
       String((node.props.advanced as any)?.customCss ?? ""),
-      /selector\s*\{[^}]*box-sizing:\s*border-box/s,
+      /selector\s*\{[^}]*box-sizing:\s*border-box/,
     );
   }
   assert.ok(

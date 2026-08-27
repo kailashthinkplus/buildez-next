@@ -16,7 +16,7 @@ export async function GET(req: Request) {
     const subscription = await prisma.subscription.findFirst({
       where: {
         userId: user.id,
-        paymentStatus: "PAID",
+        status: "ACTIVE",
       },
       orderBy: {
         paidAt: "desc",
@@ -25,8 +25,10 @@ export async function GET(req: Request) {
         planCode: true,
         billingCycle: true,
         amountPaid: true,
-        razorpayPaymentId: true,
-        razorpayOrderId: true,
+        dodoCustomerId: true,
+        dodoSubscriptionId: true,
+        dodoCheckoutSessionId: true,
+        currentPeriodEnd: true,
         paymentStatus: true,
         status: true,
         paidAt: true,

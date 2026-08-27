@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useUpdatePage } from "../hooks/useUpdatePage";
 import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
+import { R2ImageUpload } from "@/components/media/R2ImageUpload";
 
 export default function PageSettingsModal({ page, open, onClose, onSaved }) {
   const { updatePage, loading } = useUpdatePage();
@@ -141,13 +142,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
               "
             />
           </div>
-          <div>
-            <label className="text-sm dashboard-muted">Page favicon URL</label>
-            <div className="mt-1 flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center overflow-hidden rounded-lg dashboard-subtle">{faviconUrl ? <img src={faviconUrl} alt="" className="h-full w-full object-cover"/> : "★"}</span>
-              <input value={faviconUrl} onChange={(e) => setFaviconUrl(e.target.value)} placeholder="https://…/favicon.png" className="dashboard-input flex-1 rounded-xl px-3 py-2"/>
-            </div>
-          </div>
+          {page?.site?.id && <R2ImageUpload siteId={page.site.id} label="Page favicon" value={faviconUrl} onChange={setFaviconUrl} purpose="page-favicon" accept="image/png,image/svg+xml,image/x-icon,image/vnd.microsoft.icon" help="Use a square PNG, SVG, or ICO file." />}
         </div>
 
         <div className="mt-6 flex justify-end gap-3">

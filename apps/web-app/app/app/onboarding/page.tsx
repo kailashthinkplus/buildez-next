@@ -18,8 +18,7 @@ export default function OnboardingPage() {
     plan: string;
     billingCycle: string;
     amount: number;
-    paymentId: string;
-    orderId?: string;
+    subscriptionId?: string;
   }>(null);
 
   // After each step completes, always reload server state
@@ -58,8 +57,7 @@ export default function OnboardingPage() {
                 plan: data.plan,
                 billingCycle: data.billingCycle,
                 amount: data.amount,
-                paymentId: data.paymentId,
-                orderId: data.orderId,
+                subscriptionId: data.subscriptionId,
               });
             }
             goNext(3);

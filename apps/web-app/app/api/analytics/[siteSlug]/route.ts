@@ -96,18 +96,39 @@ export async function GET(
 
     const { siteSlug } = await params;
     const requestedDays = Number(req.nextUrl.searchParams.get("days") || 30);
-    const days = ranges.has(requestedDays) ? requestedDays : 30;
+    const fromParam = req.nextUrl.searchParams.get("from");
+    const toParam = req.nextUrl.searchParams.get("to");
+    const customFrom = fromParam ? new Date(`${fromParam}T00:00:00.000Z`) : null;
+    const customTo = toParam ? new Date(`${toParam}T23:59:59.999Z`) : null;
+    const validCustomRange = Boolean(
+      customFrom && customTo &&
+      Number.isFinite(customFrom.getTime()) && Number.isFinite(customTo.getTime()) &&
+      customFrom <= customTo && customTo.getTime() - customFrom.getTime() <= 366 * 86400000,
+    );
+    if ((fromParam || toParam) && !validCustomRange) {
+      return NextResponse.json({ error: "INVALID_DATE_RANGE", message: "Choose a valid date range of up to 366 days." }, { status: 400 });
+    }
+    const presetDays = ranges.has(requestedDays) ? requestedDays : 30;
     const site = await prisma.site.findFirst({
       where: { slug: siteSlug, tenantId: auth.tenant.id },
-      select: { id: true, name: true, slug: true, _count: { select: { pages: true } } },
+      select: {
+        id: true, name: true, slug: true, _count: { select: { pages: true } },
+        pages: {
+          where: { status: "PUBLISHED", deletedAt: null, deleted: false },
+          select: { id: true, title: true, slug: true, metadata: true },
+          orderBy: { publishedAt: "desc" },
+        },
+      },
     });
     if (!site) return NextResponse.json({ error: "SITE_NOT_FOUND" }, { status: 404 });
 
-    const now = new Date();
-    const since = new Date(now.getTime() - days * 86400000);
-    const previousSince = new Date(since.getTime() - days * 86400000);
+    const actualNow = new Date();
+    const until = validCustomRange ? customTo! : actualNow;
+    const since = validCustomRange ? customFrom! : new Date(until.getTime() - presetDays * 86400000);
+    const days = Math.max(1, Math.ceil((until.getTime() - since.getTime()) / 86400000));
+    const previousSince = new Date(since.getTime() - (until.getTime() - since.getTime()));
     const rows = await loadEvents(site.id, previousSince);
-    const current = rows.filter((row) => row.createdAt >= since);
+    const current = rows.filter((row) => row.createdAt >= since && row.createdAt <= until);
     const previous = rows.filter((row) => row.createdAt < since);
     const pageviews = current.filter((row) => row.eventType === "pageview");
     const previousViews = previous.filter((row) => row.eventType === "pageview");
@@ -134,7 +155,7 @@ export async function GET(
 
     const dayMap = new Map<string, { pageViews: number; visitors: Set<string> }>();
     for (let index = days - 1; index >= 0; index -= 1) {
-      const date = new Date(now.getTime() - index * 86400000).toISOString().slice(0, 10);
+      const date = new Date(until.getTime() - index * 86400000).toISOString().slice(0, 10);
       dayMap.set(date, { pageViews: 0, visitors: new Set() });
     }
     pageviews.forEach((row) => {
@@ -158,13 +179,13 @@ export async function GET(
       })).sort((a, b) => b.pageViews - a.pageViews);
     };
 
-    const liveSince = new Date(now.getTime() - 5 * 60000);
-    const liveRows = current.filter((row) => row.createdAt >= liveSince);
+    const liveSince = new Date(actualNow.getTime() - 5 * 60000);
+    const liveRows = validCustomRange ? [] : current.filter((row) => row.createdAt >= liveSince);
     const liveSessions = new Set(liveRows.map((row) => row.sessionId || row.visitorHash));
 
     return NextResponse.json({
       site,
-      range: { days, since: since.toISOString(), until: now.toISOString() },
+      range: { days, since: since.toISOString(), until: until.toISOString(), custom: validCustomRange },
       totals: {
         pageViews: pageviews.length,
         visitors: visitors.size,
@@ -184,6 +205,17 @@ export async function GET(
       devices: group(pageviews, (row) => row.device || "unknown").map((item) => ({ device: item.name, pageViews: item.pageViews })),
       liveActivity: liveRows.filter((row) => row.eventType === "pageview").slice(-20).reverse().map((row) => ({ path: row.path, city: row.city || "", country: row.country || "Unknown", createdAt: row.createdAt })),
       clicks: current.filter((row) => row.eventType === "click").slice(-500).map((row) => ({ path: row.path, metadata: row.metadata, createdAt: row.createdAt })),
+      heatmapPages: site.pages.map((page) => {
+        const metadata = page.metadata && typeof page.metadata === "object" && !Array.isArray(page.metadata) ? page.metadata as Record<string, unknown> : {};
+        const screenshotUrl = [metadata.screenshotUrl, metadata.thumbnailUrl, metadata.previewImageUrl, metadata.ogImage].find((value): value is string => typeof value === "string" && Boolean(value));
+        return {
+          id: page.id,
+          title: page.title,
+          slug: page.slug,
+          screenshotUrl: screenshotUrl || null,
+          liveUrl: `/published-preview/${encodeURIComponent(site.id)}${page.slug === "home" ? "" : `/${page.slug.split("/").map(encodeURIComponent).join("/")}`}`,
+        };
+      }),
     });
   } catch (error) {
     console.error("[analytics/site] request failed", error);

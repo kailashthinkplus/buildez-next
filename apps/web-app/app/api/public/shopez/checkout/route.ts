@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { decryptSecret, money } from "@/lib/shopez";
+import { isActivePreviewSession } from "@/modules/builder-v3/preview/PreviewSessionManager";
 
 type CartLine = { variantId: string; quantity: number };
 export async function POST(req: NextRequest) {
   const b = await req.json().catch(() => null); const lines: CartLine[] = Array.isArray(b?.items) ? b.items : [];
   if (!b?.siteId || !b.email || !lines.length) return NextResponse.json({ error: "Email, address, and cart items are required" }, { status: 400 });
-  const shop = await prisma.shop.findFirst({ where: { siteId: b.siteId, isPublished: true }, include: { payments: true } });
+  const previewSessionId = req.headers.get("x-buildez-preview-session") || "";
+  const previewSiteId = req.headers.get("x-buildez-preview-site") || "";
+  const isPreview = Boolean(
+    previewSessionId
+    && previewSiteId === b.siteId
+    && isActivePreviewSession(previewSessionId, previewSiteId),
+  );
+  const shop = await prisma.shop.findFirst({ where: { siteId: b.siteId, ...(isPreview ? {} : { isPublished: true }) }, include: { payments: true } });
   if (!shop) return NextResponse.json({ error: "Store not available" }, { status: 404 });
   const ids = [...new Set(lines.map(x => x.variantId))]; const variants = await prisma.shopProductVariant.findMany({ where: { id: { in: ids }, product: { shopId: shop.id, status: "ACTIVE" } }, include: { product: true } });
   if (variants.length !== ids.length) return NextResponse.json({ error: "One or more products are unavailable" }, { status: 409 });

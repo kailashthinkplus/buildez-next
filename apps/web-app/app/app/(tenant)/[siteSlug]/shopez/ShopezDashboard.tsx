@@ -3,26 +3,919 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BadgeIndianRupee, BarChart3, Box, CheckCircle2, CreditCard, ExternalLink, Globe2, LayoutDashboard, Loader2, Package, Percent, Plus, RefreshCw, Search, Settings, ShoppingBag, Sparkles, TrendingUp, Truck, Users } from "lucide-react";
+import {
+  BadgeIndianRupee,
+  BarChart3,
+  Box,
+  CheckCircle2,
+  CreditCard,
+  ExternalLink,
+  Globe2,
+  LayoutDashboard,
+  Loader2,
+  Package,
+  Percent,
+  Plus,
+  RefreshCw,
+  Search,
+  Settings,
+  ShoppingBag,
+  Sparkles,
+  TrendingUp,
+  Truck,
+  Users,
+} from "lucide-react";
 
-type Site={id:string;slug:string;name:string}; type Product={id:string;title:string;handle:string;status:string;vendor?:string;images:{url:string}[];variants:{price:string;inventory:number;sku?:string}[]}; type Order={id:string;orderNumber:number;email:string;total:string;currency:string;status:string;paymentStatus:string;fulfillmentStatus:string;createdAt:string;items:{quantity:number}[]};
-const tabs=[{id:"overview",label:"Overview",icon:LayoutDashboard},{id:"products",label:"Products",icon:Package},{id:"orders",label:"Orders",icon:ShoppingBag},{id:"customers",label:"Customers",icon:Users},{id:"discounts",label:"Discounts",icon:Percent},{id:"payments",label:"Payments",icon:CreditCard},{id:"domains",label:"Domains",icon:Globe2},{id:"settings",label:"Settings",icon:Settings}] as const;
-async function json<T>(r:Response):Promise<T>{const b=await r.json();if(!r.ok)throw new Error(b.error||"Request failed");return b}
-function SetupError({reload}:{reload:()=>void}){return <section className="dashboard-card flex min-h-72 flex-col items-center justify-center rounded-2xl p-8 text-center"><span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-500"><ShoppingBag/></span><h2 className="mt-4 text-lg font-semibold">Shopez could not be initialized</h2><p className="mt-2 max-w-md text-sm dashboard-muted">The commerce service did not return a store. Confirm the Shopez database migration is applied, then try again.</p><button onClick={reload} className="mt-5 flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white"><RefreshCw size={15}/>Retry</button></section>}
-export default function ShopezDashboard({site}:{site:Site}){const params=useSearchParams(),router=useRouter();const requested=params.get("view");const initial=tabs.some(x=>x.id===requested)?requested as (typeof tabs)[number]["id"]:"overview";const [tab,setTabState]=useState<(typeof tabs)[number]["id"]>(initial),[shop,setShop]=useState<any>(),[products,setProducts]=useState<Product[]>([]),[orders,setOrders]=useState<Order[]>([]),[metrics,setMetrics]=useState<any>(),[loading,setLoading]=useState(true),[error,setError]=useState("");
- const setTab=(value:(typeof tabs)[number]["id"])=>{setTabState(value);router.replace(`/app/${site.slug}/shopez?view=${value}`)};
- const load=useCallback(async()=>{setLoading(true);setError("");try{const [o,p,r]=await Promise.all([json<any>(await fetch(`/api/shopez/overview?siteId=${site.id}`)),json<any>(await fetch(`/api/shopez/products?siteId=${site.id}`)),json<any>(await fetch(`/api/shopez/orders?siteId=${site.id}`))]);setShop(o.shop);setMetrics(o.metrics);setProducts(p.products);setOrders(r.orders)}catch(e){setError(e instanceof Error?e.message:"Could not load Shopez")}finally{setLoading(false)}},[site.id]);useEffect(()=>{void load()},[load]);
- return <div className="mx-auto max-w-[1560px] pb-14"><header className="mb-6 flex flex-wrap items-end justify-between gap-4"><div><div className="flex items-center gap-2 text-sm font-semibold text-orange-500"><Sparkles size={15}/> SHOPEZ COMMERCE</div><h1 className="mt-1 text-3xl font-semibold tracking-[-.04em]">Commerce intelligence.</h1><p className="mt-1 text-sm dashboard-muted">Products, customers, payments, fulfilment, and publishing for {site.name}.</p></div><div className="flex items-center gap-3"><label className="flex items-center gap-2 rounded-xl border dashboard-border px-3 py-2 text-xs font-semibold"><input type="checkbox" checked={Boolean(shop?.isPublished)} onChange={async e=>{const next=e.target.checked;setShop((value:any)=>({...value,isPublished:next}));await fetch('/api/shopez/settings',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({...shop,siteId:site.id,isPublished:next})})}}/>Turn on Shopez</label><Link href={`/store/${site.slug}`} target="_blank" className="flex items-center gap-2 rounded-xl border dashboard-border px-4 py-2.5 text-sm"><ExternalLink size={15}/>View store</Link><Link href={`/app/${site.slug}/shopez/products/new`} className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white"><Plus size={16}/>Add product</Link></div></header>
- <main>{error&&<div className="mb-4 rounded-xl bg-rose-500/10 p-4 text-sm text-rose-500">{error}</div>}{loading?<div className="flex h-72 items-center justify-center"><Loader2 className="animate-spin text-orange-500"/></div>:!shop?<SetupError reload={load}/>:<>{tab==="overview"&&<Overview metrics={metrics} orders={orders} shop={shop} site={site}/>} {tab==="products"&&<Products products={products} site={site}/>} {tab==="orders"&&<Orders orders={orders} site={site} reload={load}/>} {tab==="customers"&&<CustomerLeaders metrics={metrics} shop={shop}/>} {tab==="discounts"&&<Discounts site={site}/>} {tab==="payments"&&<Payments site={site}/>} {tab==="domains"&&<Domains site={site}/>} {tab==="settings"&&<ShopSettings site={site} initial={shop} done={load}/>}</>}</main></div>}
-function Overview({metrics,orders,shop,site}:{metrics:any;orders:Order[];shop:any;site:Site}){const cards=[["Gross sales",`${shop?.currency || "INR"} ${Number(metrics?.revenue||0).toLocaleString()}`,BadgeIndianRupee],["Orders",metrics?.orders||0,ShoppingBag],["Customers",metrics?.customers||0,Users],["Products",metrics?.products||0,Box]] as const;const sales=metrics?.dailySales||[];const peak=Math.max(1,...sales.map((x:any)=>Number(x.revenue)));return <div className="space-y-5"><section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{cards.map(([l,v,I])=><article key={l} className="dashboard-card rounded-2xl p-5"><div className="flex items-center justify-between"><I className="text-orange-500" size={19}/><TrendingUp size={15} className="text-emerald-500"/></div><p className="mt-5 text-2xl font-semibold">{v}</p><p className="mt-1 text-xs dashboard-muted">{l}</p></article>)}</section><section className="grid gap-5 xl:grid-cols-[1.45fr_.55fr]"><article className="dashboard-card rounded-2xl p-5"><div className="flex items-center justify-between"><div><h2 className="flex items-center gap-2 font-semibold"><BarChart3 size={17} className="text-orange-500"/>Revenue trend</h2><p className="mt-1 text-xs dashboard-muted">Paid order revenue over the last seven days</p></div></div><div className="mt-7 flex h-52 items-end gap-3">{sales.map((day:any)=><div key={day.date} className="flex min-w-0 flex-1 flex-col items-center gap-2"><span className="text-[10px] font-semibold">{Number(day.revenue).toLocaleString()}</span><div className="w-full rounded-t-lg bg-gradient-to-t from-orange-500 to-amber-300" style={{height:`${Math.max(6,Number(day.revenue)/peak*150)}px`}}/><span className="text-[10px] dashboard-muted">{new Date(day.date).toLocaleDateString(undefined,{weekday:"short"})}</span></div>)}</div></article><article className="rounded-2xl bg-gradient-to-br from-[#1f2937] to-[#111827] p-6 text-white"><Sparkles className="text-amber-300"/><h2 className="mt-4 text-xl font-semibold">AI commerce insight</h2><p className="mt-2 text-sm leading-6 text-white/65">{metrics?.topProducts?.[0]?`${metrics.topProducts[0].title} is your leading product with ${metrics.topProducts[0].units} units sold. Feature it prominently and pair it with a complementary offer.`:"Sales insights will become specific as products and paid orders accumulate."}</p><Link href={`/store/${site.slug}`} className="mt-6 inline-flex rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900">Open storefront</Link></article></section><section className="grid gap-5 lg:grid-cols-3"><div className="dashboard-card rounded-2xl p-5 lg:col-span-2"><h2 className="font-semibold">Recent orders</h2><div className="mt-4 space-y-2">{orders.slice(0,6).map(o=><div key={o.id} className="flex items-center gap-3 rounded-xl dashboard-subtle p-3 text-sm"><span className="font-semibold">#{o.orderNumber}</span><span className="dashboard-muted">{o.email}</span><span className="ml-auto font-semibold">{o.currency} {Number(o.total).toLocaleString()}</span></div>)}{!orders.length&&<p className="py-12 text-center text-sm dashboard-muted">Your first orders will appear here.</p>}</div></div><div className="dashboard-card rounded-2xl p-5"><h2 className="font-semibold">Top products</h2><div className="mt-4 space-y-3">{(metrics?.topProducts||[]).map((item:any,index:number)=><div key={item.title} className="flex items-center gap-3"><span className="grid h-8 w-8 place-items-center rounded-lg bg-orange-500/10 text-xs font-bold text-orange-500">{index+1}</span><div className="min-w-0"><p className="truncate text-sm font-medium">{item.title}</p><p className="text-xs dashboard-muted">{item.units} units · {shop.currency} {item.revenue.toLocaleString()}</p></div></div>)}</div></div></section></div>}
-function CustomerLeaders({metrics,shop}:{metrics:any;shop:any}){return <section className="dashboard-card overflow-hidden rounded-2xl"><div className="border-b dashboard-border p-5"><h2 className="font-semibold">Top customers</h2><p className="text-xs dashboard-muted">Ranked by lifetime order value.</p></div>{(metrics?.topCustomers||[]).map((customer:any,index:number)=><div key={customer.id} className="flex items-center gap-4 border-b dashboard-border px-5 py-4 last:border-0"><span className="grid h-10 w-10 place-items-center rounded-full bg-orange-500/10 font-semibold text-orange-500">{index+1}</span><div><p className="font-medium">{customer.name}</p><p className="text-xs dashboard-muted">{customer.email}</p></div><span className="ml-auto text-sm">{customer.orders} orders</span><strong>{shop.currency} {customer.spend.toLocaleString()}</strong></div>)}</section>}
-function Products({products,site}:{products:Product[];site:Site}){const [q,setQ]=useState("");const visible=products.filter(p=>`${p.title} ${p.vendor||""} ${p.variants[0]?.sku||""}`.toLowerCase().includes(q.toLowerCase()));return <section className="dashboard-card overflow-hidden rounded-2xl"><div className="flex items-center gap-3 border-b dashboard-border p-4"><div className="relative flex-1"><Search className="absolute left-3 top-3 dashboard-faint" size={16}/><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search products, SKU, vendor" className="dashboard-input w-full rounded-xl py-2.5 pl-9 pr-3"/></div><Link href={`/app/${site.slug}/shopez/products/new`} className="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white">Add product</Link></div><div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left text-sm"><thead className="text-xs dashboard-muted"><tr>{["Product","Status","Inventory","Price","Vendor"].map(x=><th className="px-5 py-3" key={x}>{x}</th>)}</tr></thead><tbody>{visible.map(p=><tr key={p.id} className="border-t dashboard-border dashboard-hover"><td className="px-5 py-3"><Link href={`/app/${site.slug}/shopez/products/${p.id}`} className="flex items-center gap-3 font-medium"><span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-lg dashboard-subtle">{p.images[0]?<img src={p.images[0].url} alt="" className="h-full w-full object-cover"/>:<Box size={18}/>}</span>{p.title}</Link></td><td className="px-5"><span className={`rounded-full px-2 py-1 text-xs ${p.status==="ACTIVE"?"bg-emerald-500/10 text-emerald-600":"dashboard-subtle dashboard-muted"}`}>{p.status}</span></td><td className="px-5">{p.variants.reduce((n,v)=>n+v.inventory,0)} in stock</td><td className="px-5">{shopPrice(p)}</td><td className="px-5 dashboard-muted">{p.vendor||"—"}</td></tr>)}</tbody></table></div></section>}
-const shopPrice=(p:Product)=>p.variants.length?`${Number(p.variants[0].price).toLocaleString()}${p.variants.length>1?"+":""}`:"—";
-function Orders({orders,site,reload}:{orders:Order[];site:Site;reload:()=>void}){async function update(id:string,status:string){await fetch('/api/shopez/orders',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({siteId:site.id,orderId:id,status})});reload()}return <section className="dashboard-card overflow-hidden rounded-2xl"><div className="border-b dashboard-border p-5"><h2 className="font-semibold">Orders</h2><p className="text-xs dashboard-muted">Manage payment, fulfilment, cancellations, and refunds.</p></div><div className="overflow-x-auto"><table className="w-full min-w-[800px] text-sm"><tbody>{orders.map(o=><tr key={o.id} className="border-b dashboard-border"><td className="px-5 py-4 font-semibold">#{o.orderNumber}</td><td>{o.email}<p className="text-xs dashboard-muted">{o.items.reduce((n,x)=>n+x.quantity,0)} items</p></td><td>{o.currency} {Number(o.total).toLocaleString()}</td><td><span className="rounded-full bg-blue-500/10 px-2 py-1 text-xs text-blue-600">{o.paymentStatus}</span></td><td><select value={o.status} onChange={e=>void update(o.id,e.target.value)} className="dashboard-input rounded-lg px-2 py-1.5"><option>PENDING</option><option>CONFIRMED</option><option>PROCESSING</option><option>FULFILLED</option><option>CANCELLED</option><option>REFUNDED</option></select></td><td className="px-5 text-xs dashboard-muted">{new Date(o.createdAt).toLocaleDateString()}</td></tr>)}{!orders.length&&<tr><td className="py-20 text-center dashboard-muted">No orders yet.</td></tr>}</tbody></table></div></section>}
-function Discounts({site}:{site:Site}){const [items,setItems]=useState<any[]>([]),[code,setCode]=useState(""),[value,setValue]=useState("10");const load=()=>fetch(`/api/shopez/discounts?siteId=${site.id}`).then(r=>r.json()).then(b=>setItems(b.discounts||[]));useEffect(()=>{void load()},[]);async function add(){await fetch('/api/shopez/discounts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({siteId:site.id,code,value,type:'PERCENTAGE'})});setCode("");load()}return <section className="dashboard-card rounded-2xl p-5"><h2 className="font-semibold">Discount codes</h2><div className="mt-4 flex gap-2"><input value={code} onChange={e=>setCode(e.target.value.toUpperCase())} placeholder="SUMMER20" className="dashboard-input flex-1 rounded-xl px-3"/><input type="number" value={value} onChange={e=>setValue(e.target.value)} className="dashboard-input w-24 rounded-xl px-3"/><button onClick={()=>void add()} className="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white">Create % off</button></div><div className="mt-5 space-y-2">{items.map(x=><div key={x.id} className="flex rounded-xl dashboard-subtle p-4"><span className="font-mono font-semibold">{x.code}</span><span className="ml-auto">{Number(x.value)}% off · {x.usageCount} uses</span></div>)}</div></section>}
-function Payments({site}:{site:Site}){return <SettingsLoader site={site}>{({payments,load}:any)=><div className="grid gap-4 lg:grid-cols-2"><PaymentCard provider="RAZORPAY" title="Razorpay" hint="UPI, cards, wallets, and netbanking" existing={payments.find((x:any)=>x.provider==='RAZORPAY')} site={site} done={load}/><PaymentCard provider="PAYPAL" title="PayPal" hint="PayPal balance and international cards" existing={payments.find((x:any)=>x.provider==='PAYPAL')} site={site} done={load}/><PaymentCard provider="COD" title="Cash on delivery" hint="Accept payment when the order arrives" existing={payments.find((x:any)=>x.provider==='COD')} site={site} done={load}/></div>}</SettingsLoader>}
-function PaymentCard({provider,title,hint,existing,site,done}:{provider:string;title:string;hint:string;existing:any;site:Site;done:()=>void}){const [open,setOpen]=useState(false),[publicKey,setPublic]=useState(existing?.publicKey||""),[secret,setSecret]=useState(""),[mode,setMode]=useState(existing?.mode||"test");async function save(){await fetch('/api/shopez/settings',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({siteId:site.id,provider,enabled:true,publicKey,secret,mode})});setOpen(false);done()}return <article className="dashboard-card rounded-2xl p-5"><div className="flex items-start"><span className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500"><CreditCard/></span><div className="ml-3"><h3 className="font-semibold">{title}</h3><p className="text-xs dashboard-muted">{hint}</p></div>{existing?.enabled&&<CheckCircle2 className="ml-auto text-emerald-500"/>}</div>{open&&provider!=="COD"&&<div className="mt-4 space-y-3"><input value={publicKey} onChange={e=>setPublic(e.target.value)} placeholder={provider==='PAYPAL'?'Client ID':'Key ID'} className="dashboard-input w-full rounded-xl p-3"/><input type="password" value={secret} onChange={e=>setSecret(e.target.value)} placeholder={existing?'New secret (leave empty to keep)':'Secret'} className="dashboard-input w-full rounded-xl p-3"/><select value={mode} onChange={e=>setMode(e.target.value)} className="dashboard-input w-full rounded-xl p-3"><option value="test">Test / Sandbox</option><option value="live">Live</option></select></div>}<button onClick={()=>open||provider==='COD'?void save():setOpen(true)} className="mt-5 w-full rounded-xl border dashboard-border px-3 py-2 text-sm font-semibold">{open||provider==='COD'?"Save connection":existing?.enabled?"Update credentials":"Connect app"}</button></article>}
-function Domains({site}:{site:Site}){return <SettingsLoader site={site}>{({domains,cnameTarget,load}:any)=><DomainsInner site={site} domains={domains} target={cnameTarget} load={load}/>}</SettingsLoader>}
-function DomainsInner({site,domains,target,load}:{site:Site;domains:any[];target:string;load:()=>void}){const [domain,setDomain]=useState("");async function add(){await fetch('/api/shopez/domains',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({siteId:site.id,domain})});setDomain("");load()}async function verify(id:string){await fetch('/api/shopez/domains',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({siteId:site.id,domainId:id})});load()}return <section className="space-y-4"><div className="dashboard-card rounded-2xl p-5"><h2 className="font-semibold">Connect your domain</h2><p className="mt-1 text-sm dashboard-muted">Add a CNAME record pointing your domain to <code>{target}</code>. SSL is provisioned by your hosting edge after verification.</p><div className="mt-4 flex gap-2"><input value={domain} onChange={e=>setDomain(e.target.value)} placeholder="shop.yourbrand.com" className="dashboard-input flex-1 rounded-xl px-3"/><button onClick={()=>void add()} className="rounded-xl bg-orange-500 px-4 text-sm font-semibold text-white">Add domain</button></div></div>{domains.map(x=><article key={x.id} className="dashboard-card flex flex-wrap items-center gap-4 rounded-2xl p-5"><Globe2 className="text-orange-500"/><div><p className="font-semibold">{x.domain}</p><p className="text-xs dashboard-muted">CNAME → {x.cnameTarget}</p></div><span className={`ml-auto rounded-full px-2 py-1 text-xs ${x.status==='VERIFIED'?'bg-emerald-500/10 text-emerald-600':'bg-amber-500/10 text-amber-600'}`}>{x.status}</span><button onClick={()=>void verify(x.id)} className="rounded-xl border dashboard-border px-3 py-2 text-xs"><RefreshCw size={13}/></button></article>)}</section>}
-function ShopSettings({site,initial,done}:{site:Site;initial:any;done:()=>void}){const [form,setForm]=useState({...initial});async function save(){await fetch('/api/shopez/settings',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({...form,siteId:site.id})});done()}return <section className="dashboard-card rounded-2xl p-6"><h2 className="font-semibold">Store settings</h2><div className="mt-5 grid gap-4 sm:grid-cols-2">{[['name','Store name'],['supportEmail','Support email'],['currency','Currency (INR, USD…)'],['country','Country code'],['taxRate','Tax rate %'],['flatShippingRate','Flat shipping rate'],['freeShippingOver','Free shipping over']].map(([k,l])=><label key={k} className="text-xs dashboard-muted">{l}<input value={form[k]??''} onChange={e=>setForm({...form,[k]:e.target.value})} className="dashboard-input mt-1.5 w-full rounded-xl p-3"/></label>)}</div><label className="mt-5 flex items-center gap-3 rounded-xl dashboard-subtle p-4"><input type="checkbox" checked={Boolean(form.isPublished)} onChange={e=>setForm({...form,isPublished:e.target.checked})}/><div><p className="text-sm font-semibold">Publish storefront</p><p className="text-xs dashboard-muted">Make active products available on the tenant storefront and verified domains.</p></div></label><button onClick={()=>void save()} className="mt-5 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white">Save settings</button></section>}
-function SettingsLoader({site,children}:{site:Site;children:(data:any)=>React.ReactNode}){const [data,setData]=useState<any>();const load=useCallback(()=>{fetch(`/api/shopez/settings?siteId=${site.id}`).then(r=>r.json()).then(setData)},[site.id]);useEffect(()=>{load()},[load]);return data?children({...data,load}):<div className="flex h-52 items-center justify-center"><Loader2 className="animate-spin"/></div>}
+type Site = { id: string; slug: string; name: string };
+type Product = {
+  id: string;
+  title: string;
+  handle: string;
+  status: string;
+  vendor?: string;
+  images: { url: string }[];
+  variants: { price: string; inventory: number; sku?: string }[];
+};
+type Order = {
+  id: string;
+  orderNumber: number;
+  email: string;
+  total: string;
+  currency: string;
+  status: string;
+  paymentStatus: string;
+  fulfillmentStatus: string;
+  createdAt: string;
+  items: { quantity: number }[];
+};
+const tabs = [
+  { id: "overview", label: "Overview", icon: LayoutDashboard },
+  { id: "products", label: "Products", icon: Package },
+  { id: "orders", label: "Orders", icon: ShoppingBag },
+  { id: "customers", label: "Customers", icon: Users },
+  { id: "discounts", label: "Discounts", icon: Percent },
+  { id: "payments", label: "Payments", icon: CreditCard },
+  { id: "domains", label: "Domains", icon: Globe2 },
+  { id: "settings", label: "Settings", icon: Settings },
+] as const;
+async function json<T>(r: Response): Promise<T> {
+  const b = await r.json();
+  if (!r.ok) throw new Error(b.error || "Request failed");
+  return b;
+}
+function SetupError({ reload }: { reload: () => void }) {
+  return (
+    <section className="dashboard-card flex min-h-72 flex-col items-center justify-center rounded-2xl p-8 text-center">
+      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-500">
+        <ShoppingBag />
+      </span>
+      <h2 className="mt-4 text-lg font-semibold">
+        Shopez could not be initialized
+      </h2>
+      <p className="mt-2 max-w-md text-sm dashboard-muted">
+        The commerce service did not return a store. Confirm the Shopez database
+        migration is applied, then try again.
+      </p>
+      <button
+        onClick={reload}
+        className="mt-5 flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white"
+      >
+        <RefreshCw size={15} />
+        Retry
+      </button>
+    </section>
+  );
+}
+export default function ShopezDashboard({ site }: { site: Site }) {
+  const params = useSearchParams(),
+    router = useRouter();
+  const requested = params.get("view");
+  const initial = tabs.some((x) => x.id === requested)
+    ? (requested as (typeof tabs)[number]["id"])
+    : "overview";
+  const [tab, setTabState] = useState<(typeof tabs)[number]["id"]>(initial),
+    [shop, setShop] = useState<any>(),
+    [products, setProducts] = useState<Product[]>([]),
+    [orders, setOrders] = useState<Order[]>([]),
+    [metrics, setMetrics] = useState<any>(),
+    [loading, setLoading] = useState(true),
+    [error, setError] = useState("");
+  const setTab = (value: (typeof tabs)[number]["id"]) => {
+    setTabState(value);
+    router.replace(`/app/${site.slug}/shopez?view=${value}`);
+  };
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const [o, p, r] = await Promise.all([
+        json<any>(await fetch(`/api/shopez/overview?siteId=${site.id}`)),
+        json<any>(await fetch(`/api/shopez/products?siteId=${site.id}`)),
+        json<any>(await fetch(`/api/shopez/orders?siteId=${site.id}`)),
+      ]);
+      setShop(o.shop);
+      setMetrics(o.metrics);
+      setProducts(p.products);
+      setOrders(r.orders);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not load Shopez");
+    } finally {
+      setLoading(false);
+    }
+  }, [site.id]);
+  useEffect(() => {
+    void load();
+  }, [load]);
+  return (
+    <div className="mx-auto max-w-[1560px] pb-14">
+      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-orange-500">
+            <Sparkles size={15} /> SHOPEZ COMMERCE
+          </div>
+          <h1 className="mt-1 text-3xl font-semibold tracking-[-.04em]">
+            Commerce intelligence.
+          </h1>
+          <p className="mt-1 text-sm dashboard-muted">
+            Products, customers, payments, fulfilment, and publishing for{" "}
+            {site.name}.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <label className="flex cursor-pointer items-center gap-3 rounded-xl border dashboard-border px-3 py-2 text-xs font-semibold">
+            <span>Turn on Shopez</span>
+            <input
+              type="checkbox"
+              className="peer sr-only"
+              checked={Boolean(shop?.isPublished)}
+              onChange={async (e) => {
+                const next = e.target.checked;
+                setShop((value: any) => ({ ...value, isPublished: next }));
+                await fetch("/api/shopez/settings", {
+                  method: "PATCH",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    ...shop,
+                    siteId: site.id,
+                    isPublished: next,
+                  }),
+                });
+              }}
+            />
+            <span className="relative h-6 w-11 shrink-0 rounded-full bg-slate-300 transition-colors duration-200 after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-sm after:transition-transform after:duration-200 peer-checked:bg-orange-500 peer-checked:after:translate-x-5 peer-focus-visible:ring-2 peer-focus-visible:ring-orange-400 peer-focus-visible:ring-offset-2 dark:bg-white/20" />
+          </label>
+          <Link
+            href={`/store/${site.slug}`}
+            target="_blank"
+            className="flex items-center gap-2 rounded-xl border dashboard-border px-4 py-2.5 text-sm"
+          >
+            <ExternalLink size={15} />
+            View store
+          </Link>
+          <Link
+            href={`/app/${site.slug}/shopez/products/new`}
+            className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white"
+          >
+            <Plus size={16} />
+            Add product
+          </Link>
+        </div>
+      </header>
+      <main>
+        {error && (
+          <div className="mb-4 rounded-xl bg-rose-500/10 p-4 text-sm text-rose-500">
+            {error}
+          </div>
+        )}
+        {loading ? (
+          <div className="flex h-72 items-center justify-center">
+            <Loader2 className="animate-spin text-orange-500" />
+          </div>
+        ) : !shop ? (
+          <SetupError reload={load} />
+        ) : (
+          <>
+            {tab === "overview" && (
+              <Overview
+                metrics={metrics}
+                orders={orders}
+                shop={shop}
+                site={site}
+              />
+            )}{" "}
+            {tab === "products" && <Products products={products} site={site} />}{" "}
+            {tab === "orders" && (
+              <Orders orders={orders} site={site} reload={load} />
+            )}{" "}
+            {tab === "customers" && (
+              <CustomerLeaders metrics={metrics} shop={shop} />
+            )}{" "}
+            {tab === "discounts" && <Discounts site={site} />}{" "}
+            {tab === "payments" && <Payments site={site} />}{" "}
+            {tab === "domains" && <Domains site={site} />}{" "}
+            {tab === "settings" && (
+              <ShopSettings site={site} initial={shop} done={load} />
+            )}
+          </>
+        )}
+      </main>
+    </div>
+  );
+}
+function Overview({
+  metrics,
+  orders,
+  shop,
+  site,
+}: {
+  metrics: any;
+  orders: Order[];
+  shop: any;
+  site: Site;
+}) {
+  const cards = [
+    [
+      "Gross sales",
+      `${shop?.currency || "INR"} ${Number(metrics?.revenue || 0).toLocaleString()}`,
+      BadgeIndianRupee,
+    ],
+    ["Orders", metrics?.orders || 0, ShoppingBag],
+    ["Customers", metrics?.customers || 0, Users],
+    ["Products", metrics?.products || 0, Box],
+  ] as const;
+  const sales = metrics?.dailySales || [];
+  const peak = Math.max(1, ...sales.map((x: any) => Number(x.revenue)));
+  return (
+    <div className="space-y-5">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {cards.map(([l, v, I]) => (
+          <article key={l} className="dashboard-card rounded-2xl p-5">
+            <div className="flex items-center justify-between">
+              <I className="text-orange-500" size={19} />
+              <TrendingUp size={15} className="text-emerald-500" />
+            </div>
+            <p className="mt-5 text-2xl font-semibold">{v}</p>
+            <p className="mt-1 text-xs dashboard-muted">{l}</p>
+          </article>
+        ))}
+      </section>
+      <section className="grid gap-5 xl:grid-cols-[1.45fr_.55fr]">
+        <article className="dashboard-card rounded-2xl p-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="flex items-center gap-2 font-semibold">
+                <BarChart3 size={17} className="text-orange-500" />
+                Revenue trend
+              </h2>
+              <p className="mt-1 text-xs dashboard-muted">
+                Paid order revenue over the last seven days
+              </p>
+            </div>
+          </div>
+          <div className="mt-7 flex h-52 items-end gap-3">
+            {sales.map((day: any) => (
+              <div
+                key={day.date}
+                className="flex min-w-0 flex-1 flex-col items-center gap-2"
+              >
+                <span className="text-[10px] font-semibold">
+                  {Number(day.revenue).toLocaleString()}
+                </span>
+                <div
+                  className="w-full rounded-t-lg bg-gradient-to-t from-orange-500 to-amber-300"
+                  style={{
+                    height: `${Math.max(6, (Number(day.revenue) / peak) * 150)}px`,
+                  }}
+                />
+                <span className="text-[10px] dashboard-muted">
+                  {new Date(day.date).toLocaleDateString(undefined, {
+                    weekday: "short",
+                  })}
+                </span>
+              </div>
+            ))}
+          </div>
+        </article>
+        <article className="rounded-2xl bg-gradient-to-br from-[#1f2937] to-[#111827] p-6 text-white">
+          <Sparkles className="text-amber-300" />
+          <h2 className="mt-4 text-xl font-semibold">AI commerce insight</h2>
+          <p className="mt-2 text-sm leading-6 text-white/65">
+            {metrics?.topProducts?.[0]
+              ? `${metrics.topProducts[0].title} is your leading product with ${metrics.topProducts[0].units} units sold. Feature it prominently and pair it with a complementary offer.`
+              : "Sales insights will become specific as products and paid orders accumulate."}
+          </p>
+          <Link
+            href={`/store/${site.slug}`}
+            className="mt-6 inline-flex rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900"
+          >
+            Open storefront
+          </Link>
+        </article>
+      </section>
+      <section className="grid gap-5 lg:grid-cols-3">
+        <div className="dashboard-card rounded-2xl p-5 lg:col-span-2">
+          <h2 className="font-semibold">Recent orders</h2>
+          <div className="mt-4 space-y-2">
+            {orders.slice(0, 6).map((o) => (
+              <div
+                key={o.id}
+                className="flex items-center gap-3 rounded-xl dashboard-subtle p-3 text-sm"
+              >
+                <span className="font-semibold">#{o.orderNumber}</span>
+                <span className="dashboard-muted">{o.email}</span>
+                <span className="ml-auto font-semibold">
+                  {o.currency} {Number(o.total).toLocaleString()}
+                </span>
+              </div>
+            ))}
+            {!orders.length && (
+              <p className="py-12 text-center text-sm dashboard-muted">
+                Your first orders will appear here.
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="dashboard-card rounded-2xl p-5">
+          <h2 className="font-semibold">Top products</h2>
+          <div className="mt-4 space-y-3">
+            {(metrics?.topProducts || []).map((item: any, index: number) => (
+              <div key={item.title} className="flex items-center gap-3">
+                <span className="grid h-8 w-8 place-items-center rounded-lg bg-orange-500/10 text-xs font-bold text-orange-500">
+                  {index + 1}
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">{item.title}</p>
+                  <p className="text-xs dashboard-muted">
+                    {item.units} units · {shop.currency}{" "}
+                    {item.revenue.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+function CustomerLeaders({ metrics, shop }: { metrics: any; shop: any }) {
+  return (
+    <section className="dashboard-card overflow-hidden rounded-2xl">
+      <div className="border-b dashboard-border p-5">
+        <h2 className="font-semibold">Top customers</h2>
+        <p className="text-xs dashboard-muted">
+          Ranked by lifetime order value.
+        </p>
+      </div>
+      {(metrics?.topCustomers || []).map((customer: any, index: number) => (
+        <div
+          key={customer.id}
+          className="flex items-center gap-4 border-b dashboard-border px-5 py-4 last:border-0"
+        >
+          <span className="grid h-10 w-10 place-items-center rounded-full bg-orange-500/10 font-semibold text-orange-500">
+            {index + 1}
+          </span>
+          <div>
+            <p className="font-medium">{customer.name}</p>
+            <p className="text-xs dashboard-muted">{customer.email}</p>
+          </div>
+          <span className="ml-auto text-sm">{customer.orders} orders</span>
+          <strong>
+            {shop.currency} {customer.spend.toLocaleString()}
+          </strong>
+        </div>
+      ))}
+    </section>
+  );
+}
+function Products({ products, site }: { products: Product[]; site: Site }) {
+  const [q, setQ] = useState("");
+  const visible = products.filter((p) =>
+    `${p.title} ${p.vendor || ""} ${p.variants[0]?.sku || ""}`
+      .toLowerCase()
+      .includes(q.toLowerCase()),
+  );
+  return (
+    <section className="dashboard-card overflow-hidden rounded-2xl">
+      <div className="flex items-center gap-3 border-b dashboard-border p-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-3 dashboard-faint" size={16} />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search products, SKU, vendor"
+            className="dashboard-input w-full rounded-xl py-2.5 pl-9 pr-3"
+          />
+        </div>
+        <Link
+          href={`/app/${site.slug}/shopez/products/new`}
+          className="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white"
+        >
+          Add product
+        </Link>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[760px] text-left text-sm">
+          <thead className="text-xs dashboard-muted">
+            <tr>
+              {["Product", "Status", "Inventory", "Price", "Vendor"].map(
+                (x) => (
+                  <th className="px-5 py-3" key={x}>
+                    {x}
+                  </th>
+                ),
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {visible.map((p) => (
+              <tr
+                key={p.id}
+                className="border-t dashboard-border dashboard-hover"
+              >
+                <td className="px-5 py-3">
+                  <Link
+                    href={`/app/${site.slug}/shopez/products/${p.id}`}
+                    className="flex items-center gap-3 font-medium"
+                  >
+                    <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-lg dashboard-subtle">
+                      {p.images[0] ? (
+                        <img
+                          src={p.images[0].url}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <Box size={18} />
+                      )}
+                    </span>
+                    {p.title}
+                  </Link>
+                </td>
+                <td className="px-5">
+                  <span
+                    className={`rounded-full px-2 py-1 text-xs ${p.status === "ACTIVE" ? "bg-emerald-500/10 text-emerald-600" : "dashboard-subtle dashboard-muted"}`}
+                  >
+                    {p.status}
+                  </span>
+                </td>
+                <td className="px-5">
+                  {p.variants.reduce((n, v) => n + v.inventory, 0)} in stock
+                </td>
+                <td className="px-5">{shopPrice(p)}</td>
+                <td className="px-5 dashboard-muted">{p.vendor || "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+const shopPrice = (p: Product) =>
+  p.variants.length
+    ? `${Number(p.variants[0].price).toLocaleString()}${p.variants.length > 1 ? "+" : ""}`
+    : "—";
+function Orders({
+  orders,
+  site,
+  reload,
+}: {
+  orders: Order[];
+  site: Site;
+  reload: () => void;
+}) {
+  async function update(id: string, status: string) {
+    await fetch("/api/shopez/orders", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ siteId: site.id, orderId: id, status }),
+    });
+    reload();
+  }
+  return (
+    <section className="dashboard-card overflow-hidden rounded-2xl">
+      <div className="border-b dashboard-border p-5">
+        <h2 className="font-semibold">Orders</h2>
+        <p className="text-xs dashboard-muted">
+          Manage payment, fulfilment, cancellations, and refunds.
+        </p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[800px] text-sm">
+          <tbody>
+            {orders.map((o) => (
+              <tr key={o.id} className="border-b dashboard-border">
+                <td className="px-5 py-4 font-semibold">#{o.orderNumber}</td>
+                <td>
+                  {o.email}
+                  <p className="text-xs dashboard-muted">
+                    {o.items.reduce((n, x) => n + x.quantity, 0)} items
+                  </p>
+                </td>
+                <td>
+                  {o.currency} {Number(o.total).toLocaleString()}
+                </td>
+                <td>
+                  <span className="rounded-full bg-blue-500/10 px-2 py-1 text-xs text-blue-600">
+                    {o.paymentStatus}
+                  </span>
+                </td>
+                <td>
+                  <select
+                    value={o.status}
+                    onChange={(e) => void update(o.id, e.target.value)}
+                    className="dashboard-input rounded-lg px-2 py-1.5"
+                  >
+                    <option>PENDING</option>
+                    <option>CONFIRMED</option>
+                    <option>PROCESSING</option>
+                    <option>FULFILLED</option>
+                    <option>CANCELLED</option>
+                    <option>REFUNDED</option>
+                  </select>
+                </td>
+                <td className="px-5 text-xs dashboard-muted">
+                  {new Date(o.createdAt).toLocaleDateString()}
+                </td>
+              </tr>
+            ))}
+            {!orders.length && (
+              <tr>
+                <td className="py-20 text-center dashboard-muted">
+                  No orders yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+function Discounts({ site }: { site: Site }) {
+  const [items, setItems] = useState<any[]>([]),
+    [code, setCode] = useState(""),
+    [value, setValue] = useState("10");
+  const load = () =>
+    fetch(`/api/shopez/discounts?siteId=${site.id}`)
+      .then((r) => r.json())
+      .then((b) => setItems(b.discounts || []));
+  useEffect(() => {
+    void load();
+  }, []);
+  async function add() {
+    await fetch("/api/shopez/discounts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        siteId: site.id,
+        code,
+        value,
+        type: "PERCENTAGE",
+      }),
+    });
+    setCode("");
+    load();
+  }
+  return (
+    <section className="dashboard-card rounded-2xl p-5">
+      <h2 className="font-semibold">Discount codes</h2>
+      <div className="mt-4 flex gap-2">
+        <input
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          placeholder="SUMMER20"
+          className="dashboard-input flex-1 rounded-xl px-3"
+        />
+        <input
+          type="number"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          className="dashboard-input w-24 rounded-xl px-3"
+        />
+        <button
+          onClick={() => void add()}
+          className="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white"
+        >
+          Create % off
+        </button>
+      </div>
+      <div className="mt-5 space-y-2">
+        {items.map((x) => (
+          <div key={x.id} className="flex rounded-xl dashboard-subtle p-4">
+            <span className="font-mono font-semibold">{x.code}</span>
+            <span className="ml-auto">
+              {Number(x.value)}% off · {x.usageCount} uses
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+function Payments({ site }: { site: Site }) {
+  return (
+    <SettingsLoader site={site}>
+      {({ payments, load }: any) => (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <PaymentCard
+            provider="RAZORPAY"
+            title="Razorpay"
+            hint="UPI, cards, wallets, and netbanking"
+            existing={payments.find((x: any) => x.provider === "RAZORPAY")}
+            site={site}
+            done={load}
+          />
+          <PaymentCard
+            provider="PAYPAL"
+            title="PayPal"
+            hint="PayPal balance and international cards"
+            existing={payments.find((x: any) => x.provider === "PAYPAL")}
+            site={site}
+            done={load}
+          />
+          <PaymentCard
+            provider="COD"
+            title="Cash on delivery"
+            hint="Accept payment when the order arrives"
+            existing={payments.find((x: any) => x.provider === "COD")}
+            site={site}
+            done={load}
+          />
+        </div>
+      )}
+    </SettingsLoader>
+  );
+}
+function PaymentCard({
+  provider,
+  title,
+  hint,
+  existing,
+  site,
+  done,
+}: {
+  provider: string;
+  title: string;
+  hint: string;
+  existing: any;
+  site: Site;
+  done: () => void;
+}) {
+  const [open, setOpen] = useState(false),
+    [publicKey, setPublic] = useState(existing?.publicKey || ""),
+    [secret, setSecret] = useState(""),
+    [mode, setMode] = useState(existing?.mode || "test");
+  async function save() {
+    await fetch("/api/shopez/settings", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        siteId: site.id,
+        provider,
+        enabled: true,
+        publicKey,
+        secret,
+        mode,
+      }),
+    });
+    setOpen(false);
+    done();
+  }
+  return (
+    <article className="dashboard-card rounded-2xl p-5">
+      <div className="flex items-start">
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500">
+          <CreditCard />
+        </span>
+        <div className="ml-3">
+          <h3 className="font-semibold">{title}</h3>
+          <p className="text-xs dashboard-muted">{hint}</p>
+        </div>
+        {existing?.enabled && (
+          <CheckCircle2 className="ml-auto text-emerald-500" />
+        )}
+      </div>
+      {open && provider !== "COD" && (
+        <div className="mt-4 space-y-3">
+          <input
+            value={publicKey}
+            onChange={(e) => setPublic(e.target.value)}
+            placeholder={provider === "PAYPAL" ? "Client ID" : "Key ID"}
+            className="dashboard-input w-full rounded-xl p-3"
+          />
+          <input
+            type="password"
+            value={secret}
+            onChange={(e) => setSecret(e.target.value)}
+            placeholder={
+              existing ? "New secret (leave empty to keep)" : "Secret"
+            }
+            className="dashboard-input w-full rounded-xl p-3"
+          />
+          <select
+            value={mode}
+            onChange={(e) => setMode(e.target.value)}
+            className="dashboard-input w-full rounded-xl p-3"
+          >
+            <option value="test">Test / Sandbox</option>
+            <option value="live">Live</option>
+          </select>
+        </div>
+      )}
+      <button
+        onClick={() =>
+          open || provider === "COD" ? void save() : setOpen(true)
+        }
+        className="mt-5 w-full rounded-xl border dashboard-border px-3 py-2 text-sm font-semibold"
+      >
+        {open || provider === "COD"
+          ? "Save connection"
+          : existing?.enabled
+            ? "Update credentials"
+            : "Connect app"}
+      </button>
+    </article>
+  );
+}
+function Domains({ site }: { site: Site }) {
+  return (
+    <SettingsLoader site={site}>
+      {({ domains, cnameTarget, load }: any) => (
+        <DomainsInner
+          site={site}
+          domains={domains}
+          target={cnameTarget}
+          load={load}
+        />
+      )}
+    </SettingsLoader>
+  );
+}
+function DomainsInner({
+  site,
+  domains,
+  target,
+  load,
+}: {
+  site: Site;
+  domains: any[];
+  target: string;
+  load: () => void;
+}) {
+  const [domain, setDomain] = useState("");
+  async function add() {
+    await fetch("/api/shopez/domains", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ siteId: site.id, domain }),
+    });
+    setDomain("");
+    load();
+  }
+  async function verify(id: string) {
+    await fetch("/api/shopez/domains", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ siteId: site.id, domainId: id }),
+    });
+    load();
+  }
+  return (
+    <section className="space-y-4">
+      <div className="dashboard-card rounded-2xl p-5">
+        <h2 className="font-semibold">Connect your domain</h2>
+        <p className="mt-1 text-sm dashboard-muted">
+          Add a CNAME record pointing your domain to <code>{target}</code>. SSL
+          is provisioned by your hosting edge after verification.
+        </p>
+        <div className="mt-4 flex gap-2">
+          <input
+            value={domain}
+            onChange={(e) => setDomain(e.target.value)}
+            placeholder="shop.yourbrand.com"
+            className="dashboard-input flex-1 rounded-xl px-3"
+          />
+          <button
+            onClick={() => void add()}
+            className="rounded-xl bg-orange-500 px-4 text-sm font-semibold text-white"
+          >
+            Add domain
+          </button>
+        </div>
+      </div>
+      {domains.map((x) => (
+        <article
+          key={x.id}
+          className="dashboard-card flex flex-wrap items-center gap-4 rounded-2xl p-5"
+        >
+          <Globe2 className="text-orange-500" />
+          <div>
+            <p className="font-semibold">{x.domain}</p>
+            <p className="text-xs dashboard-muted">CNAME → {x.cnameTarget}</p>
+          </div>
+          <span
+            className={`ml-auto rounded-full px-2 py-1 text-xs ${x.status === "VERIFIED" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}`}
+          >
+            {x.status}
+          </span>
+          <button
+            onClick={() => void verify(x.id)}
+            className="rounded-xl border dashboard-border px-3 py-2 text-xs"
+          >
+            <RefreshCw size={13} />
+          </button>
+        </article>
+      ))}
+    </section>
+  );
+}
+function ShopSettings({
+  site,
+  initial,
+  done,
+}: {
+  site: Site;
+  initial: any;
+  done: () => void;
+}) {
+  const [form, setForm] = useState({ ...initial });
+  async function save() {
+    await fetch("/api/shopez/settings", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...form, siteId: site.id }),
+    });
+    done();
+  }
+  return (
+    <section className="dashboard-card rounded-2xl p-6">
+      <h2 className="font-semibold">Store settings</h2>
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        {[
+          ["name", "Store name"],
+          ["supportEmail", "Support email"],
+          ["currency", "Currency (INR, USD…)"],
+          ["country", "Country code"],
+          ["taxRate", "Tax rate %"],
+          ["flatShippingRate", "Flat shipping rate"],
+          ["freeShippingOver", "Free shipping over"],
+        ].map(([k, l]) => (
+          <label key={k} className="text-xs dashboard-muted">
+            {l}
+            <input
+              value={form[k] ?? ""}
+              onChange={(e) => setForm({ ...form, [k]: e.target.value })}
+              className="dashboard-input mt-1.5 w-full rounded-xl p-3"
+            />
+          </label>
+        ))}
+      </div>
+      <label className="mt-5 flex items-center gap-3 rounded-xl dashboard-subtle p-4">
+        <input
+          type="checkbox"
+          checked={Boolean(form.isPublished)}
+          onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
+        />
+        <div>
+          <p className="text-sm font-semibold">Publish storefront</p>
+          <p className="text-xs dashboard-muted">
+            Make active products available on the tenant storefront and verified
+            domains.
+          </p>
+        </div>
+      </label>
+      <button
+        onClick={() => void save()}
+        className="mt-5 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white"
+      >
+        Save settings
+      </button>
+    </section>
+  );
+}
+function SettingsLoader({
+  site,
+  children,
+}: {
+  site: Site;
+  children: (data: any) => React.ReactNode;
+}) {
+  const [data, setData] = useState<any>();
+  const load = useCallback(() => {
+    fetch(`/api/shopez/settings?siteId=${site.id}`)
+      .then((r) => r.json())
+      .then(setData);
+  }, [site.id]);
+  useEffect(() => {
+    load();
+  }, [load]);
+  return data ? (
+    children({ ...data, load })
+  ) : (
+    <div className="flex h-52 items-center justify-center">
+      <Loader2 className="animate-spin" />
+    </div>
+  );
+}

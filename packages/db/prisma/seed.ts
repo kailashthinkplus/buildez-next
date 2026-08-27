@@ -221,20 +221,19 @@ async function seedPlans() {
 async function seedSuperAdmin() {
   console.log("🌱 Seeding Super Admin...");
 
-  const bcrypt = await import("bcryptjs");
-
-  const passwordHash = await bcrypt.hash("Admin@123", 12);
-
   await prisma.user.upsert({
     where: {
-      email: "admin@buildez.ai",
+      email: "kailash.addanki@gmail.com",
     },
-    update: {},
-    create: {
-      email: "admin@buildez.ai",
-      name: "BuildEZ Super Admin",
+    update: {
       role: "SUPER_ADMIN",
-      passwordHash,
+      isEmailVerified: true,
+      isActive: true,
+    },
+    create: {
+      email: "kailash.addanki@gmail.com",
+      name: "Kailash Addanki",
+      role: "SUPER_ADMIN",
       isEmailVerified: true,
       isActive: true,
     },

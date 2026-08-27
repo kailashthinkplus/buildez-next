@@ -1,117 +1,500 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
-import Image from "next/image";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ArrowRight, BarChart3, Check, ChevronRight, FilePenLine, Lightbulb,
-  LoaderCircle, Mail, MessageCircle, Search, Send, ShoppingBag, Sparkles,
-  Target, Users, X, type LucideIcon,
+  Accessibility,
+  ArrowRight,
+  Check,
+  ChevronRight,
+  CircleGauge,
+  Gauge,
+  Globe2,
+  BriefcaseBusiness,
+  Loader2,
+  MousePointerClick,
+  Megaphone,
+  MessageCircle,
+  MessagesSquare,
+  Play,
+  Search,
+  Send,
+  ShieldCheck,
+  Sparkles,
+  WandSparkles,
+  X,
+  Zap,
+  type LucideIcon,
 } from "lucide-react";
+
+import type {
+  InsightAgent,
+  InsightAgentId,
+  InsightFinding,
+  InsightReport,
+} from "@/modules/insights/types";
 import { useWorkspace } from "../../components/WorkspaceContext";
+import { AIChannels } from "./AIChannels";
 
-type QuickAction = { title: string; help: string; prompt: string; icon: LucideIcon };
+type AgentRun = {
+  id: string;
+  agent: InsightAgent;
+  completedAt: string;
+  summary: string;
+  actions: InsightFinding[];
+};
 
-const actions: QuickAction[] = [
-  { title: "Create marketing content", help: "Social posts, emails, and website copy", prompt: "Create marketing content for my business", icon: FilePenLine },
-  { title: "Follow up with leads", help: "Write personal replies for new enquiries", prompt: "Help me follow up with my newest leads", icon: Users },
-  { title: "Improve my website", help: "Find simple ways to get more enquiries", prompt: "Review my website and suggest the most important improvements", icon: Search },
-  { title: "Grow online sales", help: "Promote products and improve store results", prompt: "Help me find ways to grow my online sales", icon: ShoppingBag },
-  { title: "Plan this week", help: "Turn priorities into a practical action plan", prompt: "Help me plan the most important work for this week", icon: Target },
-  { title: "Reply to customers", help: "Draft clear, helpful customer responses", prompt: "Help me reply to a customer", icon: MessageCircle },
-];
+const agentIcons: Record<InsightAgentId, LucideIcon> = {
+  "seo-agent": Search,
+  "geo-agent": Globe2,
+  "speed-agent": Zap,
+  "accessibility-agent": Accessibility,
+  "conversion-agent": MousePointerClick,
+  "quality-agent": ShieldCheck,
+  "business-agent": BriefcaseBusiness,
+  "marketing-agent": Megaphone,
+  "whatsapp-agent": MessageCircle,
+  "chatbot-agent": MessagesSquare,
+};
+
+const agentTones: Record<InsightAgentId, string> = {
+  "seo-agent": "from-blue-500/20 to-cyan-500/5 text-blue-500",
+  "geo-agent": "from-violet-500/20 to-fuchsia-500/5 text-violet-500",
+  "speed-agent": "from-amber-500/20 to-orange-500/5 text-amber-500",
+  "accessibility-agent": "from-cyan-500/20 to-blue-500/5 text-cyan-500",
+  "conversion-agent": "from-emerald-500/20 to-teal-500/5 text-emerald-500",
+  "quality-agent": "from-rose-500/20 to-pink-500/5 text-rose-500",
+  "business-agent": "from-indigo-500/20 to-blue-500/5 text-indigo-500",
+  "marketing-agent": "from-pink-500/20 to-orange-500/5 text-pink-500",
+  "whatsapp-agent": "from-emerald-500/20 to-green-500/5 text-emerald-500",
+  "chatbot-agent": "from-sky-500/20 to-indigo-500/5 text-sky-500",
+};
+
+function fixHref(siteId: string, finding: InsightFinding) {
+  const query = new URLSearchParams({
+    panel: "ai",
+    context: "Page",
+    prompt: finding.fixPrompt,
+  });
+  if (finding.pageId) query.set("pageId", finding.pageId);
+  return `/app/builder-v3/${siteId}?${query.toString()}`;
+}
 
 export default function AIAgentsPage() {
   const { siteSlug } = useParams<{ siteSlug: string }>();
-  const { currentWebsite } = useWorkspace();
+  const { websites, loading: workspaceLoading } = useWorkspace();
+  const website = websites.find((item) => item.slug === siteSlug);
+  const [agents, setAgents] = useState<InsightAgent[]>([]);
+  const [report, setReport] = useState<InsightReport>();
+  const [loading, setLoading] = useState(true);
+  const [runningId, setRunningId] = useState<InsightAgentId>();
+  const [activeRun, setActiveRun] = useState<AgentRun>();
   const [prompt, setPrompt] = useState("");
-  const [working, setWorking] = useState(false);
-  const [result, setResult] = useState("");
-  const [briefingOpen, setBriefingOpen] = useState(true);
-  const business = currentWebsite?.name || siteSlug;
-  const greeting = useMemo(() => {
-    const hour = new Date().getHours();
-    return hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  }, []);
+  const [error, setError] = useState("");
+  const business = website?.name || siteSlug;
 
-  function start(value = prompt) {
-    const task = value.trim();
-    if (!task || working) return;
-    setPrompt(task);
-    setWorking(true);
-    setResult("");
-    setTimeout(() => {
-      setWorking(false);
-      setResult(`I’m ready to help with “${task}”. I’ll use your website, brand, customers, and business information to prepare the next steps for your approval.`);
-    }, 900);
+  const load = useCallback(async () => {
+    if (!website?.id) {
+      setAgents([]);
+      setReport(undefined);
+      setLoading(workspaceLoading);
+      setError(workspaceLoading ? "" : "This website does not belong to the current workspace.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    setAgents([]);
+    setReport(undefined);
+    setActiveRun(undefined);
+    try {
+      const response = await fetch(
+        `/api/sites/${encodeURIComponent(website.id)}/ai-agents`,
+        { cache: "no-store" },
+      );
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload?.error || "Your AI team could not be loaded");
+      if (payload?.report?.site?.id !== website.id) {
+        throw new Error("The AI-agent response did not match this website.");
+      }
+      setAgents(payload.agents || []);
+      setReport(payload.report);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Your AI team could not be loaded");
+    } finally {
+      setLoading(false);
+    }
+  }, [website?.id, workspaceLoading]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const recommendedAgent = useMemo(
+    () => [...agents].sort((a, b) => a.score - b.score)[0],
+    [agents],
+  );
+
+  async function runAgent(agentId: InsightAgentId, request = prompt) {
+    if (!website?.id || runningId) return;
+    setRunningId(agentId);
+    setError("");
+    try {
+      const response = await fetch(
+        `/api/sites/${encodeURIComponent(website.id)}/ai-agents`,
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ agentId, prompt: request }),
+        },
+      );
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload?.error || "The agent could not finish");
+      setActiveRun(payload.run);
+      setPrompt("");
+      setAgents((current) =>
+        current.map((agent) =>
+          agent.id === agentId
+            ? { ...agent, lastRunAt: payload.run.completedAt }
+            : agent,
+        ),
+      );
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "The agent could not finish");
+    } finally {
+      setRunningId(undefined);
+    }
   }
 
-  return <div className="ai-simple mx-auto max-w-[1380px] pb-14">
-    <header className="flex flex-wrap items-start justify-between gap-4">
-      <div>
-        <p className="text-sm font-medium text-blue-600 dark:text-blue-300">{greeting}</p>
-        <h1 className="mt-1 text-3xl font-semibold tracking-[-.045em]">What would you like to get done?</h1>
-        <p className="mt-2 text-sm dashboard-muted">Your BuildEZ AI team can help with everyday work for {business}.</p>
+  if (loading && !agents.length) {
+    return (
+      <div className="grid min-h-[70vh] place-items-center">
+        <div className="text-center">
+          <Loader2 className="mx-auto animate-spin text-blue-500" />
+          <p className="mt-3 text-sm dashboard-muted">Bringing your AI team online…</p>
+        </div>
       </div>
-      <button className="rounded-xl border dashboard-border px-4 py-2.5 text-sm dashboard-hover">Your AI team</button>
-    </header>
+    );
+  }
 
-    <section className="ai-simple-ask relative mt-7 overflow-hidden rounded-[26px] p-5 sm:p-7">
-      <div className="ai-simple-glow pointer-events-none absolute inset-0"/>
-      <div className="relative grid items-center gap-6 lg:grid-cols-[1.08fr_.92fr]">
+  return (
+    <div className="mx-auto max-w-[1500px] pb-14">
+      <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-sm font-semibold"><span className="grid h-9 w-9 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-500/20"><Sparkles size={17}/></span>Ask BuildEZ to help</div>
-          <p className="mt-4 max-w-lg text-sm leading-6 dashboard-muted">Tell us what you need. Your AI helper can prepare the work while you stay in control and approve the result.</p>
-          <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-blue-200/70 bg-white p-3 shadow-sm dark:border-blue-300/10 dark:bg-[#10182a] sm:flex-row">
-            <textarea value={prompt} onChange={event => setPrompt(event.target.value)} onKeyDown={event => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") start(); }} placeholder="For example: Write a promotion for my best-selling product…" className="min-h-16 flex-1 resize-none bg-transparent px-2 py-2 text-sm leading-6 outline-none placeholder:text-slate-400"/>
-            <button onClick={() => start()} disabled={!prompt.trim() || working} className="flex h-11 shrink-0 items-center justify-center gap-2 self-end rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 disabled:opacity-40">{working ? <LoaderCircle size={16} className="animate-spin"/> : <Send size={16}/>}Get help</button>
+          <div className="flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-300">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+            </span>
+            {agents.length} specialists active
           </div>
-          {result && <div className="mt-4 flex items-start gap-3 rounded-xl border border-blue-200/60 bg-white/75 p-4 text-sm leading-6 text-slate-700 dark:border-blue-300/10 dark:bg-white/[.045] dark:text-slate-300"><Check className="mt-1 shrink-0 text-blue-500" size={16}/><p>{result}</p><button onClick={() => setResult("")} className="ml-auto shrink-0 dashboard-faint"><X size={15}/></button></div>}
+          <h1 className="mt-1 text-3xl font-semibold tracking-[-.045em]">
+            Your AI team for {business}
+          </h1>
+          <p className="mt-2 max-w-3xl text-sm leading-6 dashboard-muted">
+            Specialized agents share one source-aware audit, explain what matters,
+            and hand approved changes to the visual builder.
+          </p>
         </div>
-        <div className="ai-helper-art relative min-h-[240px] overflow-hidden rounded-2xl border border-white/60 bg-white/50 shadow-xl shadow-blue-900/5 dark:border-white/10 dark:bg-white/[.04]">
-          <Image src="/ai-agents/ai-working-for-you.png" alt="AI helper preparing marketing, customer replies, sales insights, and weekly plans for your business" fill priority sizes="(max-width: 1024px) 100vw, 42vw" className="object-cover"/>
-          <div className="absolute inset-x-3 bottom-3 rounded-xl border border-white/70 bg-white/80 px-4 py-3 text-xs font-medium text-slate-700 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/65 dark:text-slate-200"><span className="mr-2 inline-block h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"/>Working across marketing, customers, sales, and planning</div>
+        <Link
+          href={`/app/${siteSlug}/insights`}
+          className="flex items-center gap-2 rounded-xl border dashboard-border px-4 py-2.5 text-sm font-medium dashboard-hover"
+        >
+          <CircleGauge size={16} /> Open Insight Center
+        </Link>
+      </header>
+
+      {error && (
+        <div className="mt-5 rounded-xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-600 dark:text-rose-300">
+          {error}
         </div>
+      )}
+
+      <section className="relative mt-7 overflow-hidden rounded-[28px] border border-blue-300/20 bg-gradient-to-br from-[#081329] via-[#111d3a] to-[#1d1235] p-6 text-white shadow-2xl shadow-blue-950/15 sm:p-8">
+        <div className="absolute -right-16 -top-28 h-72 w-72 rounded-full bg-violet-500/20 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-40 w-72 rounded-full bg-blue-500/15 blur-3xl" />
+        <div className="relative grid gap-7 lg:grid-cols-[1.1fr_.9fr] lg:items-center">
+          <div>
+            <div className="flex items-center gap-2 text-sm font-semibold text-blue-200">
+              <Sparkles size={17} /> Ask your AI team
+            </div>
+            <h2 className="mt-4 max-w-2xl text-2xl font-semibold leading-tight sm:text-3xl">
+              From “what should I fix?” to an approved builder action.
+            </h2>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-white/55">
+              Describe the outcome you want. BuildEZ routes it to the right
+              specialist and grounds the response in your current website.
+            </p>
+            <div className="mt-5 flex flex-col gap-2 rounded-2xl border border-white/10 bg-black/20 p-2.5 backdrop-blur-xl sm:flex-row">
+              <textarea
+                value={prompt}
+                onChange={(event) => setPrompt(event.target.value)}
+                onKeyDown={(event) => {
+                  if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && recommendedAgent) {
+                    void runAgent(recommendedAgent.id);
+                  }
+                }}
+                placeholder="For example: What is stopping this website from ranking and converting?"
+                className="min-h-16 flex-1 resize-none bg-transparent px-3 py-2 text-sm leading-6 outline-none placeholder:text-white/30"
+              />
+              <button
+                onClick={() => recommendedAgent && void runAgent(recommendedAgent.id)}
+                disabled={!prompt.trim() || Boolean(runningId) || !recommendedAgent}
+                className="flex h-11 shrink-0 items-center justify-center gap-2 self-end rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-40"
+              >
+                {runningId ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                Ask team
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <HeroMetric
+              label="Website health"
+              value={`${report?.score ?? "—"}`}
+              help="shared score"
+              icon={Gauge}
+            />
+            <HeroMetric
+              label="Priority actions"
+              value={`${report?.stats.highPriority ?? "—"}`}
+              help="need attention"
+              icon={Zap}
+            />
+            <HeroMetric
+              label="Checks passed"
+              value={`${report?.stats.checksPassed ?? "—"}`}
+              help={`of ${report?.stats.checksTotal ?? "—"}`}
+              icon={Check}
+            />
+            <HeroMetric
+              label="Pages covered"
+              value={`${report?.stats.pagesAudited ?? "—"}`}
+              help="current audit"
+              icon={Globe2}
+            />
+          </div>
+        </div>
+      </section>
+
+      {activeRun && (
+        <section className="mt-5 rounded-2xl border border-blue-300/30 bg-blue-500/[.07] p-5 sm:p-6">
+          <div className="flex items-start gap-3">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-600 text-white">
+              <Check size={18} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="font-semibold">{activeRun.agent.name} completed the run</h2>
+                <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-300">
+                  Ready for review
+                </span>
+              </div>
+              <p className="mt-1 text-sm leading-6 dashboard-muted">{activeRun.summary}</p>
+            </div>
+            <button
+              onClick={() => setActiveRun(undefined)}
+              aria-label="Close agent result"
+              className="rounded-lg p-2 dashboard-muted dashboard-hover"
+            >
+              <X size={16} />
+            </button>
+          </div>
+          {activeRun.actions.length > 0 && (
+            <div className="mt-5 grid gap-3 lg:grid-cols-3">
+              {activeRun.actions.map((action) => (
+                <div key={action.id} className="rounded-xl border dashboard-border bg-[var(--dashboard-surface)] p-4">
+                  <div className="flex items-center gap-2">
+                    <Priority priority={action.priority} />
+                    <span className="text-[10px] dashboard-faint">{action.pageTitle}</span>
+                  </div>
+                  <h3 className="mt-3 text-sm font-semibold">{action.title}</h3>
+                  <p className="mt-1 line-clamp-2 text-xs leading-5 dashboard-muted">{action.description}</p>
+                  <Link
+                    href={fixHref(website?.id || "", action)}
+                    className="mt-4 flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-300"
+                  >
+                    Review in builder <ArrowRight size={13} />
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      <section className="mt-8">
+        <div>
+          <h2 className="text-lg font-semibold">Specialist agents</h2>
+          <p className="mt-1 text-xs dashboard-muted">
+            Run one specialist or ask the team to route a goal automatically.
+          </p>
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {agents.map((agent) => (
+            <AgentCard
+              key={agent.id}
+              agent={agent}
+              running={runningId === agent.id}
+              onRun={() => void runAgent(agent.id)}
+            />
+          ))}
+        </div>
+      </section>
+
+      {website?.id && <AIChannels siteId={website.id} />}
+
+      <section className="mt-8 grid gap-5 xl:grid-cols-[1.2fr_.8fr]">
+        <article className="dashboard-card rounded-2xl p-5 sm:p-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="flex items-center gap-2 font-semibold">
+                <WandSparkles size={17} className="text-violet-500" /> Recommended next run
+              </h2>
+              <p className="mt-1 text-xs dashboard-muted">
+                Chosen from the lowest-scoring specialist area.
+              </p>
+            </div>
+            {recommendedAgent && <Score score={recommendedAgent.score} />}
+          </div>
+          {recommendedAgent && (
+            <div className="mt-5 flex flex-col gap-4 rounded-xl bg-black/[.025] p-4 dark:bg-white/[.035] sm:flex-row sm:items-center">
+              <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br ${agentTones[recommendedAgent.id]}`}>
+                {(() => {
+                  const Icon = agentIcons[recommendedAgent.id];
+                  return <Icon size={19} />;
+                })()}
+              </span>
+              <div className="min-w-0">
+                <h3 className="text-sm font-semibold">{recommendedAgent.name}</h3>
+                <p className="mt-1 text-xs leading-5 dashboard-muted">
+                  {recommendedAgent.description}
+                </p>
+              </div>
+              <button
+                onClick={() => void runAgent(recommendedAgent.id)}
+                disabled={Boolean(runningId)}
+                className="ml-auto flex shrink-0 items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white disabled:opacity-45"
+              >
+                <Play size={13} /> Run agent
+              </button>
+            </div>
+          )}
+        </article>
+
+        <Link
+          href={`/app/${siteSlug}/insights`}
+          className="dashboard-card group rounded-2xl p-5 sm:p-6 dashboard-hover"
+        >
+          <div className="flex items-center justify-between">
+            <span className="grid h-11 w-11 place-items-center rounded-xl bg-blue-500/10 text-blue-500">
+              <CircleGauge size={20} />
+            </span>
+            <ChevronRight className="dashboard-faint transition group-hover:translate-x-1" size={18} />
+          </div>
+          <h2 className="mt-5 font-semibold">Explore the complete audit</h2>
+          <p className="mt-2 text-xs leading-5 dashboard-muted">
+            Compare every page, run a live PageSpeed test, and filter improvements by specialty.
+          </p>
+        </Link>
+      </section>
+    </div>
+  );
+}
+
+function AgentCard({
+  agent,
+  running,
+  onRun,
+}: {
+  agent: InsightAgent;
+  running: boolean;
+  onRun: () => void;
+}) {
+  const Icon = agentIcons[agent.id];
+  return (
+    <article className="dashboard-card rounded-2xl p-5">
+      <div className="flex items-start justify-between">
+        <span className={`grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br ${agentTones[agent.id]}`}>
+          <Icon size={19} />
+        </span>
+        <Status status={agent.status} />
       </div>
-    </section>
-
-    <section className="mt-8">
-      <div><h2 className="text-lg font-semibold">Popular ways I can help</h2><p className="mt-1 text-xs dashboard-muted">Choose a task to get started quickly.</p></div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{actions.map(action => <button key={action.title} onClick={() => { setPrompt(action.prompt); start(action.prompt); }} className="ai-task-card group flex items-center gap-4 rounded-2xl border dashboard-border p-4 text-left">
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-300"><action.icon size={19}/></span>
-        <span className="min-w-0"><strong className="text-sm font-semibold">{action.title}</strong><span className="mt-1 block text-xs dashboard-muted">{action.help}</span></span>
-        <ChevronRight size={16} className="ml-auto shrink-0 dashboard-faint transition group-hover:translate-x-1 group-hover:text-blue-500"/>
-      </button>)}</div>
-    </section>
-
-    <section className="mt-8 grid gap-5 xl:grid-cols-[1.25fr_.75fr]">
-      <article className="dashboard-card rounded-2xl p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-4"><div><div className="flex items-center gap-2"><Lightbulb size={17} className="text-blue-500"/><h2 className="font-semibold">Today’s business briefing</h2></div><p className="mt-1 text-xs dashboard-muted">The few things worth your attention today.</p></div><button onClick={() => setBriefingOpen(value => !value)} className="rounded-lg px-3 py-2 text-xs dashboard-hover">{briefingOpen ? "Hide" : "Show"}</button></div>
-        {briefingOpen && <div className="mt-5 space-y-3">
-          <Brief icon={Users} title="3 new enquiries need a reply" detail="Following up today may improve your chance of converting them." action="Draft replies"/>
-          <Brief icon={BarChart3} title="Your services page is getting attention" detail="Visitors are viewing it, but the next step could be clearer." action="Suggest an improvement"/>
-          <Brief icon={Mail} title="This week’s customer email is not planned" detail="BuildEZ can draft one using your latest products or updates." action="Create email"/>
-        </div>}
-      </article>
-
-      <article className="dashboard-card rounded-2xl p-5 sm:p-6">
-        <h2 className="font-semibold">Recently completed</h2>
-        <p className="mt-1 text-xs dashboard-muted">Work prepared by your AI team.</p>
-        <div className="mt-5 space-y-1">
-          <Recent title="Homepage improvement ideas" time="Today"/>
-          <Recent title="Replies for new enquiries" time="Yesterday"/>
-          <Recent title="Weekend promotion copy" time="2 days ago"/>
-        </div>
-        <button className="mt-4 flex w-full items-center justify-center gap-1 border-t dashboard-border pt-4 text-xs font-medium text-blue-600 dark:text-blue-300">View all completed work <ArrowRight size={13}/></button>
-      </article>
-    </section>
-  </div>;
+      <p className="mt-5 text-[10px] font-semibold uppercase tracking-[.14em] dashboard-faint">{agent.role}</p>
+      <h3 className="mt-1 font-semibold">{agent.name}</h3>
+      <p className="mt-2 min-h-10 text-xs leading-5 dashboard-muted">{agent.description}</p>
+      <div className="mt-5 flex items-center gap-3 border-t dashboard-border pt-4">
+        <Score score={agent.score} />
+        <span className="text-[11px] dashboard-muted">
+          {agent.opportunityCount} opportunit{agent.opportunityCount === 1 ? "y" : "ies"}
+        </span>
+        <button
+          onClick={onRun}
+          disabled={running}
+          className="ml-auto flex items-center gap-1.5 rounded-lg border dashboard-border px-3 py-2 text-xs font-semibold dashboard-hover disabled:opacity-45"
+        >
+          {running ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
+          {running ? "Running" : "Run"}
+        </button>
+      </div>
+    </article>
+  );
 }
 
-function Brief({ icon: Icon, title, detail, action }: { icon: LucideIcon; title: string; detail: string; action: string }) {
-  return <div className="ai-brief flex flex-col gap-3 rounded-xl p-4 sm:flex-row sm:items-center"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-500/10 text-blue-500"><Icon size={17}/></span><div className="min-w-0"><p className="text-sm font-medium">{title}</p><p className="mt-1 text-xs leading-5 dashboard-muted">{detail}</p></div><button className="shrink-0 rounded-lg border dashboard-border px-3 py-2 text-xs font-medium text-blue-600 dashboard-hover dark:text-blue-300">{action}</button></div>;
+function HeroMetric({
+  label,
+  value,
+  help,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  help: string;
+  icon: LucideIcon;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[.055] p-4 backdrop-blur-xl">
+      <Icon size={16} className="text-blue-300" />
+      <strong className="mt-4 block text-2xl">{value}</strong>
+      <p className="mt-1 text-xs font-medium">{label}</p>
+      <p className="mt-0.5 text-[10px] text-white/35">{help}</p>
+    </div>
+  );
 }
 
-function Recent({ title, time }: { title: string; time: string }) {
-  return <button className="flex w-full items-center gap-3 rounded-xl p-3 text-left dashboard-hover"><span className="grid h-8 w-8 place-items-center rounded-full bg-emerald-500/10 text-emerald-500"><Check size={14}/></span><span className="min-w-0 flex-1 truncate text-sm">{title}</span><span className="text-[10px] dashboard-faint">{time}</span></button>;
+function Status({ status }: { status: InsightAgent["status"] }) {
+  const style =
+    status === "ready"
+      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300"
+      : status === "attention"
+        ? "bg-amber-500/10 text-amber-600 dark:text-amber-300"
+        : "bg-blue-500/10 text-blue-600 dark:text-blue-300";
+  return (
+    <span className={`rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-wider ${style}`}>
+      {status === "attention" ? "Needs attention" : status}
+    </span>
+  );
+}
+
+function Score({ score }: { score: number }) {
+  const style =
+    score >= 90
+      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300"
+      : score >= 70
+        ? "bg-blue-500/10 text-blue-600 dark:text-blue-300"
+        : "bg-amber-500/10 text-amber-600 dark:text-amber-300";
+  return <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${style}`}>{score}/100</span>;
+}
+
+function Priority({ priority }: { priority: InsightFinding["priority"] }) {
+  const style =
+    priority === "high"
+      ? "bg-rose-500/10 text-rose-600 dark:text-rose-300"
+      : priority === "medium"
+        ? "bg-amber-500/10 text-amber-600 dark:text-amber-300"
+        : "bg-slate-500/10 dashboard-muted";
+  return (
+    <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${style}`}>
+      {priority}
+    </span>
+  );
 }

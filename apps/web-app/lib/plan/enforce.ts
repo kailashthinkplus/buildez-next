@@ -74,11 +74,48 @@ export async function enforceAICredits(tenantId: string) {
 /* ============================================================
    INCREMENT AI CREDIT USAGE
 ============================================================ */
-export async function incrementAICredits(tenantId: string, tokensUsed = 1000) {
-  const usage = await prisma.planUsage.findFirst({ where: { tenantId, key: "ai_credits" }, orderBy: { periodStart: "desc" } });
-  if (usage) await prisma.planUsage.update({ where: { id: usage.id }, data: { used: { increment: 1 } } });
-  else await prisma.planUsage.create({ data: { tenantId, key: "ai_credits", used: 1 } });
-  void tokensUsed;
+export async function incrementAICredits(
+  tenantId: string,
+  creditsUsed = 1,
+) {
+  if (!Number.isFinite(creditsUsed) || creditsUsed <= 0) {
+    return;
+  }
+
+  const amount = Math.max(1, Math.ceil(creditsUsed));
+
+  const usage = await prisma.planUsage.findFirst({
+    where: {
+      tenantId,
+      key: "ai_credits",
+    },
+    orderBy: {
+      periodStart: "desc",
+    },
+  });
+
+  if (usage) {
+    await prisma.planUsage.update({
+      where: {
+        id: usage.id,
+      },
+      data: {
+        used: {
+          increment: amount,
+        },
+      },
+    });
+
+    return;
+  }
+
+  await prisma.planUsage.create({
+    data: {
+      tenantId,
+      key: "ai_credits",
+      used: amount,
+    },
+  });
 }
 
 /* ============================================================

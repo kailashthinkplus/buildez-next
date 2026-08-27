@@ -3,7 +3,8 @@ import { prisma } from "@buildez/db";
 
 type Settings = Record<string, unknown>;
 export async function metadataForSite(siteSlug: string, pageSlug = "home"): Promise<Metadata> {
-  const site = await prisma.site.findFirst({ where: { slug: siteSlug, status: "PUBLISHED", deletedAt: null }, include: { pages: { where: { slug: pageSlug, status: "PUBLISHED", deletedAt: null }, take: 1 } } });
+  const candidates = await prisma.site.findMany({ where: { slug: siteSlug, status: "PUBLISHED", deletedAt: null }, include: { pages: { where: { slug: pageSlug, status: "PUBLISHED", deletedAt: null }, take: 1 } }, take: 2 });
+  const site = candidates.length === 1 ? candidates[0] : null;
   if (!site) return {};
   const settings = (site.settings || {}) as Settings; const page = site.pages[0]; const pageMeta = (page?.metadata || {}) as Settings;
   const title = String(pageMeta.seoTitle || settings.seoTitle || page?.title || site.name);

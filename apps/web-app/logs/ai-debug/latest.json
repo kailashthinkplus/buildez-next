@@ -1,223 +1,117 @@
 {
-  "timestamp": "2026-07-21T15:17:46.056Z",
+  "timestamp": "2026-08-26T13:37:32.991Z",
   "label": "published-render:input",
   "payload": {
     "summary": {
       "present": true,
-      "root": "dg.page",
+      "root": "page-1",
       "metadata": {
-        "title": "Test2Page",
+        "title": "Home",
         "version": 2,
-        "template": "ai-v11-m2-design-preservation",
-        "createdAt": "2026-07-16T00:00:00.000Z",
-        "updatedAt": "2026-07-16T00:00:00.000Z",
+        "industry": "Real Estate",
+        "template": "ai-v9-native-blueprint",
+        "createdAt": "2026-07-03T06:58:02.988Z",
+        "updatedAt": "2026-07-07T20:16:01.499Z",
         "aiGenerated": true
       },
       "theme": {
-        "id": "buildez-default",
-        "name": "BuildEZ Default",
-        "preset": "buildez-default",
+        "id": "ai-v9-native-blueprint",
+        "name": "Sanjeevini Group Custom Theme",
+        "preset": "ai-v9-native-blueprint",
         "tokenKeys": [
-          "cards",
-          "forms",
           "colors",
           "radius",
           "shadow",
-          "states",
           "buttons",
           "spacing",
-          "defaults",
           "typography"
         ]
       },
-      "nodeCount": 231,
-      "sectionCount": 11,
-      "imageCount": 19,
-      "backgroundPromptCount": 0,
+      "nodeCount": 27,
+      "sectionCount": 4,
+      "imageCount": 2,
+      "backgroundPromptCount": 1,
       "headings": [
-        "View new beauty arrivals of skincare",
-        "New Arrivals",
-        "Set of body care combo products",
-        "Rice body scrub with argan oil",
-        "Hyaluronic skin booster",
-        "Shower & bath gel",
-        "Skin care",
-        "Body products",
-        "Anti-aging care",
-        "Organic products"
+        "About Sanjeevini Group",
+        "Quality Materials & Craftsmanship",
+        "Building Trust Since 2010"
       ],
       "textSamples": [
-        "Home⌄",
-        "Category⌄",
-        "Offer⌄",
-        "Pages⌄",
-        "Shop",
-        "Skinelle",
-        "Skinelle",
-        "Contact",
-        "New collection",
-        "Discover the combination of science and luxury in every product. New collection is designed to give skin radiance.",
-        "Shop Now",
-        "$29.00 – $48.50",
-        "View products",
-        "$35.00"
+        "Founded in 2010, Sanjeevini Group has been a pioneer in the real estate industry, delivering over 1.5 million square feet of built space and currently developing an additional 3 million square feet.",
+        "Our projects are built with the finest materials and the highest standards of craftsmanship, ensuring durability and elegance.",
+        "With over 1,200 satisfied customers and a reputation for on-time delivery, Sanjeevini Group is a trusted name in real estate."
       ],
       "colors": [
-        "#2c221b",
-        "#fafaf8",
-        "inherit",
-        "transparent",
+        "#2C3523",
         "#ffffff",
-        "#716a65",
-        "#c05a3a",
-        "#aaa29c",
-        "#f4f1ed",
-        "#f6efe7",
-        "#d9d5d2",
-        "rgb(255 255 255 / 0.95)",
-        "#a53b20"
+        "#FFFFFF",
+        "#C05A3A",
+        "#F4F1ED",
+        "#5C6651",
+        "#FAFAF8",
+        "transparent",
+        "surface"
       ],
       "images": [
         {
-          "id": "dg.002.img",
-          "type": "image",
-          "hidden": false,
-          "src": "/v11-premium/fashion.png",
-          "backgroundImage": "",
-          "aiImagePrompt": "",
-          "backgroundPrompt": ""
-        },
-        {
-          "id": "dg.003.div",
-          "type": "container",
+          "id": "section-hero",
+          "type": "hero",
           "hidden": false,
           "src": "",
-          "backgroundImage": "linear-gradient(to right, #45150bd9, #5b1d0f4d, transparent)",
+          "backgroundImage": "url('https://sanjeevinigroups.com/wp-content/uploads/2025/08/adwaith-banner-2.jpg')",
           "aiImagePrompt": "",
-          "backgroundPrompt": ""
+          "backgroundPrompt": "Aerial view of a modern residential complex in Bangalore, natural daylight, lush greenery, architectural photography"
         },
         {
-          "id": "dg.034.img",
+          "id": "image-context",
           "type": "image",
           "hidden": false,
-          "src": "/v11-premium/product.png",
+          "src": "https://sanjeevinigroups.com/wp-content/uploads/2025/04/home-gallery-1-min.jpeg",
           "backgroundImage": "",
-          "aiImagePrompt": "",
+          "aiImagePrompt": "Interior view of a luxury apartment in Bangalore, modern design, natural light, spacious layout",
           "backgroundPrompt": ""
         },
         {
-          "id": "dg.042.img",
+          "id": "image-materials",
           "type": "image",
           "hidden": false,
-          "src": "/v11-premium/fashion.png",
+          "src": "https://sanjeevinigroups.com/wp-content/uploads/2025/04/home-gallery-2-min.jpg",
           "backgroundImage": "",
-          "aiImagePrompt": "",
+          "aiImagePrompt": "Close-up of high-quality building materials used in luxury construction, natural light",
           "backgroundPrompt": ""
         },
         {
-          "id": "dg.050.img",
-          "type": "image",
-          "hidden": false,
-          "src": "/v11-premium/clinic.png",
-          "backgroundImage": "",
-          "aiImagePrompt": "",
-          "backgroundPrompt": ""
-        },
-        {
-          "id": "dg.058.img",
-          "type": "image",
-          "hidden": false,
-          "src": "/v11-premium/resort.png",
-          "backgroundImage": "",
-          "aiImagePrompt": "",
-          "backgroundPrompt": ""
-        },
-        {
-          "id": "dg.066.img",
-          "type": "image",
-          "hidden": false,
-          "src": "/v11-premium/fashion.png",
-          "backgroundImage": "",
-          "aiImagePrompt": "",
-          "backgroundPrompt": ""
-        },
-        {
-          "id": "dg.075.img",
-          "type": "image",
-          "hidden": false,
-          "src": "/v11-premium/clinic.png",
-          "backgroundImage": "",
-          "aiImagePrompt": "",
-          "backgroundPrompt": ""
-        },
-        {
-          "id": "dg.095.img",
-          "type": "image",
-          "hidden": false,
-          "src": "/v11-premium/product.png",
-          "backgroundImage": "",
-          "aiImagePrompt": "",
-          "backgroundPrompt": ""
-        },
-        {
-          "id": "dg.096.div",
-          "type": "container",
+          "id": "section-context",
+          "type": "section",
           "hidden": false,
           "src": "",
-          "backgroundImage": "linear-gradient(to right, #221d19cc, transparent)",
+          "backgroundImage": "url('https://sanjeevinigroups.com/wp-content/uploads/2025/04/home-gallery-3-min.jpg')",
           "aiImagePrompt": "",
           "backgroundPrompt": ""
         },
         {
-          "id": "dg.116.img",
-          "type": "image",
+          "id": "section-gallery",
+          "type": "galleryLightbox",
           "hidden": false,
-          "src": "/v11-premium/product.png",
-          "backgroundImage": "",
+          "src": "",
+          "backgroundImage": "linear-gradient(180deg, #ebe5d9 0%, #ffffff 100%)",
           "aiImagePrompt": "",
           "backgroundPrompt": ""
         },
         {
-          "id": "dg.126.img",
-          "type": "image",
+          "id": "section-showcase",
+          "type": "offerGrid",
           "hidden": false,
-          "src": "/v11-premium/clinic.png",
-          "backgroundImage": "",
+          "src": "",
+          "backgroundImage": "linear-gradient(180deg, #ebe5d9 0%, #ffffff 100%)",
           "aiImagePrompt": "",
           "backgroundPrompt": ""
         },
         {
-          "id": "dg.136.img",
-          "type": "image",
+          "id": "d4e07f95-b920-41e4-b0e9-3081c1207780",
+          "type": "section",
           "hidden": false,
-          "src": "/v11-premium/resort.png",
-          "backgroundImage": "",
-          "aiImagePrompt": "",
-          "backgroundPrompt": ""
-        },
-        {
-          "id": "dg.146.img",
-          "type": "image",
-          "hidden": false,
-          "src": "/v11-premium/fashion.png",
-          "backgroundImage": "",
-          "aiImagePrompt": "",
-          "backgroundPrompt": ""
-        },
-        {
-          "id": "dg.159.img",
-          "type": "image",
-          "hidden": false,
-          "src": "/v11-premium/fashion.png",
-          "backgroundImage": "",
-          "aiImagePrompt": "",
-          "backgroundPrompt": ""
-        },
-        {
-          "id": "dg.165.img",
-          "type": "image",
-          "hidden": false,
-          "src": "/v11-premium/fashion.png",
+          "src": "",
           "backgroundImage": "",
           "aiImagePrompt": "",
           "backgroundPrompt": ""
@@ -226,59 +120,81 @@
       "forbiddenHits": [],
       "layoutFingerprint": [
         {
-          "id": "dg.001.section",
-          "type": "section",
-          "children": 4,
-          "backgroundColor": "#a53b20"
+          "id": "de3f4f32-8f49-4886-a1ab-89b8ac7c6e91",
+          "type": "container",
+          "children": 1,
+          "backgroundColor": "transparent"
         },
         {
-          "id": "dg.024.section",
-          "type": "section",
-          "children": 1
+          "id": "c11f171a-c8c4-4e61-849b-784a45b6c910",
+          "type": "container",
+          "children": 1,
+          "backgroundColor": "transparent"
         },
         {
-          "id": "dg.064.section",
+          "id": "d4e07f95-b920-41e4-b0e9-3081c1207780",
+          "type": "section",
+          "children": 0,
+          "backgroundColor": "surface",
+          "backgroundImage": ""
+        },
+        {
+          "id": "section-hero",
+          "type": "hero",
+          "children": 0,
+          "display": "flex",
+          "backgroundColor": "#F4F1ED",
+          "backgroundImage": "url('https://sanjeevinigroups.com/wp-content/uploads/2025/08/adwaith-banner-2.jpg')"
+        },
+        {
+          "id": "section-context",
           "type": "section",
           "children": 1,
-          "backgroundColor": "#f4f1ed"
+          "backgroundColor": "#2C3523",
+          "backgroundImage": "url('https://sanjeevinigroups.com/wp-content/uploads/2025/04/home-gallery-3-min.jpg')"
         },
         {
-          "id": "dg.076.section",
-          "type": "section",
-          "children": 1
+          "id": "section-showcase",
+          "type": "offerGrid",
+          "children": 0,
+          "gridTemplateColumns": {
+            "mobile": "1fr",
+            "tablet": "repeat(2, 1fr)",
+            "desktop": "repeat(3, 1fr)"
+          },
+          "backgroundColor": "#F4F1ED",
+          "backgroundImage": "linear-gradient(180deg, #ebe5d9 0%, #ffffff 100%)"
         },
         {
-          "id": "dg.094.section",
-          "type": "section",
-          "children": 6
-        },
-        {
-          "id": "dg.106.section",
-          "type": "section",
-          "children": 1
-        },
-        {
-          "id": "dg.154.section",
+          "id": "section-materials",
           "type": "section",
           "children": 1,
-          "backgroundColor": "#f4f1ed"
+          "backgroundColor": "#FAFAF8"
         },
         {
-          "id": "dg.172.section",
-          "type": "section",
-          "children": 1
-        },
-        {
-          "id": "dg.191.section",
-          "type": "section",
-          "children": 2,
-          "display": "flex"
-        },
-        {
-          "id": "dg.201.footer",
+          "id": "section-confidence",
           "type": "section",
           "children": 1,
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#F4F1ED"
+        },
+        {
+          "id": "section-gallery",
+          "type": "galleryLightbox",
+          "children": 0,
+          "backgroundColor": "#FAFAF8",
+          "backgroundImage": "linear-gradient(180deg, #ebe5d9 0%, #ffffff 100%)"
+        },
+        {
+          "id": "section-faq",
+          "type": "faq",
+          "children": 0,
+          "backgroundColor": "#F4F1ED"
+        },
+        {
+          "id": "section-cta",
+          "type": "cta",
+          "children": 0,
+          "backgroundColor": "#C05A3A"
         }
       ]
     },

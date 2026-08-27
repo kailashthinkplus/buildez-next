@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { readProjectFile, listProjectFiles } from "../project-workspace";
+import { readProjectFile, listProjectFiles, normalizeGeneratedReactEffects } from "../project-workspace";
 import { validatePreviewProjectPaths } from "./previewContract";
 import { createBuilderRuntimeScript, instrumentTsxSource } from "../visual-editor";
 
@@ -41,7 +41,10 @@ export async function materializePreviewProject(input: {
     let content = isBlankProject
       ? BLANK_PROJECT_FILES[projectPath as keyof typeof BLANK_PROJECT_FILES]
       : (await readProjectFile(input.siteId, input.tenantId, projectPath)).content;
-    if (/\.[jt]sx$/.test(projectPath)) content = instrumentTsxSource(content, projectPath, projectRevision);
+    if (/\.[jt]sx$/.test(projectPath)) {
+      content = normalizeGeneratedReactEffects(content, projectPath);
+      content = instrumentTsxSource(content, projectPath, projectRevision);
+    }
     if (projectPath === "index.html") content = content.replace("</body>", '<script src="/__buildez_editor.js"></script></body>');
     await writeFile(target, content, { encoding: "utf8", flag: "w" });
   }

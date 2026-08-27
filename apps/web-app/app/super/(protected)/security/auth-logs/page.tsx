@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 export default function AuthLogsPage() {
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<Array<{ id: string; createdAt: string; provider: string; success: boolean; ipAddress: string | null; user?: { email: string | null } }>>([]);
 
   useEffect(() => {
     fetch("/api/super/security/auth-logs")

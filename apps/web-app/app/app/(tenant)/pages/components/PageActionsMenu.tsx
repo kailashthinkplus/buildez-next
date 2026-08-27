@@ -10,6 +10,8 @@ import {
   Eye,
   Pencil,
   RotateCcw,
+  ExternalLink,
+  Home,
 } from "lucide-react";
 import PublishButton from "./PublishButton";
 
@@ -18,15 +20,18 @@ type PageActionsPage = {
   title: string;
   status: string;
   site?: { slug?: string };
+  isFrontPage?: boolean;
 };
 
 type PageActionsMenuProps = {
   page: PageActionsPage;
   onEdit?: () => void;
   onSettings?: () => void;
+  onSetFrontPage?: () => Promise<void> | void;
   onDelete?: () => void;
   onDuplicate?: () => Promise<void> | void;
   onPreview?: () => void;
+  onView?: () => void;
   onChanged?: () => void;
   isTrash?: boolean;
   onRestore?: () => Promise<void> | void;
@@ -36,9 +41,11 @@ export default function PageActionsMenu({
   page,
   onEdit,
   onSettings,
+  onSetFrontPage,
   onDelete,
   onDuplicate,
   onPreview,
+  onView,
   onChanged,
   isTrash = false,
   onRestore,
@@ -86,8 +93,10 @@ export default function PageActionsMenu({
     const rect = buttonRef.current?.getBoundingClientRect();
     if (rect) {
       const menuWidth = 192;
+      const menuHeight = isTrash ? 52 : 346;
+      const openAbove = rect.bottom + menuHeight + 12 > window.innerHeight;
       setMenuPosition({
-        top: rect.bottom + 8,
+        top: Math.max(8, openAbove ? rect.top - menuHeight - 8 : rect.bottom + 8),
         left: Math.max(
           8,
           Math.min(window.innerWidth - menuWidth - 8, rect.right - menuWidth)
@@ -108,7 +117,7 @@ export default function PageActionsMenu({
               left: menuPosition.left,
             }}
             className="
-              fixed w-48 rounded-xl z-[1000]
+              fixed w-48 rounded-xl z-[50000]
               overflow-hidden
               dashboard-card-strong
               backdrop-blur-xl shadow-xl
@@ -164,6 +173,32 @@ export default function PageActionsMenu({
                 >
                   <Eye className="h-4 w-4" />
                   Preview
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    onView?.();
+                    setOpen(false);
+                  }}
+                  disabled={!onView}
+                  className="flex w-full items-center gap-3 px-4 py-2 text-left dashboard-hover disabled:opacity-40"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  View live page
+                </button>
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await onSetFrontPage?.();
+                    setOpen(false);
+                  }}
+                  disabled={!onSetFrontPage || page.isFrontPage}
+                  className="flex w-full items-center gap-3 px-4 py-2 text-left dashboard-hover disabled:opacity-50"
+                >
+                  <Home className="h-4 w-4" />
+                  {page.isFrontPage ? "Front page" : "Set as front page"}
                 </button>
 
                 {/* Settings */}

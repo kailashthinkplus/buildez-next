@@ -38,7 +38,8 @@ export type NodeType =
   | "code"
   | "spacer"
   | "html-block"
-  | "react-component";
+  | "react-component"
+  | "divider";
 
 export interface BlueprintNode {
   id: string;

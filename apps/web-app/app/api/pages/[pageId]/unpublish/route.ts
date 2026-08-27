@@ -47,6 +47,9 @@ export async function POST(
       where: {
         id: execCtx.pageId,
         siteId: execCtx.siteId,
+        deletedAt: null,
+        deleted: false,
+        site: { tenantId: execCtx.tenantId, deletedAt: null },
       },
     });
 
@@ -60,8 +63,8 @@ export async function POST(
     /* ----------------------------------------------------------
        UNPUBLISH
     ---------------------------------------------------------- */
-    const updated = await prisma.page.update({
-      where: { id: page.id },
+    const updated = await prisma.page.updateMany({
+      where: { id: page.id, siteId: execCtx.siteId, deletedAt: null, deleted: false },
       data: {
         status: "DRAFT",
       },
@@ -69,6 +72,9 @@ export async function POST(
 
     console.log("✅ [UNPUBLISH] COMPLETE");
 
-    return { success: true, page: updated };
-  })(req);
+    if (updated.count !== 1) {
+      return NextResponse.json({ error: "Page no longer belongs to this workspace" }, { status: 409 });
+    }
+    return { success: true };
+  }, { requireTenant: true })(req);
 }

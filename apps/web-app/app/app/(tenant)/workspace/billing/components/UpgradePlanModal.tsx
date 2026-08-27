@@ -5,6 +5,8 @@ import { X, Check, CreditCard } from "lucide-react";
 import { motion } from "framer-motion";
 import { DashboardModalPortal } from "../../../components/ui/DashboardModalPortal";
 
+type UpgradePlan = { code:string;name:string;description:string;priceMonthly:number;priceYearly:number;features:string[];maxSites:number;maxPages:number;aiCredits:number;teamMembers:number };
+
 export default function UpgradePlanModal({
   open,
   onClose,
@@ -14,9 +16,11 @@ export default function UpgradePlanModal({
   onClose: () => void;
   currentPlan: string | null;
 }) {
-  const [plans, setPlans] = useState<any[]>([]);
-  const [selected, setSelected] = useState<string | null>(currentPlan);
+  const [plans, setPlans] = useState<UpgradePlan[]>([]);
+  const [selected, setSelected] = useState<string | null>(null);
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [paying, setPaying] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
   /* Load public plans */
   useEffect(() => {
@@ -24,63 +28,32 @@ export default function UpgradePlanModal({
     fetch("/api/plans?active=true&public=true")
       .then((res) => res.json())
       .then((data) => {
-        setPlans(data);
-        if (!selected && data?.length) {
-          setSelected(currentPlan ?? data[0].code);
-        }
+        const rows = Array.isArray(data) ? data : [];
+        setPlans(rows);
+        const currentIndex = rows.findIndex((plan) => plan.code.toUpperCase() === currentPlan?.toUpperCase());
+        setSelected(rows[currentIndex + 1]?.code ?? (currentIndex < 0 ? rows[0]?.code : null));
       });
-  }, [open]);
+  }, [currentPlan, open]);
 
   if (!open) return null;
 
-  /* Razorpay Order Fix (Receipt < 40 chars) */
-  async function startPayment(plan: any) {
+  async function startPayment(plan: UpgradePlan) {
+    setPaying(plan.code);
+    setError("");
     try {
-      const price =
-        billing === "monthly" ? plan.priceMonthly : plan.priceYearly;
-
-      const orderRes = await fetch("/api/razorpay/order", {
+      const response = await fetch("/api/billing/dodo/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: price,
-          currency: "INR",
-          receipt: `bz_${plan.code}_${Math.random()
-            .toString(36)
-            .slice(2, 9)}`,
-        }),
+        body: JSON.stringify({ planCode: plan.code, billingCycle: billing }),
       });
-
-      const orderData = await orderRes.json();
-      if (!orderRes.ok) throw new Error(orderData.error);
-
-      const Razorpay = (window as typeof window & { Razorpay: new (options: Record<string, unknown>) => { open(): void } }).Razorpay;
-      new Razorpay({
-        key: orderData.key,
-        amount: orderData.amount,
-        order_id: orderData.orderId,
-        currency: "INR",
-        name: "BuildEZ",
-        description: `${plan.name} Plan Upgrade`,
-        handler: async function (response: any) {
-          await fetch("/api/billing/activate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              planCode: plan.code,
-              billingCycle: billing,
-              paymentId: response.razorpay_payment_id,
-              orderId: response.razorpay_order_id,
-              amount: price,
-            }),
-          });
-
-          window.location.reload();
-        },
-        theme: { color: "#4F46E5" },
-      }).open();
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || typeof payload.checkoutUrl !== "string") {
+        throw new Error(payload.error || "Dodo checkout could not be started.");
+      }
+      window.location.assign(payload.checkoutUrl);
     } catch (err) {
-      console.error("Payment Error:", err);
+      setError(err instanceof Error ? err.message : "Dodo checkout could not be started.");
+      setPaying(null);
     }
   }
 
@@ -121,6 +94,7 @@ export default function UpgradePlanModal({
         <p className="dashboard-muted text-sm mb-8">
           Select a plan to upgrade. You can change or cancel anytime.
         </p>
+        {error && <p className="mb-5 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-500">{error}</p>}
 
         {/* Billing Toggle */}
         <div className="flex items-center justify-center gap-4 mb-8">
@@ -169,7 +143,10 @@ export default function UpgradePlanModal({
 
         {/* Plan Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {plans.map((plan) => {
+          {plans.filter((_, index) => {
+            const currentIndex = plans.findIndex((item) => item.code.toUpperCase() === currentPlan?.toUpperCase());
+            return currentIndex < 0 || index > currentIndex;
+          }).map((plan) => {
             const price =
               billing === "monthly"
                 ? plan.priceMonthly
@@ -190,12 +167,6 @@ export default function UpgradePlanModal({
                 `}
                 onClick={() => setSelected(plan.code)}
               >
-                {currentPlan === plan.code && (
-                  <div className="text-[10px] px-2 py-1 rounded-full bg-blue-600 text-white absolute top-4 right-4">
-                    Current Plan
-                  </div>
-                )}
-
                 <h3 className="text-lg font-medium mb-1">
                   {plan.name}
                 </h3>
@@ -221,6 +192,7 @@ export default function UpgradePlanModal({
 
                 <button
                   onClick={() => startPayment(plan)}
+                  disabled={Boolean(paying)}
                   className={`
                     w-full py-2 rounded-xl text-sm transition
                     ${
@@ -230,11 +202,15 @@ export default function UpgradePlanModal({
                     }
                   `}
                 >
-                  {currentPlan === plan.code ? "Selected ✓" : "Upgrade →"}
+                  {paying === plan.code ? "Opening secure checkout…" : isActive ? "Upgrade with Dodo →" : "Select plan"}
                 </button>
               </div>
             );
           })}
+          {plans.length > 0 && plans.every((plan, index) => {
+            const currentIndex = plans.findIndex((item) => item.code.toUpperCase() === currentPlan?.toUpperCase());
+            return currentIndex >= 0 && index <= currentIndex;
+          }) ? <div className="col-span-full rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-8 text-center text-sm text-emerald-600 dark:text-emerald-400">You already have the highest available plan.</div> : null}
         </div>
       </motion.div>
     </div>

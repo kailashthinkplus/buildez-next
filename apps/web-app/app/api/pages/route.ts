@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Prisma, prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
+import { createInsightReport } from "@/modules/insights/server";
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -62,6 +63,7 @@ export const GET = async (request: NextRequest) => {
        Resolve SITE IDS
     ------------------------------------------ */
     let siteIds: string[] = [];
+    const frontPageBySite = new Map<string, string>();
 
     if (siteSlug) {
       console.log("🟢 [PAGES][GET] Resolving site by slug:", siteSlug);
@@ -71,7 +73,7 @@ export const GET = async (request: NextRequest) => {
           slug: siteSlug,
           tenantId: tenant.id,
         },
-        select: { id: true },
+        select: { id: true, settings: true },
       });
 
       console.log("🟢 [PAGES][GET] Site resolved:", site);
@@ -82,15 +84,22 @@ export const GET = async (request: NextRequest) => {
       }
 
       siteIds = [site.id];
+      frontPageBySite.set(site.id, asString(asRecord(site.settings).frontPageId));
     } else {
       console.log("🟢 [PAGES][GET] Resolving ALL sites for tenant");
 
       const sites = await prisma.site.findMany({
         where: { tenantId: tenant.id },
-        select: { id: true },
+        select: { id: true, settings: true },
       });
 
       siteIds = sites.map((s) => s.id);
+      sites.forEach((resolvedSite) => {
+        frontPageBySite.set(
+          resolvedSite.id,
+          asString(asRecord(resolvedSite.settings).frontPageId),
+        );
+      });
       console.log("🟢 [PAGES][GET] Site IDs:", siteIds);
     }
 
@@ -132,9 +141,23 @@ export const GET = async (request: NextRequest) => {
 
     console.log("🟢 [PAGES][GET] Pages found:", pages.length, "Total:", total);
 
+    const insightReports = await Promise.all(
+      siteIds.map(async (siteId) => {
+        try {
+          return await createInsightReport({ siteId, tenantId: tenant.id });
+        } catch {
+          return null;
+        }
+      }),
+    );
+    const aiScores = new Map(
+      insightReports.flatMap((report) =>
+        report?.pages.map((page) => [page.id, page.score] as const) ?? [],
+      ),
+    );
+
     const normalizedPages = pages.map((page) => {
       const metadata = asRecord(page.metadata);
-      const seoMetadata = asRecord(metadata.seo);
       const seoTitle = asString(metadata.seoTitle);
       const seoDescription = asString(metadata.seoDescription);
       const faviconUrl = asString(metadata.faviconUrl);
@@ -147,9 +170,6 @@ export const GET = async (request: NextRequest) => {
       ];
       const requiredFieldsCompleted = requiredFields.filter(Boolean).length;
       const requiredFieldsTotal = requiredFields.length;
-      const fallbackSeoScore = Math.round(
-        (requiredFieldsCompleted / requiredFieldsTotal) * 100
-      );
 
       return {
         ...page,
@@ -162,10 +182,8 @@ export const GET = async (request: NextRequest) => {
           asString(metadata.previewImageUrl) ||
           asString(metadata.previewUrl) ||
           asString(metadata.ogImage),
-        seoScore:
-          asNumber(metadata.seoScore) ??
-          asNumber(seoMetadata.score) ??
-          fallbackSeoScore,
+        aiScore: aiScores.get(page.id) ?? 0,
+        isFrontPage: frontPageBySite.get(page.siteId) === page.id,
         aiRecommendationsTotal:
           countRecommendations(metadata.aiRecommendations) ||
           countRecommendations(metadata.recommendations) ||

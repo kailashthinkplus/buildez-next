@@ -5,7 +5,7 @@ import { AuthProvider, prisma } from "@buildez/db";
 import { hashOtp } from "@/lib/auth/otp";
 import { checkLockout } from "@/lib/auth/lockout";
 import { writeAuthLog } from "@/lib/auth/authLog";
-import { cookies } from "next/headers";
+import { createSession } from "@/lib/auth/session";
 
 export async function POST(req: Request) {
   const { email, otp } = await req.json();
@@ -59,24 +59,7 @@ export async function POST(req: Request) {
     /* ------------------------------------------------------------
        5️⃣ Create DB session (NOT JWT)
     ------------------------------------------------------------ */
-    const session = await prisma.session.create({
-      data: {
-        userId: user.id,
-        provider: AuthProvider.OTP,
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 4), // 4 hours
-      },
-    });
-
-    const cookieStore = await cookies();
-    cookieStore.set({
-      name: "session",
-      value: session.id,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/",
-      maxAge: 60 * 60 * 4, // 4 hours
-    });
+    await createSession({ user, provider: AuthProvider.OTP, ttlHours: 4 });
 
     /* ------------------------------------------------------------
        6️⃣ Auth Log

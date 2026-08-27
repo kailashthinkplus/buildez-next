@@ -164,6 +164,11 @@ export type ShopCollectionProduct = $Result.DefaultSelection<Prisma.$ShopCollect
  */
 export type ShopCustomer = $Result.DefaultSelection<Prisma.$ShopCustomerPayload>
 /**
+ * Model ShopCustomerSession
+ * 
+ */
+export type ShopCustomerSession = $Result.DefaultSelection<Prisma.$ShopCustomerSessionPayload>
+/**
  * Model ShopDiscount
  * 
  */
@@ -263,6 +268,16 @@ export type PlanFeature = $Result.DefaultSelection<Prisma.$PlanFeaturePayload>
  * 
  */
 export type PlanUsage = $Result.DefaultSelection<Prisma.$PlanUsagePayload>
+/**
+ * Model AiCreditReservation
+ * 
+ */
+export type AiCreditReservation = $Result.DefaultSelection<Prisma.$AiCreditReservationPayload>
+/**
+ * Model AiCreditLedgerEntry
+ * 
+ */
+export type AiCreditLedgerEntry = $Result.DefaultSelection<Prisma.$AiCreditLedgerEntryPayload>
 /**
  * Model Subscription
  * 
@@ -1110,6 +1125,16 @@ export class PrismaClient<
   get shopCustomer(): Prisma.ShopCustomerDelegate<ExtArgs>;
 
   /**
+   * `prisma.shopCustomerSession`: Exposes CRUD operations for the **ShopCustomerSession** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ShopCustomerSessions
+    * const shopCustomerSessions = await prisma.shopCustomerSession.findMany()
+    * ```
+    */
+  get shopCustomerSession(): Prisma.ShopCustomerSessionDelegate<ExtArgs>;
+
+  /**
    * `prisma.shopDiscount`: Exposes CRUD operations for the **ShopDiscount** model.
     * Example usage:
     * ```ts
@@ -1308,6 +1333,26 @@ export class PrismaClient<
     * ```
     */
   get planUsage(): Prisma.PlanUsageDelegate<ExtArgs>;
+
+  /**
+   * `prisma.aiCreditReservation`: Exposes CRUD operations for the **AiCreditReservation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AiCreditReservations
+    * const aiCreditReservations = await prisma.aiCreditReservation.findMany()
+    * ```
+    */
+  get aiCreditReservation(): Prisma.AiCreditReservationDelegate<ExtArgs>;
+
+  /**
+   * `prisma.aiCreditLedgerEntry`: Exposes CRUD operations for the **AiCreditLedgerEntry** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AiCreditLedgerEntries
+    * const aiCreditLedgerEntries = await prisma.aiCreditLedgerEntry.findMany()
+    * ```
+    */
+  get aiCreditLedgerEntry(): Prisma.AiCreditLedgerEntryDelegate<ExtArgs>;
 
   /**
    * `prisma.subscription`: Exposes CRUD operations for the **Subscription** model.
@@ -1959,6 +2004,7 @@ export namespace Prisma {
     ShopCollection: 'ShopCollection',
     ShopCollectionProduct: 'ShopCollectionProduct',
     ShopCustomer: 'ShopCustomer',
+    ShopCustomerSession: 'ShopCustomerSession',
     ShopDiscount: 'ShopDiscount',
     ShopOrder: 'ShopOrder',
     ShopOrderItem: 'ShopOrderItem',
@@ -1979,6 +2025,8 @@ export namespace Prisma {
     PlanPricing: 'PlanPricing',
     PlanFeature: 'PlanFeature',
     PlanUsage: 'PlanUsage',
+    AiCreditReservation: 'AiCreditReservation',
+    AiCreditLedgerEntry: 'AiCreditLedgerEntry',
     Subscription: 'Subscription',
     SiteSubscription: 'SiteSubscription',
     ComplianceAudit: 'ComplianceAudit',
@@ -2012,7 +2060,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "userOnboarding" | "session" | "otp" | "authLog" | "verificationToken" | "refreshToken" | "loginAttempt" | "tenant" | "tenantEvent" | "team" | "teamMember" | "teamInvite" | "theme" | "themeVersion" | "themeAsset" | "mediaAsset" | "site" | "v12Project" | "v12ProjectFile" | "v12ProjectRevision" | "v12ProjectCheckpoint" | "shop" | "shopProduct" | "shopProductImage" | "shopProductOption" | "shopProductVariant" | "shopCollection" | "shopCollectionProduct" | "shopCustomer" | "shopDiscount" | "shopOrder" | "shopOrderItem" | "shopPaymentIntegration" | "crmLead" | "crmCommunication" | "crmApiKey" | "cmsCollection" | "cmsEntry" | "siteLayout" | "domain" | "page" | "previewToken" | "aIBlueprintSnapshot" | "blueprint" | "blueprintHistory" | "plan" | "planPricing" | "planFeature" | "planUsage" | "subscription" | "siteSubscription" | "complianceAudit" | "systemNotification" | "siteSnapshot" | "pageSnapshot" | "siteRender" | "renderedPage" | "siteDomain" | "sslCertificate" | "trafficEvent" | "trafficRollupHourly" | "aiEvent" | "rateLimit" | "workspace" | "workspaceMember" | "aIMessage" | "aIConversation"
+      modelProps: "user" | "userOnboarding" | "session" | "otp" | "authLog" | "verificationToken" | "refreshToken" | "loginAttempt" | "tenant" | "tenantEvent" | "team" | "teamMember" | "teamInvite" | "theme" | "themeVersion" | "themeAsset" | "mediaAsset" | "site" | "v12Project" | "v12ProjectFile" | "v12ProjectRevision" | "v12ProjectCheckpoint" | "shop" | "shopProduct" | "shopProductImage" | "shopProductOption" | "shopProductVariant" | "shopCollection" | "shopCollectionProduct" | "shopCustomer" | "shopCustomerSession" | "shopDiscount" | "shopOrder" | "shopOrderItem" | "shopPaymentIntegration" | "crmLead" | "crmCommunication" | "crmApiKey" | "cmsCollection" | "cmsEntry" | "siteLayout" | "domain" | "page" | "previewToken" | "aIBlueprintSnapshot" | "blueprint" | "blueprintHistory" | "plan" | "planPricing" | "planFeature" | "planUsage" | "aiCreditReservation" | "aiCreditLedgerEntry" | "subscription" | "siteSubscription" | "complianceAudit" | "systemNotification" | "siteSnapshot" | "pageSnapshot" | "siteRender" | "renderedPage" | "siteDomain" | "sslCertificate" | "trafficEvent" | "trafficRollupHourly" | "aiEvent" | "rateLimit" | "workspace" | "workspaceMember" | "aIMessage" | "aIConversation"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4116,6 +4164,76 @@ export namespace Prisma {
           }
         }
       }
+      ShopCustomerSession: {
+        payload: Prisma.$ShopCustomerSessionPayload<ExtArgs>
+        fields: Prisma.ShopCustomerSessionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ShopCustomerSessionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopCustomerSessionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ShopCustomerSessionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopCustomerSessionPayload>
+          }
+          findFirst: {
+            args: Prisma.ShopCustomerSessionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopCustomerSessionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ShopCustomerSessionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopCustomerSessionPayload>
+          }
+          findMany: {
+            args: Prisma.ShopCustomerSessionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopCustomerSessionPayload>[]
+          }
+          create: {
+            args: Prisma.ShopCustomerSessionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopCustomerSessionPayload>
+          }
+          createMany: {
+            args: Prisma.ShopCustomerSessionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ShopCustomerSessionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopCustomerSessionPayload>[]
+          }
+          delete: {
+            args: Prisma.ShopCustomerSessionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopCustomerSessionPayload>
+          }
+          update: {
+            args: Prisma.ShopCustomerSessionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopCustomerSessionPayload>
+          }
+          deleteMany: {
+            args: Prisma.ShopCustomerSessionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ShopCustomerSessionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ShopCustomerSessionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopCustomerSessionPayload>
+          }
+          aggregate: {
+            args: Prisma.ShopCustomerSessionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateShopCustomerSession>
+          }
+          groupBy: {
+            args: Prisma.ShopCustomerSessionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ShopCustomerSessionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ShopCustomerSessionCountArgs<ExtArgs>
+            result: $Utils.Optional<ShopCustomerSessionCountAggregateOutputType> | number
+          }
+        }
+      }
       ShopDiscount: {
         payload: Prisma.$ShopDiscountPayload<ExtArgs>
         fields: Prisma.ShopDiscountFieldRefs
@@ -5513,6 +5631,146 @@ export namespace Prisma {
           count: {
             args: Prisma.PlanUsageCountArgs<ExtArgs>
             result: $Utils.Optional<PlanUsageCountAggregateOutputType> | number
+          }
+        }
+      }
+      AiCreditReservation: {
+        payload: Prisma.$AiCreditReservationPayload<ExtArgs>
+        fields: Prisma.AiCreditReservationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AiCreditReservationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditReservationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AiCreditReservationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditReservationPayload>
+          }
+          findFirst: {
+            args: Prisma.AiCreditReservationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditReservationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AiCreditReservationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditReservationPayload>
+          }
+          findMany: {
+            args: Prisma.AiCreditReservationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditReservationPayload>[]
+          }
+          create: {
+            args: Prisma.AiCreditReservationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditReservationPayload>
+          }
+          createMany: {
+            args: Prisma.AiCreditReservationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AiCreditReservationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditReservationPayload>[]
+          }
+          delete: {
+            args: Prisma.AiCreditReservationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditReservationPayload>
+          }
+          update: {
+            args: Prisma.AiCreditReservationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditReservationPayload>
+          }
+          deleteMany: {
+            args: Prisma.AiCreditReservationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AiCreditReservationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AiCreditReservationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditReservationPayload>
+          }
+          aggregate: {
+            args: Prisma.AiCreditReservationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAiCreditReservation>
+          }
+          groupBy: {
+            args: Prisma.AiCreditReservationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AiCreditReservationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AiCreditReservationCountArgs<ExtArgs>
+            result: $Utils.Optional<AiCreditReservationCountAggregateOutputType> | number
+          }
+        }
+      }
+      AiCreditLedgerEntry: {
+        payload: Prisma.$AiCreditLedgerEntryPayload<ExtArgs>
+        fields: Prisma.AiCreditLedgerEntryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AiCreditLedgerEntryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditLedgerEntryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AiCreditLedgerEntryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditLedgerEntryPayload>
+          }
+          findFirst: {
+            args: Prisma.AiCreditLedgerEntryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditLedgerEntryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AiCreditLedgerEntryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditLedgerEntryPayload>
+          }
+          findMany: {
+            args: Prisma.AiCreditLedgerEntryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditLedgerEntryPayload>[]
+          }
+          create: {
+            args: Prisma.AiCreditLedgerEntryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditLedgerEntryPayload>
+          }
+          createMany: {
+            args: Prisma.AiCreditLedgerEntryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AiCreditLedgerEntryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditLedgerEntryPayload>[]
+          }
+          delete: {
+            args: Prisma.AiCreditLedgerEntryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditLedgerEntryPayload>
+          }
+          update: {
+            args: Prisma.AiCreditLedgerEntryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditLedgerEntryPayload>
+          }
+          deleteMany: {
+            args: Prisma.AiCreditLedgerEntryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AiCreditLedgerEntryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AiCreditLedgerEntryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditLedgerEntryPayload>
+          }
+          aggregate: {
+            args: Prisma.AiCreditLedgerEntryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAiCreditLedgerEntry>
+          }
+          groupBy: {
+            args: Prisma.AiCreditLedgerEntryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AiCreditLedgerEntryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AiCreditLedgerEntryCountArgs<ExtArgs>
+            result: $Utils.Optional<AiCreditLedgerEntryCountAggregateOutputType> | number
           }
         }
       }
@@ -7081,6 +7339,8 @@ export namespace Prisma {
     blueprints: number
     planUsages: number
     AiEvent: number
+    aiCreditReservations: number
+    aiCreditLedger: number
     aiSnapshots: number
     v12Projects: number
   }
@@ -7100,6 +7360,8 @@ export namespace Prisma {
     blueprints?: boolean | TenantCountOutputTypeCountBlueprintsArgs
     planUsages?: boolean | TenantCountOutputTypeCountPlanUsagesArgs
     AiEvent?: boolean | TenantCountOutputTypeCountAiEventArgs
+    aiCreditReservations?: boolean | TenantCountOutputTypeCountAiCreditReservationsArgs
+    aiCreditLedger?: boolean | TenantCountOutputTypeCountAiCreditLedgerArgs
     aiSnapshots?: boolean | TenantCountOutputTypeCountAiSnapshotsArgs
     v12Projects?: boolean | TenantCountOutputTypeCountV12ProjectsArgs
   }
@@ -7211,6 +7473,20 @@ export namespace Prisma {
    */
   export type TenantCountOutputTypeCountAiEventArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AiEventWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountAiCreditReservationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiCreditReservationWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountAiCreditLedgerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiCreditLedgerEntryWhereInput
   }
 
   /**
@@ -7769,10 +8045,12 @@ export namespace Prisma {
 
   export type ShopCustomerCountOutputType = {
     orders: number
+    sessions: number
   }
 
   export type ShopCustomerCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | ShopCustomerCountOutputTypeCountOrdersArgs
+    sessions?: boolean | ShopCustomerCountOutputTypeCountSessionsArgs
   }
 
   // Custom InputTypes
@@ -7791,6 +8069,13 @@ export namespace Prisma {
    */
   export type ShopCustomerCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ShopOrderWhereInput
+  }
+
+  /**
+   * ShopCustomerCountOutputType without action
+   */
+  export type ShopCustomerCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ShopCustomerSessionWhereInput
   }
 
 
@@ -8044,6 +8329,37 @@ export namespace Prisma {
    */
   export type PlanCountOutputTypeCountFeaturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PlanFeatureWhereInput
+  }
+
+
+  /**
+   * Count Type AiCreditReservationCountOutputType
+   */
+
+  export type AiCreditReservationCountOutputType = {
+    ledgerEntries: number
+  }
+
+  export type AiCreditReservationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    ledgerEntries?: boolean | AiCreditReservationCountOutputTypeCountLedgerEntriesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AiCreditReservationCountOutputType without action
+   */
+  export type AiCreditReservationCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservationCountOutputType
+     */
+    select?: AiCreditReservationCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AiCreditReservationCountOutputType without action
+   */
+  export type AiCreditReservationCountOutputTypeCountLedgerEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiCreditLedgerEntryWhereInput
   }
 
 
@@ -16802,6 +17118,8 @@ export namespace Prisma {
     blueprints?: boolean | Tenant$blueprintsArgs<ExtArgs>
     planUsages?: boolean | Tenant$planUsagesArgs<ExtArgs>
     AiEvent?: boolean | Tenant$AiEventArgs<ExtArgs>
+    aiCreditReservations?: boolean | Tenant$aiCreditReservationsArgs<ExtArgs>
+    aiCreditLedger?: boolean | Tenant$aiCreditLedgerArgs<ExtArgs>
     aiSnapshots?: boolean | Tenant$aiSnapshotsArgs<ExtArgs>
     v12Projects?: boolean | Tenant$v12ProjectsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
@@ -16849,6 +17167,8 @@ export namespace Prisma {
     blueprints?: boolean | Tenant$blueprintsArgs<ExtArgs>
     planUsages?: boolean | Tenant$planUsagesArgs<ExtArgs>
     AiEvent?: boolean | Tenant$AiEventArgs<ExtArgs>
+    aiCreditReservations?: boolean | Tenant$aiCreditReservationsArgs<ExtArgs>
+    aiCreditLedger?: boolean | Tenant$aiCreditLedgerArgs<ExtArgs>
     aiSnapshots?: boolean | Tenant$aiSnapshotsArgs<ExtArgs>
     v12Projects?: boolean | Tenant$v12ProjectsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
@@ -16876,6 +17196,8 @@ export namespace Prisma {
       blueprints: Prisma.$BlueprintPayload<ExtArgs>[]
       planUsages: Prisma.$PlanUsagePayload<ExtArgs>[]
       AiEvent: Prisma.$AiEventPayload<ExtArgs>[]
+      aiCreditReservations: Prisma.$AiCreditReservationPayload<ExtArgs>[]
+      aiCreditLedger: Prisma.$AiCreditLedgerEntryPayload<ExtArgs>[]
       aiSnapshots: Prisma.$AIBlueprintSnapshotPayload<ExtArgs>[]
       v12Projects: Prisma.$V12ProjectPayload<ExtArgs>[]
     }
@@ -17269,6 +17591,8 @@ export namespace Prisma {
     blueprints<T extends Tenant$blueprintsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$blueprintsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlueprintPayload<ExtArgs>, T, "findMany"> | Null>
     planUsages<T extends Tenant$planUsagesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$planUsagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlanUsagePayload<ExtArgs>, T, "findMany"> | Null>
     AiEvent<T extends Tenant$AiEventArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$AiEventArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiEventPayload<ExtArgs>, T, "findMany"> | Null>
+    aiCreditReservations<T extends Tenant$aiCreditReservationsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$aiCreditReservationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditReservationPayload<ExtArgs>, T, "findMany"> | Null>
+    aiCreditLedger<T extends Tenant$aiCreditLedgerArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$aiCreditLedgerArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditLedgerEntryPayload<ExtArgs>, T, "findMany"> | Null>
     aiSnapshots<T extends Tenant$aiSnapshotsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$aiSnapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIBlueprintSnapshotPayload<ExtArgs>, T, "findMany"> | Null>
     v12Projects<T extends Tenant$v12ProjectsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$v12ProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findMany"> | Null>
     /**
@@ -17934,6 +18258,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AiEventScalarFieldEnum | AiEventScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.aiCreditReservations
+   */
+  export type Tenant$aiCreditReservationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationInclude<ExtArgs> | null
+    where?: AiCreditReservationWhereInput
+    orderBy?: AiCreditReservationOrderByWithRelationInput | AiCreditReservationOrderByWithRelationInput[]
+    cursor?: AiCreditReservationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AiCreditReservationScalarFieldEnum | AiCreditReservationScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.aiCreditLedger
+   */
+  export type Tenant$aiCreditLedgerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryInclude<ExtArgs> | null
+    where?: AiCreditLedgerEntryWhereInput
+    orderBy?: AiCreditLedgerEntryOrderByWithRelationInput | AiCreditLedgerEntryOrderByWithRelationInput[]
+    cursor?: AiCreditLedgerEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AiCreditLedgerEntryScalarFieldEnum | AiCreditLedgerEntryScalarFieldEnum[]
   }
 
   /**
@@ -38997,6 +39361,7 @@ export namespace Prisma {
     phone: string | null
     acceptsMarketing: boolean | null
     notes: string | null
+    passwordHash: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -39010,6 +39375,7 @@ export namespace Prisma {
     phone: string | null
     acceptsMarketing: boolean | null
     notes: string | null
+    passwordHash: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -39024,6 +39390,7 @@ export namespace Prisma {
     acceptsMarketing: number
     addresses: number
     notes: number
+    passwordHash: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -39039,6 +39406,7 @@ export namespace Prisma {
     phone?: true
     acceptsMarketing?: true
     notes?: true
+    passwordHash?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -39052,6 +39420,7 @@ export namespace Prisma {
     phone?: true
     acceptsMarketing?: true
     notes?: true
+    passwordHash?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -39066,6 +39435,7 @@ export namespace Prisma {
     acceptsMarketing?: true
     addresses?: true
     notes?: true
+    passwordHash?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -39153,6 +39523,7 @@ export namespace Prisma {
     acceptsMarketing: boolean
     addresses: JsonValue | null
     notes: string | null
+    passwordHash: string | null
     createdAt: Date
     updatedAt: Date
     _count: ShopCustomerCountAggregateOutputType | null
@@ -39184,10 +39555,12 @@ export namespace Prisma {
     acceptsMarketing?: boolean
     addresses?: boolean
     notes?: boolean
+    passwordHash?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     shop?: boolean | ShopDefaultArgs<ExtArgs>
     orders?: boolean | ShopCustomer$ordersArgs<ExtArgs>
+    sessions?: boolean | ShopCustomer$sessionsArgs<ExtArgs>
     _count?: boolean | ShopCustomerCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shopCustomer"]>
 
@@ -39201,6 +39574,7 @@ export namespace Prisma {
     acceptsMarketing?: boolean
     addresses?: boolean
     notes?: boolean
+    passwordHash?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     shop?: boolean | ShopDefaultArgs<ExtArgs>
@@ -39216,6 +39590,7 @@ export namespace Prisma {
     acceptsMarketing?: boolean
     addresses?: boolean
     notes?: boolean
+    passwordHash?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -39223,6 +39598,7 @@ export namespace Prisma {
   export type ShopCustomerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     shop?: boolean | ShopDefaultArgs<ExtArgs>
     orders?: boolean | ShopCustomer$ordersArgs<ExtArgs>
+    sessions?: boolean | ShopCustomer$sessionsArgs<ExtArgs>
     _count?: boolean | ShopCustomerCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ShopCustomerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -39234,6 +39610,7 @@ export namespace Prisma {
     objects: {
       shop: Prisma.$ShopPayload<ExtArgs>
       orders: Prisma.$ShopOrderPayload<ExtArgs>[]
+      sessions: Prisma.$ShopCustomerSessionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -39245,6 +39622,7 @@ export namespace Prisma {
       acceptsMarketing: boolean
       addresses: Prisma.JsonValue | null
       notes: string | null
+      passwordHash: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["shopCustomer"]>
@@ -39613,6 +39991,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     shop<T extends ShopDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ShopDefaultArgs<ExtArgs>>): Prisma__ShopClient<$Result.GetResult<Prisma.$ShopPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     orders<T extends ShopCustomer$ordersArgs<ExtArgs> = {}>(args?: Subset<T, ShopCustomer$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShopOrderPayload<ExtArgs>, T, "findMany"> | Null>
+    sessions<T extends ShopCustomer$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, ShopCustomer$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShopCustomerSessionPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -39651,6 +40030,7 @@ export namespace Prisma {
     readonly acceptsMarketing: FieldRef<"ShopCustomer", 'Boolean'>
     readonly addresses: FieldRef<"ShopCustomer", 'Json'>
     readonly notes: FieldRef<"ShopCustomer", 'String'>
+    readonly passwordHash: FieldRef<"ShopCustomer", 'String'>
     readonly createdAt: FieldRef<"ShopCustomer", 'DateTime'>
     readonly updatedAt: FieldRef<"ShopCustomer", 'DateTime'>
   }
@@ -39991,6 +40371,26 @@ export namespace Prisma {
   }
 
   /**
+   * ShopCustomer.sessions
+   */
+  export type ShopCustomer$sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopCustomerSession
+     */
+    select?: ShopCustomerSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopCustomerSessionInclude<ExtArgs> | null
+    where?: ShopCustomerSessionWhereInput
+    orderBy?: ShopCustomerSessionOrderByWithRelationInput | ShopCustomerSessionOrderByWithRelationInput[]
+    cursor?: ShopCustomerSessionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ShopCustomerSessionScalarFieldEnum | ShopCustomerSessionScalarFieldEnum[]
+  }
+
+  /**
    * ShopCustomer without action
    */
   export type ShopCustomerDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -40002,6 +40402,939 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ShopCustomerInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ShopCustomerSession
+   */
+
+  export type AggregateShopCustomerSession = {
+    _count: ShopCustomerSessionCountAggregateOutputType | null
+    _min: ShopCustomerSessionMinAggregateOutputType | null
+    _max: ShopCustomerSessionMaxAggregateOutputType | null
+  }
+
+  export type ShopCustomerSessionMinAggregateOutputType = {
+    id: string | null
+    customerId: string | null
+    tokenHash: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type ShopCustomerSessionMaxAggregateOutputType = {
+    id: string | null
+    customerId: string | null
+    tokenHash: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type ShopCustomerSessionCountAggregateOutputType = {
+    id: number
+    customerId: number
+    tokenHash: number
+    expiresAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ShopCustomerSessionMinAggregateInputType = {
+    id?: true
+    customerId?: true
+    tokenHash?: true
+    expiresAt?: true
+    createdAt?: true
+  }
+
+  export type ShopCustomerSessionMaxAggregateInputType = {
+    id?: true
+    customerId?: true
+    tokenHash?: true
+    expiresAt?: true
+    createdAt?: true
+  }
+
+  export type ShopCustomerSessionCountAggregateInputType = {
+    id?: true
+    customerId?: true
+    tokenHash?: true
+    expiresAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ShopCustomerSessionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ShopCustomerSession to aggregate.
+     */
+    where?: ShopCustomerSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ShopCustomerSessions to fetch.
+     */
+    orderBy?: ShopCustomerSessionOrderByWithRelationInput | ShopCustomerSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ShopCustomerSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ShopCustomerSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ShopCustomerSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ShopCustomerSessions
+    **/
+    _count?: true | ShopCustomerSessionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ShopCustomerSessionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ShopCustomerSessionMaxAggregateInputType
+  }
+
+  export type GetShopCustomerSessionAggregateType<T extends ShopCustomerSessionAggregateArgs> = {
+        [P in keyof T & keyof AggregateShopCustomerSession]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateShopCustomerSession[P]>
+      : GetScalarType<T[P], AggregateShopCustomerSession[P]>
+  }
+
+
+
+
+  export type ShopCustomerSessionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ShopCustomerSessionWhereInput
+    orderBy?: ShopCustomerSessionOrderByWithAggregationInput | ShopCustomerSessionOrderByWithAggregationInput[]
+    by: ShopCustomerSessionScalarFieldEnum[] | ShopCustomerSessionScalarFieldEnum
+    having?: ShopCustomerSessionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ShopCustomerSessionCountAggregateInputType | true
+    _min?: ShopCustomerSessionMinAggregateInputType
+    _max?: ShopCustomerSessionMaxAggregateInputType
+  }
+
+  export type ShopCustomerSessionGroupByOutputType = {
+    id: string
+    customerId: string
+    tokenHash: string
+    expiresAt: Date
+    createdAt: Date
+    _count: ShopCustomerSessionCountAggregateOutputType | null
+    _min: ShopCustomerSessionMinAggregateOutputType | null
+    _max: ShopCustomerSessionMaxAggregateOutputType | null
+  }
+
+  type GetShopCustomerSessionGroupByPayload<T extends ShopCustomerSessionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ShopCustomerSessionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ShopCustomerSessionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ShopCustomerSessionGroupByOutputType[P]>
+            : GetScalarType<T[P], ShopCustomerSessionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ShopCustomerSessionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    tokenHash?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    customer?: boolean | ShopCustomerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["shopCustomerSession"]>
+
+  export type ShopCustomerSessionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    tokenHash?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    customer?: boolean | ShopCustomerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["shopCustomerSession"]>
+
+  export type ShopCustomerSessionSelectScalar = {
+    id?: boolean
+    customerId?: boolean
+    tokenHash?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type ShopCustomerSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | ShopCustomerDefaultArgs<ExtArgs>
+  }
+  export type ShopCustomerSessionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | ShopCustomerDefaultArgs<ExtArgs>
+  }
+
+  export type $ShopCustomerSessionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ShopCustomerSession"
+    objects: {
+      customer: Prisma.$ShopCustomerPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      customerId: string
+      tokenHash: string
+      expiresAt: Date
+      createdAt: Date
+    }, ExtArgs["result"]["shopCustomerSession"]>
+    composites: {}
+  }
+
+  type ShopCustomerSessionGetPayload<S extends boolean | null | undefined | ShopCustomerSessionDefaultArgs> = $Result.GetResult<Prisma.$ShopCustomerSessionPayload, S>
+
+  type ShopCustomerSessionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ShopCustomerSessionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ShopCustomerSessionCountAggregateInputType | true
+    }
+
+  export interface ShopCustomerSessionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ShopCustomerSession'], meta: { name: 'ShopCustomerSession' } }
+    /**
+     * Find zero or one ShopCustomerSession that matches the filter.
+     * @param {ShopCustomerSessionFindUniqueArgs} args - Arguments to find a ShopCustomerSession
+     * @example
+     * // Get one ShopCustomerSession
+     * const shopCustomerSession = await prisma.shopCustomerSession.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ShopCustomerSessionFindUniqueArgs>(args: SelectSubset<T, ShopCustomerSessionFindUniqueArgs<ExtArgs>>): Prisma__ShopCustomerSessionClient<$Result.GetResult<Prisma.$ShopCustomerSessionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ShopCustomerSession that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ShopCustomerSessionFindUniqueOrThrowArgs} args - Arguments to find a ShopCustomerSession
+     * @example
+     * // Get one ShopCustomerSession
+     * const shopCustomerSession = await prisma.shopCustomerSession.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ShopCustomerSessionFindUniqueOrThrowArgs>(args: SelectSubset<T, ShopCustomerSessionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ShopCustomerSessionClient<$Result.GetResult<Prisma.$ShopCustomerSessionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ShopCustomerSession that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopCustomerSessionFindFirstArgs} args - Arguments to find a ShopCustomerSession
+     * @example
+     * // Get one ShopCustomerSession
+     * const shopCustomerSession = await prisma.shopCustomerSession.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ShopCustomerSessionFindFirstArgs>(args?: SelectSubset<T, ShopCustomerSessionFindFirstArgs<ExtArgs>>): Prisma__ShopCustomerSessionClient<$Result.GetResult<Prisma.$ShopCustomerSessionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ShopCustomerSession that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopCustomerSessionFindFirstOrThrowArgs} args - Arguments to find a ShopCustomerSession
+     * @example
+     * // Get one ShopCustomerSession
+     * const shopCustomerSession = await prisma.shopCustomerSession.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ShopCustomerSessionFindFirstOrThrowArgs>(args?: SelectSubset<T, ShopCustomerSessionFindFirstOrThrowArgs<ExtArgs>>): Prisma__ShopCustomerSessionClient<$Result.GetResult<Prisma.$ShopCustomerSessionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ShopCustomerSessions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopCustomerSessionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ShopCustomerSessions
+     * const shopCustomerSessions = await prisma.shopCustomerSession.findMany()
+     * 
+     * // Get first 10 ShopCustomerSessions
+     * const shopCustomerSessions = await prisma.shopCustomerSession.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const shopCustomerSessionWithIdOnly = await prisma.shopCustomerSession.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ShopCustomerSessionFindManyArgs>(args?: SelectSubset<T, ShopCustomerSessionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShopCustomerSessionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ShopCustomerSession.
+     * @param {ShopCustomerSessionCreateArgs} args - Arguments to create a ShopCustomerSession.
+     * @example
+     * // Create one ShopCustomerSession
+     * const ShopCustomerSession = await prisma.shopCustomerSession.create({
+     *   data: {
+     *     // ... data to create a ShopCustomerSession
+     *   }
+     * })
+     * 
+     */
+    create<T extends ShopCustomerSessionCreateArgs>(args: SelectSubset<T, ShopCustomerSessionCreateArgs<ExtArgs>>): Prisma__ShopCustomerSessionClient<$Result.GetResult<Prisma.$ShopCustomerSessionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ShopCustomerSessions.
+     * @param {ShopCustomerSessionCreateManyArgs} args - Arguments to create many ShopCustomerSessions.
+     * @example
+     * // Create many ShopCustomerSessions
+     * const shopCustomerSession = await prisma.shopCustomerSession.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ShopCustomerSessionCreateManyArgs>(args?: SelectSubset<T, ShopCustomerSessionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ShopCustomerSessions and returns the data saved in the database.
+     * @param {ShopCustomerSessionCreateManyAndReturnArgs} args - Arguments to create many ShopCustomerSessions.
+     * @example
+     * // Create many ShopCustomerSessions
+     * const shopCustomerSession = await prisma.shopCustomerSession.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ShopCustomerSessions and only return the `id`
+     * const shopCustomerSessionWithIdOnly = await prisma.shopCustomerSession.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ShopCustomerSessionCreateManyAndReturnArgs>(args?: SelectSubset<T, ShopCustomerSessionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShopCustomerSessionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ShopCustomerSession.
+     * @param {ShopCustomerSessionDeleteArgs} args - Arguments to delete one ShopCustomerSession.
+     * @example
+     * // Delete one ShopCustomerSession
+     * const ShopCustomerSession = await prisma.shopCustomerSession.delete({
+     *   where: {
+     *     // ... filter to delete one ShopCustomerSession
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ShopCustomerSessionDeleteArgs>(args: SelectSubset<T, ShopCustomerSessionDeleteArgs<ExtArgs>>): Prisma__ShopCustomerSessionClient<$Result.GetResult<Prisma.$ShopCustomerSessionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ShopCustomerSession.
+     * @param {ShopCustomerSessionUpdateArgs} args - Arguments to update one ShopCustomerSession.
+     * @example
+     * // Update one ShopCustomerSession
+     * const shopCustomerSession = await prisma.shopCustomerSession.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ShopCustomerSessionUpdateArgs>(args: SelectSubset<T, ShopCustomerSessionUpdateArgs<ExtArgs>>): Prisma__ShopCustomerSessionClient<$Result.GetResult<Prisma.$ShopCustomerSessionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ShopCustomerSessions.
+     * @param {ShopCustomerSessionDeleteManyArgs} args - Arguments to filter ShopCustomerSessions to delete.
+     * @example
+     * // Delete a few ShopCustomerSessions
+     * const { count } = await prisma.shopCustomerSession.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ShopCustomerSessionDeleteManyArgs>(args?: SelectSubset<T, ShopCustomerSessionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ShopCustomerSessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopCustomerSessionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ShopCustomerSessions
+     * const shopCustomerSession = await prisma.shopCustomerSession.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ShopCustomerSessionUpdateManyArgs>(args: SelectSubset<T, ShopCustomerSessionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ShopCustomerSession.
+     * @param {ShopCustomerSessionUpsertArgs} args - Arguments to update or create a ShopCustomerSession.
+     * @example
+     * // Update or create a ShopCustomerSession
+     * const shopCustomerSession = await prisma.shopCustomerSession.upsert({
+     *   create: {
+     *     // ... data to create a ShopCustomerSession
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ShopCustomerSession we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ShopCustomerSessionUpsertArgs>(args: SelectSubset<T, ShopCustomerSessionUpsertArgs<ExtArgs>>): Prisma__ShopCustomerSessionClient<$Result.GetResult<Prisma.$ShopCustomerSessionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ShopCustomerSessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopCustomerSessionCountArgs} args - Arguments to filter ShopCustomerSessions to count.
+     * @example
+     * // Count the number of ShopCustomerSessions
+     * const count = await prisma.shopCustomerSession.count({
+     *   where: {
+     *     // ... the filter for the ShopCustomerSessions we want to count
+     *   }
+     * })
+    **/
+    count<T extends ShopCustomerSessionCountArgs>(
+      args?: Subset<T, ShopCustomerSessionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ShopCustomerSessionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ShopCustomerSession.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopCustomerSessionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ShopCustomerSessionAggregateArgs>(args: Subset<T, ShopCustomerSessionAggregateArgs>): Prisma.PrismaPromise<GetShopCustomerSessionAggregateType<T>>
+
+    /**
+     * Group by ShopCustomerSession.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopCustomerSessionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ShopCustomerSessionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ShopCustomerSessionGroupByArgs['orderBy'] }
+        : { orderBy?: ShopCustomerSessionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ShopCustomerSessionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetShopCustomerSessionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ShopCustomerSession model
+   */
+  readonly fields: ShopCustomerSessionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ShopCustomerSession.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ShopCustomerSessionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    customer<T extends ShopCustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ShopCustomerDefaultArgs<ExtArgs>>): Prisma__ShopCustomerClient<$Result.GetResult<Prisma.$ShopCustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ShopCustomerSession model
+   */ 
+  interface ShopCustomerSessionFieldRefs {
+    readonly id: FieldRef<"ShopCustomerSession", 'String'>
+    readonly customerId: FieldRef<"ShopCustomerSession", 'String'>
+    readonly tokenHash: FieldRef<"ShopCustomerSession", 'String'>
+    readonly expiresAt: FieldRef<"ShopCustomerSession", 'DateTime'>
+    readonly createdAt: FieldRef<"ShopCustomerSession", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ShopCustomerSession findUnique
+   */
+  export type ShopCustomerSessionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopCustomerSession
+     */
+    select?: ShopCustomerSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopCustomerSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which ShopCustomerSession to fetch.
+     */
+    where: ShopCustomerSessionWhereUniqueInput
+  }
+
+  /**
+   * ShopCustomerSession findUniqueOrThrow
+   */
+  export type ShopCustomerSessionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopCustomerSession
+     */
+    select?: ShopCustomerSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopCustomerSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which ShopCustomerSession to fetch.
+     */
+    where: ShopCustomerSessionWhereUniqueInput
+  }
+
+  /**
+   * ShopCustomerSession findFirst
+   */
+  export type ShopCustomerSessionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopCustomerSession
+     */
+    select?: ShopCustomerSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopCustomerSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which ShopCustomerSession to fetch.
+     */
+    where?: ShopCustomerSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ShopCustomerSessions to fetch.
+     */
+    orderBy?: ShopCustomerSessionOrderByWithRelationInput | ShopCustomerSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ShopCustomerSessions.
+     */
+    cursor?: ShopCustomerSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ShopCustomerSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ShopCustomerSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ShopCustomerSessions.
+     */
+    distinct?: ShopCustomerSessionScalarFieldEnum | ShopCustomerSessionScalarFieldEnum[]
+  }
+
+  /**
+   * ShopCustomerSession findFirstOrThrow
+   */
+  export type ShopCustomerSessionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopCustomerSession
+     */
+    select?: ShopCustomerSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopCustomerSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which ShopCustomerSession to fetch.
+     */
+    where?: ShopCustomerSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ShopCustomerSessions to fetch.
+     */
+    orderBy?: ShopCustomerSessionOrderByWithRelationInput | ShopCustomerSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ShopCustomerSessions.
+     */
+    cursor?: ShopCustomerSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ShopCustomerSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ShopCustomerSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ShopCustomerSessions.
+     */
+    distinct?: ShopCustomerSessionScalarFieldEnum | ShopCustomerSessionScalarFieldEnum[]
+  }
+
+  /**
+   * ShopCustomerSession findMany
+   */
+  export type ShopCustomerSessionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopCustomerSession
+     */
+    select?: ShopCustomerSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopCustomerSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which ShopCustomerSessions to fetch.
+     */
+    where?: ShopCustomerSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ShopCustomerSessions to fetch.
+     */
+    orderBy?: ShopCustomerSessionOrderByWithRelationInput | ShopCustomerSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ShopCustomerSessions.
+     */
+    cursor?: ShopCustomerSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ShopCustomerSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ShopCustomerSessions.
+     */
+    skip?: number
+    distinct?: ShopCustomerSessionScalarFieldEnum | ShopCustomerSessionScalarFieldEnum[]
+  }
+
+  /**
+   * ShopCustomerSession create
+   */
+  export type ShopCustomerSessionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopCustomerSession
+     */
+    select?: ShopCustomerSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopCustomerSessionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ShopCustomerSession.
+     */
+    data: XOR<ShopCustomerSessionCreateInput, ShopCustomerSessionUncheckedCreateInput>
+  }
+
+  /**
+   * ShopCustomerSession createMany
+   */
+  export type ShopCustomerSessionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ShopCustomerSessions.
+     */
+    data: ShopCustomerSessionCreateManyInput | ShopCustomerSessionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ShopCustomerSession createManyAndReturn
+   */
+  export type ShopCustomerSessionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopCustomerSession
+     */
+    select?: ShopCustomerSessionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ShopCustomerSessions.
+     */
+    data: ShopCustomerSessionCreateManyInput | ShopCustomerSessionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopCustomerSessionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ShopCustomerSession update
+   */
+  export type ShopCustomerSessionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopCustomerSession
+     */
+    select?: ShopCustomerSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopCustomerSessionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ShopCustomerSession.
+     */
+    data: XOR<ShopCustomerSessionUpdateInput, ShopCustomerSessionUncheckedUpdateInput>
+    /**
+     * Choose, which ShopCustomerSession to update.
+     */
+    where: ShopCustomerSessionWhereUniqueInput
+  }
+
+  /**
+   * ShopCustomerSession updateMany
+   */
+  export type ShopCustomerSessionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ShopCustomerSessions.
+     */
+    data: XOR<ShopCustomerSessionUpdateManyMutationInput, ShopCustomerSessionUncheckedUpdateManyInput>
+    /**
+     * Filter which ShopCustomerSessions to update
+     */
+    where?: ShopCustomerSessionWhereInput
+  }
+
+  /**
+   * ShopCustomerSession upsert
+   */
+  export type ShopCustomerSessionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopCustomerSession
+     */
+    select?: ShopCustomerSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopCustomerSessionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ShopCustomerSession to update in case it exists.
+     */
+    where: ShopCustomerSessionWhereUniqueInput
+    /**
+     * In case the ShopCustomerSession found by the `where` argument doesn't exist, create a new ShopCustomerSession with this data.
+     */
+    create: XOR<ShopCustomerSessionCreateInput, ShopCustomerSessionUncheckedCreateInput>
+    /**
+     * In case the ShopCustomerSession was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ShopCustomerSessionUpdateInput, ShopCustomerSessionUncheckedUpdateInput>
+  }
+
+  /**
+   * ShopCustomerSession delete
+   */
+  export type ShopCustomerSessionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopCustomerSession
+     */
+    select?: ShopCustomerSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopCustomerSessionInclude<ExtArgs> | null
+    /**
+     * Filter which ShopCustomerSession to delete.
+     */
+    where: ShopCustomerSessionWhereUniqueInput
+  }
+
+  /**
+   * ShopCustomerSession deleteMany
+   */
+  export type ShopCustomerSessionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ShopCustomerSessions to delete
+     */
+    where?: ShopCustomerSessionWhereInput
+  }
+
+  /**
+   * ShopCustomerSession without action
+   */
+  export type ShopCustomerSessionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopCustomerSession
+     */
+    select?: ShopCustomerSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopCustomerSessionInclude<ExtArgs> | null
   }
 
 
@@ -60482,6 +61815,2227 @@ export namespace Prisma {
 
 
   /**
+   * Model AiCreditReservation
+   */
+
+  export type AggregateAiCreditReservation = {
+    _count: AiCreditReservationCountAggregateOutputType | null
+    _avg: AiCreditReservationAvgAggregateOutputType | null
+    _sum: AiCreditReservationSumAggregateOutputType | null
+    _min: AiCreditReservationMinAggregateOutputType | null
+    _max: AiCreditReservationMaxAggregateOutputType | null
+  }
+
+  export type AiCreditReservationAvgAggregateOutputType = {
+    amount: number | null
+    planCreditsReserved: number | null
+    topUpCreditsReserved: number | null
+  }
+
+  export type AiCreditReservationSumAggregateOutputType = {
+    amount: number | null
+    planCreditsReserved: number | null
+    topUpCreditsReserved: number | null
+  }
+
+  export type AiCreditReservationMinAggregateOutputType = {
+    id: string | null
+    reservationId: string | null
+    tenantId: string | null
+    userId: string | null
+    siteId: string | null
+    planCode: string | null
+    amount: number | null
+    planCreditsReserved: number | null
+    topUpCreditsReserved: number | null
+    planUsageId: string | null
+    topUpUsageId: string | null
+    status: string | null
+    releaseReason: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    capturedAt: Date | null
+    releasedAt: Date | null
+  }
+
+  export type AiCreditReservationMaxAggregateOutputType = {
+    id: string | null
+    reservationId: string | null
+    tenantId: string | null
+    userId: string | null
+    siteId: string | null
+    planCode: string | null
+    amount: number | null
+    planCreditsReserved: number | null
+    topUpCreditsReserved: number | null
+    planUsageId: string | null
+    topUpUsageId: string | null
+    status: string | null
+    releaseReason: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    capturedAt: Date | null
+    releasedAt: Date | null
+  }
+
+  export type AiCreditReservationCountAggregateOutputType = {
+    id: number
+    reservationId: number
+    tenantId: number
+    userId: number
+    siteId: number
+    planCode: number
+    amount: number
+    planCreditsReserved: number
+    topUpCreditsReserved: number
+    planUsageId: number
+    topUpUsageId: number
+    status: number
+    releaseReason: number
+    createdAt: number
+    updatedAt: number
+    capturedAt: number
+    releasedAt: number
+    _all: number
+  }
+
+
+  export type AiCreditReservationAvgAggregateInputType = {
+    amount?: true
+    planCreditsReserved?: true
+    topUpCreditsReserved?: true
+  }
+
+  export type AiCreditReservationSumAggregateInputType = {
+    amount?: true
+    planCreditsReserved?: true
+    topUpCreditsReserved?: true
+  }
+
+  export type AiCreditReservationMinAggregateInputType = {
+    id?: true
+    reservationId?: true
+    tenantId?: true
+    userId?: true
+    siteId?: true
+    planCode?: true
+    amount?: true
+    planCreditsReserved?: true
+    topUpCreditsReserved?: true
+    planUsageId?: true
+    topUpUsageId?: true
+    status?: true
+    releaseReason?: true
+    createdAt?: true
+    updatedAt?: true
+    capturedAt?: true
+    releasedAt?: true
+  }
+
+  export type AiCreditReservationMaxAggregateInputType = {
+    id?: true
+    reservationId?: true
+    tenantId?: true
+    userId?: true
+    siteId?: true
+    planCode?: true
+    amount?: true
+    planCreditsReserved?: true
+    topUpCreditsReserved?: true
+    planUsageId?: true
+    topUpUsageId?: true
+    status?: true
+    releaseReason?: true
+    createdAt?: true
+    updatedAt?: true
+    capturedAt?: true
+    releasedAt?: true
+  }
+
+  export type AiCreditReservationCountAggregateInputType = {
+    id?: true
+    reservationId?: true
+    tenantId?: true
+    userId?: true
+    siteId?: true
+    planCode?: true
+    amount?: true
+    planCreditsReserved?: true
+    topUpCreditsReserved?: true
+    planUsageId?: true
+    topUpUsageId?: true
+    status?: true
+    releaseReason?: true
+    createdAt?: true
+    updatedAt?: true
+    capturedAt?: true
+    releasedAt?: true
+    _all?: true
+  }
+
+  export type AiCreditReservationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AiCreditReservation to aggregate.
+     */
+    where?: AiCreditReservationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditReservations to fetch.
+     */
+    orderBy?: AiCreditReservationOrderByWithRelationInput | AiCreditReservationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AiCreditReservationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditReservations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditReservations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AiCreditReservations
+    **/
+    _count?: true | AiCreditReservationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AiCreditReservationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AiCreditReservationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AiCreditReservationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AiCreditReservationMaxAggregateInputType
+  }
+
+  export type GetAiCreditReservationAggregateType<T extends AiCreditReservationAggregateArgs> = {
+        [P in keyof T & keyof AggregateAiCreditReservation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAiCreditReservation[P]>
+      : GetScalarType<T[P], AggregateAiCreditReservation[P]>
+  }
+
+
+
+
+  export type AiCreditReservationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiCreditReservationWhereInput
+    orderBy?: AiCreditReservationOrderByWithAggregationInput | AiCreditReservationOrderByWithAggregationInput[]
+    by: AiCreditReservationScalarFieldEnum[] | AiCreditReservationScalarFieldEnum
+    having?: AiCreditReservationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AiCreditReservationCountAggregateInputType | true
+    _avg?: AiCreditReservationAvgAggregateInputType
+    _sum?: AiCreditReservationSumAggregateInputType
+    _min?: AiCreditReservationMinAggregateInputType
+    _max?: AiCreditReservationMaxAggregateInputType
+  }
+
+  export type AiCreditReservationGroupByOutputType = {
+    id: string
+    reservationId: string
+    tenantId: string
+    userId: string | null
+    siteId: string | null
+    planCode: string | null
+    amount: number
+    planCreditsReserved: number
+    topUpCreditsReserved: number
+    planUsageId: string | null
+    topUpUsageId: string | null
+    status: string
+    releaseReason: string | null
+    createdAt: Date
+    updatedAt: Date
+    capturedAt: Date | null
+    releasedAt: Date | null
+    _count: AiCreditReservationCountAggregateOutputType | null
+    _avg: AiCreditReservationAvgAggregateOutputType | null
+    _sum: AiCreditReservationSumAggregateOutputType | null
+    _min: AiCreditReservationMinAggregateOutputType | null
+    _max: AiCreditReservationMaxAggregateOutputType | null
+  }
+
+  type GetAiCreditReservationGroupByPayload<T extends AiCreditReservationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AiCreditReservationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AiCreditReservationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AiCreditReservationGroupByOutputType[P]>
+            : GetScalarType<T[P], AiCreditReservationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AiCreditReservationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reservationId?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    siteId?: boolean
+    planCode?: boolean
+    amount?: boolean
+    planCreditsReserved?: boolean
+    topUpCreditsReserved?: boolean
+    planUsageId?: boolean
+    topUpUsageId?: boolean
+    status?: boolean
+    releaseReason?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    capturedAt?: boolean
+    releasedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    ledgerEntries?: boolean | AiCreditReservation$ledgerEntriesArgs<ExtArgs>
+    _count?: boolean | AiCreditReservationCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCreditReservation"]>
+
+  export type AiCreditReservationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reservationId?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    siteId?: boolean
+    planCode?: boolean
+    amount?: boolean
+    planCreditsReserved?: boolean
+    topUpCreditsReserved?: boolean
+    planUsageId?: boolean
+    topUpUsageId?: boolean
+    status?: boolean
+    releaseReason?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    capturedAt?: boolean
+    releasedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCreditReservation"]>
+
+  export type AiCreditReservationSelectScalar = {
+    id?: boolean
+    reservationId?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    siteId?: boolean
+    planCode?: boolean
+    amount?: boolean
+    planCreditsReserved?: boolean
+    topUpCreditsReserved?: boolean
+    planUsageId?: boolean
+    topUpUsageId?: boolean
+    status?: boolean
+    releaseReason?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    capturedAt?: boolean
+    releasedAt?: boolean
+  }
+
+  export type AiCreditReservationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    ledgerEntries?: boolean | AiCreditReservation$ledgerEntriesArgs<ExtArgs>
+    _count?: boolean | AiCreditReservationCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type AiCreditReservationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+
+  export type $AiCreditReservationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AiCreditReservation"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      ledgerEntries: Prisma.$AiCreditLedgerEntryPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      reservationId: string
+      tenantId: string
+      userId: string | null
+      siteId: string | null
+      planCode: string | null
+      amount: number
+      planCreditsReserved: number
+      topUpCreditsReserved: number
+      planUsageId: string | null
+      topUpUsageId: string | null
+      status: string
+      releaseReason: string | null
+      createdAt: Date
+      updatedAt: Date
+      capturedAt: Date | null
+      releasedAt: Date | null
+    }, ExtArgs["result"]["aiCreditReservation"]>
+    composites: {}
+  }
+
+  type AiCreditReservationGetPayload<S extends boolean | null | undefined | AiCreditReservationDefaultArgs> = $Result.GetResult<Prisma.$AiCreditReservationPayload, S>
+
+  type AiCreditReservationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AiCreditReservationFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AiCreditReservationCountAggregateInputType | true
+    }
+
+  export interface AiCreditReservationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AiCreditReservation'], meta: { name: 'AiCreditReservation' } }
+    /**
+     * Find zero or one AiCreditReservation that matches the filter.
+     * @param {AiCreditReservationFindUniqueArgs} args - Arguments to find a AiCreditReservation
+     * @example
+     * // Get one AiCreditReservation
+     * const aiCreditReservation = await prisma.aiCreditReservation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AiCreditReservationFindUniqueArgs>(args: SelectSubset<T, AiCreditReservationFindUniqueArgs<ExtArgs>>): Prisma__AiCreditReservationClient<$Result.GetResult<Prisma.$AiCreditReservationPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AiCreditReservation that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AiCreditReservationFindUniqueOrThrowArgs} args - Arguments to find a AiCreditReservation
+     * @example
+     * // Get one AiCreditReservation
+     * const aiCreditReservation = await prisma.aiCreditReservation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AiCreditReservationFindUniqueOrThrowArgs>(args: SelectSubset<T, AiCreditReservationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AiCreditReservationClient<$Result.GetResult<Prisma.$AiCreditReservationPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AiCreditReservation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditReservationFindFirstArgs} args - Arguments to find a AiCreditReservation
+     * @example
+     * // Get one AiCreditReservation
+     * const aiCreditReservation = await prisma.aiCreditReservation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AiCreditReservationFindFirstArgs>(args?: SelectSubset<T, AiCreditReservationFindFirstArgs<ExtArgs>>): Prisma__AiCreditReservationClient<$Result.GetResult<Prisma.$AiCreditReservationPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AiCreditReservation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditReservationFindFirstOrThrowArgs} args - Arguments to find a AiCreditReservation
+     * @example
+     * // Get one AiCreditReservation
+     * const aiCreditReservation = await prisma.aiCreditReservation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AiCreditReservationFindFirstOrThrowArgs>(args?: SelectSubset<T, AiCreditReservationFindFirstOrThrowArgs<ExtArgs>>): Prisma__AiCreditReservationClient<$Result.GetResult<Prisma.$AiCreditReservationPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AiCreditReservations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditReservationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AiCreditReservations
+     * const aiCreditReservations = await prisma.aiCreditReservation.findMany()
+     * 
+     * // Get first 10 AiCreditReservations
+     * const aiCreditReservations = await prisma.aiCreditReservation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const aiCreditReservationWithIdOnly = await prisma.aiCreditReservation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AiCreditReservationFindManyArgs>(args?: SelectSubset<T, AiCreditReservationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditReservationPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AiCreditReservation.
+     * @param {AiCreditReservationCreateArgs} args - Arguments to create a AiCreditReservation.
+     * @example
+     * // Create one AiCreditReservation
+     * const AiCreditReservation = await prisma.aiCreditReservation.create({
+     *   data: {
+     *     // ... data to create a AiCreditReservation
+     *   }
+     * })
+     * 
+     */
+    create<T extends AiCreditReservationCreateArgs>(args: SelectSubset<T, AiCreditReservationCreateArgs<ExtArgs>>): Prisma__AiCreditReservationClient<$Result.GetResult<Prisma.$AiCreditReservationPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AiCreditReservations.
+     * @param {AiCreditReservationCreateManyArgs} args - Arguments to create many AiCreditReservations.
+     * @example
+     * // Create many AiCreditReservations
+     * const aiCreditReservation = await prisma.aiCreditReservation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AiCreditReservationCreateManyArgs>(args?: SelectSubset<T, AiCreditReservationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AiCreditReservations and returns the data saved in the database.
+     * @param {AiCreditReservationCreateManyAndReturnArgs} args - Arguments to create many AiCreditReservations.
+     * @example
+     * // Create many AiCreditReservations
+     * const aiCreditReservation = await prisma.aiCreditReservation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AiCreditReservations and only return the `id`
+     * const aiCreditReservationWithIdOnly = await prisma.aiCreditReservation.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AiCreditReservationCreateManyAndReturnArgs>(args?: SelectSubset<T, AiCreditReservationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditReservationPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AiCreditReservation.
+     * @param {AiCreditReservationDeleteArgs} args - Arguments to delete one AiCreditReservation.
+     * @example
+     * // Delete one AiCreditReservation
+     * const AiCreditReservation = await prisma.aiCreditReservation.delete({
+     *   where: {
+     *     // ... filter to delete one AiCreditReservation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AiCreditReservationDeleteArgs>(args: SelectSubset<T, AiCreditReservationDeleteArgs<ExtArgs>>): Prisma__AiCreditReservationClient<$Result.GetResult<Prisma.$AiCreditReservationPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AiCreditReservation.
+     * @param {AiCreditReservationUpdateArgs} args - Arguments to update one AiCreditReservation.
+     * @example
+     * // Update one AiCreditReservation
+     * const aiCreditReservation = await prisma.aiCreditReservation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AiCreditReservationUpdateArgs>(args: SelectSubset<T, AiCreditReservationUpdateArgs<ExtArgs>>): Prisma__AiCreditReservationClient<$Result.GetResult<Prisma.$AiCreditReservationPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AiCreditReservations.
+     * @param {AiCreditReservationDeleteManyArgs} args - Arguments to filter AiCreditReservations to delete.
+     * @example
+     * // Delete a few AiCreditReservations
+     * const { count } = await prisma.aiCreditReservation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AiCreditReservationDeleteManyArgs>(args?: SelectSubset<T, AiCreditReservationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AiCreditReservations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditReservationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AiCreditReservations
+     * const aiCreditReservation = await prisma.aiCreditReservation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AiCreditReservationUpdateManyArgs>(args: SelectSubset<T, AiCreditReservationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AiCreditReservation.
+     * @param {AiCreditReservationUpsertArgs} args - Arguments to update or create a AiCreditReservation.
+     * @example
+     * // Update or create a AiCreditReservation
+     * const aiCreditReservation = await prisma.aiCreditReservation.upsert({
+     *   create: {
+     *     // ... data to create a AiCreditReservation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AiCreditReservation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AiCreditReservationUpsertArgs>(args: SelectSubset<T, AiCreditReservationUpsertArgs<ExtArgs>>): Prisma__AiCreditReservationClient<$Result.GetResult<Prisma.$AiCreditReservationPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AiCreditReservations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditReservationCountArgs} args - Arguments to filter AiCreditReservations to count.
+     * @example
+     * // Count the number of AiCreditReservations
+     * const count = await prisma.aiCreditReservation.count({
+     *   where: {
+     *     // ... the filter for the AiCreditReservations we want to count
+     *   }
+     * })
+    **/
+    count<T extends AiCreditReservationCountArgs>(
+      args?: Subset<T, AiCreditReservationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AiCreditReservationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AiCreditReservation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditReservationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AiCreditReservationAggregateArgs>(args: Subset<T, AiCreditReservationAggregateArgs>): Prisma.PrismaPromise<GetAiCreditReservationAggregateType<T>>
+
+    /**
+     * Group by AiCreditReservation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditReservationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AiCreditReservationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AiCreditReservationGroupByArgs['orderBy'] }
+        : { orderBy?: AiCreditReservationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AiCreditReservationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAiCreditReservationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AiCreditReservation model
+   */
+  readonly fields: AiCreditReservationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AiCreditReservation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AiCreditReservationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    ledgerEntries<T extends AiCreditReservation$ledgerEntriesArgs<ExtArgs> = {}>(args?: Subset<T, AiCreditReservation$ledgerEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditLedgerEntryPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AiCreditReservation model
+   */ 
+  interface AiCreditReservationFieldRefs {
+    readonly id: FieldRef<"AiCreditReservation", 'String'>
+    readonly reservationId: FieldRef<"AiCreditReservation", 'String'>
+    readonly tenantId: FieldRef<"AiCreditReservation", 'String'>
+    readonly userId: FieldRef<"AiCreditReservation", 'String'>
+    readonly siteId: FieldRef<"AiCreditReservation", 'String'>
+    readonly planCode: FieldRef<"AiCreditReservation", 'String'>
+    readonly amount: FieldRef<"AiCreditReservation", 'Int'>
+    readonly planCreditsReserved: FieldRef<"AiCreditReservation", 'Int'>
+    readonly topUpCreditsReserved: FieldRef<"AiCreditReservation", 'Int'>
+    readonly planUsageId: FieldRef<"AiCreditReservation", 'String'>
+    readonly topUpUsageId: FieldRef<"AiCreditReservation", 'String'>
+    readonly status: FieldRef<"AiCreditReservation", 'String'>
+    readonly releaseReason: FieldRef<"AiCreditReservation", 'String'>
+    readonly createdAt: FieldRef<"AiCreditReservation", 'DateTime'>
+    readonly updatedAt: FieldRef<"AiCreditReservation", 'DateTime'>
+    readonly capturedAt: FieldRef<"AiCreditReservation", 'DateTime'>
+    readonly releasedAt: FieldRef<"AiCreditReservation", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AiCreditReservation findUnique
+   */
+  export type AiCreditReservationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditReservation to fetch.
+     */
+    where: AiCreditReservationWhereUniqueInput
+  }
+
+  /**
+   * AiCreditReservation findUniqueOrThrow
+   */
+  export type AiCreditReservationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditReservation to fetch.
+     */
+    where: AiCreditReservationWhereUniqueInput
+  }
+
+  /**
+   * AiCreditReservation findFirst
+   */
+  export type AiCreditReservationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditReservation to fetch.
+     */
+    where?: AiCreditReservationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditReservations to fetch.
+     */
+    orderBy?: AiCreditReservationOrderByWithRelationInput | AiCreditReservationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AiCreditReservations.
+     */
+    cursor?: AiCreditReservationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditReservations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditReservations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiCreditReservations.
+     */
+    distinct?: AiCreditReservationScalarFieldEnum | AiCreditReservationScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditReservation findFirstOrThrow
+   */
+  export type AiCreditReservationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditReservation to fetch.
+     */
+    where?: AiCreditReservationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditReservations to fetch.
+     */
+    orderBy?: AiCreditReservationOrderByWithRelationInput | AiCreditReservationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AiCreditReservations.
+     */
+    cursor?: AiCreditReservationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditReservations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditReservations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiCreditReservations.
+     */
+    distinct?: AiCreditReservationScalarFieldEnum | AiCreditReservationScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditReservation findMany
+   */
+  export type AiCreditReservationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditReservations to fetch.
+     */
+    where?: AiCreditReservationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditReservations to fetch.
+     */
+    orderBy?: AiCreditReservationOrderByWithRelationInput | AiCreditReservationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AiCreditReservations.
+     */
+    cursor?: AiCreditReservationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditReservations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditReservations.
+     */
+    skip?: number
+    distinct?: AiCreditReservationScalarFieldEnum | AiCreditReservationScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditReservation create
+   */
+  export type AiCreditReservationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AiCreditReservation.
+     */
+    data: XOR<AiCreditReservationCreateInput, AiCreditReservationUncheckedCreateInput>
+  }
+
+  /**
+   * AiCreditReservation createMany
+   */
+  export type AiCreditReservationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AiCreditReservations.
+     */
+    data: AiCreditReservationCreateManyInput | AiCreditReservationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AiCreditReservation createManyAndReturn
+   */
+  export type AiCreditReservationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AiCreditReservations.
+     */
+    data: AiCreditReservationCreateManyInput | AiCreditReservationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AiCreditReservation update
+   */
+  export type AiCreditReservationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AiCreditReservation.
+     */
+    data: XOR<AiCreditReservationUpdateInput, AiCreditReservationUncheckedUpdateInput>
+    /**
+     * Choose, which AiCreditReservation to update.
+     */
+    where: AiCreditReservationWhereUniqueInput
+  }
+
+  /**
+   * AiCreditReservation updateMany
+   */
+  export type AiCreditReservationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AiCreditReservations.
+     */
+    data: XOR<AiCreditReservationUpdateManyMutationInput, AiCreditReservationUncheckedUpdateManyInput>
+    /**
+     * Filter which AiCreditReservations to update
+     */
+    where?: AiCreditReservationWhereInput
+  }
+
+  /**
+   * AiCreditReservation upsert
+   */
+  export type AiCreditReservationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AiCreditReservation to update in case it exists.
+     */
+    where: AiCreditReservationWhereUniqueInput
+    /**
+     * In case the AiCreditReservation found by the `where` argument doesn't exist, create a new AiCreditReservation with this data.
+     */
+    create: XOR<AiCreditReservationCreateInput, AiCreditReservationUncheckedCreateInput>
+    /**
+     * In case the AiCreditReservation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AiCreditReservationUpdateInput, AiCreditReservationUncheckedUpdateInput>
+  }
+
+  /**
+   * AiCreditReservation delete
+   */
+  export type AiCreditReservationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationInclude<ExtArgs> | null
+    /**
+     * Filter which AiCreditReservation to delete.
+     */
+    where: AiCreditReservationWhereUniqueInput
+  }
+
+  /**
+   * AiCreditReservation deleteMany
+   */
+  export type AiCreditReservationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AiCreditReservations to delete
+     */
+    where?: AiCreditReservationWhereInput
+  }
+
+  /**
+   * AiCreditReservation.ledgerEntries
+   */
+  export type AiCreditReservation$ledgerEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryInclude<ExtArgs> | null
+    where?: AiCreditLedgerEntryWhereInput
+    orderBy?: AiCreditLedgerEntryOrderByWithRelationInput | AiCreditLedgerEntryOrderByWithRelationInput[]
+    cursor?: AiCreditLedgerEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AiCreditLedgerEntryScalarFieldEnum | AiCreditLedgerEntryScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditReservation without action
+   */
+  export type AiCreditReservationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AiCreditLedgerEntry
+   */
+
+  export type AggregateAiCreditLedgerEntry = {
+    _count: AiCreditLedgerEntryCountAggregateOutputType | null
+    _avg: AiCreditLedgerEntryAvgAggregateOutputType | null
+    _sum: AiCreditLedgerEntrySumAggregateOutputType | null
+    _min: AiCreditLedgerEntryMinAggregateOutputType | null
+    _max: AiCreditLedgerEntryMaxAggregateOutputType | null
+  }
+
+  export type AiCreditLedgerEntryAvgAggregateOutputType = {
+    amount: number | null
+    planCredits: number | null
+    topUpCredits: number | null
+  }
+
+  export type AiCreditLedgerEntrySumAggregateOutputType = {
+    amount: number | null
+    planCredits: number | null
+    topUpCredits: number | null
+  }
+
+  export type AiCreditLedgerEntryMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    reservationId: string | null
+    type: string | null
+    amount: number | null
+    planCredits: number | null
+    topUpCredits: number | null
+    planCode: string | null
+    reason: string | null
+    idempotencyKey: string | null
+    createdAt: Date | null
+  }
+
+  export type AiCreditLedgerEntryMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    reservationId: string | null
+    type: string | null
+    amount: number | null
+    planCredits: number | null
+    topUpCredits: number | null
+    planCode: string | null
+    reason: string | null
+    idempotencyKey: string | null
+    createdAt: Date | null
+  }
+
+  export type AiCreditLedgerEntryCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    reservationId: number
+    type: number
+    amount: number
+    planCredits: number
+    topUpCredits: number
+    planCode: number
+    reason: number
+    idempotencyKey: number
+    metadata: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AiCreditLedgerEntryAvgAggregateInputType = {
+    amount?: true
+    planCredits?: true
+    topUpCredits?: true
+  }
+
+  export type AiCreditLedgerEntrySumAggregateInputType = {
+    amount?: true
+    planCredits?: true
+    topUpCredits?: true
+  }
+
+  export type AiCreditLedgerEntryMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    reservationId?: true
+    type?: true
+    amount?: true
+    planCredits?: true
+    topUpCredits?: true
+    planCode?: true
+    reason?: true
+    idempotencyKey?: true
+    createdAt?: true
+  }
+
+  export type AiCreditLedgerEntryMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    reservationId?: true
+    type?: true
+    amount?: true
+    planCredits?: true
+    topUpCredits?: true
+    planCode?: true
+    reason?: true
+    idempotencyKey?: true
+    createdAt?: true
+  }
+
+  export type AiCreditLedgerEntryCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    reservationId?: true
+    type?: true
+    amount?: true
+    planCredits?: true
+    topUpCredits?: true
+    planCode?: true
+    reason?: true
+    idempotencyKey?: true
+    metadata?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AiCreditLedgerEntryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AiCreditLedgerEntry to aggregate.
+     */
+    where?: AiCreditLedgerEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditLedgerEntries to fetch.
+     */
+    orderBy?: AiCreditLedgerEntryOrderByWithRelationInput | AiCreditLedgerEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AiCreditLedgerEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditLedgerEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditLedgerEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AiCreditLedgerEntries
+    **/
+    _count?: true | AiCreditLedgerEntryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AiCreditLedgerEntryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AiCreditLedgerEntrySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AiCreditLedgerEntryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AiCreditLedgerEntryMaxAggregateInputType
+  }
+
+  export type GetAiCreditLedgerEntryAggregateType<T extends AiCreditLedgerEntryAggregateArgs> = {
+        [P in keyof T & keyof AggregateAiCreditLedgerEntry]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAiCreditLedgerEntry[P]>
+      : GetScalarType<T[P], AggregateAiCreditLedgerEntry[P]>
+  }
+
+
+
+
+  export type AiCreditLedgerEntryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiCreditLedgerEntryWhereInput
+    orderBy?: AiCreditLedgerEntryOrderByWithAggregationInput | AiCreditLedgerEntryOrderByWithAggregationInput[]
+    by: AiCreditLedgerEntryScalarFieldEnum[] | AiCreditLedgerEntryScalarFieldEnum
+    having?: AiCreditLedgerEntryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AiCreditLedgerEntryCountAggregateInputType | true
+    _avg?: AiCreditLedgerEntryAvgAggregateInputType
+    _sum?: AiCreditLedgerEntrySumAggregateInputType
+    _min?: AiCreditLedgerEntryMinAggregateInputType
+    _max?: AiCreditLedgerEntryMaxAggregateInputType
+  }
+
+  export type AiCreditLedgerEntryGroupByOutputType = {
+    id: string
+    tenantId: string
+    reservationId: string | null
+    type: string
+    amount: number
+    planCredits: number
+    topUpCredits: number
+    planCode: string | null
+    reason: string | null
+    idempotencyKey: string
+    metadata: JsonValue | null
+    createdAt: Date
+    _count: AiCreditLedgerEntryCountAggregateOutputType | null
+    _avg: AiCreditLedgerEntryAvgAggregateOutputType | null
+    _sum: AiCreditLedgerEntrySumAggregateOutputType | null
+    _min: AiCreditLedgerEntryMinAggregateOutputType | null
+    _max: AiCreditLedgerEntryMaxAggregateOutputType | null
+  }
+
+  type GetAiCreditLedgerEntryGroupByPayload<T extends AiCreditLedgerEntryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AiCreditLedgerEntryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AiCreditLedgerEntryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AiCreditLedgerEntryGroupByOutputType[P]>
+            : GetScalarType<T[P], AiCreditLedgerEntryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AiCreditLedgerEntrySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    reservationId?: boolean
+    type?: boolean
+    amount?: boolean
+    planCredits?: boolean
+    topUpCredits?: boolean
+    planCode?: boolean
+    reason?: boolean
+    idempotencyKey?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    reservation?: boolean | AiCreditLedgerEntry$reservationArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCreditLedgerEntry"]>
+
+  export type AiCreditLedgerEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    reservationId?: boolean
+    type?: boolean
+    amount?: boolean
+    planCredits?: boolean
+    topUpCredits?: boolean
+    planCode?: boolean
+    reason?: boolean
+    idempotencyKey?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    reservation?: boolean | AiCreditLedgerEntry$reservationArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCreditLedgerEntry"]>
+
+  export type AiCreditLedgerEntrySelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    reservationId?: boolean
+    type?: boolean
+    amount?: boolean
+    planCredits?: boolean
+    topUpCredits?: boolean
+    planCode?: boolean
+    reason?: boolean
+    idempotencyKey?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+  }
+
+  export type AiCreditLedgerEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    reservation?: boolean | AiCreditLedgerEntry$reservationArgs<ExtArgs>
+  }
+  export type AiCreditLedgerEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    reservation?: boolean | AiCreditLedgerEntry$reservationArgs<ExtArgs>
+  }
+
+  export type $AiCreditLedgerEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AiCreditLedgerEntry"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      reservation: Prisma.$AiCreditReservationPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      reservationId: string | null
+      type: string
+      amount: number
+      planCredits: number
+      topUpCredits: number
+      planCode: string | null
+      reason: string | null
+      idempotencyKey: string
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+    }, ExtArgs["result"]["aiCreditLedgerEntry"]>
+    composites: {}
+  }
+
+  type AiCreditLedgerEntryGetPayload<S extends boolean | null | undefined | AiCreditLedgerEntryDefaultArgs> = $Result.GetResult<Prisma.$AiCreditLedgerEntryPayload, S>
+
+  type AiCreditLedgerEntryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AiCreditLedgerEntryFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AiCreditLedgerEntryCountAggregateInputType | true
+    }
+
+  export interface AiCreditLedgerEntryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AiCreditLedgerEntry'], meta: { name: 'AiCreditLedgerEntry' } }
+    /**
+     * Find zero or one AiCreditLedgerEntry that matches the filter.
+     * @param {AiCreditLedgerEntryFindUniqueArgs} args - Arguments to find a AiCreditLedgerEntry
+     * @example
+     * // Get one AiCreditLedgerEntry
+     * const aiCreditLedgerEntry = await prisma.aiCreditLedgerEntry.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AiCreditLedgerEntryFindUniqueArgs>(args: SelectSubset<T, AiCreditLedgerEntryFindUniqueArgs<ExtArgs>>): Prisma__AiCreditLedgerEntryClient<$Result.GetResult<Prisma.$AiCreditLedgerEntryPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AiCreditLedgerEntry that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AiCreditLedgerEntryFindUniqueOrThrowArgs} args - Arguments to find a AiCreditLedgerEntry
+     * @example
+     * // Get one AiCreditLedgerEntry
+     * const aiCreditLedgerEntry = await prisma.aiCreditLedgerEntry.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AiCreditLedgerEntryFindUniqueOrThrowArgs>(args: SelectSubset<T, AiCreditLedgerEntryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AiCreditLedgerEntryClient<$Result.GetResult<Prisma.$AiCreditLedgerEntryPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AiCreditLedgerEntry that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditLedgerEntryFindFirstArgs} args - Arguments to find a AiCreditLedgerEntry
+     * @example
+     * // Get one AiCreditLedgerEntry
+     * const aiCreditLedgerEntry = await prisma.aiCreditLedgerEntry.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AiCreditLedgerEntryFindFirstArgs>(args?: SelectSubset<T, AiCreditLedgerEntryFindFirstArgs<ExtArgs>>): Prisma__AiCreditLedgerEntryClient<$Result.GetResult<Prisma.$AiCreditLedgerEntryPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AiCreditLedgerEntry that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditLedgerEntryFindFirstOrThrowArgs} args - Arguments to find a AiCreditLedgerEntry
+     * @example
+     * // Get one AiCreditLedgerEntry
+     * const aiCreditLedgerEntry = await prisma.aiCreditLedgerEntry.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AiCreditLedgerEntryFindFirstOrThrowArgs>(args?: SelectSubset<T, AiCreditLedgerEntryFindFirstOrThrowArgs<ExtArgs>>): Prisma__AiCreditLedgerEntryClient<$Result.GetResult<Prisma.$AiCreditLedgerEntryPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AiCreditLedgerEntries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditLedgerEntryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AiCreditLedgerEntries
+     * const aiCreditLedgerEntries = await prisma.aiCreditLedgerEntry.findMany()
+     * 
+     * // Get first 10 AiCreditLedgerEntries
+     * const aiCreditLedgerEntries = await prisma.aiCreditLedgerEntry.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const aiCreditLedgerEntryWithIdOnly = await prisma.aiCreditLedgerEntry.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AiCreditLedgerEntryFindManyArgs>(args?: SelectSubset<T, AiCreditLedgerEntryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditLedgerEntryPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AiCreditLedgerEntry.
+     * @param {AiCreditLedgerEntryCreateArgs} args - Arguments to create a AiCreditLedgerEntry.
+     * @example
+     * // Create one AiCreditLedgerEntry
+     * const AiCreditLedgerEntry = await prisma.aiCreditLedgerEntry.create({
+     *   data: {
+     *     // ... data to create a AiCreditLedgerEntry
+     *   }
+     * })
+     * 
+     */
+    create<T extends AiCreditLedgerEntryCreateArgs>(args: SelectSubset<T, AiCreditLedgerEntryCreateArgs<ExtArgs>>): Prisma__AiCreditLedgerEntryClient<$Result.GetResult<Prisma.$AiCreditLedgerEntryPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AiCreditLedgerEntries.
+     * @param {AiCreditLedgerEntryCreateManyArgs} args - Arguments to create many AiCreditLedgerEntries.
+     * @example
+     * // Create many AiCreditLedgerEntries
+     * const aiCreditLedgerEntry = await prisma.aiCreditLedgerEntry.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AiCreditLedgerEntryCreateManyArgs>(args?: SelectSubset<T, AiCreditLedgerEntryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AiCreditLedgerEntries and returns the data saved in the database.
+     * @param {AiCreditLedgerEntryCreateManyAndReturnArgs} args - Arguments to create many AiCreditLedgerEntries.
+     * @example
+     * // Create many AiCreditLedgerEntries
+     * const aiCreditLedgerEntry = await prisma.aiCreditLedgerEntry.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AiCreditLedgerEntries and only return the `id`
+     * const aiCreditLedgerEntryWithIdOnly = await prisma.aiCreditLedgerEntry.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AiCreditLedgerEntryCreateManyAndReturnArgs>(args?: SelectSubset<T, AiCreditLedgerEntryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditLedgerEntryPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AiCreditLedgerEntry.
+     * @param {AiCreditLedgerEntryDeleteArgs} args - Arguments to delete one AiCreditLedgerEntry.
+     * @example
+     * // Delete one AiCreditLedgerEntry
+     * const AiCreditLedgerEntry = await prisma.aiCreditLedgerEntry.delete({
+     *   where: {
+     *     // ... filter to delete one AiCreditLedgerEntry
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AiCreditLedgerEntryDeleteArgs>(args: SelectSubset<T, AiCreditLedgerEntryDeleteArgs<ExtArgs>>): Prisma__AiCreditLedgerEntryClient<$Result.GetResult<Prisma.$AiCreditLedgerEntryPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AiCreditLedgerEntry.
+     * @param {AiCreditLedgerEntryUpdateArgs} args - Arguments to update one AiCreditLedgerEntry.
+     * @example
+     * // Update one AiCreditLedgerEntry
+     * const aiCreditLedgerEntry = await prisma.aiCreditLedgerEntry.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AiCreditLedgerEntryUpdateArgs>(args: SelectSubset<T, AiCreditLedgerEntryUpdateArgs<ExtArgs>>): Prisma__AiCreditLedgerEntryClient<$Result.GetResult<Prisma.$AiCreditLedgerEntryPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AiCreditLedgerEntries.
+     * @param {AiCreditLedgerEntryDeleteManyArgs} args - Arguments to filter AiCreditLedgerEntries to delete.
+     * @example
+     * // Delete a few AiCreditLedgerEntries
+     * const { count } = await prisma.aiCreditLedgerEntry.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AiCreditLedgerEntryDeleteManyArgs>(args?: SelectSubset<T, AiCreditLedgerEntryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AiCreditLedgerEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditLedgerEntryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AiCreditLedgerEntries
+     * const aiCreditLedgerEntry = await prisma.aiCreditLedgerEntry.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AiCreditLedgerEntryUpdateManyArgs>(args: SelectSubset<T, AiCreditLedgerEntryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AiCreditLedgerEntry.
+     * @param {AiCreditLedgerEntryUpsertArgs} args - Arguments to update or create a AiCreditLedgerEntry.
+     * @example
+     * // Update or create a AiCreditLedgerEntry
+     * const aiCreditLedgerEntry = await prisma.aiCreditLedgerEntry.upsert({
+     *   create: {
+     *     // ... data to create a AiCreditLedgerEntry
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AiCreditLedgerEntry we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AiCreditLedgerEntryUpsertArgs>(args: SelectSubset<T, AiCreditLedgerEntryUpsertArgs<ExtArgs>>): Prisma__AiCreditLedgerEntryClient<$Result.GetResult<Prisma.$AiCreditLedgerEntryPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AiCreditLedgerEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditLedgerEntryCountArgs} args - Arguments to filter AiCreditLedgerEntries to count.
+     * @example
+     * // Count the number of AiCreditLedgerEntries
+     * const count = await prisma.aiCreditLedgerEntry.count({
+     *   where: {
+     *     // ... the filter for the AiCreditLedgerEntries we want to count
+     *   }
+     * })
+    **/
+    count<T extends AiCreditLedgerEntryCountArgs>(
+      args?: Subset<T, AiCreditLedgerEntryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AiCreditLedgerEntryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AiCreditLedgerEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditLedgerEntryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AiCreditLedgerEntryAggregateArgs>(args: Subset<T, AiCreditLedgerEntryAggregateArgs>): Prisma.PrismaPromise<GetAiCreditLedgerEntryAggregateType<T>>
+
+    /**
+     * Group by AiCreditLedgerEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditLedgerEntryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AiCreditLedgerEntryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AiCreditLedgerEntryGroupByArgs['orderBy'] }
+        : { orderBy?: AiCreditLedgerEntryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AiCreditLedgerEntryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAiCreditLedgerEntryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AiCreditLedgerEntry model
+   */
+  readonly fields: AiCreditLedgerEntryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AiCreditLedgerEntry.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AiCreditLedgerEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    reservation<T extends AiCreditLedgerEntry$reservationArgs<ExtArgs> = {}>(args?: Subset<T, AiCreditLedgerEntry$reservationArgs<ExtArgs>>): Prisma__AiCreditReservationClient<$Result.GetResult<Prisma.$AiCreditReservationPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AiCreditLedgerEntry model
+   */ 
+  interface AiCreditLedgerEntryFieldRefs {
+    readonly id: FieldRef<"AiCreditLedgerEntry", 'String'>
+    readonly tenantId: FieldRef<"AiCreditLedgerEntry", 'String'>
+    readonly reservationId: FieldRef<"AiCreditLedgerEntry", 'String'>
+    readonly type: FieldRef<"AiCreditLedgerEntry", 'String'>
+    readonly amount: FieldRef<"AiCreditLedgerEntry", 'Int'>
+    readonly planCredits: FieldRef<"AiCreditLedgerEntry", 'Int'>
+    readonly topUpCredits: FieldRef<"AiCreditLedgerEntry", 'Int'>
+    readonly planCode: FieldRef<"AiCreditLedgerEntry", 'String'>
+    readonly reason: FieldRef<"AiCreditLedgerEntry", 'String'>
+    readonly idempotencyKey: FieldRef<"AiCreditLedgerEntry", 'String'>
+    readonly metadata: FieldRef<"AiCreditLedgerEntry", 'Json'>
+    readonly createdAt: FieldRef<"AiCreditLedgerEntry", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AiCreditLedgerEntry findUnique
+   */
+  export type AiCreditLedgerEntryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditLedgerEntry to fetch.
+     */
+    where: AiCreditLedgerEntryWhereUniqueInput
+  }
+
+  /**
+   * AiCreditLedgerEntry findUniqueOrThrow
+   */
+  export type AiCreditLedgerEntryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditLedgerEntry to fetch.
+     */
+    where: AiCreditLedgerEntryWhereUniqueInput
+  }
+
+  /**
+   * AiCreditLedgerEntry findFirst
+   */
+  export type AiCreditLedgerEntryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditLedgerEntry to fetch.
+     */
+    where?: AiCreditLedgerEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditLedgerEntries to fetch.
+     */
+    orderBy?: AiCreditLedgerEntryOrderByWithRelationInput | AiCreditLedgerEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AiCreditLedgerEntries.
+     */
+    cursor?: AiCreditLedgerEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditLedgerEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditLedgerEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiCreditLedgerEntries.
+     */
+    distinct?: AiCreditLedgerEntryScalarFieldEnum | AiCreditLedgerEntryScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditLedgerEntry findFirstOrThrow
+   */
+  export type AiCreditLedgerEntryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditLedgerEntry to fetch.
+     */
+    where?: AiCreditLedgerEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditLedgerEntries to fetch.
+     */
+    orderBy?: AiCreditLedgerEntryOrderByWithRelationInput | AiCreditLedgerEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AiCreditLedgerEntries.
+     */
+    cursor?: AiCreditLedgerEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditLedgerEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditLedgerEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiCreditLedgerEntries.
+     */
+    distinct?: AiCreditLedgerEntryScalarFieldEnum | AiCreditLedgerEntryScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditLedgerEntry findMany
+   */
+  export type AiCreditLedgerEntryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditLedgerEntries to fetch.
+     */
+    where?: AiCreditLedgerEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditLedgerEntries to fetch.
+     */
+    orderBy?: AiCreditLedgerEntryOrderByWithRelationInput | AiCreditLedgerEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AiCreditLedgerEntries.
+     */
+    cursor?: AiCreditLedgerEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditLedgerEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditLedgerEntries.
+     */
+    skip?: number
+    distinct?: AiCreditLedgerEntryScalarFieldEnum | AiCreditLedgerEntryScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditLedgerEntry create
+   */
+  export type AiCreditLedgerEntryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AiCreditLedgerEntry.
+     */
+    data: XOR<AiCreditLedgerEntryCreateInput, AiCreditLedgerEntryUncheckedCreateInput>
+  }
+
+  /**
+   * AiCreditLedgerEntry createMany
+   */
+  export type AiCreditLedgerEntryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AiCreditLedgerEntries.
+     */
+    data: AiCreditLedgerEntryCreateManyInput | AiCreditLedgerEntryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AiCreditLedgerEntry createManyAndReturn
+   */
+  export type AiCreditLedgerEntryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AiCreditLedgerEntries.
+     */
+    data: AiCreditLedgerEntryCreateManyInput | AiCreditLedgerEntryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AiCreditLedgerEntry update
+   */
+  export type AiCreditLedgerEntryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AiCreditLedgerEntry.
+     */
+    data: XOR<AiCreditLedgerEntryUpdateInput, AiCreditLedgerEntryUncheckedUpdateInput>
+    /**
+     * Choose, which AiCreditLedgerEntry to update.
+     */
+    where: AiCreditLedgerEntryWhereUniqueInput
+  }
+
+  /**
+   * AiCreditLedgerEntry updateMany
+   */
+  export type AiCreditLedgerEntryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AiCreditLedgerEntries.
+     */
+    data: XOR<AiCreditLedgerEntryUpdateManyMutationInput, AiCreditLedgerEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which AiCreditLedgerEntries to update
+     */
+    where?: AiCreditLedgerEntryWhereInput
+  }
+
+  /**
+   * AiCreditLedgerEntry upsert
+   */
+  export type AiCreditLedgerEntryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AiCreditLedgerEntry to update in case it exists.
+     */
+    where: AiCreditLedgerEntryWhereUniqueInput
+    /**
+     * In case the AiCreditLedgerEntry found by the `where` argument doesn't exist, create a new AiCreditLedgerEntry with this data.
+     */
+    create: XOR<AiCreditLedgerEntryCreateInput, AiCreditLedgerEntryUncheckedCreateInput>
+    /**
+     * In case the AiCreditLedgerEntry was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AiCreditLedgerEntryUpdateInput, AiCreditLedgerEntryUncheckedUpdateInput>
+  }
+
+  /**
+   * AiCreditLedgerEntry delete
+   */
+  export type AiCreditLedgerEntryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryInclude<ExtArgs> | null
+    /**
+     * Filter which AiCreditLedgerEntry to delete.
+     */
+    where: AiCreditLedgerEntryWhereUniqueInput
+  }
+
+  /**
+   * AiCreditLedgerEntry deleteMany
+   */
+  export type AiCreditLedgerEntryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AiCreditLedgerEntries to delete
+     */
+    where?: AiCreditLedgerEntryWhereInput
+  }
+
+  /**
+   * AiCreditLedgerEntry.reservation
+   */
+  export type AiCreditLedgerEntry$reservationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditReservation
+     */
+    select?: AiCreditReservationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditReservationInclude<ExtArgs> | null
+    where?: AiCreditReservationWhereInput
+  }
+
+  /**
+   * AiCreditLedgerEntry without action
+   */
+  export type AiCreditLedgerEntryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditLedgerEntry
+     */
+    select?: AiCreditLedgerEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditLedgerEntryInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Subscription
    */
 
@@ -60513,6 +64067,10 @@ export namespace Prisma {
     razorpayOrderId: string | null
     razorpayPaymentId: string | null
     razorpaySignature: string | null
+    dodoCustomerId: string | null
+    dodoSubscriptionId: string | null
+    dodoCheckoutSessionId: string | null
+    currentPeriodEnd: Date | null
     amountPaid: number | null
     currency: string | null
     startedAt: Date | null
@@ -60534,6 +64092,10 @@ export namespace Prisma {
     razorpayOrderId: string | null
     razorpayPaymentId: string | null
     razorpaySignature: string | null
+    dodoCustomerId: string | null
+    dodoSubscriptionId: string | null
+    dodoCheckoutSessionId: string | null
+    currentPeriodEnd: Date | null
     amountPaid: number | null
     currency: string | null
     startedAt: Date | null
@@ -60555,6 +64117,10 @@ export namespace Prisma {
     razorpayOrderId: number
     razorpayPaymentId: number
     razorpaySignature: number
+    dodoCustomerId: number
+    dodoSubscriptionId: number
+    dodoCheckoutSessionId: number
+    currentPeriodEnd: number
     amountPaid: number
     currency: number
     startedAt: number
@@ -60586,6 +64152,10 @@ export namespace Prisma {
     razorpayOrderId?: true
     razorpayPaymentId?: true
     razorpaySignature?: true
+    dodoCustomerId?: true
+    dodoSubscriptionId?: true
+    dodoCheckoutSessionId?: true
+    currentPeriodEnd?: true
     amountPaid?: true
     currency?: true
     startedAt?: true
@@ -60607,6 +64177,10 @@ export namespace Prisma {
     razorpayOrderId?: true
     razorpayPaymentId?: true
     razorpaySignature?: true
+    dodoCustomerId?: true
+    dodoSubscriptionId?: true
+    dodoCheckoutSessionId?: true
+    currentPeriodEnd?: true
     amountPaid?: true
     currency?: true
     startedAt?: true
@@ -60628,6 +64202,10 @@ export namespace Prisma {
     razorpayOrderId?: true
     razorpayPaymentId?: true
     razorpaySignature?: true
+    dodoCustomerId?: true
+    dodoSubscriptionId?: true
+    dodoCheckoutSessionId?: true
+    currentPeriodEnd?: true
     amountPaid?: true
     currency?: true
     startedAt?: true
@@ -60736,6 +64314,10 @@ export namespace Prisma {
     razorpayOrderId: string | null
     razorpayPaymentId: string | null
     razorpaySignature: string | null
+    dodoCustomerId: string | null
+    dodoSubscriptionId: string | null
+    dodoCheckoutSessionId: string | null
+    currentPeriodEnd: Date | null
     amountPaid: number | null
     currency: string | null
     startedAt: Date | null
@@ -60776,6 +64358,10 @@ export namespace Prisma {
     razorpayOrderId?: boolean
     razorpayPaymentId?: boolean
     razorpaySignature?: boolean
+    dodoCustomerId?: boolean
+    dodoSubscriptionId?: boolean
+    dodoCheckoutSessionId?: boolean
+    currentPeriodEnd?: boolean
     amountPaid?: boolean
     currency?: boolean
     startedAt?: boolean
@@ -60801,6 +64387,10 @@ export namespace Prisma {
     razorpayOrderId?: boolean
     razorpayPaymentId?: boolean
     razorpaySignature?: boolean
+    dodoCustomerId?: boolean
+    dodoSubscriptionId?: boolean
+    dodoCheckoutSessionId?: boolean
+    currentPeriodEnd?: boolean
     amountPaid?: boolean
     currency?: boolean
     startedAt?: boolean
@@ -60826,6 +64416,10 @@ export namespace Prisma {
     razorpayOrderId?: boolean
     razorpayPaymentId?: boolean
     razorpaySignature?: boolean
+    dodoCustomerId?: boolean
+    dodoSubscriptionId?: boolean
+    dodoCheckoutSessionId?: boolean
+    currentPeriodEnd?: boolean
     amountPaid?: boolean
     currency?: boolean
     startedAt?: boolean
@@ -60868,6 +64462,10 @@ export namespace Prisma {
       razorpayOrderId: string | null
       razorpayPaymentId: string | null
       razorpaySignature: string | null
+      dodoCustomerId: string | null
+      dodoSubscriptionId: string | null
+      dodoCheckoutSessionId: string | null
+      currentPeriodEnd: Date | null
       amountPaid: number | null
       currency: string | null
       startedAt: Date | null
@@ -61283,6 +64881,10 @@ export namespace Prisma {
     readonly razorpayOrderId: FieldRef<"Subscription", 'String'>
     readonly razorpayPaymentId: FieldRef<"Subscription", 'String'>
     readonly razorpaySignature: FieldRef<"Subscription", 'String'>
+    readonly dodoCustomerId: FieldRef<"Subscription", 'String'>
+    readonly dodoSubscriptionId: FieldRef<"Subscription", 'String'>
+    readonly dodoCheckoutSessionId: FieldRef<"Subscription", 'String'>
+    readonly currentPeriodEnd: FieldRef<"Subscription", 'DateTime'>
     readonly amountPaid: FieldRef<"Subscription", 'Int'>
     readonly currency: FieldRef<"Subscription", 'String'>
     readonly startedAt: FieldRef<"Subscription", 'DateTime'>
@@ -78769,11 +82371,23 @@ export namespace Prisma {
     acceptsMarketing: 'acceptsMarketing',
     addresses: 'addresses',
     notes: 'notes',
+    passwordHash: 'passwordHash',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type ShopCustomerScalarFieldEnum = (typeof ShopCustomerScalarFieldEnum)[keyof typeof ShopCustomerScalarFieldEnum]
+
+
+  export const ShopCustomerSessionScalarFieldEnum: {
+    id: 'id',
+    customerId: 'customerId',
+    tokenHash: 'tokenHash',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt'
+  };
+
+  export type ShopCustomerSessionScalarFieldEnum = (typeof ShopCustomerSessionScalarFieldEnum)[keyof typeof ShopCustomerSessionScalarFieldEnum]
 
 
   export const ShopDiscountScalarFieldEnum: {
@@ -79089,6 +82703,47 @@ export namespace Prisma {
   export type PlanUsageScalarFieldEnum = (typeof PlanUsageScalarFieldEnum)[keyof typeof PlanUsageScalarFieldEnum]
 
 
+  export const AiCreditReservationScalarFieldEnum: {
+    id: 'id',
+    reservationId: 'reservationId',
+    tenantId: 'tenantId',
+    userId: 'userId',
+    siteId: 'siteId',
+    planCode: 'planCode',
+    amount: 'amount',
+    planCreditsReserved: 'planCreditsReserved',
+    topUpCreditsReserved: 'topUpCreditsReserved',
+    planUsageId: 'planUsageId',
+    topUpUsageId: 'topUpUsageId',
+    status: 'status',
+    releaseReason: 'releaseReason',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    capturedAt: 'capturedAt',
+    releasedAt: 'releasedAt'
+  };
+
+  export type AiCreditReservationScalarFieldEnum = (typeof AiCreditReservationScalarFieldEnum)[keyof typeof AiCreditReservationScalarFieldEnum]
+
+
+  export const AiCreditLedgerEntryScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    reservationId: 'reservationId',
+    type: 'type',
+    amount: 'amount',
+    planCredits: 'planCredits',
+    topUpCredits: 'topUpCredits',
+    planCode: 'planCode',
+    reason: 'reason',
+    idempotencyKey: 'idempotencyKey',
+    metadata: 'metadata',
+    createdAt: 'createdAt'
+  };
+
+  export type AiCreditLedgerEntryScalarFieldEnum = (typeof AiCreditLedgerEntryScalarFieldEnum)[keyof typeof AiCreditLedgerEntryScalarFieldEnum]
+
+
   export const SubscriptionScalarFieldEnum: {
     id: 'id',
     tenantActiveId: 'tenantActiveId',
@@ -79101,6 +82756,10 @@ export namespace Prisma {
     razorpayOrderId: 'razorpayOrderId',
     razorpayPaymentId: 'razorpayPaymentId',
     razorpaySignature: 'razorpaySignature',
+    dodoCustomerId: 'dodoCustomerId',
+    dodoSubscriptionId: 'dodoSubscriptionId',
+    dodoCheckoutSessionId: 'dodoCheckoutSessionId',
+    currentPeriodEnd: 'currentPeriodEnd',
     amountPaid: 'amountPaid',
     currency: 'currency',
     startedAt: 'startedAt',
@@ -80591,6 +84250,8 @@ export namespace Prisma {
     blueprints?: BlueprintListRelationFilter
     planUsages?: PlanUsageListRelationFilter
     AiEvent?: AiEventListRelationFilter
+    aiCreditReservations?: AiCreditReservationListRelationFilter
+    aiCreditLedger?: AiCreditLedgerEntryListRelationFilter
     aiSnapshots?: AIBlueprintSnapshotListRelationFilter
     v12Projects?: V12ProjectListRelationFilter
   }
@@ -80621,6 +84282,8 @@ export namespace Prisma {
     blueprints?: BlueprintOrderByRelationAggregateInput
     planUsages?: PlanUsageOrderByRelationAggregateInput
     AiEvent?: AiEventOrderByRelationAggregateInput
+    aiCreditReservations?: AiCreditReservationOrderByRelationAggregateInput
+    aiCreditLedger?: AiCreditLedgerEntryOrderByRelationAggregateInput
     aiSnapshots?: AIBlueprintSnapshotOrderByRelationAggregateInput
     v12Projects?: V12ProjectOrderByRelationAggregateInput
   }
@@ -80654,6 +84317,8 @@ export namespace Prisma {
     blueprints?: BlueprintListRelationFilter
     planUsages?: PlanUsageListRelationFilter
     AiEvent?: AiEventListRelationFilter
+    aiCreditReservations?: AiCreditReservationListRelationFilter
+    aiCreditLedger?: AiCreditLedgerEntryListRelationFilter
     aiSnapshots?: AIBlueprintSnapshotListRelationFilter
     v12Projects?: V12ProjectListRelationFilter
   }, "id" | "subscriptionId">
@@ -82386,10 +86051,12 @@ export namespace Prisma {
     acceptsMarketing?: BoolFilter<"ShopCustomer"> | boolean
     addresses?: JsonNullableFilter<"ShopCustomer">
     notes?: StringNullableFilter<"ShopCustomer"> | string | null
+    passwordHash?: StringNullableFilter<"ShopCustomer"> | string | null
     createdAt?: DateTimeFilter<"ShopCustomer"> | Date | string
     updatedAt?: DateTimeFilter<"ShopCustomer"> | Date | string
     shop?: XOR<ShopRelationFilter, ShopWhereInput>
     orders?: ShopOrderListRelationFilter
+    sessions?: ShopCustomerSessionListRelationFilter
   }
 
   export type ShopCustomerOrderByWithRelationInput = {
@@ -82402,10 +86069,12 @@ export namespace Prisma {
     acceptsMarketing?: SortOrder
     addresses?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    passwordHash?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     shop?: ShopOrderByWithRelationInput
     orders?: ShopOrderOrderByRelationAggregateInput
+    sessions?: ShopCustomerSessionOrderByRelationAggregateInput
   }
 
   export type ShopCustomerWhereUniqueInput = Prisma.AtLeast<{
@@ -82422,10 +86091,12 @@ export namespace Prisma {
     acceptsMarketing?: BoolFilter<"ShopCustomer"> | boolean
     addresses?: JsonNullableFilter<"ShopCustomer">
     notes?: StringNullableFilter<"ShopCustomer"> | string | null
+    passwordHash?: StringNullableFilter<"ShopCustomer"> | string | null
     createdAt?: DateTimeFilter<"ShopCustomer"> | Date | string
     updatedAt?: DateTimeFilter<"ShopCustomer"> | Date | string
     shop?: XOR<ShopRelationFilter, ShopWhereInput>
     orders?: ShopOrderListRelationFilter
+    sessions?: ShopCustomerSessionListRelationFilter
   }, "id" | "shopId_email">
 
   export type ShopCustomerOrderByWithAggregationInput = {
@@ -82438,6 +86109,7 @@ export namespace Prisma {
     acceptsMarketing?: SortOrder
     addresses?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    passwordHash?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ShopCustomerCountOrderByAggregateInput
@@ -82458,8 +86130,64 @@ export namespace Prisma {
     acceptsMarketing?: BoolWithAggregatesFilter<"ShopCustomer"> | boolean
     addresses?: JsonNullableWithAggregatesFilter<"ShopCustomer">
     notes?: StringNullableWithAggregatesFilter<"ShopCustomer"> | string | null
+    passwordHash?: StringNullableWithAggregatesFilter<"ShopCustomer"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ShopCustomer"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ShopCustomer"> | Date | string
+  }
+
+  export type ShopCustomerSessionWhereInput = {
+    AND?: ShopCustomerSessionWhereInput | ShopCustomerSessionWhereInput[]
+    OR?: ShopCustomerSessionWhereInput[]
+    NOT?: ShopCustomerSessionWhereInput | ShopCustomerSessionWhereInput[]
+    id?: StringFilter<"ShopCustomerSession"> | string
+    customerId?: StringFilter<"ShopCustomerSession"> | string
+    tokenHash?: StringFilter<"ShopCustomerSession"> | string
+    expiresAt?: DateTimeFilter<"ShopCustomerSession"> | Date | string
+    createdAt?: DateTimeFilter<"ShopCustomerSession"> | Date | string
+    customer?: XOR<ShopCustomerRelationFilter, ShopCustomerWhereInput>
+  }
+
+  export type ShopCustomerSessionOrderByWithRelationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    customer?: ShopCustomerOrderByWithRelationInput
+  }
+
+  export type ShopCustomerSessionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tokenHash?: string
+    AND?: ShopCustomerSessionWhereInput | ShopCustomerSessionWhereInput[]
+    OR?: ShopCustomerSessionWhereInput[]
+    NOT?: ShopCustomerSessionWhereInput | ShopCustomerSessionWhereInput[]
+    customerId?: StringFilter<"ShopCustomerSession"> | string
+    expiresAt?: DateTimeFilter<"ShopCustomerSession"> | Date | string
+    createdAt?: DateTimeFilter<"ShopCustomerSession"> | Date | string
+    customer?: XOR<ShopCustomerRelationFilter, ShopCustomerWhereInput>
+  }, "id" | "tokenHash">
+
+  export type ShopCustomerSessionOrderByWithAggregationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    _count?: ShopCustomerSessionCountOrderByAggregateInput
+    _max?: ShopCustomerSessionMaxOrderByAggregateInput
+    _min?: ShopCustomerSessionMinOrderByAggregateInput
+  }
+
+  export type ShopCustomerSessionScalarWhereWithAggregatesInput = {
+    AND?: ShopCustomerSessionScalarWhereWithAggregatesInput | ShopCustomerSessionScalarWhereWithAggregatesInput[]
+    OR?: ShopCustomerSessionScalarWhereWithAggregatesInput[]
+    NOT?: ShopCustomerSessionScalarWhereWithAggregatesInput | ShopCustomerSessionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ShopCustomerSession"> | string
+    customerId?: StringWithAggregatesFilter<"ShopCustomerSession"> | string
+    tokenHash?: StringWithAggregatesFilter<"ShopCustomerSession"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"ShopCustomerSession"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"ShopCustomerSession"> | Date | string
   }
 
   export type ShopDiscountWhereInput = {
@@ -84110,6 +87838,221 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PlanUsage"> | Date | string
   }
 
+  export type AiCreditReservationWhereInput = {
+    AND?: AiCreditReservationWhereInput | AiCreditReservationWhereInput[]
+    OR?: AiCreditReservationWhereInput[]
+    NOT?: AiCreditReservationWhereInput | AiCreditReservationWhereInput[]
+    id?: StringFilter<"AiCreditReservation"> | string
+    reservationId?: StringFilter<"AiCreditReservation"> | string
+    tenantId?: StringFilter<"AiCreditReservation"> | string
+    userId?: StringNullableFilter<"AiCreditReservation"> | string | null
+    siteId?: StringNullableFilter<"AiCreditReservation"> | string | null
+    planCode?: StringNullableFilter<"AiCreditReservation"> | string | null
+    amount?: IntFilter<"AiCreditReservation"> | number
+    planCreditsReserved?: IntFilter<"AiCreditReservation"> | number
+    topUpCreditsReserved?: IntFilter<"AiCreditReservation"> | number
+    planUsageId?: StringNullableFilter<"AiCreditReservation"> | string | null
+    topUpUsageId?: StringNullableFilter<"AiCreditReservation"> | string | null
+    status?: StringFilter<"AiCreditReservation"> | string
+    releaseReason?: StringNullableFilter<"AiCreditReservation"> | string | null
+    createdAt?: DateTimeFilter<"AiCreditReservation"> | Date | string
+    updatedAt?: DateTimeFilter<"AiCreditReservation"> | Date | string
+    capturedAt?: DateTimeNullableFilter<"AiCreditReservation"> | Date | string | null
+    releasedAt?: DateTimeNullableFilter<"AiCreditReservation"> | Date | string | null
+    tenant?: XOR<TenantRelationFilter, TenantWhereInput>
+    ledgerEntries?: AiCreditLedgerEntryListRelationFilter
+  }
+
+  export type AiCreditReservationOrderByWithRelationInput = {
+    id?: SortOrder
+    reservationId?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    siteId?: SortOrderInput | SortOrder
+    planCode?: SortOrderInput | SortOrder
+    amount?: SortOrder
+    planCreditsReserved?: SortOrder
+    topUpCreditsReserved?: SortOrder
+    planUsageId?: SortOrderInput | SortOrder
+    topUpUsageId?: SortOrderInput | SortOrder
+    status?: SortOrder
+    releaseReason?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    capturedAt?: SortOrderInput | SortOrder
+    releasedAt?: SortOrderInput | SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    ledgerEntries?: AiCreditLedgerEntryOrderByRelationAggregateInput
+  }
+
+  export type AiCreditReservationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    reservationId?: string
+    AND?: AiCreditReservationWhereInput | AiCreditReservationWhereInput[]
+    OR?: AiCreditReservationWhereInput[]
+    NOT?: AiCreditReservationWhereInput | AiCreditReservationWhereInput[]
+    tenantId?: StringFilter<"AiCreditReservation"> | string
+    userId?: StringNullableFilter<"AiCreditReservation"> | string | null
+    siteId?: StringNullableFilter<"AiCreditReservation"> | string | null
+    planCode?: StringNullableFilter<"AiCreditReservation"> | string | null
+    amount?: IntFilter<"AiCreditReservation"> | number
+    planCreditsReserved?: IntFilter<"AiCreditReservation"> | number
+    topUpCreditsReserved?: IntFilter<"AiCreditReservation"> | number
+    planUsageId?: StringNullableFilter<"AiCreditReservation"> | string | null
+    topUpUsageId?: StringNullableFilter<"AiCreditReservation"> | string | null
+    status?: StringFilter<"AiCreditReservation"> | string
+    releaseReason?: StringNullableFilter<"AiCreditReservation"> | string | null
+    createdAt?: DateTimeFilter<"AiCreditReservation"> | Date | string
+    updatedAt?: DateTimeFilter<"AiCreditReservation"> | Date | string
+    capturedAt?: DateTimeNullableFilter<"AiCreditReservation"> | Date | string | null
+    releasedAt?: DateTimeNullableFilter<"AiCreditReservation"> | Date | string | null
+    tenant?: XOR<TenantRelationFilter, TenantWhereInput>
+    ledgerEntries?: AiCreditLedgerEntryListRelationFilter
+  }, "id" | "reservationId">
+
+  export type AiCreditReservationOrderByWithAggregationInput = {
+    id?: SortOrder
+    reservationId?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    siteId?: SortOrderInput | SortOrder
+    planCode?: SortOrderInput | SortOrder
+    amount?: SortOrder
+    planCreditsReserved?: SortOrder
+    topUpCreditsReserved?: SortOrder
+    planUsageId?: SortOrderInput | SortOrder
+    topUpUsageId?: SortOrderInput | SortOrder
+    status?: SortOrder
+    releaseReason?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    capturedAt?: SortOrderInput | SortOrder
+    releasedAt?: SortOrderInput | SortOrder
+    _count?: AiCreditReservationCountOrderByAggregateInput
+    _avg?: AiCreditReservationAvgOrderByAggregateInput
+    _max?: AiCreditReservationMaxOrderByAggregateInput
+    _min?: AiCreditReservationMinOrderByAggregateInput
+    _sum?: AiCreditReservationSumOrderByAggregateInput
+  }
+
+  export type AiCreditReservationScalarWhereWithAggregatesInput = {
+    AND?: AiCreditReservationScalarWhereWithAggregatesInput | AiCreditReservationScalarWhereWithAggregatesInput[]
+    OR?: AiCreditReservationScalarWhereWithAggregatesInput[]
+    NOT?: AiCreditReservationScalarWhereWithAggregatesInput | AiCreditReservationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AiCreditReservation"> | string
+    reservationId?: StringWithAggregatesFilter<"AiCreditReservation"> | string
+    tenantId?: StringWithAggregatesFilter<"AiCreditReservation"> | string
+    userId?: StringNullableWithAggregatesFilter<"AiCreditReservation"> | string | null
+    siteId?: StringNullableWithAggregatesFilter<"AiCreditReservation"> | string | null
+    planCode?: StringNullableWithAggregatesFilter<"AiCreditReservation"> | string | null
+    amount?: IntWithAggregatesFilter<"AiCreditReservation"> | number
+    planCreditsReserved?: IntWithAggregatesFilter<"AiCreditReservation"> | number
+    topUpCreditsReserved?: IntWithAggregatesFilter<"AiCreditReservation"> | number
+    planUsageId?: StringNullableWithAggregatesFilter<"AiCreditReservation"> | string | null
+    topUpUsageId?: StringNullableWithAggregatesFilter<"AiCreditReservation"> | string | null
+    status?: StringWithAggregatesFilter<"AiCreditReservation"> | string
+    releaseReason?: StringNullableWithAggregatesFilter<"AiCreditReservation"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AiCreditReservation"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AiCreditReservation"> | Date | string
+    capturedAt?: DateTimeNullableWithAggregatesFilter<"AiCreditReservation"> | Date | string | null
+    releasedAt?: DateTimeNullableWithAggregatesFilter<"AiCreditReservation"> | Date | string | null
+  }
+
+  export type AiCreditLedgerEntryWhereInput = {
+    AND?: AiCreditLedgerEntryWhereInput | AiCreditLedgerEntryWhereInput[]
+    OR?: AiCreditLedgerEntryWhereInput[]
+    NOT?: AiCreditLedgerEntryWhereInput | AiCreditLedgerEntryWhereInput[]
+    id?: StringFilter<"AiCreditLedgerEntry"> | string
+    tenantId?: StringFilter<"AiCreditLedgerEntry"> | string
+    reservationId?: StringNullableFilter<"AiCreditLedgerEntry"> | string | null
+    type?: StringFilter<"AiCreditLedgerEntry"> | string
+    amount?: IntFilter<"AiCreditLedgerEntry"> | number
+    planCredits?: IntFilter<"AiCreditLedgerEntry"> | number
+    topUpCredits?: IntFilter<"AiCreditLedgerEntry"> | number
+    planCode?: StringNullableFilter<"AiCreditLedgerEntry"> | string | null
+    reason?: StringNullableFilter<"AiCreditLedgerEntry"> | string | null
+    idempotencyKey?: StringFilter<"AiCreditLedgerEntry"> | string
+    metadata?: JsonNullableFilter<"AiCreditLedgerEntry">
+    createdAt?: DateTimeFilter<"AiCreditLedgerEntry"> | Date | string
+    tenant?: XOR<TenantRelationFilter, TenantWhereInput>
+    reservation?: XOR<AiCreditReservationNullableRelationFilter, AiCreditReservationWhereInput> | null
+  }
+
+  export type AiCreditLedgerEntryOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    reservationId?: SortOrderInput | SortOrder
+    type?: SortOrder
+    amount?: SortOrder
+    planCredits?: SortOrder
+    topUpCredits?: SortOrder
+    planCode?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    idempotencyKey?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    reservation?: AiCreditReservationOrderByWithRelationInput
+  }
+
+  export type AiCreditLedgerEntryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    idempotencyKey?: string
+    AND?: AiCreditLedgerEntryWhereInput | AiCreditLedgerEntryWhereInput[]
+    OR?: AiCreditLedgerEntryWhereInput[]
+    NOT?: AiCreditLedgerEntryWhereInput | AiCreditLedgerEntryWhereInput[]
+    tenantId?: StringFilter<"AiCreditLedgerEntry"> | string
+    reservationId?: StringNullableFilter<"AiCreditLedgerEntry"> | string | null
+    type?: StringFilter<"AiCreditLedgerEntry"> | string
+    amount?: IntFilter<"AiCreditLedgerEntry"> | number
+    planCredits?: IntFilter<"AiCreditLedgerEntry"> | number
+    topUpCredits?: IntFilter<"AiCreditLedgerEntry"> | number
+    planCode?: StringNullableFilter<"AiCreditLedgerEntry"> | string | null
+    reason?: StringNullableFilter<"AiCreditLedgerEntry"> | string | null
+    metadata?: JsonNullableFilter<"AiCreditLedgerEntry">
+    createdAt?: DateTimeFilter<"AiCreditLedgerEntry"> | Date | string
+    tenant?: XOR<TenantRelationFilter, TenantWhereInput>
+    reservation?: XOR<AiCreditReservationNullableRelationFilter, AiCreditReservationWhereInput> | null
+  }, "id" | "idempotencyKey">
+
+  export type AiCreditLedgerEntryOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    reservationId?: SortOrderInput | SortOrder
+    type?: SortOrder
+    amount?: SortOrder
+    planCredits?: SortOrder
+    topUpCredits?: SortOrder
+    planCode?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    idempotencyKey?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: AiCreditLedgerEntryCountOrderByAggregateInput
+    _avg?: AiCreditLedgerEntryAvgOrderByAggregateInput
+    _max?: AiCreditLedgerEntryMaxOrderByAggregateInput
+    _min?: AiCreditLedgerEntryMinOrderByAggregateInput
+    _sum?: AiCreditLedgerEntrySumOrderByAggregateInput
+  }
+
+  export type AiCreditLedgerEntryScalarWhereWithAggregatesInput = {
+    AND?: AiCreditLedgerEntryScalarWhereWithAggregatesInput | AiCreditLedgerEntryScalarWhereWithAggregatesInput[]
+    OR?: AiCreditLedgerEntryScalarWhereWithAggregatesInput[]
+    NOT?: AiCreditLedgerEntryScalarWhereWithAggregatesInput | AiCreditLedgerEntryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AiCreditLedgerEntry"> | string
+    tenantId?: StringWithAggregatesFilter<"AiCreditLedgerEntry"> | string
+    reservationId?: StringNullableWithAggregatesFilter<"AiCreditLedgerEntry"> | string | null
+    type?: StringWithAggregatesFilter<"AiCreditLedgerEntry"> | string
+    amount?: IntWithAggregatesFilter<"AiCreditLedgerEntry"> | number
+    planCredits?: IntWithAggregatesFilter<"AiCreditLedgerEntry"> | number
+    topUpCredits?: IntWithAggregatesFilter<"AiCreditLedgerEntry"> | number
+    planCode?: StringNullableWithAggregatesFilter<"AiCreditLedgerEntry"> | string | null
+    reason?: StringNullableWithAggregatesFilter<"AiCreditLedgerEntry"> | string | null
+    idempotencyKey?: StringWithAggregatesFilter<"AiCreditLedgerEntry"> | string
+    metadata?: JsonNullableWithAggregatesFilter<"AiCreditLedgerEntry">
+    createdAt?: DateTimeWithAggregatesFilter<"AiCreditLedgerEntry"> | Date | string
+  }
+
   export type SubscriptionWhereInput = {
     AND?: SubscriptionWhereInput | SubscriptionWhereInput[]
     OR?: SubscriptionWhereInput[]
@@ -84125,6 +88068,10 @@ export namespace Prisma {
     razorpayOrderId?: StringNullableFilter<"Subscription"> | string | null
     razorpayPaymentId?: StringNullableFilter<"Subscription"> | string | null
     razorpaySignature?: StringNullableFilter<"Subscription"> | string | null
+    dodoCustomerId?: StringNullableFilter<"Subscription"> | string | null
+    dodoSubscriptionId?: StringNullableFilter<"Subscription"> | string | null
+    dodoCheckoutSessionId?: StringNullableFilter<"Subscription"> | string | null
+    currentPeriodEnd?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     amountPaid?: IntNullableFilter<"Subscription"> | number | null
     currency?: StringNullableFilter<"Subscription"> | string | null
     startedAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
@@ -84150,6 +88097,10 @@ export namespace Prisma {
     razorpayOrderId?: SortOrderInput | SortOrder
     razorpayPaymentId?: SortOrderInput | SortOrder
     razorpaySignature?: SortOrderInput | SortOrder
+    dodoCustomerId?: SortOrderInput | SortOrder
+    dodoSubscriptionId?: SortOrderInput | SortOrder
+    dodoCheckoutSessionId?: SortOrderInput | SortOrder
+    currentPeriodEnd?: SortOrderInput | SortOrder
     amountPaid?: SortOrderInput | SortOrder
     currency?: SortOrderInput | SortOrder
     startedAt?: SortOrderInput | SortOrder
@@ -84166,6 +88117,7 @@ export namespace Prisma {
   export type SubscriptionWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     tenantActiveId?: string
+    dodoSubscriptionId?: string
     AND?: SubscriptionWhereInput | SubscriptionWhereInput[]
     OR?: SubscriptionWhereInput[]
     NOT?: SubscriptionWhereInput | SubscriptionWhereInput[]
@@ -84178,6 +88130,9 @@ export namespace Prisma {
     razorpayOrderId?: StringNullableFilter<"Subscription"> | string | null
     razorpayPaymentId?: StringNullableFilter<"Subscription"> | string | null
     razorpaySignature?: StringNullableFilter<"Subscription"> | string | null
+    dodoCustomerId?: StringNullableFilter<"Subscription"> | string | null
+    dodoCheckoutSessionId?: StringNullableFilter<"Subscription"> | string | null
+    currentPeriodEnd?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     amountPaid?: IntNullableFilter<"Subscription"> | number | null
     currency?: StringNullableFilter<"Subscription"> | string | null
     startedAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
@@ -84189,7 +88144,7 @@ export namespace Prisma {
     tenantHistory?: XOR<TenantNullableRelationFilter, TenantWhereInput> | null
     user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     Plan?: XOR<PlanNullableRelationFilter, PlanWhereInput> | null
-  }, "id" | "tenantActiveId">
+  }, "id" | "tenantActiveId" | "dodoSubscriptionId">
 
   export type SubscriptionOrderByWithAggregationInput = {
     id?: SortOrder
@@ -84203,6 +88158,10 @@ export namespace Prisma {
     razorpayOrderId?: SortOrderInput | SortOrder
     razorpayPaymentId?: SortOrderInput | SortOrder
     razorpaySignature?: SortOrderInput | SortOrder
+    dodoCustomerId?: SortOrderInput | SortOrder
+    dodoSubscriptionId?: SortOrderInput | SortOrder
+    dodoCheckoutSessionId?: SortOrderInput | SortOrder
+    currentPeriodEnd?: SortOrderInput | SortOrder
     amountPaid?: SortOrderInput | SortOrder
     currency?: SortOrderInput | SortOrder
     startedAt?: SortOrderInput | SortOrder
@@ -84232,6 +88191,10 @@ export namespace Prisma {
     razorpayOrderId?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
     razorpayPaymentId?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
     razorpaySignature?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
+    dodoCustomerId?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
+    dodoSubscriptionId?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
+    dodoCheckoutSessionId?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
+    currentPeriodEnd?: DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
     amountPaid?: IntNullableWithAggregatesFilter<"Subscription"> | number | null
     currency?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
     startedAt?: DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
@@ -86354,6 +90317,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -86383,6 +90348,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -86412,6 +90379,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -86441,6 +90410,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -88330,10 +92301,12 @@ export namespace Prisma {
     acceptsMarketing?: boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     shop: ShopCreateNestedOneWithoutCustomersInput
     orders?: ShopOrderCreateNestedManyWithoutCustomerInput
+    sessions?: ShopCustomerSessionCreateNestedManyWithoutCustomerInput
   }
 
   export type ShopCustomerUncheckedCreateInput = {
@@ -88346,9 +92319,11 @@ export namespace Prisma {
     acceptsMarketing?: boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: ShopOrderUncheckedCreateNestedManyWithoutCustomerInput
+    sessions?: ShopCustomerSessionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type ShopCustomerUpdateInput = {
@@ -88360,10 +92335,12 @@ export namespace Prisma {
     acceptsMarketing?: BoolFieldUpdateOperationsInput | boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     shop?: ShopUpdateOneRequiredWithoutCustomersNestedInput
     orders?: ShopOrderUpdateManyWithoutCustomerNestedInput
+    sessions?: ShopCustomerSessionUpdateManyWithoutCustomerNestedInput
   }
 
   export type ShopCustomerUncheckedUpdateInput = {
@@ -88376,9 +92353,11 @@ export namespace Prisma {
     acceptsMarketing?: BoolFieldUpdateOperationsInput | boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: ShopOrderUncheckedUpdateManyWithoutCustomerNestedInput
+    sessions?: ShopCustomerSessionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type ShopCustomerCreateManyInput = {
@@ -88391,6 +92370,7 @@ export namespace Prisma {
     acceptsMarketing?: boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -88404,6 +92384,7 @@ export namespace Prisma {
     acceptsMarketing?: BoolFieldUpdateOperationsInput | boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -88418,8 +92399,64 @@ export namespace Prisma {
     acceptsMarketing?: BoolFieldUpdateOperationsInput | boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShopCustomerSessionCreateInput = {
+    id?: string
+    tokenHash: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    customer: ShopCustomerCreateNestedOneWithoutSessionsInput
+  }
+
+  export type ShopCustomerSessionUncheckedCreateInput = {
+    id?: string
+    customerId: string
+    tokenHash: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ShopCustomerSessionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: ShopCustomerUpdateOneRequiredWithoutSessionsNestedInput
+  }
+
+  export type ShopCustomerSessionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShopCustomerSessionCreateManyInput = {
+    id?: string
+    customerId: string
+    tokenHash: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ShopCustomerSessionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShopCustomerSessionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShopDiscountCreateInput = {
@@ -90214,6 +94251,252 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AiCreditReservationCreateInput = {
+    id?: string
+    reservationId: string
+    userId?: string | null
+    siteId?: string | null
+    planCode?: string | null
+    amount: number
+    planCreditsReserved?: number
+    topUpCreditsReserved?: number
+    planUsageId?: string | null
+    topUpUsageId?: string | null
+    status?: string
+    releaseReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    capturedAt?: Date | string | null
+    releasedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutAiCreditReservationsInput
+    ledgerEntries?: AiCreditLedgerEntryCreateNestedManyWithoutReservationInput
+  }
+
+  export type AiCreditReservationUncheckedCreateInput = {
+    id?: string
+    reservationId: string
+    tenantId: string
+    userId?: string | null
+    siteId?: string | null
+    planCode?: string | null
+    amount: number
+    planCreditsReserved?: number
+    topUpCreditsReserved?: number
+    planUsageId?: string | null
+    topUpUsageId?: string | null
+    status?: string
+    releaseReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    capturedAt?: Date | string | null
+    releasedAt?: Date | string | null
+    ledgerEntries?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutReservationInput
+  }
+
+  export type AiCreditReservationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reservationId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    siteId?: NullableStringFieldUpdateOperationsInput | string | null
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
+    planCreditsReserved?: IntFieldUpdateOperationsInput | number
+    topUpCreditsReserved?: IntFieldUpdateOperationsInput | number
+    planUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    topUpUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    releaseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutAiCreditReservationsNestedInput
+    ledgerEntries?: AiCreditLedgerEntryUpdateManyWithoutReservationNestedInput
+  }
+
+  export type AiCreditReservationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reservationId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    siteId?: NullableStringFieldUpdateOperationsInput | string | null
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
+    planCreditsReserved?: IntFieldUpdateOperationsInput | number
+    topUpCreditsReserved?: IntFieldUpdateOperationsInput | number
+    planUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    topUpUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    releaseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ledgerEntries?: AiCreditLedgerEntryUncheckedUpdateManyWithoutReservationNestedInput
+  }
+
+  export type AiCreditReservationCreateManyInput = {
+    id?: string
+    reservationId: string
+    tenantId: string
+    userId?: string | null
+    siteId?: string | null
+    planCode?: string | null
+    amount: number
+    planCreditsReserved?: number
+    topUpCreditsReserved?: number
+    planUsageId?: string | null
+    topUpUsageId?: string | null
+    status?: string
+    releaseReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    capturedAt?: Date | string | null
+    releasedAt?: Date | string | null
+  }
+
+  export type AiCreditReservationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reservationId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    siteId?: NullableStringFieldUpdateOperationsInput | string | null
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
+    planCreditsReserved?: IntFieldUpdateOperationsInput | number
+    topUpCreditsReserved?: IntFieldUpdateOperationsInput | number
+    planUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    topUpUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    releaseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type AiCreditReservationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reservationId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    siteId?: NullableStringFieldUpdateOperationsInput | string | null
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
+    planCreditsReserved?: IntFieldUpdateOperationsInput | number
+    topUpCreditsReserved?: IntFieldUpdateOperationsInput | number
+    planUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    topUpUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    releaseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type AiCreditLedgerEntryCreateInput = {
+    id?: string
+    type: string
+    amount: number
+    planCredits?: number
+    topUpCredits?: number
+    planCode?: string | null
+    reason?: string | null
+    idempotencyKey: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutAiCreditLedgerInput
+    reservation?: AiCreditReservationCreateNestedOneWithoutLedgerEntriesInput
+  }
+
+  export type AiCreditLedgerEntryUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    reservationId?: string | null
+    type: string
+    amount: number
+    planCredits?: number
+    topUpCredits?: number
+    planCode?: string | null
+    reason?: string | null
+    idempotencyKey: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AiCreditLedgerEntryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    planCredits?: IntFieldUpdateOperationsInput | number
+    topUpCredits?: IntFieldUpdateOperationsInput | number
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutAiCreditLedgerNestedInput
+    reservation?: AiCreditReservationUpdateOneWithoutLedgerEntriesNestedInput
+  }
+
+  export type AiCreditLedgerEntryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    reservationId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    planCredits?: IntFieldUpdateOperationsInput | number
+    topUpCredits?: IntFieldUpdateOperationsInput | number
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditLedgerEntryCreateManyInput = {
+    id?: string
+    tenantId: string
+    reservationId?: string | null
+    type: string
+    amount: number
+    planCredits?: number
+    topUpCredits?: number
+    planCode?: string | null
+    reason?: string | null
+    idempotencyKey: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AiCreditLedgerEntryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    planCredits?: IntFieldUpdateOperationsInput | number
+    topUpCredits?: IntFieldUpdateOperationsInput | number
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditLedgerEntryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    reservationId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    planCredits?: IntFieldUpdateOperationsInput | number
+    topUpCredits?: IntFieldUpdateOperationsInput | number
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SubscriptionCreateInput = {
     id?: string
     planCode?: string | null
@@ -90223,6 +94506,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -90247,6 +94534,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -90265,6 +94556,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -90289,6 +94584,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -90310,6 +94609,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -90328,6 +94631,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -90348,6 +94655,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -92477,6 +96788,18 @@ export namespace Prisma {
     none?: PlanUsageWhereInput
   }
 
+  export type AiCreditReservationListRelationFilter = {
+    every?: AiCreditReservationWhereInput
+    some?: AiCreditReservationWhereInput
+    none?: AiCreditReservationWhereInput
+  }
+
+  export type AiCreditLedgerEntryListRelationFilter = {
+    every?: AiCreditLedgerEntryWhereInput
+    some?: AiCreditLedgerEntryWhereInput
+    none?: AiCreditLedgerEntryWhereInput
+  }
+
   export type AIBlueprintSnapshotListRelationFilter = {
     every?: AIBlueprintSnapshotWhereInput
     some?: AIBlueprintSnapshotWhereInput
@@ -92534,6 +96857,14 @@ export namespace Prisma {
   }
 
   export type PlanUsageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AiCreditReservationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AiCreditLedgerEntryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -94029,6 +98360,16 @@ export namespace Prisma {
     position?: SortOrder
   }
 
+  export type ShopCustomerSessionListRelationFilter = {
+    every?: ShopCustomerSessionWhereInput
+    some?: ShopCustomerSessionWhereInput
+    none?: ShopCustomerSessionWhereInput
+  }
+
+  export type ShopCustomerSessionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type ShopCustomerShopIdEmailCompoundUniqueInput = {
     shopId: string
     email: string
@@ -94044,6 +98385,7 @@ export namespace Prisma {
     acceptsMarketing?: SortOrder
     addresses?: SortOrder
     notes?: SortOrder
+    passwordHash?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -94057,6 +98399,7 @@ export namespace Prisma {
     phone?: SortOrder
     acceptsMarketing?: SortOrder
     notes?: SortOrder
+    passwordHash?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -94070,8 +98413,38 @@ export namespace Prisma {
     phone?: SortOrder
     acceptsMarketing?: SortOrder
     notes?: SortOrder
+    passwordHash?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type ShopCustomerRelationFilter = {
+    is?: ShopCustomerWhereInput
+    isNot?: ShopCustomerWhereInput
+  }
+
+  export type ShopCustomerSessionCountOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ShopCustomerSessionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ShopCustomerSessionMinOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type EnumShopDiscountTypeFilter<$PrismaModel = never> = {
@@ -95197,6 +99570,138 @@ export namespace Prisma {
     used?: SortOrder
   }
 
+  export type AiCreditReservationCountOrderByAggregateInput = {
+    id?: SortOrder
+    reservationId?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    siteId?: SortOrder
+    planCode?: SortOrder
+    amount?: SortOrder
+    planCreditsReserved?: SortOrder
+    topUpCreditsReserved?: SortOrder
+    planUsageId?: SortOrder
+    topUpUsageId?: SortOrder
+    status?: SortOrder
+    releaseReason?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    capturedAt?: SortOrder
+    releasedAt?: SortOrder
+  }
+
+  export type AiCreditReservationAvgOrderByAggregateInput = {
+    amount?: SortOrder
+    planCreditsReserved?: SortOrder
+    topUpCreditsReserved?: SortOrder
+  }
+
+  export type AiCreditReservationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    reservationId?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    siteId?: SortOrder
+    planCode?: SortOrder
+    amount?: SortOrder
+    planCreditsReserved?: SortOrder
+    topUpCreditsReserved?: SortOrder
+    planUsageId?: SortOrder
+    topUpUsageId?: SortOrder
+    status?: SortOrder
+    releaseReason?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    capturedAt?: SortOrder
+    releasedAt?: SortOrder
+  }
+
+  export type AiCreditReservationMinOrderByAggregateInput = {
+    id?: SortOrder
+    reservationId?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    siteId?: SortOrder
+    planCode?: SortOrder
+    amount?: SortOrder
+    planCreditsReserved?: SortOrder
+    topUpCreditsReserved?: SortOrder
+    planUsageId?: SortOrder
+    topUpUsageId?: SortOrder
+    status?: SortOrder
+    releaseReason?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    capturedAt?: SortOrder
+    releasedAt?: SortOrder
+  }
+
+  export type AiCreditReservationSumOrderByAggregateInput = {
+    amount?: SortOrder
+    planCreditsReserved?: SortOrder
+    topUpCreditsReserved?: SortOrder
+  }
+
+  export type AiCreditReservationNullableRelationFilter = {
+    is?: AiCreditReservationWhereInput | null
+    isNot?: AiCreditReservationWhereInput | null
+  }
+
+  export type AiCreditLedgerEntryCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    reservationId?: SortOrder
+    type?: SortOrder
+    amount?: SortOrder
+    planCredits?: SortOrder
+    topUpCredits?: SortOrder
+    planCode?: SortOrder
+    reason?: SortOrder
+    idempotencyKey?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AiCreditLedgerEntryAvgOrderByAggregateInput = {
+    amount?: SortOrder
+    planCredits?: SortOrder
+    topUpCredits?: SortOrder
+  }
+
+  export type AiCreditLedgerEntryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    reservationId?: SortOrder
+    type?: SortOrder
+    amount?: SortOrder
+    planCredits?: SortOrder
+    topUpCredits?: SortOrder
+    planCode?: SortOrder
+    reason?: SortOrder
+    idempotencyKey?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AiCreditLedgerEntryMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    reservationId?: SortOrder
+    type?: SortOrder
+    amount?: SortOrder
+    planCredits?: SortOrder
+    topUpCredits?: SortOrder
+    planCode?: SortOrder
+    reason?: SortOrder
+    idempotencyKey?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AiCreditLedgerEntrySumOrderByAggregateInput = {
+    amount?: SortOrder
+    planCredits?: SortOrder
+    topUpCredits?: SortOrder
+  }
+
   export type PlanNullableRelationFilter = {
     is?: PlanWhereInput | null
     isNot?: PlanWhereInput | null
@@ -95214,6 +99719,10 @@ export namespace Prisma {
     razorpayOrderId?: SortOrder
     razorpayPaymentId?: SortOrder
     razorpaySignature?: SortOrder
+    dodoCustomerId?: SortOrder
+    dodoSubscriptionId?: SortOrder
+    dodoCheckoutSessionId?: SortOrder
+    currentPeriodEnd?: SortOrder
     amountPaid?: SortOrder
     currency?: SortOrder
     startedAt?: SortOrder
@@ -95239,6 +99748,10 @@ export namespace Prisma {
     razorpayOrderId?: SortOrder
     razorpayPaymentId?: SortOrder
     razorpaySignature?: SortOrder
+    dodoCustomerId?: SortOrder
+    dodoSubscriptionId?: SortOrder
+    dodoCheckoutSessionId?: SortOrder
+    currentPeriodEnd?: SortOrder
     amountPaid?: SortOrder
     currency?: SortOrder
     startedAt?: SortOrder
@@ -95260,6 +99773,10 @@ export namespace Prisma {
     razorpayOrderId?: SortOrder
     razorpayPaymentId?: SortOrder
     razorpaySignature?: SortOrder
+    dodoCustomerId?: SortOrder
+    dodoSubscriptionId?: SortOrder
+    dodoCheckoutSessionId?: SortOrder
+    currentPeriodEnd?: SortOrder
     amountPaid?: SortOrder
     currency?: SortOrder
     startedAt?: SortOrder
@@ -96818,6 +101335,20 @@ export namespace Prisma {
     connect?: AiEventWhereUniqueInput | AiEventWhereUniqueInput[]
   }
 
+  export type AiCreditReservationCreateNestedManyWithoutTenantInput = {
+    create?: XOR<AiCreditReservationCreateWithoutTenantInput, AiCreditReservationUncheckedCreateWithoutTenantInput> | AiCreditReservationCreateWithoutTenantInput[] | AiCreditReservationUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: AiCreditReservationCreateOrConnectWithoutTenantInput | AiCreditReservationCreateOrConnectWithoutTenantInput[]
+    createMany?: AiCreditReservationCreateManyTenantInputEnvelope
+    connect?: AiCreditReservationWhereUniqueInput | AiCreditReservationWhereUniqueInput[]
+  }
+
+  export type AiCreditLedgerEntryCreateNestedManyWithoutTenantInput = {
+    create?: XOR<AiCreditLedgerEntryCreateWithoutTenantInput, AiCreditLedgerEntryUncheckedCreateWithoutTenantInput> | AiCreditLedgerEntryCreateWithoutTenantInput[] | AiCreditLedgerEntryUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: AiCreditLedgerEntryCreateOrConnectWithoutTenantInput | AiCreditLedgerEntryCreateOrConnectWithoutTenantInput[]
+    createMany?: AiCreditLedgerEntryCreateManyTenantInputEnvelope
+    connect?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+  }
+
   export type AIBlueprintSnapshotCreateNestedManyWithoutTenantInput = {
     create?: XOR<AIBlueprintSnapshotCreateWithoutTenantInput, AIBlueprintSnapshotUncheckedCreateWithoutTenantInput> | AIBlueprintSnapshotCreateWithoutTenantInput[] | AIBlueprintSnapshotUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: AIBlueprintSnapshotCreateOrConnectWithoutTenantInput | AIBlueprintSnapshotCreateOrConnectWithoutTenantInput[]
@@ -96933,6 +101464,20 @@ export namespace Prisma {
     connectOrCreate?: AiEventCreateOrConnectWithoutTenantInput | AiEventCreateOrConnectWithoutTenantInput[]
     createMany?: AiEventCreateManyTenantInputEnvelope
     connect?: AiEventWhereUniqueInput | AiEventWhereUniqueInput[]
+  }
+
+  export type AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<AiCreditReservationCreateWithoutTenantInput, AiCreditReservationUncheckedCreateWithoutTenantInput> | AiCreditReservationCreateWithoutTenantInput[] | AiCreditReservationUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: AiCreditReservationCreateOrConnectWithoutTenantInput | AiCreditReservationCreateOrConnectWithoutTenantInput[]
+    createMany?: AiCreditReservationCreateManyTenantInputEnvelope
+    connect?: AiCreditReservationWhereUniqueInput | AiCreditReservationWhereUniqueInput[]
+  }
+
+  export type AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<AiCreditLedgerEntryCreateWithoutTenantInput, AiCreditLedgerEntryUncheckedCreateWithoutTenantInput> | AiCreditLedgerEntryCreateWithoutTenantInput[] | AiCreditLedgerEntryUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: AiCreditLedgerEntryCreateOrConnectWithoutTenantInput | AiCreditLedgerEntryCreateOrConnectWithoutTenantInput[]
+    createMany?: AiCreditLedgerEntryCreateManyTenantInputEnvelope
+    connect?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
   }
 
   export type AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput = {
@@ -97162,6 +101707,34 @@ export namespace Prisma {
     update?: AiEventUpdateWithWhereUniqueWithoutTenantInput | AiEventUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: AiEventUpdateManyWithWhereWithoutTenantInput | AiEventUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: AiEventScalarWhereInput | AiEventScalarWhereInput[]
+  }
+
+  export type AiCreditReservationUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<AiCreditReservationCreateWithoutTenantInput, AiCreditReservationUncheckedCreateWithoutTenantInput> | AiCreditReservationCreateWithoutTenantInput[] | AiCreditReservationUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: AiCreditReservationCreateOrConnectWithoutTenantInput | AiCreditReservationCreateOrConnectWithoutTenantInput[]
+    upsert?: AiCreditReservationUpsertWithWhereUniqueWithoutTenantInput | AiCreditReservationUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: AiCreditReservationCreateManyTenantInputEnvelope
+    set?: AiCreditReservationWhereUniqueInput | AiCreditReservationWhereUniqueInput[]
+    disconnect?: AiCreditReservationWhereUniqueInput | AiCreditReservationWhereUniqueInput[]
+    delete?: AiCreditReservationWhereUniqueInput | AiCreditReservationWhereUniqueInput[]
+    connect?: AiCreditReservationWhereUniqueInput | AiCreditReservationWhereUniqueInput[]
+    update?: AiCreditReservationUpdateWithWhereUniqueWithoutTenantInput | AiCreditReservationUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: AiCreditReservationUpdateManyWithWhereWithoutTenantInput | AiCreditReservationUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: AiCreditReservationScalarWhereInput | AiCreditReservationScalarWhereInput[]
+  }
+
+  export type AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<AiCreditLedgerEntryCreateWithoutTenantInput, AiCreditLedgerEntryUncheckedCreateWithoutTenantInput> | AiCreditLedgerEntryCreateWithoutTenantInput[] | AiCreditLedgerEntryUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: AiCreditLedgerEntryCreateOrConnectWithoutTenantInput | AiCreditLedgerEntryCreateOrConnectWithoutTenantInput[]
+    upsert?: AiCreditLedgerEntryUpsertWithWhereUniqueWithoutTenantInput | AiCreditLedgerEntryUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: AiCreditLedgerEntryCreateManyTenantInputEnvelope
+    set?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    disconnect?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    delete?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    connect?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    update?: AiCreditLedgerEntryUpdateWithWhereUniqueWithoutTenantInput | AiCreditLedgerEntryUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: AiCreditLedgerEntryUpdateManyWithWhereWithoutTenantInput | AiCreditLedgerEntryUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: AiCreditLedgerEntryScalarWhereInput | AiCreditLedgerEntryScalarWhereInput[]
   }
 
   export type AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput = {
@@ -97395,6 +101968,34 @@ export namespace Prisma {
     update?: AiEventUpdateWithWhereUniqueWithoutTenantInput | AiEventUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: AiEventUpdateManyWithWhereWithoutTenantInput | AiEventUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: AiEventScalarWhereInput | AiEventScalarWhereInput[]
+  }
+
+  export type AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<AiCreditReservationCreateWithoutTenantInput, AiCreditReservationUncheckedCreateWithoutTenantInput> | AiCreditReservationCreateWithoutTenantInput[] | AiCreditReservationUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: AiCreditReservationCreateOrConnectWithoutTenantInput | AiCreditReservationCreateOrConnectWithoutTenantInput[]
+    upsert?: AiCreditReservationUpsertWithWhereUniqueWithoutTenantInput | AiCreditReservationUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: AiCreditReservationCreateManyTenantInputEnvelope
+    set?: AiCreditReservationWhereUniqueInput | AiCreditReservationWhereUniqueInput[]
+    disconnect?: AiCreditReservationWhereUniqueInput | AiCreditReservationWhereUniqueInput[]
+    delete?: AiCreditReservationWhereUniqueInput | AiCreditReservationWhereUniqueInput[]
+    connect?: AiCreditReservationWhereUniqueInput | AiCreditReservationWhereUniqueInput[]
+    update?: AiCreditReservationUpdateWithWhereUniqueWithoutTenantInput | AiCreditReservationUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: AiCreditReservationUpdateManyWithWhereWithoutTenantInput | AiCreditReservationUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: AiCreditReservationScalarWhereInput | AiCreditReservationScalarWhereInput[]
+  }
+
+  export type AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<AiCreditLedgerEntryCreateWithoutTenantInput, AiCreditLedgerEntryUncheckedCreateWithoutTenantInput> | AiCreditLedgerEntryCreateWithoutTenantInput[] | AiCreditLedgerEntryUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: AiCreditLedgerEntryCreateOrConnectWithoutTenantInput | AiCreditLedgerEntryCreateOrConnectWithoutTenantInput[]
+    upsert?: AiCreditLedgerEntryUpsertWithWhereUniqueWithoutTenantInput | AiCreditLedgerEntryUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: AiCreditLedgerEntryCreateManyTenantInputEnvelope
+    set?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    disconnect?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    delete?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    connect?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    update?: AiCreditLedgerEntryUpdateWithWhereUniqueWithoutTenantInput | AiCreditLedgerEntryUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: AiCreditLedgerEntryUpdateManyWithWhereWithoutTenantInput | AiCreditLedgerEntryUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: AiCreditLedgerEntryScalarWhereInput | AiCreditLedgerEntryScalarWhereInput[]
   }
 
   export type AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput = {
@@ -99455,11 +104056,25 @@ export namespace Prisma {
     connect?: ShopOrderWhereUniqueInput | ShopOrderWhereUniqueInput[]
   }
 
+  export type ShopCustomerSessionCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<ShopCustomerSessionCreateWithoutCustomerInput, ShopCustomerSessionUncheckedCreateWithoutCustomerInput> | ShopCustomerSessionCreateWithoutCustomerInput[] | ShopCustomerSessionUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: ShopCustomerSessionCreateOrConnectWithoutCustomerInput | ShopCustomerSessionCreateOrConnectWithoutCustomerInput[]
+    createMany?: ShopCustomerSessionCreateManyCustomerInputEnvelope
+    connect?: ShopCustomerSessionWhereUniqueInput | ShopCustomerSessionWhereUniqueInput[]
+  }
+
   export type ShopOrderUncheckedCreateNestedManyWithoutCustomerInput = {
     create?: XOR<ShopOrderCreateWithoutCustomerInput, ShopOrderUncheckedCreateWithoutCustomerInput> | ShopOrderCreateWithoutCustomerInput[] | ShopOrderUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: ShopOrderCreateOrConnectWithoutCustomerInput | ShopOrderCreateOrConnectWithoutCustomerInput[]
     createMany?: ShopOrderCreateManyCustomerInputEnvelope
     connect?: ShopOrderWhereUniqueInput | ShopOrderWhereUniqueInput[]
+  }
+
+  export type ShopCustomerSessionUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<ShopCustomerSessionCreateWithoutCustomerInput, ShopCustomerSessionUncheckedCreateWithoutCustomerInput> | ShopCustomerSessionCreateWithoutCustomerInput[] | ShopCustomerSessionUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: ShopCustomerSessionCreateOrConnectWithoutCustomerInput | ShopCustomerSessionCreateOrConnectWithoutCustomerInput[]
+    createMany?: ShopCustomerSessionCreateManyCustomerInputEnvelope
+    connect?: ShopCustomerSessionWhereUniqueInput | ShopCustomerSessionWhereUniqueInput[]
   }
 
   export type ShopUpdateOneRequiredWithoutCustomersNestedInput = {
@@ -99484,6 +104099,20 @@ export namespace Prisma {
     deleteMany?: ShopOrderScalarWhereInput | ShopOrderScalarWhereInput[]
   }
 
+  export type ShopCustomerSessionUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<ShopCustomerSessionCreateWithoutCustomerInput, ShopCustomerSessionUncheckedCreateWithoutCustomerInput> | ShopCustomerSessionCreateWithoutCustomerInput[] | ShopCustomerSessionUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: ShopCustomerSessionCreateOrConnectWithoutCustomerInput | ShopCustomerSessionCreateOrConnectWithoutCustomerInput[]
+    upsert?: ShopCustomerSessionUpsertWithWhereUniqueWithoutCustomerInput | ShopCustomerSessionUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: ShopCustomerSessionCreateManyCustomerInputEnvelope
+    set?: ShopCustomerSessionWhereUniqueInput | ShopCustomerSessionWhereUniqueInput[]
+    disconnect?: ShopCustomerSessionWhereUniqueInput | ShopCustomerSessionWhereUniqueInput[]
+    delete?: ShopCustomerSessionWhereUniqueInput | ShopCustomerSessionWhereUniqueInput[]
+    connect?: ShopCustomerSessionWhereUniqueInput | ShopCustomerSessionWhereUniqueInput[]
+    update?: ShopCustomerSessionUpdateWithWhereUniqueWithoutCustomerInput | ShopCustomerSessionUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: ShopCustomerSessionUpdateManyWithWhereWithoutCustomerInput | ShopCustomerSessionUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: ShopCustomerSessionScalarWhereInput | ShopCustomerSessionScalarWhereInput[]
+  }
+
   export type ShopOrderUncheckedUpdateManyWithoutCustomerNestedInput = {
     create?: XOR<ShopOrderCreateWithoutCustomerInput, ShopOrderUncheckedCreateWithoutCustomerInput> | ShopOrderCreateWithoutCustomerInput[] | ShopOrderUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: ShopOrderCreateOrConnectWithoutCustomerInput | ShopOrderCreateOrConnectWithoutCustomerInput[]
@@ -99496,6 +104125,34 @@ export namespace Prisma {
     update?: ShopOrderUpdateWithWhereUniqueWithoutCustomerInput | ShopOrderUpdateWithWhereUniqueWithoutCustomerInput[]
     updateMany?: ShopOrderUpdateManyWithWhereWithoutCustomerInput | ShopOrderUpdateManyWithWhereWithoutCustomerInput[]
     deleteMany?: ShopOrderScalarWhereInput | ShopOrderScalarWhereInput[]
+  }
+
+  export type ShopCustomerSessionUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<ShopCustomerSessionCreateWithoutCustomerInput, ShopCustomerSessionUncheckedCreateWithoutCustomerInput> | ShopCustomerSessionCreateWithoutCustomerInput[] | ShopCustomerSessionUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: ShopCustomerSessionCreateOrConnectWithoutCustomerInput | ShopCustomerSessionCreateOrConnectWithoutCustomerInput[]
+    upsert?: ShopCustomerSessionUpsertWithWhereUniqueWithoutCustomerInput | ShopCustomerSessionUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: ShopCustomerSessionCreateManyCustomerInputEnvelope
+    set?: ShopCustomerSessionWhereUniqueInput | ShopCustomerSessionWhereUniqueInput[]
+    disconnect?: ShopCustomerSessionWhereUniqueInput | ShopCustomerSessionWhereUniqueInput[]
+    delete?: ShopCustomerSessionWhereUniqueInput | ShopCustomerSessionWhereUniqueInput[]
+    connect?: ShopCustomerSessionWhereUniqueInput | ShopCustomerSessionWhereUniqueInput[]
+    update?: ShopCustomerSessionUpdateWithWhereUniqueWithoutCustomerInput | ShopCustomerSessionUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: ShopCustomerSessionUpdateManyWithWhereWithoutCustomerInput | ShopCustomerSessionUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: ShopCustomerSessionScalarWhereInput | ShopCustomerSessionScalarWhereInput[]
+  }
+
+  export type ShopCustomerCreateNestedOneWithoutSessionsInput = {
+    create?: XOR<ShopCustomerCreateWithoutSessionsInput, ShopCustomerUncheckedCreateWithoutSessionsInput>
+    connectOrCreate?: ShopCustomerCreateOrConnectWithoutSessionsInput
+    connect?: ShopCustomerWhereUniqueInput
+  }
+
+  export type ShopCustomerUpdateOneRequiredWithoutSessionsNestedInput = {
+    create?: XOR<ShopCustomerCreateWithoutSessionsInput, ShopCustomerUncheckedCreateWithoutSessionsInput>
+    connectOrCreate?: ShopCustomerCreateOrConnectWithoutSessionsInput
+    upsert?: ShopCustomerUpsertWithoutSessionsInput
+    connect?: ShopCustomerWhereUniqueInput
+    update?: XOR<XOR<ShopCustomerUpdateToOneWithWhereWithoutSessionsInput, ShopCustomerUpdateWithoutSessionsInput>, ShopCustomerUncheckedUpdateWithoutSessionsInput>
   }
 
   export type ShopCreateNestedOneWithoutDiscountsInput = {
@@ -100417,6 +105074,92 @@ export namespace Prisma {
     upsert?: TenantUpsertWithoutPlanUsagesInput
     connect?: TenantWhereUniqueInput
     update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutPlanUsagesInput, TenantUpdateWithoutPlanUsagesInput>, TenantUncheckedUpdateWithoutPlanUsagesInput>
+  }
+
+  export type TenantCreateNestedOneWithoutAiCreditReservationsInput = {
+    create?: XOR<TenantCreateWithoutAiCreditReservationsInput, TenantUncheckedCreateWithoutAiCreditReservationsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutAiCreditReservationsInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type AiCreditLedgerEntryCreateNestedManyWithoutReservationInput = {
+    create?: XOR<AiCreditLedgerEntryCreateWithoutReservationInput, AiCreditLedgerEntryUncheckedCreateWithoutReservationInput> | AiCreditLedgerEntryCreateWithoutReservationInput[] | AiCreditLedgerEntryUncheckedCreateWithoutReservationInput[]
+    connectOrCreate?: AiCreditLedgerEntryCreateOrConnectWithoutReservationInput | AiCreditLedgerEntryCreateOrConnectWithoutReservationInput[]
+    createMany?: AiCreditLedgerEntryCreateManyReservationInputEnvelope
+    connect?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+  }
+
+  export type AiCreditLedgerEntryUncheckedCreateNestedManyWithoutReservationInput = {
+    create?: XOR<AiCreditLedgerEntryCreateWithoutReservationInput, AiCreditLedgerEntryUncheckedCreateWithoutReservationInput> | AiCreditLedgerEntryCreateWithoutReservationInput[] | AiCreditLedgerEntryUncheckedCreateWithoutReservationInput[]
+    connectOrCreate?: AiCreditLedgerEntryCreateOrConnectWithoutReservationInput | AiCreditLedgerEntryCreateOrConnectWithoutReservationInput[]
+    createMany?: AiCreditLedgerEntryCreateManyReservationInputEnvelope
+    connect?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+  }
+
+  export type TenantUpdateOneRequiredWithoutAiCreditReservationsNestedInput = {
+    create?: XOR<TenantCreateWithoutAiCreditReservationsInput, TenantUncheckedCreateWithoutAiCreditReservationsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutAiCreditReservationsInput
+    upsert?: TenantUpsertWithoutAiCreditReservationsInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutAiCreditReservationsInput, TenantUpdateWithoutAiCreditReservationsInput>, TenantUncheckedUpdateWithoutAiCreditReservationsInput>
+  }
+
+  export type AiCreditLedgerEntryUpdateManyWithoutReservationNestedInput = {
+    create?: XOR<AiCreditLedgerEntryCreateWithoutReservationInput, AiCreditLedgerEntryUncheckedCreateWithoutReservationInput> | AiCreditLedgerEntryCreateWithoutReservationInput[] | AiCreditLedgerEntryUncheckedCreateWithoutReservationInput[]
+    connectOrCreate?: AiCreditLedgerEntryCreateOrConnectWithoutReservationInput | AiCreditLedgerEntryCreateOrConnectWithoutReservationInput[]
+    upsert?: AiCreditLedgerEntryUpsertWithWhereUniqueWithoutReservationInput | AiCreditLedgerEntryUpsertWithWhereUniqueWithoutReservationInput[]
+    createMany?: AiCreditLedgerEntryCreateManyReservationInputEnvelope
+    set?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    disconnect?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    delete?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    connect?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    update?: AiCreditLedgerEntryUpdateWithWhereUniqueWithoutReservationInput | AiCreditLedgerEntryUpdateWithWhereUniqueWithoutReservationInput[]
+    updateMany?: AiCreditLedgerEntryUpdateManyWithWhereWithoutReservationInput | AiCreditLedgerEntryUpdateManyWithWhereWithoutReservationInput[]
+    deleteMany?: AiCreditLedgerEntryScalarWhereInput | AiCreditLedgerEntryScalarWhereInput[]
+  }
+
+  export type AiCreditLedgerEntryUncheckedUpdateManyWithoutReservationNestedInput = {
+    create?: XOR<AiCreditLedgerEntryCreateWithoutReservationInput, AiCreditLedgerEntryUncheckedCreateWithoutReservationInput> | AiCreditLedgerEntryCreateWithoutReservationInput[] | AiCreditLedgerEntryUncheckedCreateWithoutReservationInput[]
+    connectOrCreate?: AiCreditLedgerEntryCreateOrConnectWithoutReservationInput | AiCreditLedgerEntryCreateOrConnectWithoutReservationInput[]
+    upsert?: AiCreditLedgerEntryUpsertWithWhereUniqueWithoutReservationInput | AiCreditLedgerEntryUpsertWithWhereUniqueWithoutReservationInput[]
+    createMany?: AiCreditLedgerEntryCreateManyReservationInputEnvelope
+    set?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    disconnect?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    delete?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    connect?: AiCreditLedgerEntryWhereUniqueInput | AiCreditLedgerEntryWhereUniqueInput[]
+    update?: AiCreditLedgerEntryUpdateWithWhereUniqueWithoutReservationInput | AiCreditLedgerEntryUpdateWithWhereUniqueWithoutReservationInput[]
+    updateMany?: AiCreditLedgerEntryUpdateManyWithWhereWithoutReservationInput | AiCreditLedgerEntryUpdateManyWithWhereWithoutReservationInput[]
+    deleteMany?: AiCreditLedgerEntryScalarWhereInput | AiCreditLedgerEntryScalarWhereInput[]
+  }
+
+  export type TenantCreateNestedOneWithoutAiCreditLedgerInput = {
+    create?: XOR<TenantCreateWithoutAiCreditLedgerInput, TenantUncheckedCreateWithoutAiCreditLedgerInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutAiCreditLedgerInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type AiCreditReservationCreateNestedOneWithoutLedgerEntriesInput = {
+    create?: XOR<AiCreditReservationCreateWithoutLedgerEntriesInput, AiCreditReservationUncheckedCreateWithoutLedgerEntriesInput>
+    connectOrCreate?: AiCreditReservationCreateOrConnectWithoutLedgerEntriesInput
+    connect?: AiCreditReservationWhereUniqueInput
+  }
+
+  export type TenantUpdateOneRequiredWithoutAiCreditLedgerNestedInput = {
+    create?: XOR<TenantCreateWithoutAiCreditLedgerInput, TenantUncheckedCreateWithoutAiCreditLedgerInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutAiCreditLedgerInput
+    upsert?: TenantUpsertWithoutAiCreditLedgerInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutAiCreditLedgerInput, TenantUpdateWithoutAiCreditLedgerInput>, TenantUncheckedUpdateWithoutAiCreditLedgerInput>
+  }
+
+  export type AiCreditReservationUpdateOneWithoutLedgerEntriesNestedInput = {
+    create?: XOR<AiCreditReservationCreateWithoutLedgerEntriesInput, AiCreditReservationUncheckedCreateWithoutLedgerEntriesInput>
+    connectOrCreate?: AiCreditReservationCreateOrConnectWithoutLedgerEntriesInput
+    upsert?: AiCreditReservationUpsertWithoutLedgerEntriesInput
+    disconnect?: AiCreditReservationWhereInput | boolean
+    delete?: AiCreditReservationWhereInput | boolean
+    connect?: AiCreditReservationWhereUniqueInput
+    update?: XOR<XOR<AiCreditReservationUpdateToOneWithWhereWithoutLedgerEntriesInput, AiCreditReservationUpdateWithoutLedgerEntriesInput>, AiCreditReservationUncheckedUpdateWithoutLedgerEntriesInput>
   }
 
   export type TenantCreateNestedOneWithoutSubscriptionInput = {
@@ -102099,6 +106842,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -102127,6 +106872,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -102165,6 +106912,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -102193,6 +106942,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -102211,6 +106962,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -102233,6 +106988,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -102676,6 +107435,10 @@ export namespace Prisma {
     razorpayOrderId?: StringNullableFilter<"Subscription"> | string | null
     razorpayPaymentId?: StringNullableFilter<"Subscription"> | string | null
     razorpaySignature?: StringNullableFilter<"Subscription"> | string | null
+    dodoCustomerId?: StringNullableFilter<"Subscription"> | string | null
+    dodoSubscriptionId?: StringNullableFilter<"Subscription"> | string | null
+    dodoCheckoutSessionId?: StringNullableFilter<"Subscription"> | string | null
+    currentPeriodEnd?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     amountPaid?: IntNullableFilter<"Subscription"> | number | null
     currency?: StringNullableFilter<"Subscription"> | string | null
     startedAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
@@ -103920,6 +108683,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -103942,6 +108709,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -103965,6 +108736,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -103987,6 +108762,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -104422,6 +109201,94 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AiCreditReservationCreateWithoutTenantInput = {
+    id?: string
+    reservationId: string
+    userId?: string | null
+    siteId?: string | null
+    planCode?: string | null
+    amount: number
+    planCreditsReserved?: number
+    topUpCreditsReserved?: number
+    planUsageId?: string | null
+    topUpUsageId?: string | null
+    status?: string
+    releaseReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    capturedAt?: Date | string | null
+    releasedAt?: Date | string | null
+    ledgerEntries?: AiCreditLedgerEntryCreateNestedManyWithoutReservationInput
+  }
+
+  export type AiCreditReservationUncheckedCreateWithoutTenantInput = {
+    id?: string
+    reservationId: string
+    userId?: string | null
+    siteId?: string | null
+    planCode?: string | null
+    amount: number
+    planCreditsReserved?: number
+    topUpCreditsReserved?: number
+    planUsageId?: string | null
+    topUpUsageId?: string | null
+    status?: string
+    releaseReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    capturedAt?: Date | string | null
+    releasedAt?: Date | string | null
+    ledgerEntries?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutReservationInput
+  }
+
+  export type AiCreditReservationCreateOrConnectWithoutTenantInput = {
+    where: AiCreditReservationWhereUniqueInput
+    create: XOR<AiCreditReservationCreateWithoutTenantInput, AiCreditReservationUncheckedCreateWithoutTenantInput>
+  }
+
+  export type AiCreditReservationCreateManyTenantInputEnvelope = {
+    data: AiCreditReservationCreateManyTenantInput | AiCreditReservationCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AiCreditLedgerEntryCreateWithoutTenantInput = {
+    id?: string
+    type: string
+    amount: number
+    planCredits?: number
+    topUpCredits?: number
+    planCode?: string | null
+    reason?: string | null
+    idempotencyKey: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    reservation?: AiCreditReservationCreateNestedOneWithoutLedgerEntriesInput
+  }
+
+  export type AiCreditLedgerEntryUncheckedCreateWithoutTenantInput = {
+    id?: string
+    reservationId?: string | null
+    type: string
+    amount: number
+    planCredits?: number
+    topUpCredits?: number
+    planCode?: string | null
+    reason?: string | null
+    idempotencyKey: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AiCreditLedgerEntryCreateOrConnectWithoutTenantInput = {
+    where: AiCreditLedgerEntryWhereUniqueInput
+    create: XOR<AiCreditLedgerEntryCreateWithoutTenantInput, AiCreditLedgerEntryUncheckedCreateWithoutTenantInput>
+  }
+
+  export type AiCreditLedgerEntryCreateManyTenantInputEnvelope = {
+    data: AiCreditLedgerEntryCreateManyTenantInput | AiCreditLedgerEntryCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AIBlueprintSnapshotCreateWithoutTenantInput = {
     id?: string
     blueprint: JsonNullValueInput | InputJsonValue
@@ -104638,6 +109505,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -104660,6 +109531,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -105029,6 +109904,79 @@ export namespace Prisma {
     data: XOR<AiEventUpdateManyMutationInput, AiEventUncheckedUpdateManyWithoutTenantInput>
   }
 
+  export type AiCreditReservationUpsertWithWhereUniqueWithoutTenantInput = {
+    where: AiCreditReservationWhereUniqueInput
+    update: XOR<AiCreditReservationUpdateWithoutTenantInput, AiCreditReservationUncheckedUpdateWithoutTenantInput>
+    create: XOR<AiCreditReservationCreateWithoutTenantInput, AiCreditReservationUncheckedCreateWithoutTenantInput>
+  }
+
+  export type AiCreditReservationUpdateWithWhereUniqueWithoutTenantInput = {
+    where: AiCreditReservationWhereUniqueInput
+    data: XOR<AiCreditReservationUpdateWithoutTenantInput, AiCreditReservationUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type AiCreditReservationUpdateManyWithWhereWithoutTenantInput = {
+    where: AiCreditReservationScalarWhereInput
+    data: XOR<AiCreditReservationUpdateManyMutationInput, AiCreditReservationUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type AiCreditReservationScalarWhereInput = {
+    AND?: AiCreditReservationScalarWhereInput | AiCreditReservationScalarWhereInput[]
+    OR?: AiCreditReservationScalarWhereInput[]
+    NOT?: AiCreditReservationScalarWhereInput | AiCreditReservationScalarWhereInput[]
+    id?: StringFilter<"AiCreditReservation"> | string
+    reservationId?: StringFilter<"AiCreditReservation"> | string
+    tenantId?: StringFilter<"AiCreditReservation"> | string
+    userId?: StringNullableFilter<"AiCreditReservation"> | string | null
+    siteId?: StringNullableFilter<"AiCreditReservation"> | string | null
+    planCode?: StringNullableFilter<"AiCreditReservation"> | string | null
+    amount?: IntFilter<"AiCreditReservation"> | number
+    planCreditsReserved?: IntFilter<"AiCreditReservation"> | number
+    topUpCreditsReserved?: IntFilter<"AiCreditReservation"> | number
+    planUsageId?: StringNullableFilter<"AiCreditReservation"> | string | null
+    topUpUsageId?: StringNullableFilter<"AiCreditReservation"> | string | null
+    status?: StringFilter<"AiCreditReservation"> | string
+    releaseReason?: StringNullableFilter<"AiCreditReservation"> | string | null
+    createdAt?: DateTimeFilter<"AiCreditReservation"> | Date | string
+    updatedAt?: DateTimeFilter<"AiCreditReservation"> | Date | string
+    capturedAt?: DateTimeNullableFilter<"AiCreditReservation"> | Date | string | null
+    releasedAt?: DateTimeNullableFilter<"AiCreditReservation"> | Date | string | null
+  }
+
+  export type AiCreditLedgerEntryUpsertWithWhereUniqueWithoutTenantInput = {
+    where: AiCreditLedgerEntryWhereUniqueInput
+    update: XOR<AiCreditLedgerEntryUpdateWithoutTenantInput, AiCreditLedgerEntryUncheckedUpdateWithoutTenantInput>
+    create: XOR<AiCreditLedgerEntryCreateWithoutTenantInput, AiCreditLedgerEntryUncheckedCreateWithoutTenantInput>
+  }
+
+  export type AiCreditLedgerEntryUpdateWithWhereUniqueWithoutTenantInput = {
+    where: AiCreditLedgerEntryWhereUniqueInput
+    data: XOR<AiCreditLedgerEntryUpdateWithoutTenantInput, AiCreditLedgerEntryUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type AiCreditLedgerEntryUpdateManyWithWhereWithoutTenantInput = {
+    where: AiCreditLedgerEntryScalarWhereInput
+    data: XOR<AiCreditLedgerEntryUpdateManyMutationInput, AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type AiCreditLedgerEntryScalarWhereInput = {
+    AND?: AiCreditLedgerEntryScalarWhereInput | AiCreditLedgerEntryScalarWhereInput[]
+    OR?: AiCreditLedgerEntryScalarWhereInput[]
+    NOT?: AiCreditLedgerEntryScalarWhereInput | AiCreditLedgerEntryScalarWhereInput[]
+    id?: StringFilter<"AiCreditLedgerEntry"> | string
+    tenantId?: StringFilter<"AiCreditLedgerEntry"> | string
+    reservationId?: StringNullableFilter<"AiCreditLedgerEntry"> | string | null
+    type?: StringFilter<"AiCreditLedgerEntry"> | string
+    amount?: IntFilter<"AiCreditLedgerEntry"> | number
+    planCredits?: IntFilter<"AiCreditLedgerEntry"> | number
+    topUpCredits?: IntFilter<"AiCreditLedgerEntry"> | number
+    planCode?: StringNullableFilter<"AiCreditLedgerEntry"> | string | null
+    reason?: StringNullableFilter<"AiCreditLedgerEntry"> | string | null
+    idempotencyKey?: StringFilter<"AiCreditLedgerEntry"> | string
+    metadata?: JsonNullableFilter<"AiCreditLedgerEntry">
+    createdAt?: DateTimeFilter<"AiCreditLedgerEntry"> | Date | string
+  }
+
   export type AIBlueprintSnapshotUpsertWithWhereUniqueWithoutTenantInput = {
     where: AIBlueprintSnapshotWhereUniqueInput
     update: XOR<AIBlueprintSnapshotUpdateWithoutTenantInput, AIBlueprintSnapshotUncheckedUpdateWithoutTenantInput>
@@ -105109,6 +110057,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -105137,6 +110087,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -105181,6 +110133,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -105209,6 +110163,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -105237,6 +110193,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -105265,6 +110223,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -105367,6 +110327,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -105395,6 +110357,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -105758,6 +110722,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -105786,6 +110752,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -105898,6 +110866,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -105926,6 +110896,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -106577,6 +111549,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -106605,6 +111579,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -107224,6 +112200,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -107252,6 +112230,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -107754,6 +112734,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
   }
 
@@ -107782,6 +112764,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
   }
 
@@ -107981,6 +112965,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
   }
 
@@ -108009,6 +112995,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
   }
 
@@ -108531,9 +113519,11 @@ export namespace Prisma {
     acceptsMarketing?: boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: ShopOrderCreateNestedManyWithoutCustomerInput
+    sessions?: ShopCustomerSessionCreateNestedManyWithoutCustomerInput
   }
 
   export type ShopCustomerUncheckedCreateWithoutShopInput = {
@@ -108545,9 +113535,11 @@ export namespace Prisma {
     acceptsMarketing?: boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: ShopOrderUncheckedCreateNestedManyWithoutCustomerInput
+    sessions?: ShopCustomerSessionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type ShopCustomerCreateOrConnectWithoutShopInput = {
@@ -108862,6 +113854,7 @@ export namespace Prisma {
     acceptsMarketing?: BoolFilter<"ShopCustomer"> | boolean
     addresses?: JsonNullableFilter<"ShopCustomer">
     notes?: StringNullableFilter<"ShopCustomer"> | string | null
+    passwordHash?: StringNullableFilter<"ShopCustomer"> | string | null
     createdAt?: DateTimeFilter<"ShopCustomer"> | Date | string
     updatedAt?: DateTimeFilter<"ShopCustomer"> | Date | string
   }
@@ -110166,6 +115159,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ShopCustomerSessionCreateWithoutCustomerInput = {
+    id?: string
+    tokenHash: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ShopCustomerSessionUncheckedCreateWithoutCustomerInput = {
+    id?: string
+    tokenHash: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ShopCustomerSessionCreateOrConnectWithoutCustomerInput = {
+    where: ShopCustomerSessionWhereUniqueInput
+    create: XOR<ShopCustomerSessionCreateWithoutCustomerInput, ShopCustomerSessionUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type ShopCustomerSessionCreateManyCustomerInputEnvelope = {
+    data: ShopCustomerSessionCreateManyCustomerInput | ShopCustomerSessionCreateManyCustomerInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ShopUpsertWithoutCustomersInput = {
     update: XOR<ShopUpdateWithoutCustomersInput, ShopUncheckedUpdateWithoutCustomersInput>
     create: XOR<ShopCreateWithoutCustomersInput, ShopUncheckedCreateWithoutCustomersInput>
@@ -110237,6 +115254,113 @@ export namespace Prisma {
   export type ShopOrderUpdateManyWithWhereWithoutCustomerInput = {
     where: ShopOrderScalarWhereInput
     data: XOR<ShopOrderUpdateManyMutationInput, ShopOrderUncheckedUpdateManyWithoutCustomerInput>
+  }
+
+  export type ShopCustomerSessionUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: ShopCustomerSessionWhereUniqueInput
+    update: XOR<ShopCustomerSessionUpdateWithoutCustomerInput, ShopCustomerSessionUncheckedUpdateWithoutCustomerInput>
+    create: XOR<ShopCustomerSessionCreateWithoutCustomerInput, ShopCustomerSessionUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type ShopCustomerSessionUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: ShopCustomerSessionWhereUniqueInput
+    data: XOR<ShopCustomerSessionUpdateWithoutCustomerInput, ShopCustomerSessionUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type ShopCustomerSessionUpdateManyWithWhereWithoutCustomerInput = {
+    where: ShopCustomerSessionScalarWhereInput
+    data: XOR<ShopCustomerSessionUpdateManyMutationInput, ShopCustomerSessionUncheckedUpdateManyWithoutCustomerInput>
+  }
+
+  export type ShopCustomerSessionScalarWhereInput = {
+    AND?: ShopCustomerSessionScalarWhereInput | ShopCustomerSessionScalarWhereInput[]
+    OR?: ShopCustomerSessionScalarWhereInput[]
+    NOT?: ShopCustomerSessionScalarWhereInput | ShopCustomerSessionScalarWhereInput[]
+    id?: StringFilter<"ShopCustomerSession"> | string
+    customerId?: StringFilter<"ShopCustomerSession"> | string
+    tokenHash?: StringFilter<"ShopCustomerSession"> | string
+    expiresAt?: DateTimeFilter<"ShopCustomerSession"> | Date | string
+    createdAt?: DateTimeFilter<"ShopCustomerSession"> | Date | string
+  }
+
+  export type ShopCustomerCreateWithoutSessionsInput = {
+    id?: string
+    email: string
+    firstName?: string | null
+    lastName?: string | null
+    phone?: string | null
+    acceptsMarketing?: boolean
+    addresses?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    passwordHash?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    shop: ShopCreateNestedOneWithoutCustomersInput
+    orders?: ShopOrderCreateNestedManyWithoutCustomerInput
+  }
+
+  export type ShopCustomerUncheckedCreateWithoutSessionsInput = {
+    id?: string
+    shopId: string
+    email: string
+    firstName?: string | null
+    lastName?: string | null
+    phone?: string | null
+    acceptsMarketing?: boolean
+    addresses?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    passwordHash?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: ShopOrderUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type ShopCustomerCreateOrConnectWithoutSessionsInput = {
+    where: ShopCustomerWhereUniqueInput
+    create: XOR<ShopCustomerCreateWithoutSessionsInput, ShopCustomerUncheckedCreateWithoutSessionsInput>
+  }
+
+  export type ShopCustomerUpsertWithoutSessionsInput = {
+    update: XOR<ShopCustomerUpdateWithoutSessionsInput, ShopCustomerUncheckedUpdateWithoutSessionsInput>
+    create: XOR<ShopCustomerCreateWithoutSessionsInput, ShopCustomerUncheckedCreateWithoutSessionsInput>
+    where?: ShopCustomerWhereInput
+  }
+
+  export type ShopCustomerUpdateToOneWithWhereWithoutSessionsInput = {
+    where?: ShopCustomerWhereInput
+    data: XOR<ShopCustomerUpdateWithoutSessionsInput, ShopCustomerUncheckedUpdateWithoutSessionsInput>
+  }
+
+  export type ShopCustomerUpdateWithoutSessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptsMarketing?: BoolFieldUpdateOperationsInput | boolean
+    addresses?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    shop?: ShopUpdateOneRequiredWithoutCustomersNestedInput
+    orders?: ShopOrderUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type ShopCustomerUncheckedUpdateWithoutSessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptsMarketing?: BoolFieldUpdateOperationsInput | boolean
+    addresses?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: ShopOrderUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type ShopCreateWithoutDiscountsInput = {
@@ -110487,9 +115611,11 @@ export namespace Prisma {
     acceptsMarketing?: boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     shop: ShopCreateNestedOneWithoutCustomersInput
+    sessions?: ShopCustomerSessionCreateNestedManyWithoutCustomerInput
   }
 
   export type ShopCustomerUncheckedCreateWithoutOrdersInput = {
@@ -110502,8 +115628,10 @@ export namespace Prisma {
     acceptsMarketing?: boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    sessions?: ShopCustomerSessionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type ShopCustomerCreateOrConnectWithoutOrdersInput = {
@@ -110655,9 +115783,11 @@ export namespace Prisma {
     acceptsMarketing?: BoolFieldUpdateOperationsInput | boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     shop?: ShopUpdateOneRequiredWithoutCustomersNestedInput
+    sessions?: ShopCustomerSessionUpdateManyWithoutCustomerNestedInput
   }
 
   export type ShopCustomerUncheckedUpdateWithoutOrdersInput = {
@@ -110670,8 +115800,10 @@ export namespace Prisma {
     acceptsMarketing?: BoolFieldUpdateOperationsInput | boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: ShopCustomerSessionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type ShopDiscountUpsertWithoutOrdersInput = {
@@ -112601,6 +117733,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
 
@@ -112629,6 +117763,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
 
@@ -112791,6 +117927,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
 
@@ -112819,6 +117957,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
 
@@ -112952,6 +118092,8 @@ export namespace Prisma {
     siteSubscriptions?: SiteSubscriptionCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -112980,6 +118122,8 @@ export namespace Prisma {
     siteSubscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -113174,6 +118318,8 @@ export namespace Prisma {
     siteSubscriptions?: SiteSubscriptionUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -113202,6 +118348,8 @@ export namespace Prisma {
     siteSubscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -113344,6 +118492,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -113367,6 +118519,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -113710,6 +118866,8 @@ export namespace Prisma {
     siteSubscriptions?: SiteSubscriptionCreateNestedManyWithoutTenantInput
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -113738,6 +118896,8 @@ export namespace Prisma {
     siteSubscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutTenantInput
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -113782,6 +118942,8 @@ export namespace Prisma {
     siteSubscriptions?: SiteSubscriptionUpdateManyWithoutTenantNestedInput
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -113810,8 +118972,432 @@ export namespace Prisma {
     siteSubscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantCreateWithoutAiCreditReservationsInput = {
+    id?: string
+    name: string
+    domain?: string | null
+    isActive?: boolean
+    subscriptionId?: string | null
+    aiSuspended?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner?: UserCreateNestedOneWithoutOwnedTenantsInput
+    users?: UserCreateNestedManyWithoutTenantUsersInput
+    subscription?: SubscriptionCreateNestedOneWithoutTenantActiveInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutTenantHistoryInput
+    teams?: TeamCreateNestedManyWithoutTenantInput
+    themes?: ThemeCreateNestedManyWithoutTenantInput
+    sites?: SiteCreateNestedManyWithoutTenantInput
+    events?: TenantEventCreateNestedManyWithoutTenantInput
+    complianceAudits?: ComplianceAuditCreateNestedManyWithoutTenantInput
+    siteSnapshots?: SiteSnapshotCreateNestedManyWithoutTenantInput
+    siteRenders?: SiteRenderCreateNestedManyWithoutTenantInput
+    siteDomains?: SiteDomainCreateNestedManyWithoutTenantInput
+    siteSubscriptions?: SiteSubscriptionCreateNestedManyWithoutTenantInput
+    blueprints?: BlueprintCreateNestedManyWithoutTenantInput
+    planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
+    AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
+    aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutAiCreditReservationsInput = {
+    id?: string
+    name: string
+    domain?: string | null
+    isActive?: boolean
+    ownerId?: string | null
+    subscriptionId?: string | null
+    aiSuspended?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantUsersInput
+    subscription?: SubscriptionUncheckedCreateNestedOneWithoutTenantActiveInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutTenantHistoryInput
+    teams?: TeamUncheckedCreateNestedManyWithoutTenantInput
+    themes?: ThemeUncheckedCreateNestedManyWithoutTenantInput
+    sites?: SiteUncheckedCreateNestedManyWithoutTenantInput
+    events?: TenantEventUncheckedCreateNestedManyWithoutTenantInput
+    complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutTenantInput
+    siteSnapshots?: SiteSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    siteRenders?: SiteRenderUncheckedCreateNestedManyWithoutTenantInput
+    siteDomains?: SiteDomainUncheckedCreateNestedManyWithoutTenantInput
+    siteSubscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutTenantInput
+    blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
+    planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
+    AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutAiCreditReservationsInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutAiCreditReservationsInput, TenantUncheckedCreateWithoutAiCreditReservationsInput>
+  }
+
+  export type AiCreditLedgerEntryCreateWithoutReservationInput = {
+    id?: string
+    type: string
+    amount: number
+    planCredits?: number
+    topUpCredits?: number
+    planCode?: string | null
+    reason?: string | null
+    idempotencyKey: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutAiCreditLedgerInput
+  }
+
+  export type AiCreditLedgerEntryUncheckedCreateWithoutReservationInput = {
+    id?: string
+    tenantId: string
+    type: string
+    amount: number
+    planCredits?: number
+    topUpCredits?: number
+    planCode?: string | null
+    reason?: string | null
+    idempotencyKey: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AiCreditLedgerEntryCreateOrConnectWithoutReservationInput = {
+    where: AiCreditLedgerEntryWhereUniqueInput
+    create: XOR<AiCreditLedgerEntryCreateWithoutReservationInput, AiCreditLedgerEntryUncheckedCreateWithoutReservationInput>
+  }
+
+  export type AiCreditLedgerEntryCreateManyReservationInputEnvelope = {
+    data: AiCreditLedgerEntryCreateManyReservationInput | AiCreditLedgerEntryCreateManyReservationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TenantUpsertWithoutAiCreditReservationsInput = {
+    update: XOR<TenantUpdateWithoutAiCreditReservationsInput, TenantUncheckedUpdateWithoutAiCreditReservationsInput>
+    create: XOR<TenantCreateWithoutAiCreditReservationsInput, TenantUncheckedCreateWithoutAiCreditReservationsInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutAiCreditReservationsInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutAiCreditReservationsInput, TenantUncheckedUpdateWithoutAiCreditReservationsInput>
+  }
+
+  export type TenantUpdateWithoutAiCreditReservationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSuspended?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneWithoutOwnedTenantsNestedInput
+    users?: UserUpdateManyWithoutTenantUsersNestedInput
+    subscription?: SubscriptionUpdateOneWithoutTenantActiveNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutTenantHistoryNestedInput
+    teams?: TeamUpdateManyWithoutTenantNestedInput
+    themes?: ThemeUpdateManyWithoutTenantNestedInput
+    sites?: SiteUpdateManyWithoutTenantNestedInput
+    events?: TenantEventUpdateManyWithoutTenantNestedInput
+    complianceAudits?: ComplianceAuditUpdateManyWithoutTenantNestedInput
+    siteSnapshots?: SiteSnapshotUpdateManyWithoutTenantNestedInput
+    siteRenders?: SiteRenderUpdateManyWithoutTenantNestedInput
+    siteDomains?: SiteDomainUpdateManyWithoutTenantNestedInput
+    siteSubscriptions?: SiteSubscriptionUpdateManyWithoutTenantNestedInput
+    blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
+    planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
+    AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutAiCreditReservationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSuspended?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantUsersNestedInput
+    subscription?: SubscriptionUncheckedUpdateOneWithoutTenantActiveNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutTenantHistoryNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutTenantNestedInput
+    themes?: ThemeUncheckedUpdateManyWithoutTenantNestedInput
+    sites?: SiteUncheckedUpdateManyWithoutTenantNestedInput
+    events?: TenantEventUncheckedUpdateManyWithoutTenantNestedInput
+    complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutTenantNestedInput
+    siteSnapshots?: SiteSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    siteRenders?: SiteRenderUncheckedUpdateManyWithoutTenantNestedInput
+    siteDomains?: SiteDomainUncheckedUpdateManyWithoutTenantNestedInput
+    siteSubscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
+    blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
+    planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
+    AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type AiCreditLedgerEntryUpsertWithWhereUniqueWithoutReservationInput = {
+    where: AiCreditLedgerEntryWhereUniqueInput
+    update: XOR<AiCreditLedgerEntryUpdateWithoutReservationInput, AiCreditLedgerEntryUncheckedUpdateWithoutReservationInput>
+    create: XOR<AiCreditLedgerEntryCreateWithoutReservationInput, AiCreditLedgerEntryUncheckedCreateWithoutReservationInput>
+  }
+
+  export type AiCreditLedgerEntryUpdateWithWhereUniqueWithoutReservationInput = {
+    where: AiCreditLedgerEntryWhereUniqueInput
+    data: XOR<AiCreditLedgerEntryUpdateWithoutReservationInput, AiCreditLedgerEntryUncheckedUpdateWithoutReservationInput>
+  }
+
+  export type AiCreditLedgerEntryUpdateManyWithWhereWithoutReservationInput = {
+    where: AiCreditLedgerEntryScalarWhereInput
+    data: XOR<AiCreditLedgerEntryUpdateManyMutationInput, AiCreditLedgerEntryUncheckedUpdateManyWithoutReservationInput>
+  }
+
+  export type TenantCreateWithoutAiCreditLedgerInput = {
+    id?: string
+    name: string
+    domain?: string | null
+    isActive?: boolean
+    subscriptionId?: string | null
+    aiSuspended?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner?: UserCreateNestedOneWithoutOwnedTenantsInput
+    users?: UserCreateNestedManyWithoutTenantUsersInput
+    subscription?: SubscriptionCreateNestedOneWithoutTenantActiveInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutTenantHistoryInput
+    teams?: TeamCreateNestedManyWithoutTenantInput
+    themes?: ThemeCreateNestedManyWithoutTenantInput
+    sites?: SiteCreateNestedManyWithoutTenantInput
+    events?: TenantEventCreateNestedManyWithoutTenantInput
+    complianceAudits?: ComplianceAuditCreateNestedManyWithoutTenantInput
+    siteSnapshots?: SiteSnapshotCreateNestedManyWithoutTenantInput
+    siteRenders?: SiteRenderCreateNestedManyWithoutTenantInput
+    siteDomains?: SiteDomainCreateNestedManyWithoutTenantInput
+    siteSubscriptions?: SiteSubscriptionCreateNestedManyWithoutTenantInput
+    blueprints?: BlueprintCreateNestedManyWithoutTenantInput
+    planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
+    AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutAiCreditLedgerInput = {
+    id?: string
+    name: string
+    domain?: string | null
+    isActive?: boolean
+    ownerId?: string | null
+    subscriptionId?: string | null
+    aiSuspended?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantUsersInput
+    subscription?: SubscriptionUncheckedCreateNestedOneWithoutTenantActiveInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutTenantHistoryInput
+    teams?: TeamUncheckedCreateNestedManyWithoutTenantInput
+    themes?: ThemeUncheckedCreateNestedManyWithoutTenantInput
+    sites?: SiteUncheckedCreateNestedManyWithoutTenantInput
+    events?: TenantEventUncheckedCreateNestedManyWithoutTenantInput
+    complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutTenantInput
+    siteSnapshots?: SiteSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    siteRenders?: SiteRenderUncheckedCreateNestedManyWithoutTenantInput
+    siteDomains?: SiteDomainUncheckedCreateNestedManyWithoutTenantInput
+    siteSubscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutTenantInput
+    blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
+    planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
+    AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
+    v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutAiCreditLedgerInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutAiCreditLedgerInput, TenantUncheckedCreateWithoutAiCreditLedgerInput>
+  }
+
+  export type AiCreditReservationCreateWithoutLedgerEntriesInput = {
+    id?: string
+    reservationId: string
+    userId?: string | null
+    siteId?: string | null
+    planCode?: string | null
+    amount: number
+    planCreditsReserved?: number
+    topUpCreditsReserved?: number
+    planUsageId?: string | null
+    topUpUsageId?: string | null
+    status?: string
+    releaseReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    capturedAt?: Date | string | null
+    releasedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutAiCreditReservationsInput
+  }
+
+  export type AiCreditReservationUncheckedCreateWithoutLedgerEntriesInput = {
+    id?: string
+    reservationId: string
+    tenantId: string
+    userId?: string | null
+    siteId?: string | null
+    planCode?: string | null
+    amount: number
+    planCreditsReserved?: number
+    topUpCreditsReserved?: number
+    planUsageId?: string | null
+    topUpUsageId?: string | null
+    status?: string
+    releaseReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    capturedAt?: Date | string | null
+    releasedAt?: Date | string | null
+  }
+
+  export type AiCreditReservationCreateOrConnectWithoutLedgerEntriesInput = {
+    where: AiCreditReservationWhereUniqueInput
+    create: XOR<AiCreditReservationCreateWithoutLedgerEntriesInput, AiCreditReservationUncheckedCreateWithoutLedgerEntriesInput>
+  }
+
+  export type TenantUpsertWithoutAiCreditLedgerInput = {
+    update: XOR<TenantUpdateWithoutAiCreditLedgerInput, TenantUncheckedUpdateWithoutAiCreditLedgerInput>
+    create: XOR<TenantCreateWithoutAiCreditLedgerInput, TenantUncheckedCreateWithoutAiCreditLedgerInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutAiCreditLedgerInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutAiCreditLedgerInput, TenantUncheckedUpdateWithoutAiCreditLedgerInput>
+  }
+
+  export type TenantUpdateWithoutAiCreditLedgerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSuspended?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneWithoutOwnedTenantsNestedInput
+    users?: UserUpdateManyWithoutTenantUsersNestedInput
+    subscription?: SubscriptionUpdateOneWithoutTenantActiveNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutTenantHistoryNestedInput
+    teams?: TeamUpdateManyWithoutTenantNestedInput
+    themes?: ThemeUpdateManyWithoutTenantNestedInput
+    sites?: SiteUpdateManyWithoutTenantNestedInput
+    events?: TenantEventUpdateManyWithoutTenantNestedInput
+    complianceAudits?: ComplianceAuditUpdateManyWithoutTenantNestedInput
+    siteSnapshots?: SiteSnapshotUpdateManyWithoutTenantNestedInput
+    siteRenders?: SiteRenderUpdateManyWithoutTenantNestedInput
+    siteDomains?: SiteDomainUpdateManyWithoutTenantNestedInput
+    siteSubscriptions?: SiteSubscriptionUpdateManyWithoutTenantNestedInput
+    blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
+    planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
+    AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutAiCreditLedgerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSuspended?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantUsersNestedInput
+    subscription?: SubscriptionUncheckedUpdateOneWithoutTenantActiveNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutTenantHistoryNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutTenantNestedInput
+    themes?: ThemeUncheckedUpdateManyWithoutTenantNestedInput
+    sites?: SiteUncheckedUpdateManyWithoutTenantNestedInput
+    events?: TenantEventUncheckedUpdateManyWithoutTenantNestedInput
+    complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutTenantNestedInput
+    siteSnapshots?: SiteSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    siteRenders?: SiteRenderUncheckedUpdateManyWithoutTenantNestedInput
+    siteDomains?: SiteDomainUncheckedUpdateManyWithoutTenantNestedInput
+    siteSubscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
+    blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
+    planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
+    AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
+    v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type AiCreditReservationUpsertWithoutLedgerEntriesInput = {
+    update: XOR<AiCreditReservationUpdateWithoutLedgerEntriesInput, AiCreditReservationUncheckedUpdateWithoutLedgerEntriesInput>
+    create: XOR<AiCreditReservationCreateWithoutLedgerEntriesInput, AiCreditReservationUncheckedCreateWithoutLedgerEntriesInput>
+    where?: AiCreditReservationWhereInput
+  }
+
+  export type AiCreditReservationUpdateToOneWithWhereWithoutLedgerEntriesInput = {
+    where?: AiCreditReservationWhereInput
+    data: XOR<AiCreditReservationUpdateWithoutLedgerEntriesInput, AiCreditReservationUncheckedUpdateWithoutLedgerEntriesInput>
+  }
+
+  export type AiCreditReservationUpdateWithoutLedgerEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reservationId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    siteId?: NullableStringFieldUpdateOperationsInput | string | null
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
+    planCreditsReserved?: IntFieldUpdateOperationsInput | number
+    topUpCreditsReserved?: IntFieldUpdateOperationsInput | number
+    planUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    topUpUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    releaseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutAiCreditReservationsNestedInput
+  }
+
+  export type AiCreditReservationUncheckedUpdateWithoutLedgerEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reservationId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    siteId?: NullableStringFieldUpdateOperationsInput | string | null
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
+    planCreditsReserved?: IntFieldUpdateOperationsInput | number
+    topUpCreditsReserved?: IntFieldUpdateOperationsInput | number
+    planUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    topUpUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    releaseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type TenantCreateWithoutSubscriptionInput = {
@@ -113838,6 +119424,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -113866,6 +119454,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -113899,6 +119489,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -113927,6 +119519,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -114091,6 +119685,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -114119,6 +119715,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -114158,6 +119756,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -114186,6 +119786,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -114409,6 +120011,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -114437,6 +120041,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -114585,6 +120191,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -114613,6 +120221,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -114745,6 +120355,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -114773,6 +120385,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -114886,6 +120500,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -114914,6 +120530,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -115005,6 +120623,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -115033,6 +120653,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -115204,6 +120826,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -115232,6 +120856,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -115428,6 +121054,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -115456,6 +121084,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -115628,6 +121258,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -115656,6 +121288,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -115867,6 +121501,8 @@ export namespace Prisma {
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -115895,6 +121531,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
     AiEvent?: AiEventUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -116008,6 +121646,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -116036,6 +121676,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -116064,6 +121706,8 @@ export namespace Prisma {
     siteSubscriptions?: SiteSubscriptionCreateNestedManyWithoutTenantInput
     blueprints?: BlueprintCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectCreateNestedManyWithoutTenantInput
   }
@@ -116092,6 +121736,8 @@ export namespace Prisma {
     siteSubscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutTenantInput
     blueprints?: BlueprintUncheckedCreateNestedManyWithoutTenantInput
     planUsages?: PlanUsageUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditReservations?: AiCreditReservationUncheckedCreateNestedManyWithoutTenantInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedCreateNestedManyWithoutTenantInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutTenantInput
     v12Projects?: V12ProjectUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -116221,6 +121867,8 @@ export namespace Prisma {
     siteSubscriptions?: SiteSubscriptionUpdateManyWithoutTenantNestedInput
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -116249,6 +121897,8 @@ export namespace Prisma {
     siteSubscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -116863,6 +122513,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -117241,6 +122895,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -117269,6 +122925,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -117308,6 +122966,8 @@ export namespace Prisma {
     blueprints?: BlueprintUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUpdateManyWithoutTenantNestedInput
   }
@@ -117336,6 +122996,8 @@ export namespace Prisma {
     blueprints?: BlueprintUncheckedUpdateManyWithoutTenantNestedInput
     planUsages?: PlanUsageUncheckedUpdateManyWithoutTenantNestedInput
     AiEvent?: AiEventUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditReservations?: AiCreditReservationUncheckedUpdateManyWithoutTenantNestedInput
+    aiCreditLedger?: AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantNestedInput
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutTenantNestedInput
     v12Projects?: V12ProjectUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -117361,6 +123023,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -117383,6 +123049,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -117403,6 +123073,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -117423,6 +123097,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -117553,6 +123231,39 @@ export namespace Prisma {
     tokensOut?: number | null
     status: string
     error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AiCreditReservationCreateManyTenantInput = {
+    id?: string
+    reservationId: string
+    userId?: string | null
+    siteId?: string | null
+    planCode?: string | null
+    amount: number
+    planCreditsReserved?: number
+    topUpCreditsReserved?: number
+    planUsageId?: string | null
+    topUpUsageId?: string | null
+    status?: string
+    releaseReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    capturedAt?: Date | string | null
+    releasedAt?: Date | string | null
+  }
+
+  export type AiCreditLedgerEntryCreateManyTenantInput = {
+    id?: string
+    reservationId?: string | null
+    type: string
+    amount: number
+    planCredits?: number
+    topUpCredits?: number
+    planCode?: string | null
+    reason?: string | null
+    idempotencyKey: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -117689,6 +123400,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -117711,6 +123426,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -117731,6 +123450,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -118157,6 +123880,107 @@ export namespace Prisma {
     tokensOut?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditReservationUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reservationId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    siteId?: NullableStringFieldUpdateOperationsInput | string | null
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
+    planCreditsReserved?: IntFieldUpdateOperationsInput | number
+    topUpCreditsReserved?: IntFieldUpdateOperationsInput | number
+    planUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    topUpUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    releaseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ledgerEntries?: AiCreditLedgerEntryUpdateManyWithoutReservationNestedInput
+  }
+
+  export type AiCreditReservationUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reservationId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    siteId?: NullableStringFieldUpdateOperationsInput | string | null
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
+    planCreditsReserved?: IntFieldUpdateOperationsInput | number
+    topUpCreditsReserved?: IntFieldUpdateOperationsInput | number
+    planUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    topUpUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    releaseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ledgerEntries?: AiCreditLedgerEntryUncheckedUpdateManyWithoutReservationNestedInput
+  }
+
+  export type AiCreditReservationUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reservationId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    siteId?: NullableStringFieldUpdateOperationsInput | string | null
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: IntFieldUpdateOperationsInput | number
+    planCreditsReserved?: IntFieldUpdateOperationsInput | number
+    topUpCreditsReserved?: IntFieldUpdateOperationsInput | number
+    planUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    topUpUsageId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    releaseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type AiCreditLedgerEntryUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    planCredits?: IntFieldUpdateOperationsInput | number
+    topUpCredits?: IntFieldUpdateOperationsInput | number
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reservation?: AiCreditReservationUpdateOneWithoutLedgerEntriesNestedInput
+  }
+
+  export type AiCreditLedgerEntryUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reservationId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    planCredits?: IntFieldUpdateOperationsInput | number
+    topUpCredits?: IntFieldUpdateOperationsInput | number
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditLedgerEntryUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reservationId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    planCredits?: IntFieldUpdateOperationsInput | number
+    topUpCredits?: IntFieldUpdateOperationsInput | number
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -119283,6 +125107,7 @@ export namespace Prisma {
     acceptsMarketing?: boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -119438,9 +125263,11 @@ export namespace Prisma {
     acceptsMarketing?: BoolFieldUpdateOperationsInput | boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: ShopOrderUpdateManyWithoutCustomerNestedInput
+    sessions?: ShopCustomerSessionUpdateManyWithoutCustomerNestedInput
   }
 
   export type ShopCustomerUncheckedUpdateWithoutShopInput = {
@@ -119452,9 +125279,11 @@ export namespace Prisma {
     acceptsMarketing?: BoolFieldUpdateOperationsInput | boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: ShopOrderUncheckedUpdateManyWithoutCustomerNestedInput
+    sessions?: ShopCustomerSessionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type ShopCustomerUncheckedUpdateManyWithoutShopInput = {
@@ -119466,6 +125295,7 @@ export namespace Prisma {
     acceptsMarketing?: BoolFieldUpdateOperationsInput | boolean
     addresses?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -119906,6 +125736,13 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type ShopCustomerSessionCreateManyCustomerInput = {
+    id?: string
+    tokenHash: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
   export type ShopOrderUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: IntFieldUpdateOperationsInput | number
@@ -119984,6 +125821,27 @@ export namespace Prisma {
     providerPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShopCustomerSessionUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShopCustomerSessionUncheckedUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShopCustomerSessionUncheckedUpdateManyWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShopOrderCreateManyDiscountCodeInput = {
@@ -120332,6 +126190,10 @@ export namespace Prisma {
     razorpayOrderId?: string | null
     razorpayPaymentId?: string | null
     razorpaySignature?: string | null
+    dodoCustomerId?: string | null
+    dodoSubscriptionId?: string | null
+    dodoCheckoutSessionId?: string | null
+    currentPeriodEnd?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -120403,6 +126265,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -120426,6 +126292,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -120446,6 +126316,10 @@ export namespace Prisma {
     razorpayOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpayPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     razorpaySignature?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -120506,6 +126380,62 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditLedgerEntryCreateManyReservationInput = {
+    id?: string
+    tenantId: string
+    type: string
+    amount: number
+    planCredits?: number
+    topUpCredits?: number
+    planCode?: string | null
+    reason?: string | null
+    idempotencyKey: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AiCreditLedgerEntryUpdateWithoutReservationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    planCredits?: IntFieldUpdateOperationsInput | number
+    topUpCredits?: IntFieldUpdateOperationsInput | number
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutAiCreditLedgerNestedInput
+  }
+
+  export type AiCreditLedgerEntryUncheckedUpdateWithoutReservationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    planCredits?: IntFieldUpdateOperationsInput | number
+    topUpCredits?: IntFieldUpdateOperationsInput | number
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditLedgerEntryUncheckedUpdateManyWithoutReservationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    planCredits?: IntFieldUpdateOperationsInput | number
+    topUpCredits?: IntFieldUpdateOperationsInput | number
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PageSnapshotCreateManySiteSnapshotInput = {
@@ -120772,6 +126702,10 @@ export namespace Prisma {
      */
     export type PlanCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PlanCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use AiCreditReservationCountOutputTypeDefaultArgs instead
+     */
+    export type AiCreditReservationCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AiCreditReservationCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use SiteSnapshotCountOutputTypeDefaultArgs instead
      */
     export type SiteSnapshotCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SiteSnapshotCountOutputTypeDefaultArgs<ExtArgs>
@@ -120908,6 +126842,10 @@ export namespace Prisma {
      */
     export type ShopCustomerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ShopCustomerDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use ShopCustomerSessionDefaultArgs instead
+     */
+    export type ShopCustomerSessionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ShopCustomerSessionDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use ShopDiscountDefaultArgs instead
      */
     export type ShopDiscountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ShopDiscountDefaultArgs<ExtArgs>
@@ -120987,6 +126925,14 @@ export namespace Prisma {
      * @deprecated Use PlanUsageDefaultArgs instead
      */
     export type PlanUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PlanUsageDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AiCreditReservationDefaultArgs instead
+     */
+    export type AiCreditReservationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AiCreditReservationDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AiCreditLedgerEntryDefaultArgs instead
+     */
+    export type AiCreditLedgerEntryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AiCreditLedgerEntryDefaultArgs<ExtArgs>
     /**
      * @deprecated Use SubscriptionDefaultArgs instead
      */

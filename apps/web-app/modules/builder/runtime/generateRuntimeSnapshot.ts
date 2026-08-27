@@ -4,7 +4,7 @@ import { resolveBlueprintTree } from "./resolveBlueprintTree";
 import { generateRuntimeCSS } from "./generateRuntimeCSS";
 import { bindDesignTokensToCSS } from "./designTokens/bindDesignTokensToCSS";
 import { renderNodeToHtml } from "./renderNodeToHtml";
-import type { BlueprintNode } from "@/modules/builder/types";
+import type { BlueprintNode } from "@/modules/builder/renderer/PageRenderer";
 
 /**
  * Blueprint data (flat format from database)
@@ -66,13 +66,13 @@ export function generateRuntimeSnapshot(
   }
 
   // 1️⃣ Resolve ID-based blueprint → real tree
-  const resolvedTree = resolveBlueprintTree(data);
+  const resolvedTree: BlueprintNode = resolveBlueprintTree(data);
 
   // Extract design tokens
   const designTokens = resolvedTree.props?.designTokens;
 
   // 2️⃣ Generate HTML using canonical renderer
-  const html = renderNodeToHtml(resolvedTree, device, designTokens);
+  const html = renderNodeToHtml(resolvedTree, device);
 
   // 3️⃣ Generate CSS
   const baseCSS = generateRuntimeCSS(resolvedTree as any);

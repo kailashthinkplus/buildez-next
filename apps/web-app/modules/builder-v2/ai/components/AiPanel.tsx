@@ -1729,7 +1729,6 @@ function ContextEditorModal({
     { key: "industry", label: "Industry", placeholder: "Architecture, healthcare, ecommerce…" },
     { key: "useCase", label: "Website purpose", placeholder: "Company website, lead generation…" },
     { key: "websiteUrl", label: "Existing website", placeholder: "https://example.com", wide: true },
-    { key: "logoUrl", label: "Company logo URL", placeholder: "https://…/logo.svg", wide: true },
     { key: "audience", label: "Primary audience", placeholder: "Who should this website persuade?", wide: true },
     { key: "offer", label: "Primary offer or action", placeholder: "What should visitors understand or do?", wide: true },
     { key: "designIntent", label: "Design direction", placeholder: "Describe the desired visual language", wide: true },

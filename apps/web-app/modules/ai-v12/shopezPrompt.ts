@@ -25,6 +25,30 @@ Load commerce data from:
 
 Never replace this API with a hardcoded local catalogue.
 
+REQUIRED STOREFRONT ROUTES AND SHARED SHELL
+
+Build a coherent multi-page store, not a single landing page. At minimum:
+
+- / — homepage with a live ShopEZ product feed
+- /shop — searchable/filterable live product listing
+- /products/:handle — reusable dynamic product-detail page
+- /cart — functional cart page (a drawer may also be provided)
+- /checkout — functional checkout form
+- /account — customer register/login, profile, order history, and logout
+
+Every route must render one shared SiteShell with the same Header, Footer,
+navigation, theme variables, logo treatment, button system, spacing rhythm,
+and responsive breakpoints. Never duplicate or restyle the header/footer in
+individual page files.
+
+The header must visibly include:
+
+- a working home/logo link
+- shop navigation
+- an account icon linking to /account
+- a cart icon linking to /cart or opening the cart drawer
+- a live quantity badge derived from cart state
+
 MANDATORY PRODUCT FEED ARCHITECTURE
 
 All product grids, product carousels, featured-product sections, new-arrival
@@ -97,6 +121,9 @@ product information.
 Do not use localStorage, static JSON imported by React or frontend constants
 as the product catalogue.
 
+localStorage is permitted only for the visitor's cart state. It is never a
+catalogue, pricing, inventory, customer-session, or checkout source of truth.
+
 Do not create a separate hardcoded React page for every product.
 
 Do not create fake cart totals or fake checkout records.
@@ -161,55 +188,12 @@ When ShopEZ contains no products:
 
 1. Do not insert fallback product records into React.
 2. Continue using the canonical ShopEZ API in the storefront.
-3. Render a polished empty state until products are provisioned.
-4. Generate a starter catalogue manifest at:
+3. Render a polished empty state inside the product-feed section.
+4. Keep the rest of the page visible and functional.
 
-   src/buildez.shopez-products.json
-
-The manifest must contain products suitable for the user's requested
-business and design.
-
-Use this shape:
-
-{
-  "version": 1,
-  "siteSlug": "${siteSlug}",
-  "createOnlyWhenShopIsEmpty": true,
-  "products": [
-    {
-      "title": "Product title",
-      "handle": "product-handle",
-      "description": "Product description",
-      "vendor": "Brand",
-      "productType": "Category",
-      "status": "ACTIVE",
-      "tags": ["tag"],
-      "images": ["https://example.com/product.jpg"],
-      "variants": [
-        {
-          "title": "Default",
-          "sku": "SKU-001",
-          "price": "999",
-          "compareAtPrice": "",
-          "cost": "",
-          "inventory": "10",
-          "barcode": "",
-          "weightGrams": ""
-        }
-      ],
-      "seoTitle": "SEO title",
-      "seoDescription": "SEO description",
-      "trackQuantity": true,
-      "continueSelling": false,
-      "storySections": []
-    }
-  ]
-}
-
-This manifest is a server-side ShopEZ provisioning contract.
-
-Never import src/buildez.shopez-products.json into frontend React code.
-Never render products directly from this manifest.
+The BuildEZ platform provisions ShopEZ products before website generation.
+Do not generate a local catalogue manifest or attempt to create products
+inside frontend React code.
 
 CART ACTIONS
 
@@ -217,6 +201,58 @@ Add-to-cart and buy-now actions must use the current ShopEZ product and
 variant identifiers.
 
 Do not hardcode product IDs in buttons.
+
+Implement a shared CartProvider used by every route. It must:
+
+- add the selected live ShopEZ variant
+- update quantity
+- remove a line
+- clear the cart after successful checkout
+- persist cart lines locally across navigation/reload
+- re-resolve product/variant facts from the current ShopEZ payload
+- calculate subtotal from current ShopEZ variant prices
+- expose total item quantity for the header badge
+- prevent unavailable variants from being added
+
+The cart drawer/page must show the real product image, title, selected variant,
+quantity, unit price, line total, subtotal, empty state, and checkout link.
+
+CHECKOUT
+
+Submit checkout to:
+
+  POST /api/public/shopez/checkout
+
+Send siteId from the canonical store response, customer/contact fields,
+shipping/billing address, provider, and only variantId + quantity for cart
+items. Never calculate authoritative tax, shipping, discount, or order totals
+in the browser. Display values returned by the checkout API and handle
+validation, stock conflict, payment handoff, confirmed, and failure states.
+
+CUSTOMER ACCOUNT
+
+Implement real customer registration, login, session restoration, order
+history, and logout with credentials included:
+
+  POST /api/public/shopez/account/register
+  POST /api/public/shopez/account/login
+  GET /api/public/shopez/account/session?siteId=<ShopEZ site id>
+  DELETE /api/public/shopez/account/session
+
+Registration and login POST bodies include siteId, email, and password;
+registration may also include firstName and lastName. Use
+fetch(..., { credentials: "include" }). Never store passwords or auth tokens
+in React state beyond the form submission and never place them in
+localStorage. Render signed-out, loading, validation/error, and signed-in
+states. The signed-in view must show the customer profile and real ShopEZ
+order history returned by the session endpoint.
+
+MEDIA
+
+Use product images returned by ShopEZ. Do not use Unsplash, Lorem Picsum,
+random-image services, image-search URLs, or unrelated stock photography.
+If editorial imagery is not supplied, reuse appropriate ShopEZ imagery or
+create the composition with the canonical theme and CSS.
 
 CANVAS EDITABILITY
 

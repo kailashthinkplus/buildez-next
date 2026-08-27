@@ -10,7 +10,12 @@ export async function getTenantPlan(tenantId: string) {
   if (!subscription) return null;
 
   const plan = subscription.planCode
-    ? await prisma.plan.findUnique({ where: { code: subscription.planCode } })
+    ? await prisma.plan.findUnique({
+        where: { code: subscription.planCode },
+        include: {
+          features: true,
+        },
+      })
     : null;
   if (!plan) return null;
 

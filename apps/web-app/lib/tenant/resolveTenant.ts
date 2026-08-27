@@ -3,6 +3,7 @@
 import { prisma } from "@buildez/db";
 import { ApiError } from "../api/errors";
 import { getSessionUser } from "../auth/session";
+import { findAccessibleTenant } from "../auth/tenantAccess";
 
 interface TenantResolveOptions {
   require?: boolean; // throw error if missing
@@ -31,7 +32,11 @@ export async function resolveTenant(
   /* ------------------------------------------------------------
      1. Get user session
   ------------------------------------------------------------ */
-  const user = await getSessionUser();
+  const user = await getSessionUser(req);
+  if (!user) {
+    if (opts.require) throw new ApiError("Unauthorized", 401, "UNAUTHORIZED");
+    return null;
+  }
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
 
   /* ------------------------------------------------------------
@@ -53,36 +58,24 @@ export async function resolveTenant(
   /* ------------------------------------------------------------
      3. TENANT COOKIE
   ------------------------------------------------------------ */
-  const tenantCookie = cookies["tenantId"];
-  if (tenantCookie) {
-    const t = await prisma.tenant.findUnique({ where: { id: tenantCookie } });
-    if (t) return { tenantId: t.id, tenant: t, user, isSuperAdmin };
+  const tenantCookie = cookies["tenant-user-id"] === user.id
+    ? cookies["tenant-id"]
+    : undefined;
+  const accessibleTenant = await findAccessibleTenant(user.id, tenantCookie);
+  if (accessibleTenant) {
+    return {
+      tenantId: accessibleTenant.id,
+      tenant: accessibleTenant,
+      user,
+      isSuperAdmin,
+    };
   }
 
   /* ------------------------------------------------------------
      4. USER DEFAULT TENANT
   ------------------------------------------------------------ */
-  const defaultTenantId = user?.ownedTenants[0]?.id ?? user?.tenantUsers[0]?.id ?? user?.teamMemberships[0]?.team.tenantId;
-  if (defaultTenantId) {
-    const t = await prisma.tenant.findUnique({ where: { id: defaultTenantId } });
-    if (t) return { tenantId: t.id, tenant: t, user, isSuperAdmin };
-  }
-
   /* ------------------------------------------------------------
-     5. FALLBACK — BODY tenantId
-  ------------------------------------------------------------ */
-  try {
-    const body = await req.clone().json().catch(() => null);
-    const bodyTenant = body?.tenantId;
-
-    if (bodyTenant) {
-      const t = await prisma.tenant.findUnique({ where: { id: bodyTenant } });
-      if (t) return { tenantId: t.id, tenant: t, user, isSuperAdmin };
-    }
-  } catch {}
-
-  /* ------------------------------------------------------------
-     6. FAIL IF REQUIRED
+     4. FAIL IF REQUIRED
   ------------------------------------------------------------ */
   if (opts.require) {
     throw new ApiError(

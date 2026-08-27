@@ -78,14 +78,14 @@ export async function resolveExecutionContext(
 
   if (query?.siteId) {
     site = await prisma.site.findFirst({
-      where: { id: query.siteId, tenantId },
+      where: { id: query.siteId, tenantId, deletedAt: null },
       select: { id: true, slug: true },
     });
   }
 
   if (!site && params?.siteSlug) {
     site = await prisma.site.findFirst({
-      where: { slug: params.siteSlug, tenantId },
+      where: { slug: params.siteSlug, tenantId, deletedAt: null },
       select: { id: true, slug: true },
     });
   }
@@ -97,7 +97,10 @@ export async function resolveExecutionContext(
         id: query.pageId,
         site: {
           tenantId,
+          deletedAt: null,
         },
+        deletedAt: null,
+        deleted: false,
       },
       select: {
         site: {
@@ -130,6 +133,8 @@ export async function resolveExecutionContext(
         where: {
           id: query.pageId,
           siteId: site.id,
+          deletedAt: null,
+          deleted: false,
         },
         select: { id: true, slug: true },
       });
@@ -140,6 +145,8 @@ export async function resolveExecutionContext(
         where: {
           slug: params.pageSlug,
           siteId: site.id,
+          deletedAt: null,
+          deleted: false,
         },
         select: { id: true, slug: true },
       });

@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Plus,
   CheckSquare,
@@ -15,6 +16,9 @@ import {
   Globe2,
   Clock3,
   Layers3,
+  Loader2,
+  SendToBack,
+  Trash2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -22,6 +26,7 @@ import PageActionsMenu from "../pages/components/PageActionsMenu";
 import CreatePageModal from "../pages/components/CreatePageModal";
 import PageSettingsModal from "../pages/components/PageSettingsModal";
 import DeletePageModal from "../pages/components/DeletePageModal";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
 
 import { usePages } from "../pages/hooks/usePages";
 
@@ -29,7 +34,7 @@ type Props = {
   siteSlug?: string;
 };
 
-type SortKey = "title" | "status" | "updatedAt" | "seoScore";
+type SortKey = "title" | "status" | "updatedAt" | "aiScore";
 type SortDir = "asc" | "desc";
 
 type PageRow = {
@@ -39,10 +44,11 @@ type PageRow = {
   status: string;
   updatedAt: string;
   deletedAt?: string | null;
-  site?: { slug?: string };
+  site?: { id?: string; slug?: string };
   siteSlug?: string;
+  isFrontPage?: boolean;
   screenshotUrl?: string;
-  seoScore?: number;
+  aiScore?: number;
 };
 
 function getPageSiteSlug(page: PageRow, fallbackSiteSlug?: string) {
@@ -70,7 +76,9 @@ function getScoreTone(score: number) {
 }
 
 export default function PagesView({ siteSlug }: Props) {
-  const [search, setSearch] = useState("");
+  const searchParams = useSearchParams();
+  const routeSearch = searchParams.get("search") || "";
+  const [search, setSearch] = useState(routeSearch);
   const [page, setPage] = useState(1);
   const limit = 10;
 
@@ -81,7 +89,13 @@ export default function PagesView({ siteSlug }: Props) {
   const [settingsPage, setSettingsPage] = useState<PageRow | null>(null);
   const [deletePage, setDeletePage] = useState<PageRow | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
+  const [bulkWorking, setBulkWorking] = useState<"publish"|"unpublish"|"delete"|null>(null);
   const [showTrash, setShowTrash] = useState(false);
+
+  useEffect(() => {
+    setSearch(routeSearch);
+    setPage(1);
+  }, [routeSearch]);
 
   const {
     pages,
@@ -170,6 +184,38 @@ export default function PagesView({ siteSlug }: Props) {
     await mutatePages();
   };
 
+  const setFrontPage = async (pageRow: PageRow) => {
+    const siteId = pageRow.site?.id;
+    if (!siteId) throw new Error("Website information is unavailable");
+    const response = await fetch(`/api/sites/${siteId}/front-page`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pageId: pageRow.id }),
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      throw new Error(payload?.error || "Could not set the front page");
+    }
+    await mutatePages();
+  };
+
+  const runBulkAction = async (action: "publish" | "unpublish" | "delete") => {
+    if (!selected.length || bulkWorking) return;
+    if (action === "delete" && !window.confirm(`Move ${selected.length} selected page${selected.length === 1 ? "" : "s"} to trash?`)) return;
+    setBulkWorking(action);
+    try {
+      await Promise.all(selected.map(pageId => fetch(
+        action === "delete" ? `/api/pages/${pageId}` : `/api/pages/${pageId}/${action}`,
+        { method: action === "delete" ? "DELETE" : "POST", credentials: "include" },
+      ).then(response => { if (!response.ok) throw new Error(`Could not ${action} selected pages`); })));
+      setSelected([]);
+      await mutatePages();
+    } finally {
+      setBulkWorking(null);
+    }
+  };
+
   return (
     <div className="relative px-1 py-2 md:px-2">
       <div className="pointer-events-none absolute left-[10%] top-0 h-80 w-80 rounded-full bg-[#1349A3]/10 blur-[110px]" />
@@ -188,7 +234,7 @@ export default function PagesView({ siteSlug }: Props) {
             <PageMetric icon={FileText} label="Total pages" value={total} />
             <PageMetric icon={Globe2} label="Published here" value={publishedCount} tone="text-emerald-600" />
             <PageMetric icon={Clock3} label="Drafts here" value={draftCount} tone="text-amber-600" />
-            <PageMetric icon={Search} label="Average SEO" value={pages.length ? Math.round(pages.reduce((sum: number, item: PageRow) => sum + (item.seoScore ?? 0), 0) / pages.length) : 0} suffix="/100" tone="text-[#1349A3] dark:text-blue-300" />
+            <PageMetric icon={Search} label="Average AI page score" value={pages.length ? Math.round(pages.reduce((sum: number, item: PageRow) => sum + (item.aiScore ?? 0), 0) / pages.length) : 0} suffix="/100" tone="text-[#1349A3] dark:text-blue-300" />
           </div>
         </section>
 
@@ -203,7 +249,7 @@ export default function PagesView({ siteSlug }: Props) {
             placeholder={showTrash ? "Search trash…" : "Search pages…"}
             className="w-full rounded-xl border dashboard-border bg-transparent py-2.5 pl-9 pr-3 text-sm outline-none focus:border-[#3B82F6]"
           />
-        </div>{!showTrash && <select value={`${sortKey}:${sortDir}`} onChange={(event) => { const [key, dir] = event.target.value.split(":") as [SortKey, SortDir]; setSortKey(key); setSortDir(dir); }} aria-label="Sort pages" className="rounded-xl border dashboard-border bg-transparent px-3 py-2.5 text-xs font-medium outline-none"><option value="updatedAt:desc">Recently updated</option><option value="updatedAt:asc">Oldest updated</option><option value="title:asc">Title A–Z</option><option value="title:desc">Title Z–A</option><option value="seoScore:desc">Best SEO score</option></select>}<div className="flex items-center gap-2 ml-auto">
+        </div>{!showTrash && <select value={`${sortKey}:${sortDir}`} onChange={(event) => { const [key, dir] = event.target.value.split(":") as [SortKey, SortDir]; setSortKey(key); setSortDir(dir); }} aria-label="Sort pages" className="rounded-xl border dashboard-border bg-transparent px-3 py-2.5 text-xs font-medium outline-none"><option value="updatedAt:desc">Recently updated</option><option value="updatedAt:asc">Oldest updated</option><option value="title:asc">Title A–Z</option><option value="title:desc">Title Z–A</option><option value="aiScore:desc">Best AI page score</option></select>}<div className="flex items-center gap-2 ml-auto">
           <button
             onClick={() => {
               setShowTrash(false);
@@ -233,6 +279,8 @@ export default function PagesView({ siteSlug }: Props) {
           >
             Trash
           </button></div></div>
+
+        {!showTrash && selected.length > 0 && <div className="sticky top-[70px] z-20 flex flex-wrap items-center gap-2 rounded-2xl border border-blue-400/25 bg-blue-600 p-3 text-white shadow-xl shadow-blue-950/20"><CheckSquare size={17}/><strong className="mr-2 text-sm">{selected.length} selected</strong><button disabled={Boolean(bulkWorking)} onClick={()=>void runBulkAction('publish')} className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-2 text-xs font-semibold hover:bg-white/20"><Globe2 size={13}/>Publish</button><button disabled={Boolean(bulkWorking)} onClick={()=>void runBulkAction('unpublish')} className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-2 text-xs font-semibold hover:bg-white/20"><SendToBack size={13}/>Unpublish</button><button disabled={Boolean(bulkWorking)} onClick={()=>void runBulkAction('delete')} className="flex items-center gap-1.5 rounded-lg bg-rose-500/80 px-3 py-2 text-xs font-semibold hover:bg-rose-500"><Trash2 size={13}/>Move to trash</button>{bulkWorking&&<Loader2 size={15} className="animate-spin"/>}<button onClick={()=>setSelected([])} className="ml-auto rounded-lg px-3 py-2 text-xs font-semibold hover:bg-white/10">Clear selection</button></div>}
 
         {isLoading && (
           <div className="overflow-hidden rounded-2xl dashboard-card backdrop-blur-xl">
@@ -293,10 +341,10 @@ export default function PagesView({ siteSlug }: Props) {
                     />
 
                     <SortableTh
-                      label="SEO Score"
-                      active={sortKey === "seoScore"}
+                      label="AI Page Score"
+                      active={sortKey === "aiScore"}
                       dir={sortDir}
-                      onClick={() => toggleSort("seoScore")}
+                      onClick={() => toggleSort("aiScore")}
                     />
 
                     <SortableTh
@@ -345,7 +393,7 @@ export default function PagesView({ siteSlug }: Props) {
                   const isChecked = selected.includes(pageRow.id);
                   const editUrl = getEditUrl(pageRow, siteSlug);
                   const previewUrl = getPreviewUrl(pageRow, siteSlug);
-                  const seoScore = pageRow.seoScore ?? 0;
+                  const aiScore = pageRow.aiScore ?? 0;
 
                   return (
                     <tr
@@ -383,14 +431,7 @@ export default function PagesView({ siteSlug }: Props) {
                               alt={`${pageRow.title} screenshot preview`}
                               className="h-full w-full object-cover transition-transform group-hover:scale-105"
                             />
-                          ) : (
-                            <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-gradient-to-br from-white to-gray-100 dashboard-faint dark:from-white/10 dark:to-white/5">
-                              <ImageIcon className="h-5 w-5" />
-                              <span className="text-[10px] font-medium">
-                                No preview
-                              </span>
-                            </div>
-                          )}
+                          ) : previewUrl ? <iframe src={previewUrl} title={`${pageRow.title} live preview thumbnail`} loading="lazy" tabIndex={-1} className="pointer-events-none h-[288px] w-[448px] origin-top-left scale-25 border-0 bg-white"/> : <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-gradient-to-br from-white to-gray-100 dashboard-faint dark:from-white/10 dark:to-white/5"><ImageIcon className="h-5 w-5"/><span className="text-[10px] font-medium">Preview unavailable</span></div>}
                         </button>
                       </td>
 
@@ -418,14 +459,14 @@ export default function PagesView({ siteSlug }: Props) {
 
                       <td className="p-3">
                         <span
-                          className={`inline-flex min-w-12 justify-center rounded-lg px-2 py-1 text-xs font-semibold ${getScoreTone(seoScore)}`}
+                          className={`inline-flex min-w-12 justify-center rounded-lg px-2 py-1 text-xs font-semibold ${getScoreTone(aiScore)}`}
                         >
-                          {seoScore}
+                          {aiScore}
                         </span>
                       </td>
 
                       <td className="p-3 dashboard-muted">
-                        {new Date(pageRow.updatedAt).toLocaleDateString()}
+                        {new Date(pageRow.updatedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
                       </td>
 
                       <td className="p-2 text-right">
@@ -435,6 +476,7 @@ export default function PagesView({ siteSlug }: Props) {
                             window.location.href = editUrl;
                           }}
                           onSettings={() => setSettingsPage(pageRow)}
+                          onSetFrontPage={() => setFrontPage(pageRow)}
                           onDelete={() => setDeletePage(pageRow)}
                           onChanged={() => mutatePages()}
                           onPreview={() => {
@@ -446,6 +488,7 @@ export default function PagesView({ siteSlug }: Props) {
                               );
                             }
                           }}
+                          onView={pageRow.status === "PUBLISHED" && pageRow.site?.id ? () => window.open(publishedSitePath(pageRow.site!.id!, pageRow.slug), "_blank", "noopener,noreferrer") : undefined}
                           onDuplicate={async () => {
                             await duplicatePage(pageRow.id);
                           }}

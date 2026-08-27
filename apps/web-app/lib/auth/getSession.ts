@@ -1,8 +1,9 @@
 // /apps/web-app/lib/auth/getSession.ts
 
-import { cookies } from "next/headers";
 import { prisma } from "@buildez/db";
-import { SESSION_COOKIE } from "./session";
+import { cookies } from "next/headers";
+import { getCurrentSession } from "./session";
+import { findAccessibleTenant } from "./tenantAccess";
 
 export interface AuthSession {
   session: any;
@@ -16,31 +17,8 @@ export interface AuthSession {
  * Reads the session cookie → loads DB session → loads user → tenant → onboarding.
  */
 export async function getSession(): Promise<AuthSession | null> {
-  const cookieStore = await cookies();
-
-  const sessionId =
-    cookieStore.get(SESSION_COOKIE)?.value ||
-    cookieStore.get("session")?.value ||
-    cookieStore.get("__Secure-session")?.value;
-
-  if (!sessionId) return null;
-
-  /* ------------------------------
-     1️⃣ Load session row
-  ------------------------------ */
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-  });
-
+  const session = await getCurrentSession();
   if (!session) return null;
-
-  if (session.expiresAt < new Date()) {
-    await prisma.session.update({
-      where: { id: session.id },
-      data: { revoked: true },
-    });
-    return null;
-  }
 
   /* ------------------------------
      2️⃣ Load user
@@ -54,13 +32,11 @@ export async function getSession(): Promise<AuthSession | null> {
   /* ------------------------------
      3️⃣ Load tenant (optional)
   ------------------------------ */
-  let tenant = null;
-
-  tenant = await prisma.tenant.findFirst({
-    where: {
-      OR: [{ ownerId: user.id }, { users: { some: { id: user.id } } }],
-    },
-  });
+  const cookieStore = await cookies();
+  const requestedTenantId = cookieStore.get("tenant-user-id")?.value === user.id
+    ? cookieStore.get("tenant-id")?.value
+    : undefined;
+  const tenant = await findAccessibleTenant(user.id, requestedTenantId);
 
   /* ------------------------------
      4️⃣ Onboarding

@@ -6,9 +6,11 @@ import { isBuilderV2Blueprint } from "@/modules/builder-v2/runtime/isBuilderV2Bl
 
 export async function renderPage({
   siteSlug,
+  siteId,
   pageSlug,
 }: {
   siteSlug: string;
+  siteId?: string;
   pageSlug: string;
 }) {
   console.log("\n==============================");
@@ -19,20 +21,26 @@ export async function renderPage({
   /* ----------------------------------------------------------
      1️⃣ RESOLVE SITE CANDIDATES (BY SLUG ONLY)
   ---------------------------------------------------------- */
-  const site = await prisma.site.findFirst({
+  const siteCandidates = await prisma.site.findMany({
     where: {
       slug: siteSlug,
+      ...(siteId ? { id: siteId } : {}),
       status: "PUBLISHED",
+      deletedAt: null,
     },
     orderBy: {
       updatedAt: "desc",
     },
     include: { layout: true },
+    take: siteId ? 1 : 2,
   });
+  // A slug is tenant-scoped in the database. Never guess when the shared
+  // runtime host has more than one published site with that slug.
+  const site = siteCandidates.length === 1 ? siteCandidates[0] : null;
 
   console.log(
     "🏢 SITE CANDIDATES:",
-    site ? [`${site.id}:${site.status}`] : []
+    siteCandidates.map((candidate) => `${candidate.id}:${candidate.status}`)
   );
 
   if (!site) {

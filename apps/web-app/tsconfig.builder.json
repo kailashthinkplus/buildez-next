@@ -14,6 +14,13 @@
     "app/api/builder-v3/projects/[siteId]/checkpoints/route.ts",
     "app/api/builder-v3/projects/[siteId]/files/route.ts",
     "app/api/builder-v3/projects/[siteId]/import/route.ts",
+    "app/api/builder-v3/agent/reset/route.ts",
+    "app/api/billing/dodo/**/*.ts",
+    "app/api/billing/current/route.ts",
+    "app/api/webhooks/dodo/route.ts",
+    "app/app/(tenant)/workspace/billing/**/*.tsx",
+    "app/app/onboarding/**/*.tsx",
+    "lib/billing/**/*.ts",
     "app/api/builder-v3/preview/start/route.ts",
     "app/app/(builder-v3)/builder-v3/[siteId]/**/*.tsx",
     "modules/builder-v2/ai-compatibility/**/*.ts",
@@ -24,6 +31,7 @@
   ],
   "exclude": [
     "node_modules",
+    "app/app/onboarding/layout.client.tsx",
     "modules/_legacy",
     "modules/builder/ai-v8"
   ]

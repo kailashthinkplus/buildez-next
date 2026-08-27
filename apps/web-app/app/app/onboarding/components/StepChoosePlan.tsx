@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 
 // Modals
 import PayNowModal from "./PayNowModal";
-import StarterTrialMandateModal from "./StarterTrialMandateModal";
 
 type Plan = {
   code: string;
@@ -31,34 +30,33 @@ export default function StepChoosePlan({
   const [loading, setLoading] = useState(false);
 
   const [showPayNow, setShowPayNow] = useState(false);
-  const [showTrialModal, setShowTrialModal] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
-  /* --------------------------------------------------------
-     LISTEN FOR PAYMENT SUCCESS EVENTS (from PayNowModal)
-  -------------------------------------------------------- */
   useEffect(() => {
-    function handleSuccess(e: any) {
-      const data = e.detail;
-
-      if (data?.success) {
-        setShowPayNow(false); // close modal
-
-        // Pass payment summary to parent (page.tsx)
-        onNext({
-          success: true,
-          plan: data.plan,
-          billingCycle: data.billingCycle,
-          amount: data.amount,
-          paymentId: data.paymentId,
-          orderId: data.orderId,
-        });
-      }
+    const checkoutResult = new URLSearchParams(window.location.search).get("checkout");
+    if (checkoutResult === "cancelled") {
+      history.replaceState(null, "", "/app/onboarding");
+      setCheckoutError("Checkout was cancelled. Your plan has not changed.");
+      return;
     }
-
-    window.addEventListener("BuildEZ-Payment-Success", handleSuccess);
-    return () =>
-      window.removeEventListener("BuildEZ-Payment-Success", handleSuccess);
-  }, []);
+    if (checkoutResult !== "success") return;
+    let cancelled = false;
+    let attempts = 0;
+    const confirmSubscription = async () => {
+      attempts += 1;
+      const response = await fetch("/api/billing/current", { cache: "no-store" }).catch(() => null);
+      const payload = response ? await response.json().catch(() => null) : null;
+      if (!cancelled && response?.ok && payload?.subscription?.status === "ACTIVE") {
+        history.replaceState(null, "", "/app/onboarding");
+        onNext();
+        return;
+      }
+      if (!cancelled && attempts < 10) window.setTimeout(confirmSubscription, 1200);
+      else if (!cancelled) setCheckoutError("Payment is complete, but activation is still processing. Refresh in a moment.");
+    };
+    void confirmSubscription();
+    return () => { cancelled = true; };
+  }, [onNext]);
 
   /* --------------------------------------------------------
      LOAD PUBLIC PLANS
@@ -126,107 +124,22 @@ const isEnterprise = planCode === "ENTERPRISE";
         price={modalPrice}
         features={modalFeatures}
         onPayNow={async () => {
-          try {
-            console.log("Fetching:", "/api/razorpay/order");
-
-            // ---------------------------
-            // 1. CREATE RAZORPAY ORDER
-            // ---------------------------
-            const orderRes = await fetch("/api/razorpay/order", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                amount: modalPrice,
-                currency: "INR",
-                receipt: `buildez_${selected}_${billing}_${Date.now()}`,
-              }),
-            });
-
-            if (!orderRes.ok) {
-              console.error("Order API failed:", await orderRes.text());
-              throw new Error("Razorpay Order API returned error");
-            }
-
-            const orderData = await orderRes.json();
-
-            const options = {
-              key: orderData.key,
-              amount: orderData.amount,
-              currency: "INR",
-              name: "BuildEZ",
-              description: `${selected} Plan (${billing})`,
-              order_id: orderData.orderId,
-
-              handler: async function (response: any) {
-                // ---------------------------
-                // 2. VERIFY PAYMENT
-                // ---------------------------
-                const verifyRes = await fetch("/api/razorpay/verify", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(response),
-                });
-
-                const verifyData = await verifyRes.json();
-                if (!verifyData?.verified)
-                  throw new Error("Signature verification failed");
-
-                // ---------------------------
-                // 3. ACTIVATE PAID SUBSCRIPTION
-                // ---------------------------
-                const activateRes = await fetch("/api/billing/activate", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    planCode: selected,
-                    billingCycle: billing,
-                    paymentId: response.razorpay_payment_id,
-                    orderId: response.razorpay_order_id,
-                    amount: modalPrice,
-                  }),
-                });
-
-                const activateData = await activateRes.json();
-                if (!activateData?.ok) {
-                  console.error("Activation error:", activateData);
-                  throw new Error("Subscription activation failed");
-                }
-
-                // ---------------------------
-                // 4. SEND SUCCESS EVENT
-                // ---------------------------
-                window.dispatchEvent(
-                  new CustomEvent("BuildEZ-Payment-Success", {
-                    detail: {
-                      success: true,
-                      plan: selected,
-                      billingCycle: billing,
-                      amount: modalPrice,
-                      paymentId: response.razorpay_payment_id,
-                      orderId: response.razorpay_order_id,
-                    },
-                  })
-                );
-              },
-
-              theme: { color: "#4F46E5" },
-            };
-
-            const Razorpay = (window as typeof window & { Razorpay: new (options: Record<string, unknown>) => { open(): void } }).Razorpay;
-            new Razorpay(options).open();
-            return {};
-
-          } catch (err) {
-            console.error("🔥 Razorpay Flow Error:", err);
-            throw err;
-          }
+          if (!selected) throw new Error("Choose a plan first.");
+          const selection = await fetch("/api/onboarding/choose-plan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ planId: selected, billing }),
+          });
+          if (!selection.ok) throw new Error("Your plan selection could not be saved.");
+          const response = await fetch("/api/billing/dodo/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ planCode: selected, billingCycle: billing, returnPath: "/app/onboarding" }),
+          });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok || !payload.checkoutUrl) throw new Error(payload.error || "Secure checkout could not be started.");
+          window.location.assign(payload.checkoutUrl);
         }}
-      />
-
-      {/* STARTER TRIAL MODAL */}
-      <StarterTrialMandateModal
-        open={showTrialModal}
-        onClose={() => setShowTrialModal(false)}
       />
 
       {/* HEADER */}
@@ -244,6 +157,7 @@ const isEnterprise = planCode === "ENTERPRISE";
       <p className="text-left text-sm text-white/60 mb-4">
         You can upgrade, downgrade, or cancel anytime.
       </p>
+      {checkoutError ? <p className="rounded-xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">{checkoutError}</p> : null}
 
       {/* BILLING SWITCH */}
       <div className="flex items-center justify-center gap-4 mb-6">
@@ -375,23 +289,12 @@ const isEnterprise = planCode === "ENTERPRISE";
   )}
 
   {(isStarter || isPro || isBusiness) && (
-    <>
-      {isStarter && (
-        <button
-          onClick={() => setShowTrialModal(true)}
-          className="glass px-5 py-2 rounded-xl bg-green-600 text-white"
-        >
-          Start Free Trial
-        </button>
-      )}
-
-      <button
+    <button
         onClick={() => setShowPayNow(true)}
         className="px-5 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500"
       >
-        Pay Now →
+        Continue to secure checkout →
       </button>
-    </>
   )}
 
   {isEnterprise && (

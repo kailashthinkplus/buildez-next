@@ -32,6 +32,7 @@ import CreatePageModal from "../components/CreatePageModal";
 import PublishModal from "../components/PublishModal";
 import { commandBus } from "../core/commands/CommandBus";
 import { useBuilderStore } from "../store/useBuilderStore";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
 
 /* ============================================================================
    TYPES
@@ -41,7 +42,7 @@ interface PageItem {
   id: string;
   title: string;
   slug: string;
-  site: { slug: string };
+  site: { id: string; slug: string };
   status: "DRAFT" | "PUBLISHED";
 }
 
@@ -337,7 +338,9 @@ const previewSlugWithId = currentPage
 const previewUrl = siteSlug && previewSlugWithId
   ? `/preview/${siteSlug}/${previewSlugWithId}`
   : "";
-const publicUrl = siteSlug && pageSlug ? `/${siteSlug}/${pageSlug}` : previewUrl;
+const publicUrl = currentPage?.site.id && pageSlug
+  ? publishedSitePath(currentPage.site.id, pageSlug)
+  : previewUrl;
 const currentPageTitle = currentPage?.title ?? pageTitle ?? "Untitled page";
   
 

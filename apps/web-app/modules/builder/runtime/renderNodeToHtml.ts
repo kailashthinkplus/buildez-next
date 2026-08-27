@@ -14,7 +14,7 @@ function escapeHtml(str: string = "") {
 }
 
 function styleToString(
-  style: Record<string, unknown> = {}
+  style: object = {}
 ): string {
   return Object.entries(style)
     .filter(([, v]) => v != null)

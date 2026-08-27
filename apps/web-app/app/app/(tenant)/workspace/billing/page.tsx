@@ -1,70 +1,33 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import BillingSummary from "./components/BillingSummary";
-import PlanDetails from "./components/PlanDetails";
-import PaymentDetails from "./components/PaymentDetails";
+import { useEffect, useMemo, useState } from "react";
+import { Bot, CheckCircle2, CreditCard, Crown, FileText, Globe2, Loader2, Sparkles, Users } from "lucide-react";
 import UpgradePlanModal from "./components/UpgradePlanModal";
 
+type Plan = { code:string;name:string;maxSites:number;maxPages:number;aiCredits:number;teamMembers:number;priceMonthly:number;priceYearly:number;features:string[] };
+type Subscription = { planCode?:string;billingCycle?:string;status?:string;paymentStatus?:string;amountPaid?:number;currency?:string;dodoCustomerId?:string;dodoSubscriptionId?:string;dodoCheckoutSessionId?:string;currentPeriodEnd?:string;paidAt?:string;Plan?:Plan };
+type TenantData = { sites:Array<{id:string}>;plan:Subscription|null;usage:Array<{key:string;used:number}> };
+
 export default function BillingPage() {
-  const [loading, setLoading] = useState(true);
-  const [tenantData, setTenantData] = useState<any>(null);
-  const [showUpgrade, setShowUpgrade] = useState(false);
-
-  async function load() {
-    const res = await fetch("/api/tenant/me", { cache: "no-store" });
-    const json = await res.json();
-    setTenantData(json.data);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  if (loading || !tenantData) {
-    return (
-      <div className="flex items-center justify-center h-40 dashboard-muted">
-        Loading…
-      </div>
-    );
-  }
-
-  const subscription = tenantData.plan;
-
-  return (
-    <>
-      {/* Modal */}
-      <UpgradePlanModal
-        open={showUpgrade}
-        onClose={() => setShowUpgrade(false)}
-        currentPlan={subscription?.code ?? subscription?.planCode ?? null}
-      />
-
-      <div className="max-w-5xl mx-auto space-y-10">
-
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Billing & Subscription</h1>
-            <p className="dashboard-muted text-sm">
-              View your plan, subscription, and payment details.
-            </p>
-          </div>
-
-          {/* UPGRADE BUTTON */}
-          <button
-            onClick={() => setShowUpgrade(true)}
-            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm"
-          >
-            Upgrade Plan →
-          </button>
-        </div>
-
-        <BillingSummary subscription={subscription} />
-        <PlanDetails subscription={subscription} />
-        <PaymentDetails subscription={subscription} />
-      </div>
-    </>
-  );
+  const [loading,setLoading]=useState(true),[showUpgrade,setShowUpgrade]=useState(false),[portalLoading,setPortalLoading]=useState(false);
+  const [tenantData,setTenantData]=useState<TenantData|null>(null),[plans,setPlans]=useState<Plan[]>([]),[error,setError]=useState(""),[billingActionError,setBillingActionError]=useState("");
+  useEffect(()=>{Promise.all([fetch("/api/tenant/me",{cache:"no-store"}),fetch("/api/plans?active=true&public=true",{cache:"no-store"})]).then(async([tenantResponse,plansResponse])=>{const tenantPayload=await tenantResponse.json(),plansPayload=await plansResponse.json();if(!tenantResponse.ok)throw new Error(tenantPayload.error||"Billing could not be loaded.");if(!plansResponse.ok)throw new Error("Plans could not be loaded.");setTenantData(tenantPayload.data);setPlans(Array.isArray(plansPayload)?plansPayload:[])}).catch(reason=>setError(reason instanceof Error?reason.message:"Billing could not be loaded.")).finally(()=>setLoading(false));if(new URLSearchParams(window.location.search).get("upgrade")==="1")setShowUpgrade(true)},[]);
+  const subscription=tenantData?.plan,currentCode=(subscription?.planCode||subscription?.Plan?.code||"FREE").toUpperCase();
+  const currentPlan=plans.find(plan=>plan.code.toUpperCase()===currentCode)||subscription?.Plan;
+  const highestPlan=useMemo(()=>plans.find(candidate=>plans.every(other=>candidate.maxSites>=other.maxSites&&candidate.maxPages>=other.maxPages&&candidate.aiCredits>=other.aiCredits&&candidate.teamMembers>=other.teamMembers)),[plans]);
+  const canUpgrade=Boolean(highestPlan&&highestPlan.code.toUpperCase()!==currentCode);
+  async function openBillingPortal(){setPortalLoading(true);setBillingActionError("");try{const response=await fetch("/api/billing/dodo/portal",{method:"POST"}),payload=await response.json().catch(()=>({}));if(!response.ok||!payload.portalUrl)throw new Error(payload.error||"Billing portal could not be opened.");window.location.assign(payload.portalUrl)}catch(reason){setBillingActionError(reason instanceof Error?reason.message:"Billing portal could not be opened.");setPortalLoading(false)}}
+  if(loading)return <div className="grid min-h-[55vh] place-items-center"><Loader2 className="animate-spin dashboard-muted"/></div>;
+  if(error)return <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-5 text-sm text-rose-500">{error}</div>;
+  const usageMap=new Map((tenantData?.usage||[]).map(item=>[item.key.toLowerCase(),item.used]));
+  return <><UpgradePlanModal open={showUpgrade} onClose={()=>{setShowUpgrade(false);history.replaceState(null,"","/app/workspace/billing")}} currentPlan={currentCode}/><div className="mx-auto max-w-6xl pb-12">
+    <header className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm font-medium text-blue-600 dark:text-blue-400">Plans & payments</p><h1 className="mt-1 text-3xl font-semibold tracking-[-.04em]">Billing</h1><p className="mt-2 text-sm dashboard-muted">Understand your plan, usage and payment history in one place.</p></div><div className="flex flex-wrap gap-2">{subscription?.dodoCustomerId?<button disabled={portalLoading} onClick={()=>void openBillingPortal()} className="rounded-xl border dashboard-border px-4 py-2.5 text-sm font-semibold dashboard-hover disabled:opacity-60">{portalLoading?"Opening…":"Manage subscription"}</button>:null}{canUpgrade?<button onClick={()=>setShowUpgrade(true)} className="dashboard-primary-button flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white"><Crown size={16}/> Upgrade plan</button>:<span className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-600 dark:text-emerald-400"><CheckCircle2 size={16}/> Highest plan active</span>}</div></header>
+    {billingActionError?<p className="mt-5 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-500">{billingActionError}</p>:null}<section className="relative mt-6 overflow-hidden rounded-3xl border dashboard-border bg-[#07182c] p-6 text-white shadow-xl sm:p-8"><div className="absolute -right-20 -top-28 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl"/><div className="relative flex flex-wrap items-start justify-between gap-6"><div><span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[.06] px-3 py-1 text-xs text-cyan-100"><Sparkles size={13}/> Current subscription</span><h2 className="mt-4 text-3xl font-semibold">{currentPlan?.name||currentCode}</h2><p className="mt-2 text-sm text-white/55">{subscription?.billingCycle?`${capitalize(subscription.billingCycle)} billing`:"Free workspace plan"} · {subscription?.status||"ACTIVE"}</p></div><div className="text-right"><p className="text-xs uppercase tracking-wider text-white/45">Amount paid</p><p className="mt-2 text-3xl font-semibold">{formatMoney(subscription?.amountPaid||0,subscription?.currency||"INR")}</p><p className="mt-1 text-xs text-white/45">{subscription?.paidAt?`Paid ${new Date(subscription.paidAt).toLocaleDateString()}`:"No payment required"}</p></div></div></section>
+    <section className="mt-6"><h2 className="font-semibold">Plan usage</h2><p className="mt-1 text-xs dashboard-muted">Current billing period</p><div className="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-4"><UsageCard icon={Globe2} label="Websites" used={tenantData?.sites.length||0} total={currentPlan?.maxSites||1}/><UsageCard icon={FileText} label="Pages" used={usageMap.get("pages")||0} total={currentPlan?.maxPages||5}/><UsageCard icon={Bot} label="AI credits" used={usageMap.get("ai")||usageMap.get("ai_credits")||0} total={currentPlan?.aiCredits||100}/><UsageCard icon={Users} label="Team seats" used={usageMap.get("team")||1} total={currentPlan?.teamMembers||1}/></div></section>
+    <section className="mt-6 grid gap-5 lg:grid-cols-[1.15fr_.85fr]"><div className="dashboard-card rounded-3xl p-5 sm:p-6"><div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-500/10 text-blue-500"><CreditCard size={18}/></span><div><h2 className="font-semibold">Payment details</h2><p className="mt-0.5 text-xs dashboard-muted">Managed securely by Dodo Payments</p></div></div><div className="mt-6 grid gap-5 sm:grid-cols-2"><Detail label="Payment status" value={subscription?.paymentStatus||"No payment"}/><Detail label="Billing cycle" value={capitalize(subscription?.billingCycle||"—")}/><Detail label="Subscription ID" value={subscription?.dodoSubscriptionId||"—"} mono/><Detail label="Next renewal" value={subscription?.currentPeriodEnd?new Date(subscription.currentPeriodEnd).toLocaleDateString():"—"}/></div></div><div className="dashboard-card rounded-3xl p-5 sm:p-6"><h2 className="font-semibold">Included in your plan</h2><div className="mt-4 space-y-3">{(currentPlan?.features||[]).slice(0,6).map(feature=><p key={feature} className="flex gap-2 text-sm dashboard-muted"><CheckCircle2 size={16} className="mt-0.5 shrink-0 text-emerald-500"/>{feature}</p>)}{!currentPlan?.features?.length?<p className="text-sm dashboard-muted">Core website building and publishing features.</p>:null}</div>{canUpgrade?<button onClick={()=>setShowUpgrade(true)} className="mt-6 w-full rounded-xl border dashboard-border px-4 py-2.5 text-sm font-semibold dashboard-hover">Compare upgrade plans</button>:null}</div></section>
+  </div></>;
 }
+function UsageCard({icon:Icon,label,used,total}:{icon:typeof Globe2;label:string;used:number;total:number}){const percent=Math.min(100,total?Math.round(used/total*100):0);return <div className="dashboard-card rounded-2xl p-5"><div className="flex items-center justify-between"><span className="grid h-9 w-9 place-items-center rounded-xl bg-blue-500/10 text-blue-500"><Icon size={17}/></span><span className="text-xs dashboard-muted">{percent}%</span></div><p className="mt-4 text-xl font-semibold">{used.toLocaleString()} <span className="text-sm font-normal dashboard-faint">/ {total.toLocaleString()}</span></p><p className="mt-1 text-xs dashboard-muted">{label}</p><div className="mt-4 h-1.5 overflow-hidden rounded-full bg-black/5 dark:bg-white/[.06]"><div className="h-full rounded-full bg-gradient-to-r from-[#1349A3] to-[#0891B2]" style={{width:`${percent}%`}}/></div></div>}
+function Detail({label,value,mono}:{label:string;value:string;mono?:boolean}){return <div><p className="text-xs dashboard-faint">{label}</p><p className={`mt-1 truncate text-sm font-medium ${mono?"font-mono text-xs":""}`}>{value}</p></div>}
+function capitalize(value:string){return value?value[0].toUpperCase()+value.slice(1):value}
+function formatMoney(amount:number,currency:string){return new Intl.NumberFormat("en-IN",{style:"currency",currency,maximumFractionDigits:0}).format(amount)}

@@ -1,6 +1,6 @@
 // /Users/kailash/buildez/apps/web-app/modules/builder/runtime/resolveRuntimeStyle.ts
 
-import type { BlueprintNode } from "@/modules/builder/types";
+import type { BlueprintNode } from "@/modules/builder/renderer/PageRenderer";
 import { resolveNodeStyle } from "@/modules/builder/renderer/resolveNodeStyle";
 
 /**

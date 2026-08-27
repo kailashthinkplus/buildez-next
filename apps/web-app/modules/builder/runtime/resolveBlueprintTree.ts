@@ -1,11 +1,6 @@
-// /Users/kailash/buildez/apps/web-app/modules/builder/runtime/resolveBlueprintTree.ts
+import type { BlueprintNode } from "@/modules/builder/renderer/PageRenderer";
 
-interface BlueprintNode {
-  id: string;
-  type: string;
-  props?: any;
-  children?: string[] | BlueprintNode[];
-}
+// /Users/kailash/buildez/apps/web-app/modules/builder/runtime/resolveBlueprintTree.ts
 
 export interface BlueprintData {
   page?: BlueprintNode;

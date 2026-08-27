@@ -4,7 +4,8 @@ import { hashOtp } from "@/lib/auth/otp";
 import { createSession } from "@/lib/auth/session";
 
 export async function POST(req: Request) {
-  const { email, otp } = await req.json();
+  const { email: rawEmail, otp } = await req.json();
+  const email = String(rawEmail || "").trim().toLowerCase();
 
   const record = await prisma.otp.findFirst({
     where: {
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
   });
 
   const user = await prisma.user.findFirst({
-    where: { email, role: "SUPER_ADMIN" },
+    where: { email, role: "SUPER_ADMIN", isActive: true },
   });
 
   if (!user) {

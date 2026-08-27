@@ -13,8 +13,7 @@ export default function StepFinish({
     plan: string;
     billingCycle: string;
     amount: number;
-    paymentId: string;
-    orderId?: string;
+    subscriptionId?: string;
   } | null;
 }) {
   const { refreshFromServer } = useOnboarding();
@@ -29,8 +28,8 @@ export default function StepFinish({
   planCode: string;
   billingCycle: string;
   amountPaid: number;
-  razorpayPaymentId: string;
-  razorpayOrderId?: string;
+  dodoSubscriptionId?: string;
+  currentPeriodEnd?: string;
 } | null>(null);
 
   /* -------------------------------------------------------------
@@ -199,20 +198,18 @@ useEffect(() => {
             </p>
 
             <p>
-              <span className="text-white/50">Payment ID:</span>{" "}
+              <span className="text-white/50">Subscription ID:</span>{" "}
               <span className="font-mono text-[13px]">
-                {subscription?.razorpayPaymentId ??
-                  paymentSummary?.paymentId}
+                {subscription?.dodoSubscriptionId ??
+                  paymentSummary?.subscriptionId ?? "Processing"}
               </span>
             </p>
 
-            {(subscription?.razorpayOrderId ||
-              paymentSummary?.orderId) && (
+            {subscription?.currentPeriodEnd && (
               <p>
-                <span className="text-white/50">Order ID:</span>{" "}
-                <span className="font-mono text-[13px]">
-                  {subscription?.razorpayOrderId ??
-                    paymentSummary?.orderId}
+                <span className="text-white/50">Renews:</span>{" "}
+                <span className="text-[13px]">
+                  {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
                 </span>
               </p>
             )}

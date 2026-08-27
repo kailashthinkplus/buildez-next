@@ -505,8 +505,17 @@ exports.Prisma.ShopCustomerScalarFieldEnum = {
   acceptsMarketing: 'acceptsMarketing',
   addresses: 'addresses',
   notes: 'notes',
+  passwordHash: 'passwordHash',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ShopCustomerSessionScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.ShopDiscountScalarFieldEnum = {
@@ -762,6 +771,41 @@ exports.Prisma.PlanUsageScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.AiCreditReservationScalarFieldEnum = {
+  id: 'id',
+  reservationId: 'reservationId',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  siteId: 'siteId',
+  planCode: 'planCode',
+  amount: 'amount',
+  planCreditsReserved: 'planCreditsReserved',
+  topUpCreditsReserved: 'topUpCreditsReserved',
+  planUsageId: 'planUsageId',
+  topUpUsageId: 'topUpUsageId',
+  status: 'status',
+  releaseReason: 'releaseReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  capturedAt: 'capturedAt',
+  releasedAt: 'releasedAt'
+};
+
+exports.Prisma.AiCreditLedgerEntryScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  reservationId: 'reservationId',
+  type: 'type',
+  amount: 'amount',
+  planCredits: 'planCredits',
+  topUpCredits: 'topUpCredits',
+  planCode: 'planCode',
+  reason: 'reason',
+  idempotencyKey: 'idempotencyKey',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SubscriptionScalarFieldEnum = {
   id: 'id',
   tenantActiveId: 'tenantActiveId',
@@ -774,6 +818,10 @@ exports.Prisma.SubscriptionScalarFieldEnum = {
   razorpayOrderId: 'razorpayOrderId',
   razorpayPaymentId: 'razorpayPaymentId',
   razorpaySignature: 'razorpaySignature',
+  dodoCustomerId: 'dodoCustomerId',
+  dodoSubscriptionId: 'dodoSubscriptionId',
+  dodoCheckoutSessionId: 'dodoCheckoutSessionId',
+  currentPeriodEnd: 'currentPeriodEnd',
   amountPaid: 'amountPaid',
   currency: 'currency',
   startedAt: 'startedAt',
@@ -1189,6 +1237,7 @@ exports.Prisma.ModelName = {
   ShopCollection: 'ShopCollection',
   ShopCollectionProduct: 'ShopCollectionProduct',
   ShopCustomer: 'ShopCustomer',
+  ShopCustomerSession: 'ShopCustomerSession',
   ShopDiscount: 'ShopDiscount',
   ShopOrder: 'ShopOrder',
   ShopOrderItem: 'ShopOrderItem',
@@ -1209,6 +1258,8 @@ exports.Prisma.ModelName = {
   PlanPricing: 'PlanPricing',
   PlanFeature: 'PlanFeature',
   PlanUsage: 'PlanUsage',
+  AiCreditReservation: 'AiCreditReservation',
+  AiCreditLedgerEntry: 'AiCreditLedgerEntry',
   Subscription: 'Subscription',
   SiteSubscription: 'SiteSubscription',
   ComplianceAudit: 'ComplianceAudit',

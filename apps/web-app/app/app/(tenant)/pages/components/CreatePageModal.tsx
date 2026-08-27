@@ -77,8 +77,8 @@ console.log("🟩 [CreatePageModal] CREATE SUCCESS");
 
   return (
     <DashboardModalPortal onClose={onClose}>
-    <div className="fixed inset-0 z-[200] bg-black/40 backdrop-blur-lg">
-      <div className="dashboard-modal-surface relative flex h-[100dvh] w-screen flex-col overflow-y-auto shadow-2xl">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/45 p-3 backdrop-blur-xl sm:p-6 lg:p-8">
+      <div className="dashboard-modal-surface relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-6xl flex-col overflow-y-auto rounded-[28px] border border-white/20 bg-white/80 shadow-2xl backdrop-blur-2xl dark:bg-[#0b101c]/85 sm:max-h-[calc(100dvh-3rem)] lg:max-h-[calc(100dvh-4rem)]">
         {/* CLOSE */}
         <button
           onClick={onClose}

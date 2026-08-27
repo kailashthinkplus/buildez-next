@@ -19,7 +19,7 @@ export const ImageDefinition: WidgetDefinition = {
   properties: [
     {
       id: "src",
-      label: "Image URL",
+      label: "Image asset",
       type: "image",
       target: "props",
       category: "content",

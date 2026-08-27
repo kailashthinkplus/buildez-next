@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const VERSION=1, SESSION="85b35088-3796-49ee-90e2-2eb2ca579db3", SELECTOR="[data-buildez-id]";
+  const VERSION=1, SESSION="6f9f6cee-2c80-40b2-b292-7902ea8ba558", SELECTOR="[data-buildez-id]";
   const parentOriginParam=new URLSearchParams(location.search).get("__buildez_parent_origin");
   const referrerOrigin=document.referrer?new URL(document.referrer).origin:"";
   const PARENT_ORIGIN=parentOriginParam&&/^https?:\/\//.test(parentOriginParam)?new URL(parentOriginParam).origin:referrerOrigin;

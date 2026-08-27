@@ -63,7 +63,7 @@ export default function PayNowModal({
       setError("");
       setStatus("idle");
 
-      // Begin Razorpay flow
+      // Open the hosted subscription checkout.
       await Promise.resolve().then(() => onPayNow());
     } catch (err: any) {
       console.error("❌ PayNowModal ERROR:", err);
@@ -214,7 +214,7 @@ export default function PayNowModal({
               )}
             </div>
 
-            {/* ERROR FROM RAZORPAY FLOW */}
+            {/* CHECKOUT ERROR */}
             {error && (
               <p className="text-red-400 text-xs text-center mb-3">{error}</p>
             )}
@@ -234,7 +234,7 @@ export default function PayNowModal({
                 shadow-[0_0_20px_rgba(0,122,255,0.5)]
               `}
             >
-              {loading ? "Processing…" : "Proceed to Pay →"}
+              {loading ? "Opening secure checkout…" : "Continue with Dodo →"}
             </button>
           </>
         )}

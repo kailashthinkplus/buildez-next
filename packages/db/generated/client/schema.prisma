@@ -378,20 +378,22 @@ model Tenant {
 
   subscriptions Subscription[] @relation("TenantSubscriptionHistory")
 
-  teams             Team[]
-  themes            Theme[]
-  sites             Site[]
-  events            TenantEvent[]
-  complianceAudits  ComplianceAudit[]
-  siteSnapshots     SiteSnapshot[]
-  siteRenders       SiteRender[]
-  siteDomains       SiteDomain[]
-  siteSubscriptions SiteSubscription[]
-  blueprints        Blueprint[]
-  planUsages        PlanUsage[]
-  AiEvent           AiEvent[]
-  aiSnapshots       AIBlueprintSnapshot[]
-  v12Projects       V12Project[]
+  teams                Team[]
+  themes               Theme[]
+  sites                Site[]
+  events               TenantEvent[]
+  complianceAudits     ComplianceAudit[]
+  siteSnapshots        SiteSnapshot[]
+  siteRenders          SiteRender[]
+  siteDomains          SiteDomain[]
+  siteSubscriptions    SiteSubscription[]
+  blueprints           Blueprint[]
+  planUsages           PlanUsage[]
+  AiEvent              AiEvent[]
+  aiCreditReservations AiCreditReservation[]
+  aiCreditLedger       AiCreditLedgerEntry[]
+  aiSnapshots          AIBlueprintSnapshot[]
+  v12Projects          V12Project[]
 
   aiSuspended Boolean  @default(false)
   createdAt   DateTime @default(now())
@@ -857,21 +859,35 @@ model ShopCollectionProduct {
 }
 
 model ShopCustomer {
-  id               String      @id @default(cuid())
+  id               String                @id @default(cuid())
   shopId           String
   email            String
   firstName        String?
   lastName         String?
   phone            String?
-  acceptsMarketing Boolean     @default(false)
+  acceptsMarketing Boolean               @default(false)
   addresses        Json?
   notes            String?
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
-  shop             Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  passwordHash     String?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  shop             Shop                  @relation(fields: [shopId], references: [id], onDelete: Cascade)
   orders           ShopOrder[]
+  sessions         ShopCustomerSession[]
 
   @@unique([shopId, email])
+}
+
+model ShopCustomerSession {
+  id         String       @id @default(cuid())
+  customerId String
+  tokenHash  String       @unique
+  expiresAt  DateTime
+  createdAt  DateTime     @default(now())
+  customer   ShopCustomer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([expiresAt])
 }
 
 model ShopDiscount {
@@ -1264,6 +1280,82 @@ model PlanUsage {
 }
 
 // =======================================
+// AI CREDIT RESERVATIONS / LEDGER
+// =======================================
+
+model AiCreditReservation {
+  id            String @id @default(cuid())
+  reservationId String @unique
+
+  tenantId String
+  userId   String?
+  siteId   String?
+
+  planCode String?
+
+  amount Int
+
+  planCreditsReserved  Int @default(0)
+  topUpCreditsReserved Int @default(0)
+
+  planUsageId  String?
+  topUpUsageId String?
+
+  // RESERVED | CAPTURED | RELEASED
+  status String @default("RESERVED")
+
+  releaseReason String?
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  capturedAt DateTime?
+  releasedAt DateTime?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  ledgerEntries AiCreditLedgerEntry[]
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([createdAt])
+}
+
+model AiCreditLedgerEntry {
+  id String @id @default(cuid())
+
+  tenantId      String
+  reservationId String?
+
+  // RESERVE | CAPTURE | RELEASE | TOPUP_GRANT |
+  // TOPUP_PURCHASE | ADMIN_ADJUSTMENT
+  type String
+
+  amount Int
+
+  planCredits  Int @default(0)
+  topUpCredits Int @default(0)
+
+  planCode String?
+  reason   String?
+
+  // Used by payment callbacks/admin actions so the same external
+  // operation cannot credit the account twice.
+  idempotencyKey String @unique
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  reservation AiCreditReservation? @relation(fields: [reservationId], references: [reservationId], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([reservationId])
+  @@index([tenantId, createdAt])
+}
+
+// =======================================
 // SUBSCRIPTIONS
 // =======================================
 
@@ -1288,6 +1380,11 @@ model Subscription {
   razorpayPaymentId String?
   razorpaySignature String?
 
+  dodoCustomerId        String?
+  dodoSubscriptionId    String?   @unique
+  dodoCheckoutSessionId String?
+  currentPeriodEnd      DateTime?
+
   amountPaid Int?
   currency   String?
   startedAt  DateTime?
@@ -1300,6 +1397,7 @@ model Subscription {
 
   @@index([tenantHistoryId])
   @@index([userId])
+  @@index([dodoCustomerId])
 }
 
 model SiteSubscription {

@@ -8,6 +8,7 @@ import React, {
   useCallback,
 } from "react";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 /* ============================================================
    TYPES
@@ -17,6 +18,8 @@ export interface Website {
   id: string;
   name: string;
   slug: string;
+  logoUrl?: string | null;
+  faviconUrl?: string | null;
 }
 
 interface SubscriptionPlan {
@@ -25,6 +28,10 @@ interface SubscriptionPlan {
   status: string;
   trialEnds?: string;
   plan?: {
+    name: string;
+    code: string;
+  };
+  Plan?: {
     name: string;
     code: string;
   };
@@ -58,6 +65,19 @@ const WorkspaceContext = createContext<WorkspaceContextProps | undefined>(
   undefined
 );
 
+const SITE_AREAS = new Set([
+  "dashboard", "pages", "media", "cms", "themes", "apps", "shopez",
+  "analytics", "insights", "crm", "ai", "forms", "settings", "builder",
+  "plugins", "brand", "widgets",
+]);
+
+function routeSiteSlug(value: string | null | undefined) {
+  const segments = value?.split("/").filter(Boolean) ?? [];
+  return segments[0] === "app" && segments[1] && SITE_AREAS.has(segments[2] ?? "")
+    ? segments[1]
+    : null;
+}
+
 /* ============================================================
    PROVIDER
 ============================================================ */
@@ -68,6 +88,7 @@ export function WorkspaceProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [websites, setWebsites] = useState<Website[]>([]);
@@ -86,6 +107,7 @@ export function WorkspaceProvider({
       try {
         const res = await fetch("/api/tenant/me", {
           credentials: "include",
+          cache: "no-store",
         });
 
         const json = await res.json();
@@ -98,15 +120,19 @@ export function WorkspaceProvider({
             id: s.id,
             name: s.name,
             slug: s.slug,
+            logoUrl: typeof s.logoUrl === "string" ? s.logoUrl : null,
+            faviconUrl: typeof s.settings?.faviconUrl === "string" ? s.settings.faviconUrl : null,
           })
         );
 
         setWebsites(mappedSites);
 
-        // ✅ DEFAULT SELECTION (STATE ONLY — NO NAVIGATION)
-        if (mappedSites.length > 0) {
-          setCurrentWebsite(mappedSites[0]);
-        }
+        const requestedSlug = routeSiteSlug(window.location.pathname);
+        setCurrentWebsite(
+          requestedSlug
+            ? mappedSites.find((site) => site.slug === requestedSlug) ?? null
+            : mappedSites[0] ?? null,
+        );
 
         setPlan(json.data.plan ?? null);
       } catch (err) {
@@ -118,6 +144,15 @@ export function WorkspaceProvider({
 
     load();
   }, []);
+
+  useEffect(() => {
+    const requestedSlug = routeSiteSlug(pathname);
+    if (!requestedSlug) return;
+    const routeWebsite = websites.find((site) => site.slug === requestedSlug) ?? null;
+    if (routeWebsite?.id !== currentWebsite?.id) {
+      setCurrentWebsite(routeWebsite);
+    }
+  }, [currentWebsite?.id, pathname, websites]);
 
   /* ============================================================
      SITE SWITCH (EXPLICIT USER ACTION ONLY)

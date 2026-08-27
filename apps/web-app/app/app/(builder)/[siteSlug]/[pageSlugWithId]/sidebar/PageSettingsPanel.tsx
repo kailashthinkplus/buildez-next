@@ -99,15 +99,6 @@ export default function PageSettingsPanel({
           }
         />
 
-        <Input
-          label="OG Image URL"
-          value={pageSettings.social?.ogImage}
-          onChange={(v) =>
-            update({
-              social: { ...pageSettings.social, ogImage: v },
-            })
-          }
-        />
       </section>
 
       {/* ================= ADVANCED ================= */}

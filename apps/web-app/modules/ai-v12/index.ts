@@ -4,4 +4,8 @@ export {
   aiV12Boundary,
   type AiV12Boundary,
 } from "./boundary";
+export * from "./attachments";
+export * from "./commerce";
+export * from "./creativeDirection";
+export * from "./prepareReferences";
 export * from "./runAgent";

@@ -175,8 +175,11 @@ export async function resolveRuntimeContext(
   if (cleanHost.endsWith(`.${rootDomain}`)) {
     const slug = cleanHost.replace(`.${rootDomain}`, "");
 
-    const site = await prisma.site.findUnique({
-      where: { slug },
+    const site = await prisma.site.findFirst({
+      where: {
+        slug,
+        deletedAt: null,
+      },
       include: {
         layout: true,
       },

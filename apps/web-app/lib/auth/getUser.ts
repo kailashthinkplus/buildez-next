@@ -1,6 +1,7 @@
 import { prisma } from "@buildez/db";
 import { getCurrentUser } from "./session";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
+import { findAccessibleTenant } from "./tenantAccess";
 
 export interface AuthContext {
   user: any;
@@ -38,33 +39,12 @@ export async function getUser(): Promise<AuthContext | null> {
   /* ------------------------------------------------------------------
      1) Resolve tenant ID (from cookie or header)
   ------------------------------------------------------------------ */
-  const cookieStore = await cookies(); // Await cookies
-  const hdrs = await headers(); // Await headers
-  const tenantId =
-    hdrs.get("x-tenant-id") ||
-    cookieStore.get("tenant-id")?.value ||
-    null;
+  const cookieStore = await cookies();
+  const tenantId = cookieStore.get("tenant-user-id")?.value === user.id
+    ? cookieStore.get("tenant-id")?.value || null
+    : null;
 
-  let tenant = null;
-
-  if (tenantId) {
-    tenant = await prisma.tenant.findFirst({
-      where: {
-        id: tenantId,
-        OR: [
-          { ownerId: user.id },
-          {
-            teams: {
-              some: {
-                members: { some: { userId: user.id } },
-              },
-            },
-          },
-        ],
-      },
-      include: { subscription: true },
-    });
-  }
+  const tenant = await findAccessibleTenant(user.id, tenantId);
 
   /* ------------------------------------------------------------------
      2) Team membership (for this tenant)

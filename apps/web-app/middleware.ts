@@ -14,15 +14,14 @@ const PUBLIC_ROUTES = [
   "/api/auth/google/callback",
   "/api/auth/recovery-login",
   "/super/login",
+  "/api/super/auth",
   "/api/plans",
-  "/api/razorpay/order",
-  "/api/razorpay/verify",
-  "/api/razorpay",
   "/api/billing/activate",
   "/api/billing",
   "/api/public",
   "/preview",
   "/api/preview",
+  "/api/runtime/v12",
 ];
 
 /* ==========================================================
@@ -30,6 +29,9 @@ const PUBLIC_ROUTES = [
    ========================================================== */
 const ONBOARDING_ROUTES = [
   "/app/onboarding",
+  "/app/profile",
+  "/app/help",
+  "/api/profile",
   "/api/onboarding/status",
   "/api/onboarding/account-type",
   "/api/onboarding/business-details",
@@ -163,8 +165,12 @@ if (isRuntime) {
   console.log("📡 ONBOARDING STATUS:", obRes.status);
 
   if (!obRes.ok) {
-    console.log("❌ ONBOARDING STATUS FAILED → LOGIN");
-    return NextResponse.redirect(new URL("/app/login", req.url));
+    if (obRes.status === 401 || obRes.status === 403) {
+      console.log("❌ ONBOARDING SESSION REJECTED → LOGIN");
+      return NextResponse.redirect(new URL("/app/login", req.url));
+    }
+    console.error("❌ ONBOARDING STATUS UNAVAILABLE → ALLOW PAGE ERROR UI", obRes.status);
+    return NextResponse.next();
   }
 
   const obData = await obRes.json();
@@ -196,8 +202,12 @@ if (isRuntime) {
   console.log("📡 TENANT STATUS:", tenantRes.status);
 
   if (!tenantRes.ok) {
-    console.log("❌ TENANT FETCH FAILED → LOGIN");
-    return NextResponse.redirect(new URL("/app/login", req.url));
+    if (tenantRes.status === 401 || tenantRes.status === 403) {
+      console.log("❌ TENANT SESSION REJECTED → LOGIN");
+      return NextResponse.redirect(new URL("/app/login", req.url));
+    }
+    console.error("❌ TENANT FETCH UNAVAILABLE → ALLOW PAGE ERROR UI", tenantRes.status);
+    return NextResponse.next();
   }
 
   const tenantData = await tenantRes.json();
@@ -233,8 +243,9 @@ if (isRuntime) {
   res.headers.set("x-pathname", pathname);
   res.cookies.set("tenant-id", tenant.id, {
     path: "/",
-    httpOnly: false,
+    httpOnly: true,
     sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
   });
 
   return res;

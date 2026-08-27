@@ -50,7 +50,7 @@ async function getTenantAiLimits(tenantId: string) {
 ============================================================ */
 async function getCurrentUsage(tenantId: string) {
   let usage = await prisma.planUsage.findFirst({
-    where: { tenantId, key: "ai_tokens" },
+    where: { tenantId, key: "ai_credits" },
     orderBy: { periodStart: "desc" },
   });
 
@@ -58,7 +58,7 @@ async function getCurrentUsage(tenantId: string) {
     usage = await prisma.planUsage.create({
       data: {
         tenantId,
-        key: "ai_tokens",
+        key: "ai_credits",
         used: 0,
       },
     });

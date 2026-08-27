@@ -10,3 +10,4 @@ export * from "./canvas";
 export * from "./preview";
 export * from "./agent-ui";
 export * from "./visual-editor";
+export * from "./insights";

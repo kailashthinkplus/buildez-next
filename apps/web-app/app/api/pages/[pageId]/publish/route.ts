@@ -51,6 +51,9 @@ export async function POST(
       where: {
         id: execCtx.pageId,
         siteId: execCtx.siteId,
+        deletedAt: null,
+        deleted: false,
+        site: { tenantId: execCtx.tenantId, deletedAt: null },
       },
       include: {
         blueprint: true,
@@ -107,22 +110,25 @@ export async function POST(
         },
       });
 
-      await tx.page.update({
-        where: { id: page.id },
+      const updatedPage = await tx.page.updateMany({
+        where: { id: page.id, siteId: execCtx.siteId, deletedAt: null, deleted: false },
         data: {
           status: "PUBLISHED",
           publishedAt: new Date(),
         },
       });
 
-      await tx.site.update({
-        where: { id: execCtx.siteId },
+      const updatedSite = await tx.site.updateMany({
+        where: { id: execCtx.siteId, tenantId: execCtx.tenantId, deletedAt: null },
         data: { status: "PUBLISHED" },
       });
+      if (updatedPage.count !== 1 || updatedSite.count !== 1) {
+        throw new Error("Publish target no longer belongs to this workspace");
+      }
     });
 
     console.log("✅ [PUBLISH] COMPLETE");
 
     return { success: true };
-  })(req);
+  }, { requireTenant: true })(req);
 }

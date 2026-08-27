@@ -37,6 +37,7 @@ import {
   AppWindow,
   ClipboardCheck,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 /* ================================
    SUPER SIDEBAR
@@ -252,7 +253,7 @@ function NavLink({
   collapsed,
 }: {
   href: string;
-  icon: any;
+  icon: LucideIcon;
   label: string;
   active: boolean;
   collapsed: boolean;

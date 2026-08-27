@@ -6,16 +6,11 @@ import { Menu, X } from "lucide-react";
 import { useOnboarding } from "../OnboardingContext";
 import OnboardingSidebar from "./OnboardingSidebar";
 import ThemeToggle from "../../components/ThemeToggle";
+import AccountMenu from "../../components/AccountMenu";
 
 export default function OnboardingHeader() {
   const { step, accountType } = useOnboarding();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-
-  const user = {
-    name: "Kailash Rao",
-    avatarUrl: null,
-  };
 
   return (
     <>
@@ -78,65 +73,7 @@ export default function OnboardingHeader() {
             <ThemeToggle />
           </div>
 
-          {/* PROFILE DROPDOWN */}
-          <div className="relative">
-            <button
-              onClick={() => setProfileOpen(!profileOpen)}
-              className="
-                flex items-center gap-2 px-3 py-1.5
-                rounded-xl hover:bg-black/5 dark:hover:bg-white/10
-                transition
-              "
-            >
-              {/* AVATAR */}
-              <Image
-                src={user.avatarUrl ?? "/default-avatar.svg"}
-                alt="avatar"
-                width={34}
-                height={34}
-                className="rounded-full object-cover"
-              />
-
-              {/* NAME */}
-              <span className="hidden sm:block text-sm font-medium truncate max-w-[110px]">
-                {user.name}
-              </span>
-
-{/* KEBAB MENU ICON */}
-<svg
-  width="16"
-  height="16"
-  viewBox="0 0 24 24"
-  className="opacity-70 text-black dark:text-white"
-  fill="currentColor"
->
-  <circle cx="12" cy="5" r="1.8" />
-  <circle cx="12" cy="12" r="1.8" />
-  <circle cx="12" cy="19" r="1.8" />
-</svg>
-
-            </button>
-
-            {/* DROPDOWN */}
-            {profileOpen && (
-              <div
-                className="
-                  absolute right-0 top-12 w-40 rounded-xl
-                  glass p-2 shadow-xl backdrop-blur-xl z-50
-                "
-              >
-                <button
-                  className="
-                    w-full text-left px-3 py-2 text-sm
-                    hover:bg-black/5 dark:hover:bg-white/10
-                    rounded-lg
-                  "
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
+          <AccountMenu showWorkspace={false} />
         </div>
       </header>
 

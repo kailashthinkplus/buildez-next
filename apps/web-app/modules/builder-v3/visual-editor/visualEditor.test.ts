@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { instrumentTsxSource } from "./instrumentTsx";
-import { patchElementSource } from "./sourcePatches";
+import { patchElementSource, patchElementSources } from "./sourcePatches";
 import { validateBuilderBridgeMessage } from "./contracts";
 import { imageRequestNeedsClarification } from "../../ai-v12/imageIntent";
 import { createBuilderRuntimeScript } from "./runtimeScript";
+import { normalizeGeneratedReactEffects } from "../project-workspace/reactSourceSafety";
 
 const source = `export function Hero(){return <main><h1 className="hero">Hello</h1><img src="/hero.jpg" /></main>}`;
 
@@ -44,6 +45,134 @@ test("Inspector style values patch canonical JSX style objects", () => {
   assert.doesNotMatch(updated, /fontSize: "20px"/);
 });
 
+test("multiple style patches produce exactly one JSX style attribute", () => {
+  const anchor = source.indexOf("<h1");
+
+  const styled = patchElementSources(
+    source,
+    "src/Hero.tsx",
+    String(anchor),
+    [
+      {
+        operation: "style",
+        name: "fontSize",
+        value: "64px",
+      },
+      {
+        operation: "style",
+        name: "fontWeight",
+        value: "700",
+      },
+      {
+        operation: "style",
+        name: "color",
+        value: "red",
+      },
+      {
+        operation: "style",
+        name: "lineHeight",
+        value: "1.1",
+      },
+    ],
+  );
+
+  assert.equal(
+    (styled.match(/\bstyle=/g) ?? []).length,
+    1,
+  );
+
+  assert.match(
+    styled,
+    /fontSize: "64px"/,
+  );
+
+  assert.match(
+    styled,
+    /fontWeight: "700"/,
+  );
+
+  assert.match(
+    styled,
+    /color: "red"/,
+  );
+
+  assert.match(
+    styled,
+    /lineHeight: "1.1"/,
+  );
+});
+
+test("multiple style patches merge with existing JSX styles", () => {
+  const existing =
+    `export function Hero(){return <h1 style={{ marginTop: "12px", color: "blue", fontSize: "20px" }}>Hello</h1>}`;
+
+  const styled = patchElementSources(
+    existing,
+    "src/Hero.tsx",
+    String(existing.indexOf("<h1")),
+    [
+      {
+        operation: "style",
+        name: "fontSize",
+        value: "64px",
+      },
+      {
+        operation: "style",
+        name: "color",
+        value: "red",
+      },
+      {
+        operation: "style",
+        name: "lineHeight",
+        value: "1.1",
+      },
+    ],
+  );
+
+  assert.equal(
+    (styled.match(/\bstyle=/g) ?? []).length,
+    1,
+  );
+
+  assert.match(
+    styled,
+    /marginTop: "12px"/,
+  );
+
+  assert.match(
+    styled,
+    /fontSize: "64px"/,
+  );
+
+  assert.match(
+    styled,
+    /color: "red"/,
+  );
+
+  assert.match(
+    styled,
+    /lineHeight: "1.1"/,
+  );
+
+  assert.doesNotMatch(
+    styled,
+    /fontSize: "20px"/,
+  );
+
+  assert.doesNotMatch(
+    styled,
+    /color: "blue"/,
+  );
+});
+
+test("rich text and media styles remain source-backed", () => {
+  const anchor = source.indexOf("<h1");
+  const rich = patchElementSource(source, "src/Hero.tsx", String(anchor), { operation: "html", value: "Build <strong>better</strong> websites" });
+  assert.match(rich, /Build <strong>better<\/strong> websites/);
+  const background = patchElementSource(source, "src/Hero.tsx", String(anchor), { operation: "style", name: "backgroundImage", value: 'url("https://cdn.example/hero.webp")' });
+  assert.match(background, /backgroundImage: "url\(\\"https:\/\/cdn\.example\/hero\.webp\\"\)"/);
+});
+
 test("connected components and child field mappings persist in source", () => {
   const anchor = source.indexOf("<main");
   const connected = patchElementSource(source, "src/Hero.tsx", String(anchor), {
@@ -72,6 +201,21 @@ test("editor runtime tolerates an empty iframe referrer", () => {
   assert.match(runtime, /document\.referrer\?new URL\(document\.referrer\)\.origin:""/);
   assert.match(runtime, /__buildez_parent_origin/);
   assert.doesNotMatch(runtime, /PARENT_ORIGIN=new URL\(document\.referrer\)/);
+});
+
+test("generated concise React effects cannot return non-cleanup values", () => {
+  const unsafe = `function App(){useEffect(() => setOpen(false), [path]);React.useLayoutEffect(() => window.scrollTo(0, 0), [path]);useEffect(() => () => unsubscribe(), [])}`;
+  const safe = normalizeGeneratedReactEffects(unsafe, "src/main.tsx");
+  assert.match(safe, /useEffect\(\(\) => \{ setOpen\(false\); \}, \[path\]\)/);
+  assert.match(safe, /React\.useLayoutEffect\(\(\) => \{ window\.scrollTo\(0, 0\); \}, \[path\]\)/);
+  assert.match(safe, /useEffect\(\(\) => \(\) => unsubscribe\(\), \[\]\)/);
+});
+
+test("editor runtime reports render crashes to the builder", () => {
+  const runtime = createBuilderRuntimeScript("session");
+  assert.match(runtime, /BUILDEZ_RUNTIME_ERROR/);
+  assert.match(runtime, /unhandledrejection/);
+  assert.match(runtime, /event instanceof ErrorEvent/);
 });
 
 test("overlay geometry does not create a mutation-observer feedback loop", () => {
