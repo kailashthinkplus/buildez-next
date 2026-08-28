@@ -12,6 +12,7 @@ import {
   DEFAULT_CREATIVE_DIRECTION,
   DENSITY_OPTIONS,
   DESIGN_STYLE_OPTIONS,
+  EXPERIENCE_TYPE_OPTIONS,
   IMAGE_STYLE_OPTIONS,
   MOTION_STYLE_OPTIONS,
   PRIMARY_GOAL_OPTIONS,
@@ -191,16 +192,6 @@ export default function V12AgentPanel({
   }, [autoFocus, initialContext, initialPrompt]);
 
   useEffect(() => {
-    try {
-      setShowProTips(
-        window.localStorage.getItem("buildez-pro-tips-dismissed") !== "1"
-      );
-    } catch {
-      setShowProTips(true);
-    }
-  }, []);
-
-  useEffect(() => {
     if (!running) { setElapsed(0); return; }
     const started = Date.now();
     const timer = window.setInterval(() => setElapsed(Math.floor((Date.now() - started) / 1000)), 1000);
@@ -331,6 +322,7 @@ export default function V12AgentPanel({
     setPendingFullPageMode("auto");
     setPendingFullPageContext("Page");
     setShowCreativeDirection(false);
+    setShowProTips(true);
     try {
       await onReset();
     } finally {
@@ -667,19 +659,9 @@ export default function V12AgentPanel({
 
     <div className="min-h-0 flex-1 space-y-3 overflow-auto p-4">
       <div className="flex flex-wrap gap-1.5">{(["Website", "Page", "Selected element", "Image"] as const).map(value => <button key={value} onClick={() => setContext(value)} className={`rounded-full border px-2.5 py-1 text-[11px] ${context === value ? "border-blue-400/40 bg-blue-500/15 text-blue-200" : "border-white/10 text-white/40"}`}>{value}</button>)}</div>
-      {!events.length && showProTips && (
+      {showProTips && (
         <ProTipsCarousel
-          onClose={() => {
-            setShowProTips(false);
-            try {
-              window.localStorage.setItem(
-                "buildez-pro-tips-dismissed",
-                "1"
-              );
-            } catch {
-              // Ignore storage failures.
-            }
-          }}
+          onClose={() => setShowProTips(false)}
         />
       )}
       {!events.length && !pendingFullPagePrompt && !showCreativeDirection && (
@@ -1209,13 +1191,14 @@ function ProTipBulbIcon() {
 
 function CreativeDirectionWizard({ value, onChange, onComplete }: { value: CreativeDirection; onChange(value: CreativeDirection): void; onComplete(): void }) {
   const [step, setStep] = useState(0);
-  const questionCount = 7;
+  const questionCount = 8;
   const next = () => setStep(current => { const nextStep = Math.min(questionCount, current + 1); if (nextStep === questionCount) queueMicrotask(() => onComplete()); return nextStep; });
   const choose = <K extends keyof CreativeDirection,>(key: K, selected: CreativeDirection[K]) => {
     onChange({ ...value, [key]: selected });
     next();
   };
   const questions = [
+    <DirectionPills key="experience" label="What kind of website experience should BuildEZ create?" options={EXPERIENCE_TYPE_OPTIONS} selected={value.experienceType} onSelect={(selected) => choose("experienceType", selected)}/>,
     <DirectionPills key="design" label="What visual direction should the website take?" options={DESIGN_STYLE_OPTIONS} selected={value.designStyle} onSelect={(selected) => choose("designStyle", selected)}/>,
     <DirectionPills key="images" label="What kind of imagery should it use?" options={IMAGE_STYLE_OPTIONS} selected={value.imageStyle} onSelect={(selected) => choose("imageStyle", selected)}/>,
     <DirectionPills key="color" label="What color mood fits the brand?" options={COLOR_MOOD_OPTIONS} selected={value.colorMood} onSelect={(selected) => choose("colorMood", selected)}/>,
@@ -1237,7 +1220,7 @@ function CreativeDirectionWizard({ value, onChange, onComplete }: { value: Creat
     </div>
     <div className="mb-3 flex gap-1" aria-hidden="true">{Array.from({ length: questionCount }, (_, index) => <span key={index} className={`h-1 flex-1 rounded-full ${index < step ? "bg-blue-400" : index === step ? "bg-blue-400/60" : "bg-white/10"}`}/>)}</div>
     {step < questionCount ? questions[step] : <div>
-      <p className="text-xs leading-5 text-white/65">{value.designStyle} design · {value.imageStyle} imagery · {value.motionStyle.toLowerCase()} · {value.colorMood.toLowerCase()} palette · {value.density.toLowerCase()} content{value.audience ? ` · for ${value.audience}` : ""}</p>
+      <p className="text-xs leading-5 text-white/65">{value.experienceType} · {value.designStyle} design · {value.imageStyle} imagery · {value.motionStyle.toLowerCase()} · {value.colorMood.toLowerCase()} palette · {value.density.toLowerCase()} content{value.audience ? ` · for ${value.audience}` : ""}</p>
       <button type="button" onClick={() => setStep(0)} className="mt-2 text-[11px] font-medium text-blue-300 hover:text-blue-200">Review choices</button>
     </div>}
   </div>;

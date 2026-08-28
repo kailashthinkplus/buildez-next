@@ -1,5 +1,24 @@
 import { apiHandler } from "@/lib/api/apiHandler";
-import { createProjectCheckpoint, restoreProjectCheckpoint } from "@/modules/builder-v3/project-workspace";
+import { createProjectCheckpoint, listProjectCheckpoints, restoreProjectCheckpoint } from "@/modules/builder-v3/project-workspace";
+
+export const GET = apiHandler(
+  async ({ auth, params }) => {
+    const siteId = params?.siteId;
+    if (!siteId) throw new Error("Missing siteId");
+    const checkpoints = await listProjectCheckpoints({ siteId, tenantId: auth.tenant.id });
+    return {
+      version: 1,
+      siteId,
+      checkpoints: checkpoints.map((checkpoint) => ({
+        id: checkpoint.id,
+        label: checkpoint.label,
+        revision: checkpoint.revision.sequence,
+        createdAt: checkpoint.createdAt.toISOString(),
+      })),
+    };
+  },
+  { requireTenant: true },
+);
 
 export const POST = apiHandler(
   async ({ auth, params, req }) => {

@@ -6,7 +6,8 @@ export type ElementPatch =
   | Readonly<{ operation: "attribute"; name: EditableAttribute; value: string }>
   | Readonly<{ operation: "connection"; source: ConnectedSource; sourceId: string; presentation: ConnectedPresentation; limit: number }>
   | Readonly<{ operation: "field"; field: string }>
-  | Readonly<{ operation: "style"; name: StyleProperty; value: string }>;
+  | Readonly<{ operation: "style"; name: StyleProperty; value: string }>
+  | Readonly<{ operation: "textStyle"; name: TypographyProperty; value: string; selection: Readonly<{ start: number; end: number; text: string }> }>;
 
 export type ConnectedSource = "none" | "cms" | "blog" | "products";
 export type ConnectedPresentation = "list" | "grid" | "carousel" | "slider";
@@ -19,7 +20,90 @@ export type StyleProperty = "display" | "position" | "width" | "height" | "minWi
   | "gap" | "flexDirection" | "alignItems" | "justifyContent" | "fontFamily" | "fontSize" | "fontWeight" | "lineHeight"
   | "letterSpacing" | "textAlign" | "color" | "backgroundColor" | "borderColor" | "borderWidth" | "borderStyle"
   | "backgroundImage" | "backgroundSize" | "backgroundPosition" | "backgroundRepeat" | "objectFit"
-  | "borderRadius" | "boxShadow" | "opacity" | "overflow" | "zIndex";
+  | "borderRadius" | "boxShadow" | "opacity" | "overflow" | "zIndex" | "flexWrap" | "alignSelf" | "gridTemplateColumns"
+  | "fontStyle" | "textDecoration" | "textTransform" | "whiteSpace" | "wordBreak" | "transform" | "filter" | "cursor";
+
+export type TypographyProperty = "fontFamily" | "fontSize" | "fontWeight" | "fontStyle" | "lineHeight" | "letterSpacing" | "textAlign" | "textDecoration" | "textTransform" | "whiteSpace" | "wordBreak" | "color";
+
+function staticText(children: readonly ts.JsxChild[]): string {
+  return children.map((child) => {
+    if (ts.isJsxText(child)) return child.text;
+    if (ts.isJsxElement(child)) return staticText(child.children);
+    if (ts.isJsxFragment(child)) return staticText(child.children);
+    if (ts.isJsxExpression(child) && child.expression && (ts.isStringLiteral(child.expression) || ts.isNoSubstitutionTemplateLiteral(child.expression))) return child.expression.text;
+    return "";
+  }).join("");
+}
+
+function textStyleSpan(text: string, name: TypographyProperty, value: string): ts.JsxElement {
+  const tag = ts.factory.createIdentifier("span");
+  const style = ts.factory.createJsxAttribute(
+    ts.factory.createIdentifier("style"),
+    ts.factory.createJsxExpression(
+      undefined,
+      ts.factory.createObjectLiteralExpression([
+        ts.factory.createPropertyAssignment(ts.factory.createIdentifier(name), ts.factory.createStringLiteral(value)),
+      ]),
+    ),
+  );
+  return ts.factory.createJsxElement(
+    ts.factory.createJsxOpeningElement(tag, undefined, ts.factory.createJsxAttributes([style])),
+    [ts.factory.createJsxText(text)],
+    ts.factory.createJsxClosingElement(tag),
+  );
+}
+
+function styleStaticTextRange(
+  children: readonly ts.JsxChild[],
+  start: number,
+  end: number,
+  name: TypographyProperty,
+  value: string,
+) {
+  let cursor = 0;
+  let styled = false;
+
+  const transformChildren = (items: readonly ts.JsxChild[]): ts.JsxChild[] => items.flatMap((child): ts.JsxChild[] => {
+    if (ts.isJsxText(child)) {
+      const childStart = cursor;
+      const childEnd = cursor + child.text.length;
+      cursor = childEnd;
+      const overlapStart = Math.max(start, childStart);
+      const overlapEnd = Math.min(end, childEnd);
+      if (overlapStart >= overlapEnd) return [child];
+      const localStart = overlapStart - childStart;
+      const localEnd = overlapEnd - childStart;
+      const result: ts.JsxChild[] = [];
+      if (localStart > 0) result.push(ts.factory.createJsxText(child.text.slice(0, localStart)));
+      result.push(textStyleSpan(child.text.slice(localStart, localEnd), name, value));
+      if (localEnd < child.text.length) result.push(ts.factory.createJsxText(child.text.slice(localEnd)));
+      styled = true;
+      return result;
+    }
+
+    if (ts.isJsxElement(child)) {
+      return [ts.factory.updateJsxElement(child, child.openingElement, transformChildren(child.children), child.closingElement)];
+    }
+
+    if (ts.isJsxFragment(child)) {
+      return [ts.factory.updateJsxFragment(child, child.openingFragment, transformChildren(child.children), child.closingFragment)];
+    }
+
+    if (ts.isJsxExpression(child) && child.expression && (ts.isStringLiteral(child.expression) || ts.isNoSubstitutionTemplateLiteral(child.expression))) {
+      const childStart = cursor;
+      cursor += child.expression.text.length;
+      if (start <= childStart && end >= cursor) {
+        styled = true;
+        return [textStyleSpan(child.expression.text, name, value)];
+      }
+    }
+
+    return [child];
+  });
+
+  const result = transformChildren(children);
+  return { children: result, styled };
+}
 
 export function patchElementSources(
   content: string,
@@ -67,6 +151,12 @@ export function patchElementSources(
       > => patch.operation === "html",
     );
 
+  const textStylePatches = patches.filter(
+    (patch): patch is Extract<ElementPatch, { operation: "textStyle" }> => patch.operation === "textStyle",
+  );
+
+  if (textStylePatches.length > 1) throw new Error("Multiple selected-text style patches are not supported");
+
   if (textPatches.length > 1) {
     throw new Error(
       "Multiple text patches for one element are not supported",
@@ -109,6 +199,27 @@ export function patchElementSources(
        * element during the same AST transformation.
        */
       if (elementMatches) {
+        const textStylePatch = textStylePatches[0];
+
+        if (textStylePatch) {
+          const text = staticText(node.children);
+          let start = textStylePatch.selection.start;
+          let end = textStylePatch.selection.end;
+
+          if (text.slice(start, end) !== textStylePatch.selection.text) {
+            const first = text.indexOf(textStylePatch.selection.text);
+            const second = first < 0 ? -1 : text.indexOf(textStylePatch.selection.text, first + 1);
+            if (first < 0 || second >= 0) throw new Error("The highlighted text is stale or cannot be mapped safely");
+            start = first;
+            end = start + textStylePatch.selection.text.length;
+          }
+
+          const result = styleStaticTextRange(node.children, start, end, textStylePatch.name, textStylePatch.value);
+          if (!result.styled) throw new Error("The highlighted text cannot be styled safely");
+          matched = true;
+          return ts.factory.updateJsxElement(node, node.openingElement, result.children, node.closingElement);
+        }
+
         const contentPatch =
           htmlPatches[0] ?? textPatches[0];
 
@@ -178,7 +289,8 @@ export function patchElementSources(
         for (const patch of patches) {
           if (
             patch.operation === "text" ||
-            patch.operation === "html"
+            patch.operation === "html" ||
+            patch.operation === "textStyle"
           ) {
             continue;
           }

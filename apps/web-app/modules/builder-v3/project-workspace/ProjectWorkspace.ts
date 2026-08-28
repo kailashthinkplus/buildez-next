@@ -1,5 +1,8 @@
 import { createHash } from "node:crypto";
-import { syncActivePreviewProjectFile } from "../preview/PreviewSessionManager";
+import {
+  syncActivePreviewProjectFile,
+  syncActivePreviewProjectSnapshot,
+} from "../preview/PreviewSessionManager";
 
 import { Prisma, prisma } from "@buildez/db";
 
@@ -140,6 +143,25 @@ export async function createProjectCheckpoint(input: {
   });
 }
 
+export async function listProjectCheckpoints(input: {
+  siteId: string;
+  tenantId: string;
+  limit?: number;
+}) {
+  const project = await getOrCreateProject(input.siteId, input.tenantId);
+  return prisma.v12ProjectCheckpoint.findMany({
+    where: { projectId: project.id },
+    orderBy: { createdAt: "desc" },
+    take: Math.max(1, Math.min(input.limit ?? 100, 200)),
+    select: {
+      id: true,
+      label: true,
+      createdAt: true,
+      revision: { select: { sequence: true } },
+    },
+  });
+}
+
 export async function patchProjectFile(input: {
   siteId: string;
   tenantId: string;
@@ -178,7 +200,17 @@ export async function restoreProjectCheckpoint(input: {
     throw new Error("Unsupported checkpoint snapshot");
   }
 
-  return prisma.$transaction(async (tx) => {
+  /*
+   * Capture the currently materialized canonical paths before replacing
+   * the project. Checkpoint restoration may need to remove files from
+   * the live preview as well as restore files.
+   */
+  const previousFiles = await prisma.v12ProjectFile.findMany({
+    where: { projectId: project.id },
+    select: { path: true },
+  });
+
+  const result = await prisma.$transaction(async (tx) => {
     const latest = await tx.v12Project.findUniqueOrThrow({ where: { id: project.id } });
     if (latest.currentRevision !== input.expectedRevision) throw new Error("Project revision conflict");
     const nextRevision = latest.currentRevision + 1;
@@ -205,6 +237,24 @@ export async function restoreProjectCheckpoint(input: {
     await tx.v12Project.update({ where: { id: project.id }, data: { currentRevision: nextRevision } });
     return { revision: revision.sequence, restoredFiles: snapshot.files.length };
   });
+
+  /*
+   * Canonical restore succeeded. Mirror that complete snapshot into the
+   * existing preview. Vite can now update the iframe through HMR instead
+   * of forcing a preview-session restart.
+   */
+  await syncActivePreviewProjectSnapshot({
+    siteId: input.siteId,
+    tenantId: input.tenantId,
+    files: snapshot.files.map((file) => ({
+      path: normalizeProjectPath(file.path),
+      content: file.content,
+    })),
+    previousPaths: previousFiles.map((file) => file.path),
+    projectRevision: result.revision,
+  });
+
+  return result;
 }
 
 export async function searchProjectFiles(input: {

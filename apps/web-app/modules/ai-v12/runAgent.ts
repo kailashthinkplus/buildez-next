@@ -19,6 +19,7 @@ import type { CreativeDirection } from "./creativeDirection";
 import { WEBSITE_DEVELOPMENT_SKILL } from "./websiteDevelopmentSkill";
 import {
   capabilityPlanPrompt,
+  requiresImmersiveToolchain,
   routeV12Capabilities,
 } from "./capabilityRouter";
 import {
@@ -41,8 +42,8 @@ import {
   resolveV12ExecutionPolicy,
   type V12PlanFeatureInput,
 } from "./executionPolicy";
-import { higgsfieldMcpTools, higgsfieldResultUrls } from "./higgsfieldMcp";
-import { persistGeneratedImage } from "@/modules/builder-v2/media/server/persistGeneratedImage";
+import { creativeMcpResultUrls, creativeMcpTools } from "./creativeMcp";
+import { persistCreativeAsset } from "./persistCreativeAsset";
 import { Prisma, prisma } from "@buildez/db";
 import { prepareAgentReferences } from "./prepareReferences";
 import { normalizeThemeTokens } from "@/modules/builder-v2/theme/defaultTheme";
@@ -1551,7 +1552,10 @@ ${generationPrompt}
 ${scopeContract}
   `.trim();
 
-  const capabilityPlan = routeV12Capabilities(generationPrompt);
+  const capabilityPlan = routeV12Capabilities(
+    generationPrompt,
+    input.creativeDirection,
+  );
   const capabilityContext = capabilityPlanPrompt(capabilityPlan);
 
   console.log("\n===== BUILDEZ V12 PIPELINE =====");
@@ -2288,6 +2292,19 @@ BuildEZ project structure.`
     },
     required: ["message", "files"],
   } as const;
+  const immersiveToolchainEnabled = requiresImmersiveToolchain(
+    capabilityPlan,
+    input.creativeDirection,
+  );
+
+  const externalCreativeTools = immersiveToolchainEnabled
+    ? creativeMcpTools({
+        images: Boolean(assetToolPlan?.needsGeneratedImages),
+        video: Boolean(assetToolPlan?.needsVideo),
+        threeD: Boolean(assetToolPlan?.needs3DAssets),
+        design: prepared.inputs.length > 0,
+      })
+    : [];
   const generationText = `You are BuildEZ, an autonomous creative director, senior website designer, motion designer, and frontend engineer. ${action}
 
 FULL-PAGE GENERATION PRIORITIES:
@@ -2372,6 +2389,13 @@ If the Capability Plan requires:
 - data visualization
 
 implement those capabilities instead of downgrading the request to a standard landing page.
+
+EXTERNAL CREATIVE TOOLCHAIN:
+
+${externalCreativeTools.length
+  ? `The following configured MCP production capabilities are available in this generation: ${externalCreativeTools.map((tool) => tool.server_label).join(", ")}.
+Use the relevant tools when the approved asset plan requires cinematic media, 3D assets, or design-reference translation. Integrate returned assets into the final project; do not call a tool merely for demonstration and do not leave generated outputs unused.`
+  : "No external creative MCP is configured for this request. Implement approved code-native visuals with the listed libraries and use the durable generated media supplied below."}
 
 Do NOT add Three.js/WebGL merely because it is available.
 
@@ -2513,8 +2537,13 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
       },
     },
     input: [{ role: "user", content: generationContent }],
-    ...(assetToolPlan?.needsVideo && higgsfieldMcpTools().length
-      ? { tools: higgsfieldMcpTools(), tool_choice: "auto" }
+    ...(externalCreativeTools.length
+      ? {
+          tools: externalCreativeTools,
+          tool_choice: assetToolPlan?.needsVideo || assetToolPlan?.needs3DAssets
+            ? "required"
+            : "auto",
+        }
       : {}),
   });
 
@@ -2545,28 +2574,29 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
   }
   input.onProgress?.("Model response received", "Validating the generated project before applying it");
   const parsedResult = parseResult(outputText(payload), input.mode === "auto");
-  const durableHiggsfieldUrls = new Map<string, string>();
-  for (const sourceUrl of higgsfieldResultUrls(payload)) {
+  const durableCreativeUrls = new Map<string, string>();
+  for (const sourceUrl of creativeMcpResultUrls(payload)) {
     try {
-      const asset = await persistGeneratedImage({
+      const durableUrl = await persistCreativeAsset({
         sourceUrl,
         siteId: input.siteId,
         tenantId: input.tenantId,
         userId: input.userId,
         prompt: effectivePrompt || "AI-generated website asset",
-        provider: "Higgsfield MCP",
+        provider: "Creative MCP",
+        signal: input.signal,
       });
-      durableHiggsfieldUrls.set(sourceUrl, asset.url);
+      durableCreativeUrls.set(sourceUrl, durableUrl);
     } catch {
-      // Video outputs and non-image MCP resources are ignored by the image library.
+      // Keep generation usable if an external provider returns an ephemeral or unsupported resource.
     }
   }
-  const resultWithDurableAssets = durableHiggsfieldUrls.size
+  const resultWithDurableAssets = durableCreativeUrls.size
     ? {
         ...parsedResult,
         files: parsedResult.files.map((file) => ({
           ...file,
-          content: [...durableHiggsfieldUrls].reduce(
+          content: [...durableCreativeUrls].reduce(
             (content, [sourceUrl, durableUrl]) => content.split(sourceUrl).join(durableUrl),
             file.content,
           ),

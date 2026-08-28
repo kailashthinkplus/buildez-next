@@ -1,5 +1,26 @@
 import { createHash } from "node:crypto";
 import ts from "typescript";
+
+// React Three Fiber's lowercase JSX tags are renderer primitives rather than
+// DOM elements. Passing data-* attributes to them makes R3F interpret each
+// hyphenated segment as a nested Three.js property and crashes the canvas.
+const REACT_THREE_INTRINSICS = new Set([
+  "color",
+  "fog",
+  "group",
+  "line",
+  "mesh",
+  "points",
+  "primitive",
+  "scene",
+  "sprite",
+]);
+
+const BUILDEZ_ATTRIBUTE_PREFIX = "data-buildez-";
+
+function isReactThreeSource(content: string) {
+  return /from\s+["']@react-three\/(?:fiber|drei)["']/.test(content);
+}
 function stableId(sourceFile: string, anchor: string) {
   return `be-${createHash("sha256").update(`${sourceFile}:${anchor}`).digest("hex").slice(0, 14)}`;
 }
@@ -25,10 +46,24 @@ function capabilitiesFor(tag: string) {
 }
 export function instrumentTsxSource(content: string, sourceFile: string, projectRevision: number) {
   const parsed = ts.createSourceFile(sourceFile, content, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const containsReactThree = isReactThreeSource(content);
   const transformer: ts.TransformerFactory<ts.SourceFile> = (context) => {
     const visit = (node: ts.Node): ts.VisitResult<ts.Node> => {
       if (!ts.isJsxOpeningElement(node) && !ts.isJsxSelfClosingElement(node)) return ts.visitEachChild(node, visit, context);
       const tag = node.tagName.getText(parsed);
+      if (containsReactThree && REACT_THREE_INTRINSICS.has(tag)) {
+        // Also repair stale preview materializations produced before this guard
+        // existed. Canonical project source should never contain these attrs,
+        // but stripping them here makes preview restarts self-healing.
+        const properties = node.attributes.properties.filter((attribute) =>
+          !ts.isJsxAttribute(attribute) || !attribute.name.getText(parsed).startsWith(BUILDEZ_ATTRIBUTE_PREFIX),
+        );
+        if (properties.length === node.attributes.properties.length) return node;
+        const attributes = ts.factory.updateJsxAttributes(node.attributes, properties);
+        return ts.isJsxOpeningElement(node)
+          ? ts.factory.updateJsxOpeningElement(node, node.tagName, node.typeArguments, attributes)
+          : ts.factory.updateJsxSelfClosingElement(node, node.tagName, node.typeArguments, attributes);
+      }
       if (!/^[a-z][a-z0-9-]*$/.test(tag) || node.attributes.properties.some((attribute) => ts.isJsxAttribute(attribute) && attribute.name.getText(parsed) === "data-buildez-id")) return ts.visitEachChild(node, visit, context);
       const anchor = String(node.getStart(parsed));
       const attrs = [

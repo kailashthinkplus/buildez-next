@@ -7,6 +7,7 @@ export type BuilderSelection = Readonly<{
   parentElementId?: string; textContent?: string; innerHTML?: string; className?: string;
   attributes?: Readonly<Record<string, string>>;
   computedStyleSummary?: Readonly<Record<string, string>>;
+  textSelection?: Readonly<{ start: number; end: number; text: string }>;
   editableCapabilities: readonly EditableCapability[]; projectRevision: number;
   bounds: Readonly<{ top: number; left: number; width: number; height: number }>;
 }>;

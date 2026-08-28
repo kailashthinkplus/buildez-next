@@ -1,5 +1,5 @@
 import { spawn, type ChildProcess } from "node:child_process";
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 
@@ -8,6 +8,7 @@ import {
   normalizeGeneratedReactEffects,
 } from "../project-workspace";
 import {
+  createBuilderRuntimeScript,
   instrumentTsxSource,
 } from "../visual-editor";
 
@@ -24,6 +25,18 @@ type PreviewSession = Readonly<{
 const globalPreview = globalThis as typeof globalThis & { __buildezV12Previews?: Map<string, PreviewSession> };
 const sessions = globalPreview.__buildezV12Previews ?? new Map<string, PreviewSession>();
 globalPreview.__buildezV12Previews = sessions;
+
+/*
+ * React Strict Mode and rapid preview refreshes can issue overlapping start
+ * requests for the same project. Materializing both requests into the same
+ * project root would allow the later write of __buildez_editor.js to replace
+ * the session id used by the earlier iframe. The preview would still render,
+ * but every editor message would then be rejected as stale.
+ *
+ * Keep startup single-flight per tenant/site so the iframe URL and injected
+ * editor runtime always describe the same session.
+ */
+const pendingStarts = new Map<string, Promise<PreviewSession>>();
 
 function portFor(sessionId: string) {
   return 41000 + Array.from(sessionId).reduce((sum, char) => sum + char.charCodeAt(0), 0) % 1000;
@@ -61,41 +74,45 @@ async function previewSessionIsHealthy(
   }
 }
 
-export async function startPreviewSession(input: { siteId: string; tenantId: string; restart?: boolean }) {
-  const existing = [...sessions.values()].find(
+async function createPreviewSession(input: { siteId: string; tenantId: string; restart?: boolean }) {
+  const existing = [...sessions.values()].filter(
     (session) =>
       session.siteId === input.siteId &&
       session.tenantId === input.tenantId
   );
 
-  if (existing && !input.restart) {
-    if (await previewSessionIsHealthy(existing)) {
-      return existing;
+  if (existing.length === 1 && !input.restart) {
+    if (await previewSessionIsHealthy(existing[0])) {
+      /*
+       * The Next.js process can hot-reload the visual editor while the Vite
+       * preview worker remains alive. Refresh the injected bridge before
+       * reusing that worker so a newly mounted iframe never executes stale
+       * selection/editing behavior.
+       */
+      await writeFile(
+        path.join(existing[0].projectRoot, "__buildez_editor.js"),
+        createBuilderRuntimeScript(existing[0].id),
+        "utf8",
+      );
+      return existing[0];
     }
+  }
 
-    /*
-     * Stale cached preview.
-     *
-     * Remove it and fall through to normal materialization instead
-     * of returning a URL whose project directory no longer exists.
-     */
+  /*
+   * Remove stale/restarted sessions and recover from duplicate sessions
+   * left by an older overlapping startup. Reusing an arbitrary duplicate
+   * is unsafe because only one session id can be embedded in the shared
+   * materialized editor script.
+   */
+  for (const session of existing) {
     if (
-      existing.process.exitCode === null &&
-      !existing.process.killed
+      session.process.exitCode === null &&
+      !session.process.killed
     ) {
-      existing.process.kill("SIGTERM");
+      session.process.kill("SIGTERM");
     }
 
-    sessions.delete(existing.id);
-  } else if (existing) {
-    if (
-      existing.process.exitCode === null &&
-      !existing.process.killed
-    ) {
-      existing.process.kill("SIGTERM");
-    }
-
-    sessions.delete(existing.id);
+    sessions.delete(session.id);
   }
 
   const id = randomUUID();
@@ -160,6 +177,22 @@ export async function startPreviewSession(input: { siteId: string; tenantId: str
   return session;
 }
 
+export async function startPreviewSession(input: { siteId: string; tenantId: string; restart?: boolean }) {
+  const key = `${input.tenantId}:${input.siteId}`;
+  const pending = pendingStarts.get(key);
+
+  if (pending) return pending;
+
+  const start = createPreviewSession(input);
+  pendingStarts.set(key, start);
+
+  try {
+    return await start;
+  } finally {
+    if (pendingStarts.get(key) === start) pendingStarts.delete(key);
+  }
+}
+
 /**
  * Synchronize one canonical project file into every active preview
  * session for this tenant/site.
@@ -172,6 +205,78 @@ export async function startPreviewSession(input: { siteId: string; tenantId: str
  * during initial preview materialization so editor instrumentation
  * remains present after HMR.
  */
+
+/**
+ * Mirror an entire canonical project snapshot into every active preview
+ * for this tenant/site.
+ *
+ * Checkpoint restore can both restore files and remove files that did not
+ * exist at the checkpoint. Therefore snapshot synchronization must handle
+ * deletion as well as writes.
+ *
+ * Existing TSX/JSX instrumentation remains centralized in
+ * syncActivePreviewProjectFile().
+ */
+export async function syncActivePreviewProjectSnapshot(input: {
+  siteId: string;
+  tenantId: string;
+  files: ReadonlyArray<{ path: string; content: string }>;
+  previousPaths: ReadonlyArray<string>;
+  projectRevision: number;
+}) {
+  const restoredPaths = new Set(
+    input.files.map((file) => file.path),
+  );
+
+  const removedPaths = input.previousPaths.filter(
+    (projectPath) => !restoredPaths.has(projectPath),
+  );
+
+  const active = [...sessions.values()].filter(
+    (session) =>
+      session.siteId === input.siteId &&
+      session.tenantId === input.tenantId,
+  );
+
+  /*
+   * Remove files that exist in the current preview but are absent from
+   * the restored checkpoint.
+   */
+  for (const session of active) {
+    for (const projectPath of removedPaths) {
+      const target = path.resolve(session.projectRoot, projectPath);
+
+      if (
+        target !== session.projectRoot &&
+        target.startsWith(`${session.projectRoot}${path.sep}`)
+      ) {
+        await rm(target, { force: true });
+      }
+    }
+  }
+
+  /*
+   * Write every restored file through the normal live-preview path.
+   * This preserves React normalization/editor instrumentation and lets
+   * Vite perform HMR without replacing the iframe.
+   */
+  for (const file of input.files) {
+    await syncActivePreviewProjectFile({
+      siteId: input.siteId,
+      tenantId: input.tenantId,
+      path: file.path,
+      content: file.content,
+      projectRevision: input.projectRevision,
+    });
+  }
+
+  return {
+    synced: active.length,
+    writtenFiles: input.files.length,
+    removedFiles: removedPaths.length,
+  };
+}
+
 export async function syncActivePreviewProjectFile(input: {
   siteId: string;
   tenantId: string;

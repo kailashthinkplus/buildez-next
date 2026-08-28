@@ -9,6 +9,12 @@ export const DESIGN_STYLE_OPTIONS = [
   "Technical",
 ] as const;
 
+export const EXPERIENCE_TYPE_OPTIONS = [
+  "Traditional modern",
+  "Immersive 3D / cinematic",
+  "AI decides",
+] as const;
+
 export const MOTION_STYLE_OPTIONS = [
   "Modern motion",
   "Immersive parallax",
@@ -45,6 +51,7 @@ export const PRIMARY_GOAL_OPTIONS = [
 ] as const;
 
 export type CreativeDirection = Readonly<{
+  experienceType: typeof EXPERIENCE_TYPE_OPTIONS[number];
   designStyle: typeof DESIGN_STYLE_OPTIONS[number];
   imageStyle: typeof IMAGE_STYLE_OPTIONS[number];
   colorMood: typeof COLOR_MOOD_OPTIONS[number];
@@ -55,6 +62,7 @@ export type CreativeDirection = Readonly<{
 }>;
 
 export const DEFAULT_CREATIVE_DIRECTION: CreativeDirection = Object.freeze({
+  experienceType: "Traditional modern",
   designStyle: "AI decides",
   imageStyle: "Photorealistic",
   colorMood: "AI decides",
@@ -81,6 +89,7 @@ export function parseCreativeDirection(value: unknown): CreativeDirection {
     candidate = {};
   }
   return {
+    experienceType: option(candidate.experienceType, EXPERIENCE_TYPE_OPTIONS, DEFAULT_CREATIVE_DIRECTION.experienceType),
     designStyle: option(candidate.designStyle, DESIGN_STYLE_OPTIONS, DEFAULT_CREATIVE_DIRECTION.designStyle),
     imageStyle: option(candidate.imageStyle, IMAGE_STYLE_OPTIONS, DEFAULT_CREATIVE_DIRECTION.imageStyle),
     colorMood: option(candidate.colorMood, COLOR_MOOD_OPTIONS, DEFAULT_CREATIVE_DIRECTION.colorMood),

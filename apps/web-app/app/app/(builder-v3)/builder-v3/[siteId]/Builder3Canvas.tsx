@@ -393,10 +393,36 @@ export default function Builder3Canvas({
       setWorkspace(current => ({ ...current, revision: data?.revision }));
       if (direction === "undo") { setUndoStack(items => items.slice(0, -1)); setRedoStack(items => [...items, currentId]); }
       else { setRedoStack(items => items.slice(0, -1)); setUndoStack(items => [...items, currentId]); }
-      setPreviewGeneration(value => value + 1);
+      /*
+       * The restored canonical snapshot is already mirrored into the
+       * active preview by restoreProjectCheckpoint().
+       * Keep the iframe mounted and let Vite HMR update it.
+      */
+      setSelection(undefined);
+      sendCanvas("BUILDEZ_SELECTION_CLEARED");
       setSavedAt(new Date());
+    } catch (reason) {
+      setAgentEvents(events => [...events, {
+        id: crypto.randomUUID(),
+        type: "tool.failed",
+        title: `${direction === "undo" ? "Undo" : "Redo"} failed`,
+        detail: reason instanceof Error ? reason.message : "Project history could not be restored",
+        timestamp: new Date().toISOString(),
+      }]);
     } finally { setSaving(false); }
   }
+
+  useEffect(() => {
+    const handleHistoryShortcut = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target?.tagName || "")) return;
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "z") return;
+      event.preventDefault();
+      void restoreHistory(event.shiftKey ? "redo" : "undo");
+    };
+    window.addEventListener("keydown", handleHistoryShortcut);
+    return () => window.removeEventListener("keydown", handleHistoryShortcut);
+  }, [redoStack, saving, undoStack, workspace?.revision]);
 
   function fitCanvas() {
     const base =
@@ -447,8 +473,17 @@ export default function Builder3Canvas({
       })
       .catch((reason) => { if (!disposed) setError(reason instanceof Error ? reason.message : "Preview failed to start"); });
     return () => {
+      /*
+       * Do not DELETE the preview session from effect cleanup.
+       *
+       * React development/Strict Mode may run setup -> cleanup -> setup
+       * while the builder is still mounted. Deleting here can invalidate
+       * the exact session embedded in __buildez_editor.js and break the
+       * parent/iframe visual-editor bridge.
+       *
+       * PreviewSessionManager already owns replacement/restart cleanup.
+       */
       disposed = true;
-      if (createdSessionId) void fetch("/api/builder-v3/preview/start", { method: "DELETE", headers: { "content-type": "application/json" }, body: JSON.stringify({ sessionId: createdSessionId }), keepalive: true });
     };
   }, [siteId, previewGeneration]);
 
@@ -458,7 +493,15 @@ export default function Builder3Canvas({
     const receive = (event: MessageEvent) => {
       if (event.origin !== previewOrigin || event.source !== iframeRef.current?.contentWindow) return;
       if (!validateBuilderBridgeMessage(event.data, { sessionId: previewSessionId, direction: "to-builder" })) return;
-      if (event.data.type === "BUILDEZ_PREVIEW_READY") setError(undefined);
+      if (event.data.type === "BUILDEZ_PREVIEW_READY") {
+        setError(undefined);
+        /*
+         * Treat preview.ready as the bridge handshake. The iframe load event
+         * can race the injected editor listener during startup/HMR, so confirm
+         * the current mode once the runtime says it is listening.
+         */
+        sendCanvas("BUILDEZ_EDIT_MODE_CHANGED", { mode });
+      }
       if (event.data.type === "BUILDEZ_RUNTIME_ERROR") {
         const payload = event.data.payload as { message?: unknown; source?: unknown };
         const message = typeof payload?.message === "string" && payload.message.trim()
@@ -469,7 +512,13 @@ export default function Builder3Canvas({
           ? events
           : [...events, { id: crypto.randomUUID(), type: "tool.failed", title: "Preview render failed", detail: message, timestamp: new Date().toISOString() }]);
       }
-      if (event.data.type === "BUILDEZ_ELEMENT_SELECTED" || event.data.type === "BUILDEZ_ELEMENT_BOUNDS_CHANGED") setSelection(event.data.payload as BuilderSelection);
+      if (event.data.type === "BUILDEZ_ELEMENT_SELECTED") setSelection(event.data.payload as BuilderSelection);
+      if (event.data.type === "BUILDEZ_ELEMENT_BOUNDS_CHANGED") {
+        const next = event.data.payload as BuilderSelection;
+        setSelection(current => current?.elementId === next.elementId && current.textSelection && !next.textSelection
+          ? { ...next, textSelection: current.textSelection }
+          : next);
+      }
       if (event.data.type === "BUILDEZ_SELECTION_CLEARED") setSelection(undefined);
       if (event.data.type === "BUILDEZ_INLINE_EDIT_COMMITTED") {
         const payload = event.data.payload as BuilderSelection & { value?: string };
@@ -478,7 +527,7 @@ export default function Builder3Canvas({
     };
     window.addEventListener("message", receive);
     return () => window.removeEventListener("message", receive);
-  }, [previewSessionId, previewUrl, workspace?.revision]);
+  }, [mode, previewSessionId, previewUrl, workspace?.revision]);
 
   function sendCanvas(type: string, payload: unknown = {}) {
     if (!previewSessionId || !previewUrl) return;
@@ -607,6 +656,32 @@ export default function Builder3Canvas({
         setWorkspaceLoaded(true);
       })
       .catch((reason) => { setWorkspaceError(reason instanceof Error ? reason.message : "Workspace connection failed"); setWorkspaceLoaded(true); });
+  }, [siteId]);
+
+  useEffect(() => {
+    fetch(`/api/builder-v3/projects/${siteId}/checkpoints`, { cache: "no-store" })
+      .then(async (response) => {
+        const payload = await response.json();
+        if (!response.ok) throw new Error(apiErrorMessage(payload, "History could not be loaded"));
+        const data = payload?.data && typeof payload.data === "object" ? payload.data : payload;
+        const checkpoints = Array.isArray(data?.checkpoints) ? data.checkpoints : [];
+        const seenRevisions = new Set<number>();
+        const undoable = checkpoints
+          .filter((checkpoint: unknown): checkpoint is { id: string; label: string; revision: number } => {
+            if (!checkpoint || typeof checkpoint !== "object") return false;
+            const value = checkpoint as { id?: unknown; label?: unknown; revision?: unknown };
+            if (typeof value.id !== "string" || typeof value.label !== "string" || typeof value.revision !== "number" || !/^Before (?!undo$|redo$|publish$)/i.test(value.label)) return false;
+            if (seenRevisions.has(value.revision)) return false;
+            seenRevisions.add(value.revision);
+            return true;
+          })
+          .map((checkpoint: { id: string }) => checkpoint.id)
+          .reverse();
+        setUndoStack(current => current.length ? current : undoable);
+      })
+      .catch(() => {
+        // History hydration is a convenience; live editing remains available.
+      });
   }, [siteId]);
 
   const canvasLeftOffset = leftPanel ? 420 : 60;
@@ -1078,11 +1153,17 @@ An uploaded codebase has already been imported into the current project. Read sr
           >
           <div
             style={{
-              width: widths[device],
-              minWidth: widths[device],
+              /*
+               * Desktop represents the real responsive browser viewport.
+               * Fill every pixel available between the builder panels.
+               *
+               * Tablet/mobile remain explicit device-width previews.
+               */
+              width: device === "desktop" ? "100%" : widths[device],
+              minWidth: device === "desktop" ? "100%" : widths[device],
               transform: `scale(${zoom / 100})`,
               transformOrigin: "top center",
-              marginInline: "0",
+              marginInline: device === "desktop" ? "0" : "auto",
             }}
             className="relative min-h-[700px] overflow-hidden rounded-sm bg-white shadow-[0_24px_70px_rgb(0_0_0/38%),0_0_0_1px_rgb(255_255_255/7%)] transition-[width]"
           >
@@ -1092,7 +1173,14 @@ An uploaded codebase has already been imported into the current project. Read sr
           {!previewUrl && !error && workspaceLoaded && !agentRunning && !workspaceError && (workspace?.files?.length ?? 0) === 0 && <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>}
           {showBlankPageState && <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>} 
           {error && <div className="absolute inset-0 z-30 grid min-h-[700px] place-items-center bg-white p-8 text-center text-red-700"><div><strong>Preview unavailable</strong><p className="mt-2 max-w-xl text-sm">{error}</p><button type="button" onClick={() => setPreviewGeneration(value => value + 1)} className="mt-5 rounded-lg bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100">Retry preview</button></div></div>}
-          {iframeUrl && !showBlankPageState && <iframe ref={iframeRef} key={`${previewUrl}-${previewGeneration}`} title={`${siteName} ${mode}`} src={iframeUrl} onLoad={() => sendCanvas("BUILDEZ_EDIT_MODE_CHANGED", { mode })} className="h-full min-h-[700px] w-full border-0" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-same-origin" />}
+          {iframeUrl && !showBlankPageState && <iframe ref={iframeRef} key={`${previewUrl}-${previewGeneration}`} title={`${siteName} ${mode}`} src={iframeUrl} onLoad={() => {
+            // A recovered Vite/React preview can load successfully after a
+            // previous render exception. Clear that stale blocking overlay;
+            // a genuine new runtime failure will immediately report itself
+            // through BUILDEZ_RUNTIME_ERROR and restore the error state.
+            setError(undefined);
+            sendCanvas("BUILDEZ_EDIT_MODE_CHANGED", { mode });
+          }} className="h-full min-h-[700px] w-full border-0" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-same-origin" />}
           {previewUrl && !agentRunning && workspace && (workspace.files?.length ?? 0) === 0 && <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>} 
           {mode === "edit" && previewUrl && <div className="pointer-events-none absolute right-3 top-3 z-[150] rounded-md border border-blue-300/30 bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-lg">Edit mode · select an element</div>}
           {mode === "edit" && previewUrl && selection && <NodeToolbar selection={selection} onAction={handleNodeAction}/>}

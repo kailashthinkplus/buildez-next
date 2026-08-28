@@ -16,12 +16,47 @@ export type V12CapabilityPlan = {
   requiresDataViz: boolean;
 };
 
+export function requiresImmersiveToolchain(
+  plan: V12CapabilityPlan,
+  creativeDirection?: Readonly<{ experienceType?: string }>,
+) {
+  return creativeDirection?.experienceType === "Immersive 3D / cinematic" ||
+    plan.requires3D ||
+    plan.capabilities.includes("PARALLAX") ||
+    plan.capabilities.includes("SHADER_WEBGL");
+}
+
 export function routeV12Capabilities(
-  prompt: string
+  prompt: string,
+  creativeDirection?: Readonly<{
+    experienceType?: string;
+    motionStyle?: string;
+    imageStyle?: string;
+  }>,
 ): V12CapabilityPlan {
   const text = prompt.toLowerCase();
 
   const capabilities = new Set<V12Capability>();
+
+  const immersiveExperience =
+    creativeDirection?.experienceType ===
+    "Immersive 3D / cinematic";
+
+  if (immersiveExperience) {
+    capabilities.add("IMMERSIVE_3D");
+    capabilities.add("PARALLAX");
+    capabilities.add("MOTION_RICH");
+    capabilities.add("SHADER_WEBGL");
+  }
+
+  if (creativeDirection?.motionStyle === "Immersive parallax") {
+    capabilities.add("PARALLAX");
+    capabilities.add("MOTION_RICH");
+  }
+
+  if (creativeDirection?.imageStyle === "3D") {
+    capabilities.add("IMMERSIVE_3D");
+  }
 
   const has = (...terms: string[]) =>
     terms.some((term) => text.includes(term));

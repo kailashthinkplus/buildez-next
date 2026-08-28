@@ -19,6 +19,19 @@ test("stable element identities survive ordinary text changes", () => {
   assert.match(first, /data-buildez-capabilities="[^"]*text/);
 });
 
+test("React Three Fiber primitives are not instrumented as DOM elements", () => {
+  const threeSource = `
+    import { Canvas } from "@react-three/fiber";
+    export function Scene() {
+      return <div className="stage"><Canvas><group data-buildez-id="stale"><mesh><boxGeometry /></mesh><fog /></group></Canvas></div>;
+    }
+  `;
+  const instrumented = instrumentTsxSource(threeSource, "src/Scene.tsx", 7);
+
+  assert.match(instrumented, /<div className="stage"[^>]*data-buildez-id=/);
+  assert.doesNotMatch(instrumented, /<(?:group|mesh|fog)[^>]*data-buildez-id=/);
+});
+
 test("bridge rejects stale sessions and unknown messages", () => {
   assert.equal(validateBuilderBridgeMessage({ version: 1, sessionId: "right", type: "BUILDEZ_ELEMENT_SELECTED", payload: {} }, { sessionId: "right", direction: "to-builder" }), true);
   assert.equal(validateBuilderBridgeMessage({ version: 1, sessionId: "stale", type: "BUILDEZ_ELEMENT_SELECTED", payload: {} }, { sessionId: "right", direction: "to-builder" }), false);
@@ -173,6 +186,48 @@ test("rich text and media styles remain source-backed", () => {
   assert.match(background, /backgroundImage: "url\(\\"https:\/\/cdn\.example\/hero\.webp\\"\)"/);
 });
 
+test("typography applies only to the highlighted text range", () => {
+  const value = `export function Hero(){return <h1>Hello beautiful world</h1>}`;
+  const anchor = value.indexOf("<h1");
+  const styled = patchElementSource(value, "src/Hero.tsx", String(anchor), {
+    operation: "textStyle",
+    name: "color",
+    value: "#7c3aed",
+    selection: { start: 6, end: 15, text: "beautiful" },
+  });
+
+  assert.match(styled, /Hello <span style=\{\{ color: "#7c3aed" \}\}>beautiful<\/span> world/);
+  assert.equal((styled.match(/color:/g) ?? []).length, 1);
+});
+
+test("multiple inspector typography changes stay scoped to the same highlighted text", () => {
+  const value = `export function Hero(){return <h1>Hello beautiful world</h1>}`;
+  const selection = { start: 6, end: 15, text: "beautiful" } as const;
+  const colored = patchElementSource(value, "src/Hero.tsx", String(value.indexOf("<h1")), {
+    operation: "textStyle", name: "color", value: "#7c3aed", selection,
+  });
+  const styled = patchElementSource(colored, "src/Hero.tsx", String(colored.indexOf("<h1")), {
+    operation: "textStyle", name: "fontFamily", value: "Georgia", selection,
+  });
+
+  assert.match(styled, /Hello <span style=\{\{ color: "#7c3aed" \}\}><span style=\{\{ fontFamily: "Georgia" \}\}>beautiful<\/span><\/span> world/);
+  assert.doesNotMatch(styled, /<h1 style=/);
+});
+
+test("highlighted typography can cross nested static text", () => {
+  const value = `export function Hero(){return <p>Build <strong>better</strong> websites</p>}`;
+  const anchor = value.indexOf("<p>");
+  const styled = patchElementSource(value, "src/Hero.tsx", String(anchor), {
+    operation: "textStyle",
+    name: "fontWeight",
+    value: "700",
+    selection: { start: 6, end: 20, text: "better website" },
+  });
+
+  assert.match(styled, /<strong><span style=\{\{ fontWeight: "700" \}\}>better<\/span><\/strong>/);
+  assert.match(styled, /<span style=\{\{ fontWeight: "700" \}\}> website<\/span>s/);
+});
+
 test("connected components and child field mappings persist in source", () => {
   const anchor = source.indexOf("<main");
   const connected = patchElementSource(source, "src/Hero.tsx", String(anchor), {
@@ -201,6 +256,25 @@ test("editor runtime tolerates an empty iframe referrer", () => {
   assert.match(runtime, /document\.referrer\?new URL\(document\.referrer\)\.origin:""/);
   assert.match(runtime, /__buildez_parent_origin/);
   assert.doesNotMatch(runtime, /PARENT_ORIGIN=new URL\(document\.referrer\)/);
+});
+
+test("editor runtime installs its message listener before announcing readiness", () => {
+  const runtime = createBuilderRuntimeScript("session");
+  const listener = runtime.indexOf('addEventListener("message"');
+  const ready = runtime.indexOf('post("BUILDEZ_PREVIEW_READY"');
+
+  assert.ok(listener >= 0);
+  assert.ok(ready > listener);
+});
+
+test("editor runtime reports a highlighted text range to the inspector", () => {
+  const runtime = createBuilderRuntimeScript("session");
+  assert.match(runtime, /function liveSelectedText\(el\)/);
+  assert.match(runtime, /textRange=\{element:el,value:live\}/);
+  assert.match(runtime, /textRange=null/);
+  assert.match(runtime, /selection\.isCollapsed/);
+  assert.match(runtime, /textSelection:selectedText\(el\)/);
+  assert.match(runtime, /selectionchange/);
 });
 
 test("generated concise React effects cannot return non-cleanup values", () => {

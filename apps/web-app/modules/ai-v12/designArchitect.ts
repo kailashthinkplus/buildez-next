@@ -398,6 +398,67 @@ function fallbackPlan(
   };
 }
 
+export function enforceImmersiveMediaPlan(
+  plan: V12DesignArchitectResult,
+  creativeDirection: unknown,
+) {
+  const direction = creativeDirection && typeof creativeDirection === "object" && !Array.isArray(creativeDirection)
+    ? creativeDirection as Record<string, unknown>
+    : {};
+  const imageStyle = typeof direction.imageStyle === "string" ? direction.imageStyle : "Photorealistic";
+  const explicitlyNoImages = imageStyle === "No generated imagery";
+  const immersive = direction.experienceType === "Immersive 3D / cinematic"
+    || plan.experience === "IMMERSIVE_3D"
+    || plan.experience === "CINEMATIC";
+
+  if (!immersive || explicitlyNoImages) return plan;
+
+  const medium = imageStyle === "3D"
+    ? "cinematic physically based 3D product render"
+    : imageStyle === "Editorial illustration"
+      ? "premium editorial illustration"
+      : imageStyle === "Abstract"
+        ? "concept-specific abstract material artwork"
+        : imageStyle === "Collage"
+          ? "premium editorial collage"
+          : "photorealistic premium editorial photography";
+  const requestedMedium = imageStyle !== "Photorealistic";
+  const candidates: V12DesignArchitectResult["mediaPlan"]["images"] = [
+    {
+      role: "cinematic hero keyframe",
+      purpose: "Anchor the opening scene and provide a substantial visual layer behind the live 3D subject",
+      prompt: `Create the opening cinematic keyframe for this website: ${plan.expandedBrief}. Concept: ${plan.designDirection.concept}. Composition: ${plan.designDirection.composition}. Preserve generous negative space for interface typography. No text, logo, or watermark.`,
+      aspect: "landscape",
+      medium,
+      useRequestedMedium: requestedMedium,
+    },
+    {
+      role: "environment depth plate",
+      purpose: "Provide a wide atmospheric background layer for scroll-directed parallax depth",
+      prompt: `Create a wide environmental depth plate for this immersive website concept: ${plan.designDirection.concept}. Match this visual language: ${plan.designDirection.visualLanguage}. Keep the scene spatially deep, edge-to-edge, and free of text, logos, or watermarks.`,
+      aspect: "landscape",
+      medium,
+      useRequestedMedium: requestedMedium,
+    },
+    {
+      role: "material detail reveal",
+      purpose: "Support a close-up reveal section with a tactile foreground visual",
+      prompt: `Create a tactile macro detail visual for this immersive website: ${plan.expandedBrief}. Emphasize physically plausible materials, controlled light, depth, and a strong crop suitable for a scroll reveal. No text, logo, or watermark.`,
+      aspect: "landscape",
+      medium,
+      useRequestedMedium: requestedMedium,
+    },
+  ];
+
+  plan.mediaPlan.needsGeneratedImages = true;
+  const roles = new Set(plan.mediaPlan.images.map((item) => item.role.toLowerCase()));
+  for (const candidate of candidates) {
+    if (plan.mediaPlan.images.length >= 3) break;
+    if (!roles.has(candidate.role.toLowerCase())) plan.mediaPlan.images.push(candidate);
+  }
+  return plan;
+}
+
 export async function createV12DesignArchitectPlan(input: {
   apiKey: string;
   model: string;
@@ -410,10 +471,10 @@ export async function createV12DesignArchitectPlan(input: {
   designVariationSeed?: string;
   signal: AbortSignal;
 }): Promise<V12DesignArchitectResult> {
-  const fallback = fallbackPlan(
+  const fallback = enforceImmersiveMediaPlan(fallbackPlan(
     input.prompt,
     input.deterministicPlan,
-  );
+  ), input.creativeDirection);
 
   try {
     const response = await fetch(
@@ -669,6 +730,23 @@ CSS, SVG and browser APIs require no dependency.
 The deterministic capability plan is a guardrail, not a command to
 make the experience visually boring.
 
+EXPERIENCE TYPE CONTRACT
+
+USER CREATIVE DIRECTION.experienceType is authoritative:
+
+- "Immersive 3D / cinematic" requires a genuine IMMERSIVE_3D or
+  CINEMATIC experience with a coherent scroll narrative, layered depth,
+  sophisticated parallax, and real 3D/WebGL where it serves the concept.
+  Plan the external creative assets and approved libraries needed to
+  execute it; do not return a conventional landing page with a few fades.
+- "Traditional modern" keeps the established polished responsive website
+  path. Do not introduce heavy 3D/WebGL unless the free-text request
+  explicitly asks for it.
+- "AI decides" allows semantic inference from the brief.
+
+An explicit free-text request for 3D, WebGL, shaders, cinematic scrolling,
+or parallax overrides the traditional default.
+
 FACTUAL SAFETY
 
 Never invent:
@@ -755,9 +833,63 @@ Create one coherent implementation-ready design architecture.
         ? creativeDirection.imageStyle
         : "";
 
+    const experienceType =
+      typeof creativeDirection.experienceType === "string"
+        ? creativeDirection.experienceType
+        : "Traditional modern";
+
+    if (experienceType === "Immersive 3D / cinematic") {
+      plan.experience = "IMMERSIVE_3D";
+      plan.capabilities = [...new Set([
+        ...plan.capabilities,
+        "IMMERSIVE_3D" as const,
+        "PARALLAX" as const,
+        "MOTION_RICH" as const,
+        "SHADER_WEBGL" as const,
+      ])];
+      plan.libraries = [...new Set([
+        ...plan.libraries,
+        "gsap",
+        "three",
+        "@react-three/fiber",
+        "@react-three/drei",
+      ])];
+      plan.mediaPlan.needs3DAssets = true;
+      plan.mediaPlan.needsShaderCode = true;
+      plan.mediaPlan.needsVideo = true;
+      if (!plan.mediaPlan.videos.length) {
+        plan.mediaPlan.videos = [{
+          role: "cinematic depth sequence",
+          purpose: "Support the immersive scroll narrative with art-directed motion media",
+          prompt: `Create a seamless cinematic motion asset for this website concept: ${plan.designDirection.concept}. Match ${plan.designDirection.visualLanguage}. No text, logos, or watermark.`,
+        }];
+      }
+      if (!plan.motionPlan.length) {
+        plan.motionPlan = [
+          "GSAP ScrollTrigger timeline with pinned narrative scenes",
+          "Layered foreground, subject and background parallax at bounded speeds",
+          "Pointer-responsive 3D depth with touch and reduced-motion fallbacks",
+          "Section transitions that preserve one continuous visual story",
+        ];
+      }
+    } else if (
+      experienceType === "Traditional modern" &&
+      input.deterministicPlan.primary === "STANDARD"
+    ) {
+      plan.experience = "TRADITIONAL";
+      plan.capabilities = plan.capabilities.filter((capability) => capability === "STANDARD" || capability === "MOTION_RICH");
+      if (!plan.capabilities.length) plan.capabilities = ["STANDARD"];
+      plan.libraries = plan.libraries.filter((library) => library === "motion" || library === "lucide-react");
+      plan.mediaPlan.needs3DAssets = false;
+      plan.mediaPlan.needsShaderCode = false;
+      plan.mediaPlan.needsVideo = false;
+      plan.mediaPlan.videos = [];
+    }
+
     const requiresGeneratedImages =
       imageStyle === "Photorealistic" ||
       imageStyle === "Editorial illustration" ||
+      imageStyle === "3D" ||
       imageStyle === "Abstract" ||
       imageStyle === "Collage";
 
@@ -841,7 +973,7 @@ Create one coherent implementation-ready design architecture.
       );
     }
 
-    return plan;
+    return enforceImmersiveMediaPlan(plan, input.creativeDirection);
   } catch {
     return fallback;
   }
