@@ -27,6 +27,15 @@ export type V12DesignArchitectResult = {
     visualLanguage: string;
   };
 
+  subjectFidelity: {
+    primarySubject: string;
+    recognitionCues: string[];
+    proportionAndTopology: string[];
+    materialAndSurfaceCues: string[];
+    forbiddenSubstitutions: string[];
+    validationViews: string[];
+  };
+
   sections: Array<{
     role: string;
     purpose: string;
@@ -86,6 +95,7 @@ const schema = {
     "capabilities",
     "libraries",
     "designDirection",
+    "subjectFidelity",
     "sections",
     "mediaPlan",
     "motionPlan",
@@ -153,6 +163,27 @@ const schema = {
         colorStrategy: { type: "string" },
         spatialSystem: { type: "string" },
         visualLanguage: { type: "string" },
+      },
+    },
+
+    subjectFidelity: {
+      type: "object",
+      additionalProperties: false,
+      required: [
+        "primarySubject",
+        "recognitionCues",
+        "proportionAndTopology",
+        "materialAndSurfaceCues",
+        "forbiddenSubstitutions",
+        "validationViews",
+      ],
+      properties: {
+        primarySubject: { type: "string" },
+        recognitionCues: { type: "array", maxItems: 8, items: { type: "string" } },
+        proportionAndTopology: { type: "array", maxItems: 8, items: { type: "string" } },
+        materialAndSurfaceCues: { type: "array", maxItems: 8, items: { type: "string" } },
+        forbiddenSubstitutions: { type: "array", maxItems: 8, items: { type: "string" } },
+        validationViews: { type: "array", maxItems: 6, items: { type: "string" } },
       },
     },
 
@@ -368,6 +399,15 @@ function fallbackPlan(
         "Use restrained, brand-specific visual treatments rather than generic UI decoration.",
     },
 
+    subjectFidelity: {
+      primarySubject: "Infer the primary visual subject directly from the user request.",
+      recognitionCues: ["Preserve the subject's category-defining silhouette and landmark features."],
+      proportionAndTopology: ["Keep relative scale, orientation and component relationships physically or visually coherent."],
+      materialAndSurfaceCues: ["Use surfaces and materials that reinforce the requested subject rather than disguise it."],
+      forbiddenSubstitutions: ["Do not replace the subject with a generic primitive, icon, blob or category-adjacent approximation."],
+      validationViews: ["Default desktop hero view", "Default mobile hero view"],
+    },
+
     sections: [],
 
     mediaPlan: {
@@ -423,11 +463,12 @@ export function enforceImmersiveMediaPlan(
           ? "premium editorial collage"
           : "photorealistic premium editorial photography";
   const requestedMedium = imageStyle !== "Photorealistic";
+  const subjectFidelity = `Primary subject fidelity: ${JSON.stringify(plan.subjectFidelity)}. The result must preserve these recognition cues and forbidden substitutions.`;
   const candidates: V12DesignArchitectResult["mediaPlan"]["images"] = [
     {
       role: "cinematic hero keyframe",
       purpose: "Anchor the opening scene and provide a substantial visual layer behind the live 3D subject",
-      prompt: `Create the opening cinematic keyframe for this website: ${plan.expandedBrief}. Concept: ${plan.designDirection.concept}. Composition: ${plan.designDirection.composition}. Preserve generous negative space for interface typography. No text, logo, or watermark.`,
+      prompt: `Create the opening cinematic keyframe for this website: ${plan.expandedBrief}. Concept: ${plan.designDirection.concept}. Composition: ${plan.designDirection.composition}. ${subjectFidelity} Preserve generous negative space for interface typography. No text, logo, or watermark.`,
       aspect: "landscape",
       medium,
       useRequestedMedium: requestedMedium,
@@ -435,7 +476,7 @@ export function enforceImmersiveMediaPlan(
     {
       role: "environment depth plate",
       purpose: "Provide a wide atmospheric background layer for scroll-directed parallax depth",
-      prompt: `Create a wide environmental depth plate for this immersive website concept: ${plan.designDirection.concept}. Match this visual language: ${plan.designDirection.visualLanguage}. Keep the scene spatially deep, edge-to-edge, and free of text, logos, or watermarks.`,
+      prompt: `Create a wide environmental depth plate for this immersive website concept: ${plan.designDirection.concept}. Match this visual language: ${plan.designDirection.visualLanguage}. ${subjectFidelity} Keep the scene spatially deep, edge-to-edge, and free of text, logos, or watermarks.`,
       aspect: "landscape",
       medium,
       useRequestedMedium: requestedMedium,
@@ -443,7 +484,7 @@ export function enforceImmersiveMediaPlan(
     {
       role: "material detail reveal",
       purpose: "Support a close-up reveal section with a tactile foreground visual",
-      prompt: `Create a tactile macro detail visual for this immersive website: ${plan.expandedBrief}. Emphasize physically plausible materials, controlled light, depth, and a strong crop suitable for a scroll reveal. No text, logo, or watermark.`,
+      prompt: `Create a tactile macro detail visual for this immersive website: ${plan.expandedBrief}. ${subjectFidelity} Emphasize physically plausible materials, controlled light, depth, and a strong crop suitable for a scroll reveal. No text, logo, or watermark.`,
       aspect: "landscape",
       medium,
       useRequestedMedium: requestedMedium,
@@ -565,6 +606,8 @@ not around a fixed SaaS/landing-page formula.
 6. Decide what implementation capabilities and libraries are justified.
 
 7. Keep the result practical for responsive frontend implementation.
+
+8. Create a subject-fidelity plan whenever the request has a primary visual subject. Extract category-defining silhouette cues, relative proportions, component topology, landmark features, material behavior, forbidden substitutions, and the desktop/mobile views that must prove recognizability. This applies universally rather than to any fixed product category. If the experience has no primary visual subject, state that explicitly and use empty cue arrays.
 
 VISUAL QUALITY
 
@@ -924,6 +967,7 @@ Create one coherent implementation-ready design architecture.
 
       const fallbackImagePrompt = [
         `Create a substantial website visual for this specific brief: ${plan.expandedBrief}.`,
+        `Primary subject fidelity plan: ${JSON.stringify(plan.subjectFidelity)}.`,
         `Creative concept: ${plan.designDirection.concept}.`,
         `Composition direction: ${plan.designDirection.composition}.`,
         `Visual language: ${plan.designDirection.visualLanguage}.`,

@@ -81,6 +81,13 @@ function configuredDefinitions(): CreativeMcpDefinition[] {
   return definitions;
 }
 
+export function hasConfiguredCreativeCapability(capability: keyof CreativeMcpNeeds) {
+  return configuredDefinitions().some((definition) => {
+    const url = definition.url?.trim();
+    return Boolean(url && /^https:\/\//i.test(url) && definition.capabilities.includes(capability));
+  });
+}
+
 export function creativeMcpTools(needs: CreativeMcpNeeds): Array<Record<string, unknown>> {
   const labels = new Set<string>();
   return configuredDefinitions().flatMap((definition) => {

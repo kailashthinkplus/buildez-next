@@ -20,6 +20,10 @@ import { describeBuilderSelection } from "@/modules/builder-v3/visual-editor/sel
 import { SourceInspector } from "@/modules/builder-v3/visual-editor/SourceInspector";
 import type { ElementPatch } from "@/modules/builder-v3/visual-editor/sourcePatches";
 import { AIInsightsPanel } from "@/modules/builder-v3/insights";
+import {
+  projectManifestHasPageRoute,
+  resolvePageCanvasState,
+} from "@/modules/builder-v3/pageCanvasState";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
 
 type Device = "desktop" | "tablet" | "mobile";
@@ -558,41 +562,19 @@ export default function Builder3Canvas({
       : pagePreviewUrl;
 
   const selectedPageHasProjectRoute = (() => {
-    if (!page?.slug) return true;
     if (!workspace) return false;
-
-    const manifest = workspace.pageManifest;
-
-    const pages =
-      Array.isArray(manifest)
-        ? manifest
-        : manifest &&
-            typeof manifest === "object" &&
-            "pages" in manifest &&
-            Array.isArray((manifest as { pages?: unknown }).pages)
-          ? (manifest as { pages: unknown[] }).pages
-          : [];
-
-    const expectedRoute =
-      page.slug === "home"
-        ? "/"
-        : `/${page.slug.replace(/^\/+|\/+$/g, "")}`;
-
-    return pages.some(
-      (entry) =>
-        entry &&
-        typeof entry === "object" &&
-        "route" in entry &&
-        (entry as { route?: unknown }).route === expectedRoute
-    );
+    return projectManifestHasPageRoute(workspace.pageManifest, page?.slug);
   })();
 
-  const showBlankPageState =
-    workspaceLoaded &&
-    !workspaceError &&
-    !agentRunning &&
-    Boolean(page?.id) &&
-    !selectedPageHasProjectRoute;
+  const pageCanvasState = resolvePageCanvasState({
+    workspaceLoaded,
+    workspaceError,
+    pageId: page?.id,
+    hasProjectRoute: selectedPageHasProjectRoute,
+    agentRunning,
+  });
+
+  const showBlankPageState = pageCanvasState !== "page";
 
   useEffect(() => {
     sendCanvas("BUILDEZ_EDIT_MODE_CHANGED", { mode });
@@ -1171,7 +1153,10 @@ An uploaded codebase has already been imported into the current project. Read sr
           {!previewUrl && !error && workspaceLoaded && (workspace?.files?.length ?? 0) > 0 && <div className="grid min-h-[700px] place-items-center bg-white text-sm text-slate-400"><div className="flex items-center gap-2"><span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"/>Preparing preview</div></div>}
           {agentRunning && !previewUrl && <GenerationArtwork/>}
           {!previewUrl && !error && workspaceLoaded && !agentRunning && !workspaceError && (workspace?.files?.length ?? 0) === 0 && <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>}
-          {showBlankPageState && <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>} 
+          {pageCanvasState === "blank" && (
+            <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>
+          )}
+          {pageCanvasState === "generating" && <GenerationArtwork/>}
           {error && <div className="absolute inset-0 z-30 grid min-h-[700px] place-items-center bg-white p-8 text-center text-red-700"><div><strong>Preview unavailable</strong><p className="mt-2 max-w-xl text-sm">{error}</p><button type="button" onClick={() => setPreviewGeneration(value => value + 1)} className="mt-5 rounded-lg bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100">Retry preview</button></div></div>}
           {iframeUrl && !showBlankPageState && <iframe ref={iframeRef} key={`${previewUrl}-${previewGeneration}`} title={`${siteName} ${mode}`} src={iframeUrl} onLoad={() => {
             // A recovered Vite/React preview can load successfully after a

@@ -6,6 +6,10 @@ import { validateBuilderBridgeMessage } from "./contracts";
 import { imageRequestNeedsClarification } from "../../ai-v12/imageIntent";
 import { createBuilderRuntimeScript } from "./runtimeScript";
 import { normalizeGeneratedReactEffects } from "../project-workspace/reactSourceSafety";
+import {
+  projectManifestHasPageRoute,
+  resolvePageCanvasState,
+} from "../pageCanvasState";
 
 const source = `export function Hero(){return <main><h1 className="hero">Hello</h1><img src="/hero.jpg" /></main>}`;
 
@@ -17,6 +21,27 @@ test("stable element identities survive ordinary text changes", () => {
   assert.equal(new Set(ids(first)).size, ids(first).length);
   assert.match(first, /data-buildez-source-file="src\/Hero.tsx"/);
   assert.match(first, /data-buildez-capabilities="[^"]*text/);
+});
+
+test("a blank selected page never reveals another route while generation runs", () => {
+  const manifest = {
+    pages: [{ route: "/", sourceFile: "src/pages/HomePage.tsx" }],
+  };
+  const hasNewPageRoute = projectManifestHasPageRoute(manifest, "new-page");
+
+  assert.equal(hasNewPageRoute, false);
+  assert.equal(resolvePageCanvasState({
+    workspaceLoaded: true,
+    pageId: "new-page-id",
+    hasProjectRoute: hasNewPageRoute,
+    agentRunning: false,
+  }), "blank");
+  assert.equal(resolvePageCanvasState({
+    workspaceLoaded: true,
+    pageId: "new-page-id",
+    hasProjectRoute: hasNewPageRoute,
+    agentRunning: true,
+  }), "generating");
 });
 
 test("React Three Fiber primitives are not instrumented as DOM elements", () => {

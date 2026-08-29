@@ -44,6 +44,24 @@ export async function POST(req: NextRequest) {
     const returnBase = returnPath === "/app/workspace/billing" && configuredReturn
       ? configuredReturn
       : `${req.nextUrl.origin}${returnPath}`;
+    if (typeof auth.plan?.dodoSubscriptionId === "string" && auth.plan.dodoSubscriptionId) {
+      const changed = await client.subscriptions.changePlan(auth.plan.dodoSubscriptionId, {
+        product_id: productId,
+        quantity: 1,
+        proration_billing_mode: "prorated_immediately",
+        on_payment_failure: "prevent_change",
+        metadata: {
+          tenantId: auth.tenant.id,
+          userId: auth.user.id,
+          planCode,
+          billingCycle,
+        },
+      });
+      return Response.json({
+        checkoutUrl: changed.payment_link || `${returnBase}${returnBase.includes("?") ? "&" : "?"}planChange=processing`,
+        planChange: true,
+      });
+    }
     const session = await client.checkoutSessions.create({
       product_cart: [{ product_id: productId, quantity: 1 }],
       customer: { email: auth.user.email, ...(auth.user.name ? { name: auth.user.name } : {}) },

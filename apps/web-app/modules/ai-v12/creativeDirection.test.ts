@@ -8,6 +8,8 @@ import {
 import { requiresImmersiveToolchain, routeV12Capabilities } from "./capabilityRouter";
 import { creativeMcpTools } from "./creativeMcp";
 import { enforceImmersiveMediaPlan, type V12DesignArchitectResult } from "./designArchitect";
+import { WEBSITE_DEVELOPMENT_SKILL } from "./websiteDevelopmentSkill";
+import { immersiveAcceptanceFailures, requiresExternal3DModel } from "./experienceAcceptance";
 
 test("creative direction defaults to photorealistic imagery", () => {
   assert.deepEqual(parseCreativeDirection(undefined), DEFAULT_CREATIVE_DIRECTION);
@@ -100,6 +102,7 @@ test("immersive generation receives a minimum cinematic depth-asset plan", () =>
       spatialSystem: "Cinematic",
       visualLanguage: "Controlled studio light and tactile metal",
     },
+    subjectFidelity: { primarySubject: "watch", recognitionCues: [], proportionAndTopology: [], materialAndSurfaceCues: [], forbiddenSubstitutions: [], validationViews: [] },
     sections: [],
     mediaPlan: {
       needsGeneratedImages: false,
@@ -135,6 +138,7 @@ test("explicit no-generated-imagery choice remains authoritative in immersive mo
     capabilities: ["IMMERSIVE_3D"],
     libraries: ["three"],
     designDirection: { concept: "Depth", composition: "Layered", typography: "Serif", colorStrategy: "Dark", spatialSystem: "Wide", visualLanguage: "Tactile" },
+    subjectFidelity: { primarySubject: "launch subject", recognitionCues: [], proportionAndTopology: [], materialAndSurfaceCues: [], forbiddenSubstitutions: [], validationViews: [] },
     sections: [],
     mediaPlan: { needsGeneratedImages: false, needsVideo: true, needs3DAssets: true, needsShaderCode: true, needsCustomSvg: false, needsDataViz: false, needsIcons: false, images: [], videos: [], codeVisualRequirements: [] },
     motionPlan: [], performanceRequirements: [], rationale: "Immersive",
@@ -143,4 +147,53 @@ test("explicit no-generated-imagery choice remains authoritative in immersive mo
   enforceImmersiveMediaPlan(plan, { imageStyle: "No generated imagery" });
   assert.equal(plan.mediaPlan.needsGeneratedImages, false);
   assert.equal(plan.mediaPlan.images.length, 0);
+});
+
+test("generation skill rejects unrecognizable primitive 3D subjects", () => {
+  assert.match(WEBSITE_DEVELOPMENT_SKILL, /SUBJECT FIDELITY IS A RELEASE-BLOCKING REQUIREMENT/);
+  assert.match(WEBSITE_DEVELOPMENT_SKILL, /silhouette, relative proportions, component topology, landmark features/);
+  assert.match(WEBSITE_DEVELOPMENT_SKILL, /generic blob or primitive assembly/);
+  assert.match(WEBSITE_DEVELOPMENT_SKILL, /default camera view at desktop and mobile sizes/);
+  assert.doesNotMatch(WEBSITE_DEVELOPMENT_SKILL, /For vehicles|For watches|For buildings/);
+});
+
+test("immersive acceptance rejects ambient WebGL and one-layer image drift", () => {
+  const failures = immersiveAcceptanceFailures([{
+    path: "src/Ambient.tsx",
+    content: "new THREE.OrthographicCamera(); new THREE.ShaderMaterial(); gsap.to('[data-parallax]', { yPercent: 5 });",
+  }], {
+    requires3D: true,
+    requiresWebGL: true,
+    capabilities: ["IMMERSIVE_3D", "PARALLAX", "SHADER_WEBGL"],
+  });
+  assert.equal(failures.length, 2);
+  assert.match(failures.join(" "), /perspective 3D scene/);
+  assert.match(failures.join(" "), /three simultaneous marked depth planes/);
+});
+
+test("immersive acceptance recognizes scroll-driven perspective depth", () => {
+  const failures = immersiveAcceptanceFailures([{
+    path: "src/Scene.tsx",
+    content: "import { Canvas, useFrame } from '@react-three/fiber'; function Scene({scrollProgress}) { useFrame(({camera}) => { camera.position.z = 8 - scrollProgress * 3; camera.lookAt(0,0,0); }); return <Canvas><mesh /></Canvas>; } const shader = new THREE.ShaderMaterial();",
+  }], {
+    requires3D: true,
+    requiresWebGL: true,
+    capabilities: ["IMMERSIVE_3D", "PARALLAX", "SHADER_WEBGL"],
+  });
+  assert.deepEqual(failures, []);
+});
+
+test("realistic subject requests require an external model instead of primitive substitution", () => {
+  assert.equal(requiresExternal3DModel("Create a photorealistic high-fidelity product in genuine 3D", { requires3D: true }), true);
+  assert.equal(requiresExternal3DModel("Create an abstract code-native particle sculpture", { requires3D: true }), false);
+  assert.equal(requiresExternal3DModel("Create a realistic photograph", { requires3D: false }), false);
+  const failures = immersiveAcceptanceFailures([{
+    path: "src/Scene.tsx",
+    content: "import { Canvas, useFrame } from '@react-three/fiber'; function Scene({scroll}) { useFrame(({camera}) => camera.position.z = scroll); return <Canvas><mesh /></Canvas> } const shader = new THREE.ShaderMaterial();",
+  }], {
+    requires3D: true,
+    requiresWebGL: true,
+    capabilities: ["IMMERSIVE_3D", "PARALLAX", "SHADER_WEBGL"],
+  }, { requiresExternalModel: true });
+  assert.match(failures.join(" "), /external high-fidelity 3D model/);
 });

@@ -42,8 +42,9 @@ import {
   resolveV12ExecutionPolicy,
   type V12PlanFeatureInput,
 } from "./executionPolicy";
-import { creativeMcpResultUrls, creativeMcpTools } from "./creativeMcp";
+import { creativeMcpResultUrls, creativeMcpTools, hasConfiguredCreativeCapability } from "./creativeMcp";
 import { persistCreativeAsset } from "./persistCreativeAsset";
+import { immersiveAcceptanceFailures, requiresExternal3DModel } from "./experienceAcceptance";
 import { Prisma, prisma } from "@buildez/db";
 import { prepareAgentReferences } from "./prepareReferences";
 import { normalizeThemeTokens } from "@/modules/builder-v2/theme/defaultTheme";
@@ -2305,6 +2306,15 @@ BuildEZ project structure.`
         design: prepared.inputs.length > 0,
       })
     : [];
+  const external3DModelRequired = requiresExternal3DModel(
+    effectivePrompt || generationPrompt || "",
+    capabilityPlan,
+  );
+  if (external3DModelRequired && !hasConfiguredCreativeCapability("threeD")) {
+    throw new Error(
+      "BuildEZ cannot create this high-fidelity 3D experience yet because no Builder 3D provider is configured. Configure MESHY_MCP_URL or SPLINE_MCP_URL, then retry. The project was not changed and BuildEZ will not substitute flat imagery or primitive geometry.",
+    );
+  }
   const generationText = `You are BuildEZ, an autonomous creative director, senior website designer, motion designer, and frontend engineer. ${action}
 
 FULL-PAGE GENERATION PRIORITIES:
@@ -2389,6 +2399,16 @@ If the Capability Plan requires:
 - data visualization
 
 implement those capabilities instead of downgrading the request to a standard landing page.
+
+For every experience with a primary visual subject, subject fidelity is a release gate. Follow the Design Architect's subject-fidelity plan: establish the requested subject's recognizable silhouette, proportions, topology, landmark features, materials and spatial orientation before adding stylization, shaders, particles, camera motion or copy. Validate the specified desktop and mobile views. A technically polished but unrecognizable substitute is not an acceptable fallback and must be revised before completion.
+
+IMMERSIVE ACCEPTANCE CONTRACT:
+
+- A full-screen shader plane, animated gradient, particle background, CSS perspective decoration, or ordinary reveal animation does not count as a 3D scene.
+- When 3D is required, implement a perspective 3D scene with a recognizable subject/model and scroll-directed camera or object choreography.
+- Parallax requires simultaneous spatial separation, not one image drifting vertically. Implement at least three concurrent foreground/subject/background depth planes with distinct scroll transforms, or a scroll-driven perspective camera with visibly changing depth.
+- Mark DOM depth planes with data-buildez-depth-layer="foreground|subject|background|..." so the generated experience can be verified. Use at least three distinct values.
+- Preserve the realistic primary subject while adding depth. Do not trade subject fidelity for primitive real-time geometry.
 
 EXTERNAL CREATIVE TOOLCHAIN:
 
@@ -2524,6 +2544,7 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
   const generationBody = (
     reasoningEffort: "low" | "medium",
     maxOutputTokens: number,
+    correction?: string,
   ) => ({
     model,
     reasoning: { effort: reasoningEffort },
@@ -2536,7 +2557,12 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
         schema: projectSchema,
       },
     },
-    input: [{ role: "user", content: generationContent }],
+    input: [{
+      role: "user",
+      content: correction
+        ? [...generationContent, { type: "input_text", text: correction }]
+        : generationContent,
+    }],
     ...(externalCreativeTools.length
       ? {
           tools: externalCreativeTools,
@@ -2573,7 +2599,33 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
     });
   }
   input.onProgress?.("Model response received", "Validating the generated project before applying it");
-  const parsedResult = parseResult(outputText(payload), input.mode === "auto");
+  let parsedResult = parseResult(outputText(payload), input.mode === "auto");
+  let acceptanceFailures = immersiveAcceptanceFailures(parsedResult.files, capabilityPlan, {
+    requiresExternalModel: external3DModelRequired,
+  });
+  if (parsedResult.files.length && acceptanceFailures.length) {
+    input.onProgress?.(
+      "Correcting immersive depth",
+      "The first build did not contain the required 3D/parallax implementation",
+    );
+    payload = await requestOpenAiResponse({
+      apiKey,
+      body: generationBody(
+        "medium",
+        24_000,
+        `REJECTED IMPLEMENTATION. Rebuild the complete project and correct every acceptance failure below. Do not remove working visual quality or subject fidelity.\n\n${acceptanceFailures.map((failure) => `- ${failure}`).join("\n")}`,
+      ),
+      signal: input.signal,
+      timeoutMs: 300_000,
+    });
+    parsedResult = parseResult(outputText(payload), input.mode === "auto");
+    acceptanceFailures = immersiveAcceptanceFailures(parsedResult.files, capabilityPlan, {
+      requiresExternalModel: external3DModelRequired,
+    });
+    if (acceptanceFailures.length) {
+      throw new Error(`Immersive generation did not pass acceptance: ${acceptanceFailures.join(" ")}`);
+    }
+  }
   const durableCreativeUrls = new Map<string, string>();
   for (const sourceUrl of creativeMcpResultUrls(payload)) {
     try {

@@ -20,6 +20,7 @@ const PUBLIC_ROUTES = [
   "/api/razorpay",
   "/api/billing/activate",
   "/api/billing",
+  "/api/webhooks/dodo",
   "/preview",
   "/api/preview",
 ];
