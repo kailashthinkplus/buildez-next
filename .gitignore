@@ -77,3 +77,6 @@ apps/web-app/.next/
 /tmp/
 apps/web-app/tmp/
 *.backup
+
+# Runtime debug logs (regenerated locally, not build/deploy inputs)
+apps/web-app/logs/
