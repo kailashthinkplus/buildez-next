@@ -5,7 +5,7 @@ import { Bot, Check, Loader2, MessageCircle, RefreshCw, Save, Sparkles } from "l
 
 import type { AIChannelConfig } from "@/modules/ai-channels/config";
 
-export function AIChannels({ siteId }: { siteId: string }) {
+export function AIChannels({ siteId, only }: { siteId: string; only?: "whatsapp" | "chatbot" }) {
   const [channels, setChannels] = useState<AIChannelConfig>();
   const [busy, setBusy] = useState<"load" | "generate" | "save" | null>("load");
   const [message, setMessage] = useState("");
@@ -84,22 +84,26 @@ export function AIChannels({ siteId }: { siteId: string }) {
         </button>
       </div>
       {message && <p className="mt-3 rounded-xl border dashboard-border bg-blue-500/[.06] px-4 py-3 text-xs dashboard-muted">{message}</p>}
-      <div className="mt-4 grid gap-5 xl:grid-cols-2">
-        <ChannelCard icon={Bot} title="Website AI chatbot" status={channels.websiteChatbot.enabled ? "Deployed" : "Draft"}>
-          <Field label="Assistant name" value={channels.websiteChatbot.name} onChange={(value) => updateWebsite({ name: value })} />
-          <TextArea label="Welcome message" value={channels.websiteChatbot.welcomeMessage} onChange={(value) => updateWebsite({ welcomeMessage: value })} />
-          <div className="grid grid-cols-2 gap-3">
-            <label className="text-xs dashboard-muted">Tone<select value={channels.websiteChatbot.tone} onChange={(event) => updateWebsite({ tone: event.target.value as AIChannelConfig["websiteChatbot"]["tone"] })} className="mt-1.5 w-full rounded-xl border dashboard-border bg-transparent px-3 py-2.5 text-sm"><option value="helpful">Helpful</option><option value="friendly">Friendly</option><option value="professional">Professional</option></select></label>
-            <label className="text-xs dashboard-muted">Accent color<input type="color" value={channels.websiteChatbot.accentColor} onChange={(event) => updateWebsite({ accentColor: event.target.value })} className="mt-1.5 h-10 w-full rounded-xl border dashboard-border bg-transparent p-1" /></label>
-          </div>
-          <Toggle checked={channels.websiteChatbot.enabled} onChange={(enabled) => updateWebsite({ enabled })} label="Deploy on published website" />
-        </ChannelCard>
-        <ChannelCard icon={MessageCircle} title="WhatsApp AI agent" status={channels.whatsapp.enabled ? "Deployed" : "Draft"}>
-          <Field label="WhatsApp number (country code included)" value={channels.whatsapp.phoneNumber} placeholder="919876543210" onChange={(value) => updateWhatsApp({ phoneNumber: value.replace(/\D/g, "") })} />
-          <Field label="Button label" value={channels.whatsapp.welcomeMessage} onChange={(value) => updateWhatsApp({ welcomeMessage: value })} />
-          <TextArea label="Pre-filled first message" value={channels.whatsapp.defaultMessage} onChange={(value) => updateWhatsApp({ defaultMessage: value })} />
-          <Toggle checked={channels.whatsapp.enabled} onChange={(enabled) => updateWhatsApp({ enabled })} label="Deploy WhatsApp assistant" />
-        </ChannelCard>
+      <div className={`mt-4 grid gap-5 ${only ? "" : "xl:grid-cols-2"}`}>
+        {only !== "whatsapp" && (
+          <ChannelCard icon={Bot} title="Website AI chatbot" status={channels.websiteChatbot.enabled ? "Deployed" : "Draft"}>
+            <Field label="Assistant name" value={channels.websiteChatbot.name} onChange={(value) => updateWebsite({ name: value })} />
+            <TextArea label="Welcome message" value={channels.websiteChatbot.welcomeMessage} onChange={(value) => updateWebsite({ welcomeMessage: value })} />
+            <div className="grid grid-cols-2 gap-3">
+              <label className="text-xs dashboard-muted">Tone<select value={channels.websiteChatbot.tone} onChange={(event) => updateWebsite({ tone: event.target.value as AIChannelConfig["websiteChatbot"]["tone"] })} className="mt-1.5 w-full rounded-xl border dashboard-border bg-transparent px-3 py-2.5 text-sm"><option value="helpful">Helpful</option><option value="friendly">Friendly</option><option value="professional">Professional</option></select></label>
+              <label className="text-xs dashboard-muted">Accent color<input type="color" value={channels.websiteChatbot.accentColor} onChange={(event) => updateWebsite({ accentColor: event.target.value })} className="mt-1.5 h-10 w-full rounded-xl border dashboard-border bg-transparent p-1" /></label>
+            </div>
+            <Toggle checked={channels.websiteChatbot.enabled} onChange={(enabled) => updateWebsite({ enabled })} label="Deploy on published website" />
+          </ChannelCard>
+        )}
+        {only !== "chatbot" && (
+          <ChannelCard icon={MessageCircle} title="WhatsApp AI agent" status={channels.whatsapp.enabled ? "Deployed" : "Draft"}>
+            <Field label="WhatsApp number (country code included)" value={channels.whatsapp.phoneNumber} placeholder="919876543210" onChange={(value) => updateWhatsApp({ phoneNumber: value.replace(/\D/g, "") })} />
+            <Field label="Button label" value={channels.whatsapp.welcomeMessage} onChange={(value) => updateWhatsApp({ welcomeMessage: value })} />
+            <TextArea label="Pre-filled first message" value={channels.whatsapp.defaultMessage} onChange={(value) => updateWhatsApp({ defaultMessage: value })} />
+            <Toggle checked={channels.whatsapp.enabled} onChange={(enabled) => updateWhatsApp({ enabled })} label="Deploy WhatsApp assistant" />
+          </ChannelCard>
+        )}
       </div>
       <div className="mt-4 flex justify-end">
         <button onClick={() => void save()} disabled={busy === "save"} className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-xs font-semibold text-white hover:bg-blue-500 disabled:opacity-45">

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Sparkles } from "lucide-react";
+import { CreditsDropdown } from "@/modules/dashboard/CreditsDropdown";
 
 type V12CreditBalancePayload = {
   planCode: string | null;
@@ -61,32 +62,10 @@ export default function V12CreditMeter({ running }: { running: boolean }) {
       </button>
 
       {expanded && (
-        <div className="absolute left-0 top-9 z-[20000] w-56 overflow-hidden rounded-xl border border-white/10 bg-[#171b22] shadow-2xl shadow-black/50">
-          <div className="border-b border-white/10 px-3.5 py-3">
-            <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-white/35">AI Credits</div>
-            <div className="mt-1 flex items-end justify-between gap-3">
-              <div className="text-xl font-semibold tabular-nums text-white">{total.toLocaleString()}</div>
-              {creditBalance?.planCode && <div className="pb-0.5 text-[10px] font-medium text-white/30">{creditBalance.planCode}</div>}
-            </div>
-          </div>
-          <div className="space-y-2 px-3.5 py-3">
-            <CreditBalanceRow label="Included" value={creditBalance?.balance.included.remaining ?? 0} />
-            <CreditBalanceRow label="Top-up" value={creditBalance?.balance.topUp.remaining ?? 0} />
-            <div className="border-t border-white/10 pt-2">
-              <CreditBalanceRow label="Available" value={total} strong />
-            </div>
-          </div>
+        <div className="absolute left-0 top-9 z-[20000] w-72 overflow-hidden rounded-2xl border border-white/10 bg-[#171b22] shadow-2xl shadow-black/50">
+          <CreditsDropdown dark />
         </div>
       )}
-    </div>
-  );
-}
-
-function CreditBalanceRow({ label, value, strong = false }: { label: string; value: number; strong?: boolean }) {
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <span className={strong ? "text-[11px] font-semibold text-white/65" : "text-[11px] text-white/40"}>{label}</span>
-      <span className={strong ? "text-[11px] font-semibold tabular-nums text-white" : "text-[11px] font-medium tabular-nums text-white/65"}>{value.toLocaleString()}</span>
     </div>
   );
 }

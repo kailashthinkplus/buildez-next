@@ -516,11 +516,52 @@ export async function recordDodoSubscriptionPayment(payload: unknown) {
   });
 }
 
+/*
+ * A subscription checkout that fails, is cancelled, or expires before the
+ * subscription is ever created only ever reaches us as a `Payment`-type
+ * event (there is no `Subscription` payload to react to, and it is never
+ * `payment.succeeded`). Left unhandled, the `Subscription` row created
+ * eagerly at checkout time (status "PENDING") never moves out of that
+ * state — it just sits there indefinitely, indistinguishable from an
+ * in-flight payment. This closes that gap by resolving the matching
+ * pending row to a terminal state whenever Dodo reports anything other
+ * than success for it.
+ */
+export async function handleFailedDodoCheckout(payload: unknown) {
+  const root = record(payload);
+  const data = record(root.data);
+  if (data.payload_type !== "Payment" || root.type === "payment.succeeded") {
+    return { ignored: true };
+  }
+  const checkoutSessionId = typeof data.checkout_session_id === "string" ? data.checkout_session_id : "";
+  if (!checkoutSessionId) return { ignored: true };
+
+  const pending = await prisma.subscription.findFirst({
+    where: { dodoCheckoutSessionId: checkoutSessionId, status: "PENDING" },
+  });
+  if (!pending) return { ignored: true };
+
+  const eventType = typeof root.type === "string" ? root.type : "";
+  const rawStatus = eventType === "payment.cancelled" || eventType === "payment.expired" ? "cancelled" : "failed";
+  const mapped = subscriptionState(rawStatus);
+
+  await prisma.subscription.update({
+    where: { id: pending.id },
+    data: { status: mapped.status, paymentStatus: mapped.paymentStatus },
+  });
+
+  return { ignored: false, subscriptionId: pending.id };
+}
+
 export async function syncDodoWebhook(payload: unknown) {
   const root = record(payload);
   if (record(root.data).payload_type === "Subscription") return syncDodoSubscription(payload);
   if (root.type === "payment.succeeded" && typeof record(root.data).subscription_id === "string") {
     return recordDodoSubscriptionPayment(payload);
+  }
+  if (root.type !== "payment.succeeded") {
+    const failure = await handleFailedDodoCheckout(payload);
+    if (!failure.ignored) return failure;
   }
   return fulfillDodoCreditPayment(payload);
 }

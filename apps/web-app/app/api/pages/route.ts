@@ -134,7 +134,13 @@ export const GET = async (request: NextRequest) => {
         take,
         orderBy: { createdAt: "desc" },
         include: {
-          site: { select: { id: true, slug: true } },
+          site: {
+            select: {
+              id: true,
+              slug: true,
+              v12Project: { select: { id: true } },
+            },
+          },
           blueprint: { select: { id: true } },
         },
       }),
@@ -185,7 +191,9 @@ export const GET = async (request: NextRequest) => {
           asString(metadata.previewUrl) ||
           asString(metadata.ogImage),
         hasMeaningfulPreview:
-          Boolean(page.blueprint) || Boolean(page.reactCode && page.reactCode.trim().length > 80),
+          Boolean(page.blueprint) ||
+          Boolean(page.reactCode && page.reactCode.trim().length > 80) ||
+          (page.renderMode === "REACT" && Boolean(page.site.v12Project)),
         aiScore: aiScores.get(page.id) ?? 0,
         isFrontPage: frontPageBySite.get(page.siteId) === page.id,
         aiRecommendationsTotal:

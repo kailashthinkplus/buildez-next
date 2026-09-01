@@ -368,6 +368,30 @@ export async function PATCH(req: Request) {
       data.isPublic = body.isPublic;
     }
 
+    if (body.aiAgentRunLimitPerHour !== undefined) {
+      data.aiAgentRunLimitPerHour = integer(
+        body.aiAgentRunLimitPerHour,
+        existing.aiAgentRunLimitPerHour,
+        0,
+      );
+    }
+
+    if (body.aiAgentFollowupLimitPerHour !== undefined) {
+      data.aiAgentFollowupLimitPerHour = integer(
+        body.aiAgentFollowupLimitPerHour,
+        existing.aiAgentFollowupLimitPerHour,
+        0,
+      );
+    }
+
+    if (body.builderAgentLimitPerHour !== undefined) {
+      data.builderAgentLimitPerHour = integer(
+        body.builderAgentLimitPerHour,
+        existing.builderAgentLimitPerHour,
+        0,
+      );
+    }
+
     const pricingRecords = await prisma.$transaction(async (tx) => {
       if (Object.keys(data).length) {
         await tx.plan.update({

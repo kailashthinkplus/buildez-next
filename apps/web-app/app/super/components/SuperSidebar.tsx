@@ -37,6 +37,7 @@ import {
   Puzzle,
   AppWindow,
   ClipboardCheck,
+  Star,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -175,6 +176,7 @@ export default function SuperSidebar({
           <Section title="SUPPORT" open={sections.support || collapsed} collapsed={collapsed} onToggle={() => toggleSection("support")}>
             <NavLink href="/super/support" icon={LifeBuoy} label="Support Tickets" active={pathname.startsWith("/super/support")} collapsed={collapsed} />
             <NavLink href="/super/requests" icon={Inbox} label="Public Inbox" active={pathname.startsWith("/super/requests")} collapsed={collapsed} />
+            <NavLink href="/super/feedback" icon={Star} label="Design Feedback" active={pathname.startsWith("/super/feedback")} collapsed={collapsed} />
             <NavLink href="/super/support/chat" icon={MessageSquare} label="Live Chat" active={pathname.startsWith("/super/support/chat")} collapsed={collapsed} />
             <NavLink href="/super/support/help" icon={HelpCircle} label="Help Center" active={pathname.startsWith("/super/support/help")} collapsed={collapsed} />
           </Section>

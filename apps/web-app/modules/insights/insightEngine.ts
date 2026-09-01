@@ -1,5 +1,6 @@
 import type {
   InsightAgent,
+  InsightAgentId,
   InsightCategory,
   InsightCategoryId,
   InsightFinding,
@@ -805,6 +806,77 @@ const AGENT_CATEGORY_SOURCES = {
   whatsapp: ["conversion"],
   chatbot: ["accessibility", "conversion", "best-practices"],
 } as const;
+
+export function getAgentMeta(agentId: InsightAgentId) {
+  return AGENT_META.find((meta) => meta.id === agentId);
+}
+
+export function getAgentSourceCategories(agentId: InsightAgentId) {
+  const meta = getAgentMeta(agentId);
+  if (!meta) return [];
+  return meta.category in AGENT_CATEGORY_SOURCES
+    ? AGENT_CATEGORY_SOURCES[meta.category as keyof typeof AGENT_CATEGORY_SOURCES]
+    : [meta.category];
+}
+
+// True for agents whose category maps 1:1 onto a real audit category
+// (seo, geo, performance, accessibility, conversion, best-practices).
+// business/marketing/whatsapp/chatbot agents borrow findings from other
+// categories purely for scoring — those borrowed findings should not be
+// displayed verbatim as e.g. "SEO findings" under a different agent.
+export function agentHasOwnFindings(agentId: InsightAgentId) {
+  const meta = getAgentMeta(agentId);
+  if (!meta) return false;
+  return !(meta.category in AGENT_CATEGORY_SOURCES);
+}
+
+export function getAgentFindings(report: InsightReport, agentId: InsightAgentId) {
+  const sourceCategories = getAgentSourceCategories(agentId);
+  return report.findings.filter((finding) =>
+    sourceCategories.includes(finding.category as never),
+  );
+}
+
+export type GroupedFinding = {
+  key: string;
+  title: string;
+  description: string;
+  impact: string;
+  priority: InsightFinding["priority"];
+  category: InsightFinding["category"];
+  actionLabel: string;
+  pages: { pageId?: string; pageTitle?: string; fixPrompt: string; id: string }[];
+};
+
+export function groupFindings(findings: InsightFinding[]): GroupedFinding[] {
+  const groups = new Map<string, GroupedFinding>();
+  for (const finding of findings) {
+    const key = `${finding.category}:${finding.title}`;
+    const existing = groups.get(key);
+    const page = {
+      id: finding.id,
+      pageId: finding.pageId,
+      pageTitle: finding.pageTitle,
+      fixPrompt: finding.fixPrompt,
+    };
+    if (existing) {
+      existing.pages.push(page);
+    } else {
+      groups.set(key, {
+        key,
+        title: finding.title,
+        description: finding.description,
+        impact: finding.impact,
+        priority: finding.priority,
+        category: finding.category,
+        actionLabel: finding.actionLabel,
+        pages: [page],
+      });
+    }
+  }
+  const priorityRank = { high: 0, medium: 1, low: 2 };
+  return [...groups.values()].sort((a, b) => priorityRank[a.priority] - priorityRank[b.priority]);
+}
 
 export function buildInsightAgents(report: InsightReport): InsightAgent[] {
   return AGENT_META.map((meta) => {

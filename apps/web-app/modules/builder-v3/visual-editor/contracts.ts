@@ -1,6 +1,13 @@
 export const BUILDER_BRIDGE_VERSION = 1 as const;
-export const BUILDER_TO_CANVAS_TYPES = ["BUILDEZ_EDIT_MODE_CHANGED", "BUILDEZ_REQUEST_PARENT_SELECTION", "BUILDEZ_SELECTION_CLEARED", "BUILDEZ_SCROLL_TO_ELEMENT"] as const;
-export const CANVAS_TO_BUILDER_TYPES = ["BUILDEZ_PREVIEW_READY", "BUILDEZ_ELEMENT_HOVERED", "BUILDEZ_ELEMENT_SELECTED", "BUILDEZ_SELECTION_CLEARED", "BUILDEZ_ELEMENT_BOUNDS_CHANGED", "BUILDEZ_INLINE_EDIT_COMMITTED", "BUILDEZ_ROUTE_CHANGED", "BUILDEZ_RUNTIME_ERROR"] as const;
+export const BUILDER_TO_CANVAS_TYPES = ["BUILDEZ_EDIT_MODE_CHANGED", "BUILDEZ_REQUEST_PARENT_SELECTION", "BUILDEZ_SELECTION_CLEARED", "BUILDEZ_SCROLL_TO_ELEMENT", "BUILDEZ_REQUEST_TREE", "BUILDEZ_SELECT_ELEMENT"] as const;
+export const CANVAS_TO_BUILDER_TYPES = ["BUILDEZ_PREVIEW_READY", "BUILDEZ_ELEMENT_HOVERED", "BUILDEZ_ELEMENT_SELECTED", "BUILDEZ_SELECTION_CLEARED", "BUILDEZ_ELEMENT_BOUNDS_CHANGED", "BUILDEZ_INLINE_EDIT_COMMITTED", "BUILDEZ_ROUTE_CHANGED", "BUILDEZ_RUNTIME_ERROR", "BUILDEZ_TREE_DATA"] as const;
+export type BuilderTreeNode = Readonly<{
+  elementId: string;
+  parentElementId: string | null;
+  kind: string;
+  tagName: string;
+  label: string;
+}>;
 export type EditableCapability = "text" | "richText" | "image" | "link" | "data" | "spacing" | "typography" | "background" | "border" | "shadow" | "layout" | "responsive" | "customCss" | "structural" | "accessibility";
 export type BuilderSelection = Readonly<{
   elementId: string; kind: string; tagName: string; sourceFile: string; sourceAnchor: string;

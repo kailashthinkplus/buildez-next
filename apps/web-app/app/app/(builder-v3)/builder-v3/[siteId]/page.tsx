@@ -9,6 +9,7 @@ type BuilderSearchParams = {
   panel?: string;
   prompt?: string;
   context?: string;
+  autorun?: string;
 };
 
 const AGENT_CONTEXTS = [
@@ -84,6 +85,10 @@ export default async function Builder3Page({
       slug: true,
       status: true,
       metadata: true,
+      publishedAt: true,
+      scheduledPublishAt: true,
+      customCss: true,
+      customJs: true,
     },
   });
 
@@ -108,6 +113,7 @@ export default async function Builder3Page({
       }
       initialPrompt={normalizePrompt(requested.prompt)}
       initialContext={normalizeContext(requested.context)}
+      initialAutoSubmit={requested.autorun === "1"}
       page={
         page
           ? {
@@ -118,6 +124,10 @@ export default async function Builder3Page({
               seoTitle: String(metadata.seoTitle ?? ""),
               seoDescription: String(metadata.seoDescription ?? ""),
               faviconUrl: String(metadata.faviconUrl ?? ""),
+              publishedAt: page.publishedAt ? page.publishedAt.toISOString() : null,
+              scheduledPublishAt: page.scheduledPublishAt ? page.scheduledPublishAt.toISOString() : null,
+              customCss: page.customCss ?? "",
+              customJs: page.customJs ?? "",
             }
           : undefined
       }

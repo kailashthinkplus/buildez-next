@@ -44,8 +44,9 @@ type PageRow = {
   status: string;
   updatedAt: string;
   deletedAt?: string | null;
-  site?: { id?: string; slug?: string };
+  site?: { id?: string; slug?: string; v12Project?: { id: string } | null };
   siteSlug?: string;
+  renderMode?: string;
   isFrontPage?: boolean;
   hasMeaningfulPreview?: boolean;
   aiScore?: number;
@@ -432,6 +433,7 @@ export default function PagesView({ siteSlug }: Props) {
                             pageSlug={pageRow.slug}
                             updatedAt={pageRow.updatedAt}
                             hasMeaningfulPreview={pageRow.hasMeaningfulPreview === true}
+                            renderMode={pageRow.renderMode}
                             className="h-full w-full transition-transform group-hover:scale-105"
                           /> : <img src="/website-placeholder.svg" alt={`${pageRow.title} website preview placeholder`} className="h-full w-full object-cover" />}
                         </button>

@@ -10,6 +10,7 @@ import {
   Search,
   LayoutGrid,
 } from "lucide-react";
+import { CreditsDropdown } from "@/modules/dashboard/CreditsDropdown";
 import { WebsiteSwitcher } from "./WebsiteSwitcher";
 import { useWorkspace } from "./WorkspaceContext";
 import { usePathname, useRouter } from "next/navigation";
@@ -28,8 +29,31 @@ export function TenantHeader({
   const [searchResults, setSearchResults] = useState<Array<{ id: string; type: string; title: string; subtitle: string; href: string }>>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [highestPlanCode, setHighestPlanCode] = useState<string | null>(null);
+  const [planLimits, setPlanLimits] = useState<{ maxSites: number; maxPages: number } | null>(null);
+  const [usage, setUsage] = useState<{ siteCount: number; pagesUsed: number } | null>(null);
 
   const { plan } = useWorkspace();
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/tenant/me", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((payload) => {
+        if (cancelled || !payload?.data) return;
+        const sites: Array<{ pages?: unknown[] }> = Array.isArray(payload.data.sites) ? payload.data.sites : [];
+        const usageRows: Array<{ key: string; used: number }> = Array.isArray(payload.data.usage) ? payload.data.usage : [];
+        const pagesFromUsage = usageRows.find((row) => row.key?.toLowerCase() === "pages")?.used;
+        const pagesFromSites = sites.reduce((sum, site) => sum + (Array.isArray(site.pages) ? site.pages.length : 0), 0);
+        setUsage({
+          siteCount: sites.length,
+          pagesUsed: typeof pagesFromUsage === "number" ? pagesFromUsage : pagesFromSites,
+        });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,6 +70,8 @@ export function TenantHeader({
         teamMembers: number;
       }>) => {
         if (cancelled || !Array.isArray(plans) || !plans.length) return;
+        const current = plans.find((candidate) => candidate.code.toUpperCase() === (plan?.planCode ?? plan?.Plan?.code ?? "").toUpperCase());
+        if (current) setPlanLimits({ maxSites: current.maxSites, maxPages: current.maxPages });
         const highest = plans.find((candidate) =>
           plans.every((other) =>
             candidate.maxSites >= other.maxSites &&
@@ -60,7 +86,7 @@ export function TenantHeader({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [plan?.planCode, plan?.Plan?.code]);
 
   function submitSearch(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -191,16 +217,37 @@ export function TenantHeader({
         <div className="hidden md:flex items-center gap-3">
           <WebsiteSwitcher />
 
-          <span
-            className="px-3 py-1 rounded-xl text-xs font-medium border"
-            style={{
-              backgroundColor: color + "22",
-              borderColor: color + "55",
-              color,
-            }}
-          >
-            {label}
-          </span>
+          <div className="group relative">
+            <span
+              className="cursor-default px-3 py-1 rounded-xl text-xs font-medium border"
+              style={{
+                backgroundColor: color + "22",
+                borderColor: color + "55",
+                color,
+              }}
+            >
+              {label}
+            </span>
+
+            <div className="invisible absolute left-0 top-full z-[95] w-72 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100">
+              <div className="dashboard-modal-surface overflow-hidden rounded-2xl border dashboard-border shadow-2xl backdrop-blur-xl">
+                <div className="flex items-center gap-2 border-b dashboard-border px-4 py-3">
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{ backgroundColor: color }}
+                  />
+                  <span className="text-sm font-semibold">{label} plan</span>
+                </div>
+
+                <CreditsDropdown
+                  usageStats={[
+                    { label: "Websites", used: usage?.siteCount, total: planLimits?.maxSites },
+                    { label: "Pages", used: usage?.pagesUsed, total: planLimits?.maxPages },
+                  ]}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

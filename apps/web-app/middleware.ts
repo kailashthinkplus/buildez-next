@@ -26,6 +26,7 @@ const PUBLIC_ROUTES = [
   "/preview",
   "/api/preview",
   "/api/runtime/v12",
+  "/api/cron/publish-scheduled", // Own shared-secret auth (CRON_SECRET) — see route.ts. Called by external cron with no user session.
 ];
 
 /* ==========================================================

@@ -214,6 +214,21 @@ export type CrmLead = $Result.DefaultSelection<Prisma.$CrmLeadPayload>
  */
 export type CrmCommunication = $Result.DefaultSelection<Prisma.$CrmCommunicationPayload>
 /**
+ * Model AgentRun
+ * 
+ */
+export type AgentRun = $Result.DefaultSelection<Prisma.$AgentRunPayload>
+/**
+ * Model AgentMessage
+ * 
+ */
+export type AgentMessage = $Result.DefaultSelection<Prisma.$AgentMessagePayload>
+/**
+ * Model WebsiteFeedback
+ * 
+ */
+export type WebsiteFeedback = $Result.DefaultSelection<Prisma.$WebsiteFeedbackPayload>
+/**
  * Model CrmApiKey
  * 
  */
@@ -1245,6 +1260,36 @@ export class PrismaClient<
   get crmCommunication(): Prisma.CrmCommunicationDelegate<ExtArgs>;
 
   /**
+   * `prisma.agentRun`: Exposes CRUD operations for the **AgentRun** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AgentRuns
+    * const agentRuns = await prisma.agentRun.findMany()
+    * ```
+    */
+  get agentRun(): Prisma.AgentRunDelegate<ExtArgs>;
+
+  /**
+   * `prisma.agentMessage`: Exposes CRUD operations for the **AgentMessage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AgentMessages
+    * const agentMessages = await prisma.agentMessage.findMany()
+    * ```
+    */
+  get agentMessage(): Prisma.AgentMessageDelegate<ExtArgs>;
+
+  /**
+   * `prisma.websiteFeedback`: Exposes CRUD operations for the **WebsiteFeedback** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WebsiteFeedbacks
+    * const websiteFeedbacks = await prisma.websiteFeedback.findMany()
+    * ```
+    */
+  get websiteFeedback(): Prisma.WebsiteFeedbackDelegate<ExtArgs>;
+
+  /**
    * `prisma.crmApiKey`: Exposes CRUD operations for the **CrmApiKey** model.
     * Example usage:
     * ```ts
@@ -2074,6 +2119,9 @@ export namespace Prisma {
     SupportRequest: 'SupportRequest',
     CrmLead: 'CrmLead',
     CrmCommunication: 'CrmCommunication',
+    AgentRun: 'AgentRun',
+    AgentMessage: 'AgentMessage',
+    WebsiteFeedback: 'WebsiteFeedback',
     CrmApiKey: 'CrmApiKey',
     CmsCollection: 'CmsCollection',
     CmsEntry: 'CmsEntry',
@@ -2124,7 +2172,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "userOnboarding" | "session" | "otp" | "authLog" | "verificationToken" | "refreshToken" | "loginAttempt" | "tenant" | "tenantEvent" | "team" | "teamMember" | "teamInvite" | "theme" | "themeVersion" | "themeAsset" | "mediaAsset" | "site" | "siteIntegration" | "v12Project" | "v12ProjectFile" | "v12ProjectRevision" | "v12ProjectCheckpoint" | "v12GenerationJob" | "shop" | "shopProduct" | "shopProductImage" | "shopProductOption" | "shopProductVariant" | "shopCollection" | "shopCollectionProduct" | "shopCustomer" | "shopCustomerSession" | "shopDiscount" | "shopOrder" | "shopOrderItem" | "shopPaymentIntegration" | "supportRequest" | "crmLead" | "crmCommunication" | "crmApiKey" | "cmsCollection" | "cmsEntry" | "siteLayout" | "domain" | "page" | "previewToken" | "aIBlueprintSnapshot" | "blueprint" | "blueprintHistory" | "plan" | "planPricing" | "planFeature" | "planUsage" | "aiCreditReservation" | "aiCreditLedgerEntry" | "subscription" | "billingTransaction" | "siteSubscription" | "complianceAudit" | "systemNotification" | "siteSnapshot" | "pageSnapshot" | "siteRender" | "renderedPage" | "siteDomain" | "sslCertificate" | "trafficEvent" | "trafficRollupHourly" | "aiEvent" | "rateLimit" | "workspace" | "workspaceMember" | "aIMessage" | "aIConversation"
+      modelProps: "user" | "userOnboarding" | "session" | "otp" | "authLog" | "verificationToken" | "refreshToken" | "loginAttempt" | "tenant" | "tenantEvent" | "team" | "teamMember" | "teamInvite" | "theme" | "themeVersion" | "themeAsset" | "mediaAsset" | "site" | "siteIntegration" | "v12Project" | "v12ProjectFile" | "v12ProjectRevision" | "v12ProjectCheckpoint" | "v12GenerationJob" | "shop" | "shopProduct" | "shopProductImage" | "shopProductOption" | "shopProductVariant" | "shopCollection" | "shopCollectionProduct" | "shopCustomer" | "shopCustomerSession" | "shopDiscount" | "shopOrder" | "shopOrderItem" | "shopPaymentIntegration" | "supportRequest" | "crmLead" | "crmCommunication" | "agentRun" | "agentMessage" | "websiteFeedback" | "crmApiKey" | "cmsCollection" | "cmsEntry" | "siteLayout" | "domain" | "page" | "previewToken" | "aIBlueprintSnapshot" | "blueprint" | "blueprintHistory" | "plan" | "planPricing" | "planFeature" | "planUsage" | "aiCreditReservation" | "aiCreditLedgerEntry" | "subscription" | "billingTransaction" | "siteSubscription" | "complianceAudit" | "systemNotification" | "siteSnapshot" | "pageSnapshot" | "siteRender" | "renderedPage" | "siteDomain" | "sslCertificate" | "trafficEvent" | "trafficRollupHourly" | "aiEvent" | "rateLimit" | "workspace" | "workspaceMember" | "aIMessage" | "aIConversation"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4925,6 +4973,216 @@ export namespace Prisma {
           count: {
             args: Prisma.CrmCommunicationCountArgs<ExtArgs>
             result: $Utils.Optional<CrmCommunicationCountAggregateOutputType> | number
+          }
+        }
+      }
+      AgentRun: {
+        payload: Prisma.$AgentRunPayload<ExtArgs>
+        fields: Prisma.AgentRunFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AgentRunFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentRunPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AgentRunFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentRunPayload>
+          }
+          findFirst: {
+            args: Prisma.AgentRunFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentRunPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AgentRunFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentRunPayload>
+          }
+          findMany: {
+            args: Prisma.AgentRunFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentRunPayload>[]
+          }
+          create: {
+            args: Prisma.AgentRunCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentRunPayload>
+          }
+          createMany: {
+            args: Prisma.AgentRunCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AgentRunCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentRunPayload>[]
+          }
+          delete: {
+            args: Prisma.AgentRunDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentRunPayload>
+          }
+          update: {
+            args: Prisma.AgentRunUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentRunPayload>
+          }
+          deleteMany: {
+            args: Prisma.AgentRunDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AgentRunUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AgentRunUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentRunPayload>
+          }
+          aggregate: {
+            args: Prisma.AgentRunAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAgentRun>
+          }
+          groupBy: {
+            args: Prisma.AgentRunGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AgentRunGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AgentRunCountArgs<ExtArgs>
+            result: $Utils.Optional<AgentRunCountAggregateOutputType> | number
+          }
+        }
+      }
+      AgentMessage: {
+        payload: Prisma.$AgentMessagePayload<ExtArgs>
+        fields: Prisma.AgentMessageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AgentMessageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentMessagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AgentMessageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentMessagePayload>
+          }
+          findFirst: {
+            args: Prisma.AgentMessageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentMessagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AgentMessageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentMessagePayload>
+          }
+          findMany: {
+            args: Prisma.AgentMessageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentMessagePayload>[]
+          }
+          create: {
+            args: Prisma.AgentMessageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentMessagePayload>
+          }
+          createMany: {
+            args: Prisma.AgentMessageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AgentMessageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentMessagePayload>[]
+          }
+          delete: {
+            args: Prisma.AgentMessageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentMessagePayload>
+          }
+          update: {
+            args: Prisma.AgentMessageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentMessagePayload>
+          }
+          deleteMany: {
+            args: Prisma.AgentMessageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AgentMessageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AgentMessageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgentMessagePayload>
+          }
+          aggregate: {
+            args: Prisma.AgentMessageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAgentMessage>
+          }
+          groupBy: {
+            args: Prisma.AgentMessageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AgentMessageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AgentMessageCountArgs<ExtArgs>
+            result: $Utils.Optional<AgentMessageCountAggregateOutputType> | number
+          }
+        }
+      }
+      WebsiteFeedback: {
+        payload: Prisma.$WebsiteFeedbackPayload<ExtArgs>
+        fields: Prisma.WebsiteFeedbackFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WebsiteFeedbackFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebsiteFeedbackPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WebsiteFeedbackFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebsiteFeedbackPayload>
+          }
+          findFirst: {
+            args: Prisma.WebsiteFeedbackFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebsiteFeedbackPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WebsiteFeedbackFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebsiteFeedbackPayload>
+          }
+          findMany: {
+            args: Prisma.WebsiteFeedbackFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebsiteFeedbackPayload>[]
+          }
+          create: {
+            args: Prisma.WebsiteFeedbackCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebsiteFeedbackPayload>
+          }
+          createMany: {
+            args: Prisma.WebsiteFeedbackCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WebsiteFeedbackCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebsiteFeedbackPayload>[]
+          }
+          delete: {
+            args: Prisma.WebsiteFeedbackDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebsiteFeedbackPayload>
+          }
+          update: {
+            args: Prisma.WebsiteFeedbackUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebsiteFeedbackPayload>
+          }
+          deleteMany: {
+            args: Prisma.WebsiteFeedbackDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WebsiteFeedbackUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.WebsiteFeedbackUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebsiteFeedbackPayload>
+          }
+          aggregate: {
+            args: Prisma.WebsiteFeedbackAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWebsiteFeedback>
+          }
+          groupBy: {
+            args: Prisma.WebsiteFeedbackGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WebsiteFeedbackGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WebsiteFeedbackCountArgs<ExtArgs>
+            result: $Utils.Optional<WebsiteFeedbackCountAggregateOutputType> | number
           }
         }
       }
@@ -7977,7 +8235,9 @@ export namespace Prisma {
     cmsCollections: number
     crmLeads: number
     crmApiKeys: number
+    agentRuns: number
     integrations: number
+    feedback: number
   }
 
   export type SiteCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7994,7 +8254,9 @@ export namespace Prisma {
     cmsCollections?: boolean | SiteCountOutputTypeCountCmsCollectionsArgs
     crmLeads?: boolean | SiteCountOutputTypeCountCrmLeadsArgs
     crmApiKeys?: boolean | SiteCountOutputTypeCountCrmApiKeysArgs
+    agentRuns?: boolean | SiteCountOutputTypeCountAgentRunsArgs
     integrations?: boolean | SiteCountOutputTypeCountIntegrationsArgs
+    feedback?: boolean | SiteCountOutputTypeCountFeedbackArgs
   }
 
   // Custom InputTypes
@@ -8102,8 +8364,22 @@ export namespace Prisma {
   /**
    * SiteCountOutputType without action
    */
+  export type SiteCountOutputTypeCountAgentRunsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AgentRunWhereInput
+  }
+
+  /**
+   * SiteCountOutputType without action
+   */
   export type SiteCountOutputTypeCountIntegrationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SiteIntegrationWhereInput
+  }
+
+  /**
+   * SiteCountOutputType without action
+   */
+  export type SiteCountOutputTypeCountFeedbackArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WebsiteFeedbackWhereInput
   }
 
 
@@ -8522,6 +8798,37 @@ export namespace Prisma {
    */
   export type CrmLeadCountOutputTypeCountCommunicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CrmCommunicationWhereInput
+  }
+
+
+  /**
+   * Count Type AgentRunCountOutputType
+   */
+
+  export type AgentRunCountOutputType = {
+    messages: number
+  }
+
+  export type AgentRunCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    messages?: boolean | AgentRunCountOutputTypeCountMessagesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AgentRunCountOutputType without action
+   */
+  export type AgentRunCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRunCountOutputType
+     */
+    select?: AgentRunCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AgentRunCountOutputType without action
+   */
+  export type AgentRunCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AgentMessageWhereInput
   }
 
 
@@ -27173,9 +27480,11 @@ export namespace Prisma {
     cmsCollections?: boolean | Site$cmsCollectionsArgs<ExtArgs>
     crmLeads?: boolean | Site$crmLeadsArgs<ExtArgs>
     crmApiKeys?: boolean | Site$crmApiKeysArgs<ExtArgs>
+    agentRuns?: boolean | Site$agentRunsArgs<ExtArgs>
     integrations?: boolean | Site$integrationsArgs<ExtArgs>
     shop?: boolean | Site$shopArgs<ExtArgs>
     v12Project?: boolean | Site$v12ProjectArgs<ExtArgs>
+    feedback?: boolean | Site$feedbackArgs<ExtArgs>
     _count?: boolean | SiteCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["site"]>
 
@@ -27224,9 +27533,11 @@ export namespace Prisma {
     cmsCollections?: boolean | Site$cmsCollectionsArgs<ExtArgs>
     crmLeads?: boolean | Site$crmLeadsArgs<ExtArgs>
     crmApiKeys?: boolean | Site$crmApiKeysArgs<ExtArgs>
+    agentRuns?: boolean | Site$agentRunsArgs<ExtArgs>
     integrations?: boolean | Site$integrationsArgs<ExtArgs>
     shop?: boolean | Site$shopArgs<ExtArgs>
     v12Project?: boolean | Site$v12ProjectArgs<ExtArgs>
+    feedback?: boolean | Site$feedbackArgs<ExtArgs>
     _count?: boolean | SiteCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SiteIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -27251,9 +27562,11 @@ export namespace Prisma {
       cmsCollections: Prisma.$CmsCollectionPayload<ExtArgs>[]
       crmLeads: Prisma.$CrmLeadPayload<ExtArgs>[]
       crmApiKeys: Prisma.$CrmApiKeyPayload<ExtArgs>[]
+      agentRuns: Prisma.$AgentRunPayload<ExtArgs>[]
       integrations: Prisma.$SiteIntegrationPayload<ExtArgs>[]
       shop: Prisma.$ShopPayload<ExtArgs> | null
       v12Project: Prisma.$V12ProjectPayload<ExtArgs> | null
+      feedback: Prisma.$WebsiteFeedbackPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -27646,9 +27959,11 @@ export namespace Prisma {
     cmsCollections<T extends Site$cmsCollectionsArgs<ExtArgs> = {}>(args?: Subset<T, Site$cmsCollectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "findMany"> | Null>
     crmLeads<T extends Site$crmLeadsArgs<ExtArgs> = {}>(args?: Subset<T, Site$crmLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CrmLeadPayload<ExtArgs>, T, "findMany"> | Null>
     crmApiKeys<T extends Site$crmApiKeysArgs<ExtArgs> = {}>(args?: Subset<T, Site$crmApiKeysArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CrmApiKeyPayload<ExtArgs>, T, "findMany"> | Null>
+    agentRuns<T extends Site$agentRunsArgs<ExtArgs> = {}>(args?: Subset<T, Site$agentRunsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "findMany"> | Null>
     integrations<T extends Site$integrationsArgs<ExtArgs> = {}>(args?: Subset<T, Site$integrationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteIntegrationPayload<ExtArgs>, T, "findMany"> | Null>
     shop<T extends Site$shopArgs<ExtArgs> = {}>(args?: Subset<T, Site$shopArgs<ExtArgs>>): Prisma__ShopClient<$Result.GetResult<Prisma.$ShopPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     v12Project<T extends Site$v12ProjectArgs<ExtArgs> = {}>(args?: Subset<T, Site$v12ProjectArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    feedback<T extends Site$feedbackArgs<ExtArgs> = {}>(args?: Subset<T, Site$feedbackArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WebsiteFeedbackPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -28282,6 +28597,26 @@ export namespace Prisma {
   }
 
   /**
+   * Site.agentRuns
+   */
+  export type Site$agentRunsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRun
+     */
+    select?: AgentRunSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentRunInclude<ExtArgs> | null
+    where?: AgentRunWhereInput
+    orderBy?: AgentRunOrderByWithRelationInput | AgentRunOrderByWithRelationInput[]
+    cursor?: AgentRunWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AgentRunScalarFieldEnum | AgentRunScalarFieldEnum[]
+  }
+
+  /**
    * Site.integrations
    */
   export type Site$integrationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -28329,6 +28664,26 @@ export namespace Prisma {
      */
     include?: V12ProjectInclude<ExtArgs> | null
     where?: V12ProjectWhereInput
+  }
+
+  /**
+   * Site.feedback
+   */
+  export type Site$feedbackArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebsiteFeedback
+     */
+    select?: WebsiteFeedbackSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WebsiteFeedbackInclude<ExtArgs> | null
+    where?: WebsiteFeedbackWhereInput
+    orderBy?: WebsiteFeedbackOrderByWithRelationInput | WebsiteFeedbackOrderByWithRelationInput[]
+    cursor?: WebsiteFeedbackWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: WebsiteFeedbackScalarFieldEnum | WebsiteFeedbackScalarFieldEnum[]
   }
 
   /**
@@ -51145,6 +51500,2969 @@ export namespace Prisma {
 
 
   /**
+   * Model AgentRun
+   */
+
+  export type AggregateAgentRun = {
+    _count: AgentRunCountAggregateOutputType | null
+    _min: AgentRunMinAggregateOutputType | null
+    _max: AgentRunMaxAggregateOutputType | null
+  }
+
+  export type AgentRunMinAggregateOutputType = {
+    id: string | null
+    siteId: string | null
+    tenantId: string | null
+    agentId: string | null
+    pageId: string | null
+    prompt: string | null
+    summary: string | null
+    generatedBy: string | null
+    createdAt: Date | null
+  }
+
+  export type AgentRunMaxAggregateOutputType = {
+    id: string | null
+    siteId: string | null
+    tenantId: string | null
+    agentId: string | null
+    pageId: string | null
+    prompt: string | null
+    summary: string | null
+    generatedBy: string | null
+    createdAt: Date | null
+  }
+
+  export type AgentRunCountAggregateOutputType = {
+    id: number
+    siteId: number
+    tenantId: number
+    agentId: number
+    pageId: number
+    prompt: number
+    summary: number
+    findings: number
+    generatedBy: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AgentRunMinAggregateInputType = {
+    id?: true
+    siteId?: true
+    tenantId?: true
+    agentId?: true
+    pageId?: true
+    prompt?: true
+    summary?: true
+    generatedBy?: true
+    createdAt?: true
+  }
+
+  export type AgentRunMaxAggregateInputType = {
+    id?: true
+    siteId?: true
+    tenantId?: true
+    agentId?: true
+    pageId?: true
+    prompt?: true
+    summary?: true
+    generatedBy?: true
+    createdAt?: true
+  }
+
+  export type AgentRunCountAggregateInputType = {
+    id?: true
+    siteId?: true
+    tenantId?: true
+    agentId?: true
+    pageId?: true
+    prompt?: true
+    summary?: true
+    findings?: true
+    generatedBy?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AgentRunAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AgentRun to aggregate.
+     */
+    where?: AgentRunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AgentRuns to fetch.
+     */
+    orderBy?: AgentRunOrderByWithRelationInput | AgentRunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AgentRunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AgentRuns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AgentRuns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AgentRuns
+    **/
+    _count?: true | AgentRunCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AgentRunMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AgentRunMaxAggregateInputType
+  }
+
+  export type GetAgentRunAggregateType<T extends AgentRunAggregateArgs> = {
+        [P in keyof T & keyof AggregateAgentRun]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAgentRun[P]>
+      : GetScalarType<T[P], AggregateAgentRun[P]>
+  }
+
+
+
+
+  export type AgentRunGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AgentRunWhereInput
+    orderBy?: AgentRunOrderByWithAggregationInput | AgentRunOrderByWithAggregationInput[]
+    by: AgentRunScalarFieldEnum[] | AgentRunScalarFieldEnum
+    having?: AgentRunScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AgentRunCountAggregateInputType | true
+    _min?: AgentRunMinAggregateInputType
+    _max?: AgentRunMaxAggregateInputType
+  }
+
+  export type AgentRunGroupByOutputType = {
+    id: string
+    siteId: string
+    tenantId: string
+    agentId: string
+    pageId: string | null
+    prompt: string | null
+    summary: string
+    findings: JsonValue
+    generatedBy: string
+    createdAt: Date
+    _count: AgentRunCountAggregateOutputType | null
+    _min: AgentRunMinAggregateOutputType | null
+    _max: AgentRunMaxAggregateOutputType | null
+  }
+
+  type GetAgentRunGroupByPayload<T extends AgentRunGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AgentRunGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AgentRunGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AgentRunGroupByOutputType[P]>
+            : GetScalarType<T[P], AgentRunGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AgentRunSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    siteId?: boolean
+    tenantId?: boolean
+    agentId?: boolean
+    pageId?: boolean
+    prompt?: boolean
+    summary?: boolean
+    findings?: boolean
+    generatedBy?: boolean
+    createdAt?: boolean
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+    messages?: boolean | AgentRun$messagesArgs<ExtArgs>
+    _count?: boolean | AgentRunCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["agentRun"]>
+
+  export type AgentRunSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    siteId?: boolean
+    tenantId?: boolean
+    agentId?: boolean
+    pageId?: boolean
+    prompt?: boolean
+    summary?: boolean
+    findings?: boolean
+    generatedBy?: boolean
+    createdAt?: boolean
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["agentRun"]>
+
+  export type AgentRunSelectScalar = {
+    id?: boolean
+    siteId?: boolean
+    tenantId?: boolean
+    agentId?: boolean
+    pageId?: boolean
+    prompt?: boolean
+    summary?: boolean
+    findings?: boolean
+    generatedBy?: boolean
+    createdAt?: boolean
+  }
+
+  export type AgentRunInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+    messages?: boolean | AgentRun$messagesArgs<ExtArgs>
+    _count?: boolean | AgentRunCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type AgentRunIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+  }
+
+  export type $AgentRunPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AgentRun"
+    objects: {
+      site: Prisma.$SitePayload<ExtArgs>
+      messages: Prisma.$AgentMessagePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      siteId: string
+      tenantId: string
+      agentId: string
+      pageId: string | null
+      prompt: string | null
+      summary: string
+      findings: Prisma.JsonValue
+      generatedBy: string
+      createdAt: Date
+    }, ExtArgs["result"]["agentRun"]>
+    composites: {}
+  }
+
+  type AgentRunGetPayload<S extends boolean | null | undefined | AgentRunDefaultArgs> = $Result.GetResult<Prisma.$AgentRunPayload, S>
+
+  type AgentRunCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AgentRunFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AgentRunCountAggregateInputType | true
+    }
+
+  export interface AgentRunDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AgentRun'], meta: { name: 'AgentRun' } }
+    /**
+     * Find zero or one AgentRun that matches the filter.
+     * @param {AgentRunFindUniqueArgs} args - Arguments to find a AgentRun
+     * @example
+     * // Get one AgentRun
+     * const agentRun = await prisma.agentRun.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AgentRunFindUniqueArgs>(args: SelectSubset<T, AgentRunFindUniqueArgs<ExtArgs>>): Prisma__AgentRunClient<$Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AgentRun that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AgentRunFindUniqueOrThrowArgs} args - Arguments to find a AgentRun
+     * @example
+     * // Get one AgentRun
+     * const agentRun = await prisma.agentRun.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AgentRunFindUniqueOrThrowArgs>(args: SelectSubset<T, AgentRunFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AgentRunClient<$Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AgentRun that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentRunFindFirstArgs} args - Arguments to find a AgentRun
+     * @example
+     * // Get one AgentRun
+     * const agentRun = await prisma.agentRun.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AgentRunFindFirstArgs>(args?: SelectSubset<T, AgentRunFindFirstArgs<ExtArgs>>): Prisma__AgentRunClient<$Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AgentRun that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentRunFindFirstOrThrowArgs} args - Arguments to find a AgentRun
+     * @example
+     * // Get one AgentRun
+     * const agentRun = await prisma.agentRun.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AgentRunFindFirstOrThrowArgs>(args?: SelectSubset<T, AgentRunFindFirstOrThrowArgs<ExtArgs>>): Prisma__AgentRunClient<$Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AgentRuns that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentRunFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AgentRuns
+     * const agentRuns = await prisma.agentRun.findMany()
+     * 
+     * // Get first 10 AgentRuns
+     * const agentRuns = await prisma.agentRun.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const agentRunWithIdOnly = await prisma.agentRun.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AgentRunFindManyArgs>(args?: SelectSubset<T, AgentRunFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AgentRun.
+     * @param {AgentRunCreateArgs} args - Arguments to create a AgentRun.
+     * @example
+     * // Create one AgentRun
+     * const AgentRun = await prisma.agentRun.create({
+     *   data: {
+     *     // ... data to create a AgentRun
+     *   }
+     * })
+     * 
+     */
+    create<T extends AgentRunCreateArgs>(args: SelectSubset<T, AgentRunCreateArgs<ExtArgs>>): Prisma__AgentRunClient<$Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AgentRuns.
+     * @param {AgentRunCreateManyArgs} args - Arguments to create many AgentRuns.
+     * @example
+     * // Create many AgentRuns
+     * const agentRun = await prisma.agentRun.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AgentRunCreateManyArgs>(args?: SelectSubset<T, AgentRunCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AgentRuns and returns the data saved in the database.
+     * @param {AgentRunCreateManyAndReturnArgs} args - Arguments to create many AgentRuns.
+     * @example
+     * // Create many AgentRuns
+     * const agentRun = await prisma.agentRun.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AgentRuns and only return the `id`
+     * const agentRunWithIdOnly = await prisma.agentRun.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AgentRunCreateManyAndReturnArgs>(args?: SelectSubset<T, AgentRunCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AgentRun.
+     * @param {AgentRunDeleteArgs} args - Arguments to delete one AgentRun.
+     * @example
+     * // Delete one AgentRun
+     * const AgentRun = await prisma.agentRun.delete({
+     *   where: {
+     *     // ... filter to delete one AgentRun
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AgentRunDeleteArgs>(args: SelectSubset<T, AgentRunDeleteArgs<ExtArgs>>): Prisma__AgentRunClient<$Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AgentRun.
+     * @param {AgentRunUpdateArgs} args - Arguments to update one AgentRun.
+     * @example
+     * // Update one AgentRun
+     * const agentRun = await prisma.agentRun.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AgentRunUpdateArgs>(args: SelectSubset<T, AgentRunUpdateArgs<ExtArgs>>): Prisma__AgentRunClient<$Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AgentRuns.
+     * @param {AgentRunDeleteManyArgs} args - Arguments to filter AgentRuns to delete.
+     * @example
+     * // Delete a few AgentRuns
+     * const { count } = await prisma.agentRun.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AgentRunDeleteManyArgs>(args?: SelectSubset<T, AgentRunDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AgentRuns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentRunUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AgentRuns
+     * const agentRun = await prisma.agentRun.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AgentRunUpdateManyArgs>(args: SelectSubset<T, AgentRunUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AgentRun.
+     * @param {AgentRunUpsertArgs} args - Arguments to update or create a AgentRun.
+     * @example
+     * // Update or create a AgentRun
+     * const agentRun = await prisma.agentRun.upsert({
+     *   create: {
+     *     // ... data to create a AgentRun
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AgentRun we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AgentRunUpsertArgs>(args: SelectSubset<T, AgentRunUpsertArgs<ExtArgs>>): Prisma__AgentRunClient<$Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AgentRuns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentRunCountArgs} args - Arguments to filter AgentRuns to count.
+     * @example
+     * // Count the number of AgentRuns
+     * const count = await prisma.agentRun.count({
+     *   where: {
+     *     // ... the filter for the AgentRuns we want to count
+     *   }
+     * })
+    **/
+    count<T extends AgentRunCountArgs>(
+      args?: Subset<T, AgentRunCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AgentRunCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AgentRun.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentRunAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AgentRunAggregateArgs>(args: Subset<T, AgentRunAggregateArgs>): Prisma.PrismaPromise<GetAgentRunAggregateType<T>>
+
+    /**
+     * Group by AgentRun.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentRunGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AgentRunGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AgentRunGroupByArgs['orderBy'] }
+        : { orderBy?: AgentRunGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AgentRunGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAgentRunGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AgentRun model
+   */
+  readonly fields: AgentRunFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AgentRun.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AgentRunClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    site<T extends SiteDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SiteDefaultArgs<ExtArgs>>): Prisma__SiteClient<$Result.GetResult<Prisma.$SitePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    messages<T extends AgentRun$messagesArgs<ExtArgs> = {}>(args?: Subset<T, AgentRun$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgentMessagePayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AgentRun model
+   */ 
+  interface AgentRunFieldRefs {
+    readonly id: FieldRef<"AgentRun", 'String'>
+    readonly siteId: FieldRef<"AgentRun", 'String'>
+    readonly tenantId: FieldRef<"AgentRun", 'String'>
+    readonly agentId: FieldRef<"AgentRun", 'String'>
+    readonly pageId: FieldRef<"AgentRun", 'String'>
+    readonly prompt: FieldRef<"AgentRun", 'String'>
+    readonly summary: FieldRef<"AgentRun", 'String'>
+    readonly findings: FieldRef<"AgentRun", 'Json'>
+    readonly generatedBy: FieldRef<"AgentRun", 'String'>
+    readonly createdAt: FieldRef<"AgentRun", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AgentRun findUnique
+   */
+  export type AgentRunFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRun
+     */
+    select?: AgentRunSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentRunInclude<ExtArgs> | null
+    /**
+     * Filter, which AgentRun to fetch.
+     */
+    where: AgentRunWhereUniqueInput
+  }
+
+  /**
+   * AgentRun findUniqueOrThrow
+   */
+  export type AgentRunFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRun
+     */
+    select?: AgentRunSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentRunInclude<ExtArgs> | null
+    /**
+     * Filter, which AgentRun to fetch.
+     */
+    where: AgentRunWhereUniqueInput
+  }
+
+  /**
+   * AgentRun findFirst
+   */
+  export type AgentRunFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRun
+     */
+    select?: AgentRunSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentRunInclude<ExtArgs> | null
+    /**
+     * Filter, which AgentRun to fetch.
+     */
+    where?: AgentRunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AgentRuns to fetch.
+     */
+    orderBy?: AgentRunOrderByWithRelationInput | AgentRunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AgentRuns.
+     */
+    cursor?: AgentRunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AgentRuns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AgentRuns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AgentRuns.
+     */
+    distinct?: AgentRunScalarFieldEnum | AgentRunScalarFieldEnum[]
+  }
+
+  /**
+   * AgentRun findFirstOrThrow
+   */
+  export type AgentRunFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRun
+     */
+    select?: AgentRunSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentRunInclude<ExtArgs> | null
+    /**
+     * Filter, which AgentRun to fetch.
+     */
+    where?: AgentRunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AgentRuns to fetch.
+     */
+    orderBy?: AgentRunOrderByWithRelationInput | AgentRunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AgentRuns.
+     */
+    cursor?: AgentRunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AgentRuns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AgentRuns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AgentRuns.
+     */
+    distinct?: AgentRunScalarFieldEnum | AgentRunScalarFieldEnum[]
+  }
+
+  /**
+   * AgentRun findMany
+   */
+  export type AgentRunFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRun
+     */
+    select?: AgentRunSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentRunInclude<ExtArgs> | null
+    /**
+     * Filter, which AgentRuns to fetch.
+     */
+    where?: AgentRunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AgentRuns to fetch.
+     */
+    orderBy?: AgentRunOrderByWithRelationInput | AgentRunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AgentRuns.
+     */
+    cursor?: AgentRunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AgentRuns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AgentRuns.
+     */
+    skip?: number
+    distinct?: AgentRunScalarFieldEnum | AgentRunScalarFieldEnum[]
+  }
+
+  /**
+   * AgentRun create
+   */
+  export type AgentRunCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRun
+     */
+    select?: AgentRunSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentRunInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AgentRun.
+     */
+    data: XOR<AgentRunCreateInput, AgentRunUncheckedCreateInput>
+  }
+
+  /**
+   * AgentRun createMany
+   */
+  export type AgentRunCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AgentRuns.
+     */
+    data: AgentRunCreateManyInput | AgentRunCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AgentRun createManyAndReturn
+   */
+  export type AgentRunCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRun
+     */
+    select?: AgentRunSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AgentRuns.
+     */
+    data: AgentRunCreateManyInput | AgentRunCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentRunIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AgentRun update
+   */
+  export type AgentRunUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRun
+     */
+    select?: AgentRunSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentRunInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AgentRun.
+     */
+    data: XOR<AgentRunUpdateInput, AgentRunUncheckedUpdateInput>
+    /**
+     * Choose, which AgentRun to update.
+     */
+    where: AgentRunWhereUniqueInput
+  }
+
+  /**
+   * AgentRun updateMany
+   */
+  export type AgentRunUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AgentRuns.
+     */
+    data: XOR<AgentRunUpdateManyMutationInput, AgentRunUncheckedUpdateManyInput>
+    /**
+     * Filter which AgentRuns to update
+     */
+    where?: AgentRunWhereInput
+  }
+
+  /**
+   * AgentRun upsert
+   */
+  export type AgentRunUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRun
+     */
+    select?: AgentRunSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentRunInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AgentRun to update in case it exists.
+     */
+    where: AgentRunWhereUniqueInput
+    /**
+     * In case the AgentRun found by the `where` argument doesn't exist, create a new AgentRun with this data.
+     */
+    create: XOR<AgentRunCreateInput, AgentRunUncheckedCreateInput>
+    /**
+     * In case the AgentRun was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AgentRunUpdateInput, AgentRunUncheckedUpdateInput>
+  }
+
+  /**
+   * AgentRun delete
+   */
+  export type AgentRunDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRun
+     */
+    select?: AgentRunSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentRunInclude<ExtArgs> | null
+    /**
+     * Filter which AgentRun to delete.
+     */
+    where: AgentRunWhereUniqueInput
+  }
+
+  /**
+   * AgentRun deleteMany
+   */
+  export type AgentRunDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AgentRuns to delete
+     */
+    where?: AgentRunWhereInput
+  }
+
+  /**
+   * AgentRun.messages
+   */
+  export type AgentRun$messagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentMessage
+     */
+    select?: AgentMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentMessageInclude<ExtArgs> | null
+    where?: AgentMessageWhereInput
+    orderBy?: AgentMessageOrderByWithRelationInput | AgentMessageOrderByWithRelationInput[]
+    cursor?: AgentMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AgentMessageScalarFieldEnum | AgentMessageScalarFieldEnum[]
+  }
+
+  /**
+   * AgentRun without action
+   */
+  export type AgentRunDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentRun
+     */
+    select?: AgentRunSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentRunInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AgentMessage
+   */
+
+  export type AggregateAgentMessage = {
+    _count: AgentMessageCountAggregateOutputType | null
+    _min: AgentMessageMinAggregateOutputType | null
+    _max: AgentMessageMaxAggregateOutputType | null
+  }
+
+  export type AgentMessageMinAggregateOutputType = {
+    id: string | null
+    runId: string | null
+    role: string | null
+    content: string | null
+    createdAt: Date | null
+  }
+
+  export type AgentMessageMaxAggregateOutputType = {
+    id: string | null
+    runId: string | null
+    role: string | null
+    content: string | null
+    createdAt: Date | null
+  }
+
+  export type AgentMessageCountAggregateOutputType = {
+    id: number
+    runId: number
+    role: number
+    content: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AgentMessageMinAggregateInputType = {
+    id?: true
+    runId?: true
+    role?: true
+    content?: true
+    createdAt?: true
+  }
+
+  export type AgentMessageMaxAggregateInputType = {
+    id?: true
+    runId?: true
+    role?: true
+    content?: true
+    createdAt?: true
+  }
+
+  export type AgentMessageCountAggregateInputType = {
+    id?: true
+    runId?: true
+    role?: true
+    content?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AgentMessageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AgentMessage to aggregate.
+     */
+    where?: AgentMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AgentMessages to fetch.
+     */
+    orderBy?: AgentMessageOrderByWithRelationInput | AgentMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AgentMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AgentMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AgentMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AgentMessages
+    **/
+    _count?: true | AgentMessageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AgentMessageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AgentMessageMaxAggregateInputType
+  }
+
+  export type GetAgentMessageAggregateType<T extends AgentMessageAggregateArgs> = {
+        [P in keyof T & keyof AggregateAgentMessage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAgentMessage[P]>
+      : GetScalarType<T[P], AggregateAgentMessage[P]>
+  }
+
+
+
+
+  export type AgentMessageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AgentMessageWhereInput
+    orderBy?: AgentMessageOrderByWithAggregationInput | AgentMessageOrderByWithAggregationInput[]
+    by: AgentMessageScalarFieldEnum[] | AgentMessageScalarFieldEnum
+    having?: AgentMessageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AgentMessageCountAggregateInputType | true
+    _min?: AgentMessageMinAggregateInputType
+    _max?: AgentMessageMaxAggregateInputType
+  }
+
+  export type AgentMessageGroupByOutputType = {
+    id: string
+    runId: string
+    role: string
+    content: string
+    createdAt: Date
+    _count: AgentMessageCountAggregateOutputType | null
+    _min: AgentMessageMinAggregateOutputType | null
+    _max: AgentMessageMaxAggregateOutputType | null
+  }
+
+  type GetAgentMessageGroupByPayload<T extends AgentMessageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AgentMessageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AgentMessageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AgentMessageGroupByOutputType[P]>
+            : GetScalarType<T[P], AgentMessageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AgentMessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    runId?: boolean
+    role?: boolean
+    content?: boolean
+    createdAt?: boolean
+    run?: boolean | AgentRunDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["agentMessage"]>
+
+  export type AgentMessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    runId?: boolean
+    role?: boolean
+    content?: boolean
+    createdAt?: boolean
+    run?: boolean | AgentRunDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["agentMessage"]>
+
+  export type AgentMessageSelectScalar = {
+    id?: boolean
+    runId?: boolean
+    role?: boolean
+    content?: boolean
+    createdAt?: boolean
+  }
+
+  export type AgentMessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    run?: boolean | AgentRunDefaultArgs<ExtArgs>
+  }
+  export type AgentMessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    run?: boolean | AgentRunDefaultArgs<ExtArgs>
+  }
+
+  export type $AgentMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AgentMessage"
+    objects: {
+      run: Prisma.$AgentRunPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      runId: string
+      role: string
+      content: string
+      createdAt: Date
+    }, ExtArgs["result"]["agentMessage"]>
+    composites: {}
+  }
+
+  type AgentMessageGetPayload<S extends boolean | null | undefined | AgentMessageDefaultArgs> = $Result.GetResult<Prisma.$AgentMessagePayload, S>
+
+  type AgentMessageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AgentMessageFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AgentMessageCountAggregateInputType | true
+    }
+
+  export interface AgentMessageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AgentMessage'], meta: { name: 'AgentMessage' } }
+    /**
+     * Find zero or one AgentMessage that matches the filter.
+     * @param {AgentMessageFindUniqueArgs} args - Arguments to find a AgentMessage
+     * @example
+     * // Get one AgentMessage
+     * const agentMessage = await prisma.agentMessage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AgentMessageFindUniqueArgs>(args: SelectSubset<T, AgentMessageFindUniqueArgs<ExtArgs>>): Prisma__AgentMessageClient<$Result.GetResult<Prisma.$AgentMessagePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AgentMessage that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AgentMessageFindUniqueOrThrowArgs} args - Arguments to find a AgentMessage
+     * @example
+     * // Get one AgentMessage
+     * const agentMessage = await prisma.agentMessage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AgentMessageFindUniqueOrThrowArgs>(args: SelectSubset<T, AgentMessageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AgentMessageClient<$Result.GetResult<Prisma.$AgentMessagePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AgentMessage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentMessageFindFirstArgs} args - Arguments to find a AgentMessage
+     * @example
+     * // Get one AgentMessage
+     * const agentMessage = await prisma.agentMessage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AgentMessageFindFirstArgs>(args?: SelectSubset<T, AgentMessageFindFirstArgs<ExtArgs>>): Prisma__AgentMessageClient<$Result.GetResult<Prisma.$AgentMessagePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AgentMessage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentMessageFindFirstOrThrowArgs} args - Arguments to find a AgentMessage
+     * @example
+     * // Get one AgentMessage
+     * const agentMessage = await prisma.agentMessage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AgentMessageFindFirstOrThrowArgs>(args?: SelectSubset<T, AgentMessageFindFirstOrThrowArgs<ExtArgs>>): Prisma__AgentMessageClient<$Result.GetResult<Prisma.$AgentMessagePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AgentMessages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentMessageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AgentMessages
+     * const agentMessages = await prisma.agentMessage.findMany()
+     * 
+     * // Get first 10 AgentMessages
+     * const agentMessages = await prisma.agentMessage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const agentMessageWithIdOnly = await prisma.agentMessage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AgentMessageFindManyArgs>(args?: SelectSubset<T, AgentMessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgentMessagePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AgentMessage.
+     * @param {AgentMessageCreateArgs} args - Arguments to create a AgentMessage.
+     * @example
+     * // Create one AgentMessage
+     * const AgentMessage = await prisma.agentMessage.create({
+     *   data: {
+     *     // ... data to create a AgentMessage
+     *   }
+     * })
+     * 
+     */
+    create<T extends AgentMessageCreateArgs>(args: SelectSubset<T, AgentMessageCreateArgs<ExtArgs>>): Prisma__AgentMessageClient<$Result.GetResult<Prisma.$AgentMessagePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AgentMessages.
+     * @param {AgentMessageCreateManyArgs} args - Arguments to create many AgentMessages.
+     * @example
+     * // Create many AgentMessages
+     * const agentMessage = await prisma.agentMessage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AgentMessageCreateManyArgs>(args?: SelectSubset<T, AgentMessageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AgentMessages and returns the data saved in the database.
+     * @param {AgentMessageCreateManyAndReturnArgs} args - Arguments to create many AgentMessages.
+     * @example
+     * // Create many AgentMessages
+     * const agentMessage = await prisma.agentMessage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AgentMessages and only return the `id`
+     * const agentMessageWithIdOnly = await prisma.agentMessage.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AgentMessageCreateManyAndReturnArgs>(args?: SelectSubset<T, AgentMessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgentMessagePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AgentMessage.
+     * @param {AgentMessageDeleteArgs} args - Arguments to delete one AgentMessage.
+     * @example
+     * // Delete one AgentMessage
+     * const AgentMessage = await prisma.agentMessage.delete({
+     *   where: {
+     *     // ... filter to delete one AgentMessage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AgentMessageDeleteArgs>(args: SelectSubset<T, AgentMessageDeleteArgs<ExtArgs>>): Prisma__AgentMessageClient<$Result.GetResult<Prisma.$AgentMessagePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AgentMessage.
+     * @param {AgentMessageUpdateArgs} args - Arguments to update one AgentMessage.
+     * @example
+     * // Update one AgentMessage
+     * const agentMessage = await prisma.agentMessage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AgentMessageUpdateArgs>(args: SelectSubset<T, AgentMessageUpdateArgs<ExtArgs>>): Prisma__AgentMessageClient<$Result.GetResult<Prisma.$AgentMessagePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AgentMessages.
+     * @param {AgentMessageDeleteManyArgs} args - Arguments to filter AgentMessages to delete.
+     * @example
+     * // Delete a few AgentMessages
+     * const { count } = await prisma.agentMessage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AgentMessageDeleteManyArgs>(args?: SelectSubset<T, AgentMessageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AgentMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentMessageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AgentMessages
+     * const agentMessage = await prisma.agentMessage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AgentMessageUpdateManyArgs>(args: SelectSubset<T, AgentMessageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AgentMessage.
+     * @param {AgentMessageUpsertArgs} args - Arguments to update or create a AgentMessage.
+     * @example
+     * // Update or create a AgentMessage
+     * const agentMessage = await prisma.agentMessage.upsert({
+     *   create: {
+     *     // ... data to create a AgentMessage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AgentMessage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AgentMessageUpsertArgs>(args: SelectSubset<T, AgentMessageUpsertArgs<ExtArgs>>): Prisma__AgentMessageClient<$Result.GetResult<Prisma.$AgentMessagePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AgentMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentMessageCountArgs} args - Arguments to filter AgentMessages to count.
+     * @example
+     * // Count the number of AgentMessages
+     * const count = await prisma.agentMessage.count({
+     *   where: {
+     *     // ... the filter for the AgentMessages we want to count
+     *   }
+     * })
+    **/
+    count<T extends AgentMessageCountArgs>(
+      args?: Subset<T, AgentMessageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AgentMessageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AgentMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentMessageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AgentMessageAggregateArgs>(args: Subset<T, AgentMessageAggregateArgs>): Prisma.PrismaPromise<GetAgentMessageAggregateType<T>>
+
+    /**
+     * Group by AgentMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgentMessageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AgentMessageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AgentMessageGroupByArgs['orderBy'] }
+        : { orderBy?: AgentMessageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AgentMessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAgentMessageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AgentMessage model
+   */
+  readonly fields: AgentMessageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AgentMessage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AgentMessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    run<T extends AgentRunDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AgentRunDefaultArgs<ExtArgs>>): Prisma__AgentRunClient<$Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AgentMessage model
+   */ 
+  interface AgentMessageFieldRefs {
+    readonly id: FieldRef<"AgentMessage", 'String'>
+    readonly runId: FieldRef<"AgentMessage", 'String'>
+    readonly role: FieldRef<"AgentMessage", 'String'>
+    readonly content: FieldRef<"AgentMessage", 'String'>
+    readonly createdAt: FieldRef<"AgentMessage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AgentMessage findUnique
+   */
+  export type AgentMessageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentMessage
+     */
+    select?: AgentMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which AgentMessage to fetch.
+     */
+    where: AgentMessageWhereUniqueInput
+  }
+
+  /**
+   * AgentMessage findUniqueOrThrow
+   */
+  export type AgentMessageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentMessage
+     */
+    select?: AgentMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which AgentMessage to fetch.
+     */
+    where: AgentMessageWhereUniqueInput
+  }
+
+  /**
+   * AgentMessage findFirst
+   */
+  export type AgentMessageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentMessage
+     */
+    select?: AgentMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which AgentMessage to fetch.
+     */
+    where?: AgentMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AgentMessages to fetch.
+     */
+    orderBy?: AgentMessageOrderByWithRelationInput | AgentMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AgentMessages.
+     */
+    cursor?: AgentMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AgentMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AgentMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AgentMessages.
+     */
+    distinct?: AgentMessageScalarFieldEnum | AgentMessageScalarFieldEnum[]
+  }
+
+  /**
+   * AgentMessage findFirstOrThrow
+   */
+  export type AgentMessageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentMessage
+     */
+    select?: AgentMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which AgentMessage to fetch.
+     */
+    where?: AgentMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AgentMessages to fetch.
+     */
+    orderBy?: AgentMessageOrderByWithRelationInput | AgentMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AgentMessages.
+     */
+    cursor?: AgentMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AgentMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AgentMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AgentMessages.
+     */
+    distinct?: AgentMessageScalarFieldEnum | AgentMessageScalarFieldEnum[]
+  }
+
+  /**
+   * AgentMessage findMany
+   */
+  export type AgentMessageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentMessage
+     */
+    select?: AgentMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which AgentMessages to fetch.
+     */
+    where?: AgentMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AgentMessages to fetch.
+     */
+    orderBy?: AgentMessageOrderByWithRelationInput | AgentMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AgentMessages.
+     */
+    cursor?: AgentMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AgentMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AgentMessages.
+     */
+    skip?: number
+    distinct?: AgentMessageScalarFieldEnum | AgentMessageScalarFieldEnum[]
+  }
+
+  /**
+   * AgentMessage create
+   */
+  export type AgentMessageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentMessage
+     */
+    select?: AgentMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AgentMessage.
+     */
+    data: XOR<AgentMessageCreateInput, AgentMessageUncheckedCreateInput>
+  }
+
+  /**
+   * AgentMessage createMany
+   */
+  export type AgentMessageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AgentMessages.
+     */
+    data: AgentMessageCreateManyInput | AgentMessageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AgentMessage createManyAndReturn
+   */
+  export type AgentMessageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentMessage
+     */
+    select?: AgentMessageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AgentMessages.
+     */
+    data: AgentMessageCreateManyInput | AgentMessageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentMessageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AgentMessage update
+   */
+  export type AgentMessageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentMessage
+     */
+    select?: AgentMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AgentMessage.
+     */
+    data: XOR<AgentMessageUpdateInput, AgentMessageUncheckedUpdateInput>
+    /**
+     * Choose, which AgentMessage to update.
+     */
+    where: AgentMessageWhereUniqueInput
+  }
+
+  /**
+   * AgentMessage updateMany
+   */
+  export type AgentMessageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AgentMessages.
+     */
+    data: XOR<AgentMessageUpdateManyMutationInput, AgentMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which AgentMessages to update
+     */
+    where?: AgentMessageWhereInput
+  }
+
+  /**
+   * AgentMessage upsert
+   */
+  export type AgentMessageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentMessage
+     */
+    select?: AgentMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentMessageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AgentMessage to update in case it exists.
+     */
+    where: AgentMessageWhereUniqueInput
+    /**
+     * In case the AgentMessage found by the `where` argument doesn't exist, create a new AgentMessage with this data.
+     */
+    create: XOR<AgentMessageCreateInput, AgentMessageUncheckedCreateInput>
+    /**
+     * In case the AgentMessage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AgentMessageUpdateInput, AgentMessageUncheckedUpdateInput>
+  }
+
+  /**
+   * AgentMessage delete
+   */
+  export type AgentMessageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentMessage
+     */
+    select?: AgentMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentMessageInclude<ExtArgs> | null
+    /**
+     * Filter which AgentMessage to delete.
+     */
+    where: AgentMessageWhereUniqueInput
+  }
+
+  /**
+   * AgentMessage deleteMany
+   */
+  export type AgentMessageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AgentMessages to delete
+     */
+    where?: AgentMessageWhereInput
+  }
+
+  /**
+   * AgentMessage without action
+   */
+  export type AgentMessageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AgentMessage
+     */
+    select?: AgentMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgentMessageInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model WebsiteFeedback
+   */
+
+  export type AggregateWebsiteFeedback = {
+    _count: WebsiteFeedbackCountAggregateOutputType | null
+    _avg: WebsiteFeedbackAvgAggregateOutputType | null
+    _sum: WebsiteFeedbackSumAggregateOutputType | null
+    _min: WebsiteFeedbackMinAggregateOutputType | null
+    _max: WebsiteFeedbackMaxAggregateOutputType | null
+  }
+
+  export type WebsiteFeedbackAvgAggregateOutputType = {
+    rating: number | null
+  }
+
+  export type WebsiteFeedbackSumAggregateOutputType = {
+    rating: number | null
+  }
+
+  export type WebsiteFeedbackMinAggregateOutputType = {
+    id: string | null
+    siteId: string | null
+    tenantId: string | null
+    userId: string | null
+    pageId: string | null
+    rating: number | null
+    comment: string | null
+    status: string | null
+    createdAt: Date | null
+  }
+
+  export type WebsiteFeedbackMaxAggregateOutputType = {
+    id: string | null
+    siteId: string | null
+    tenantId: string | null
+    userId: string | null
+    pageId: string | null
+    rating: number | null
+    comment: string | null
+    status: string | null
+    createdAt: Date | null
+  }
+
+  export type WebsiteFeedbackCountAggregateOutputType = {
+    id: number
+    siteId: number
+    tenantId: number
+    userId: number
+    pageId: number
+    rating: number
+    comment: number
+    status: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type WebsiteFeedbackAvgAggregateInputType = {
+    rating?: true
+  }
+
+  export type WebsiteFeedbackSumAggregateInputType = {
+    rating?: true
+  }
+
+  export type WebsiteFeedbackMinAggregateInputType = {
+    id?: true
+    siteId?: true
+    tenantId?: true
+    userId?: true
+    pageId?: true
+    rating?: true
+    comment?: true
+    status?: true
+    createdAt?: true
+  }
+
+  export type WebsiteFeedbackMaxAggregateInputType = {
+    id?: true
+    siteId?: true
+    tenantId?: true
+    userId?: true
+    pageId?: true
+    rating?: true
+    comment?: true
+    status?: true
+    createdAt?: true
+  }
+
+  export type WebsiteFeedbackCountAggregateInputType = {
+    id?: true
+    siteId?: true
+    tenantId?: true
+    userId?: true
+    pageId?: true
+    rating?: true
+    comment?: true
+    status?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type WebsiteFeedbackAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WebsiteFeedback to aggregate.
+     */
+    where?: WebsiteFeedbackWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WebsiteFeedbacks to fetch.
+     */
+    orderBy?: WebsiteFeedbackOrderByWithRelationInput | WebsiteFeedbackOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WebsiteFeedbackWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WebsiteFeedbacks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WebsiteFeedbacks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WebsiteFeedbacks
+    **/
+    _count?: true | WebsiteFeedbackCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: WebsiteFeedbackAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: WebsiteFeedbackSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WebsiteFeedbackMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WebsiteFeedbackMaxAggregateInputType
+  }
+
+  export type GetWebsiteFeedbackAggregateType<T extends WebsiteFeedbackAggregateArgs> = {
+        [P in keyof T & keyof AggregateWebsiteFeedback]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWebsiteFeedback[P]>
+      : GetScalarType<T[P], AggregateWebsiteFeedback[P]>
+  }
+
+
+
+
+  export type WebsiteFeedbackGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WebsiteFeedbackWhereInput
+    orderBy?: WebsiteFeedbackOrderByWithAggregationInput | WebsiteFeedbackOrderByWithAggregationInput[]
+    by: WebsiteFeedbackScalarFieldEnum[] | WebsiteFeedbackScalarFieldEnum
+    having?: WebsiteFeedbackScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WebsiteFeedbackCountAggregateInputType | true
+    _avg?: WebsiteFeedbackAvgAggregateInputType
+    _sum?: WebsiteFeedbackSumAggregateInputType
+    _min?: WebsiteFeedbackMinAggregateInputType
+    _max?: WebsiteFeedbackMaxAggregateInputType
+  }
+
+  export type WebsiteFeedbackGroupByOutputType = {
+    id: string
+    siteId: string
+    tenantId: string
+    userId: string | null
+    pageId: string | null
+    rating: number
+    comment: string | null
+    status: string
+    createdAt: Date
+    _count: WebsiteFeedbackCountAggregateOutputType | null
+    _avg: WebsiteFeedbackAvgAggregateOutputType | null
+    _sum: WebsiteFeedbackSumAggregateOutputType | null
+    _min: WebsiteFeedbackMinAggregateOutputType | null
+    _max: WebsiteFeedbackMaxAggregateOutputType | null
+  }
+
+  type GetWebsiteFeedbackGroupByPayload<T extends WebsiteFeedbackGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WebsiteFeedbackGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WebsiteFeedbackGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WebsiteFeedbackGroupByOutputType[P]>
+            : GetScalarType<T[P], WebsiteFeedbackGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WebsiteFeedbackSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    siteId?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    pageId?: boolean
+    rating?: boolean
+    comment?: boolean
+    status?: boolean
+    createdAt?: boolean
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["websiteFeedback"]>
+
+  export type WebsiteFeedbackSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    siteId?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    pageId?: boolean
+    rating?: boolean
+    comment?: boolean
+    status?: boolean
+    createdAt?: boolean
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["websiteFeedback"]>
+
+  export type WebsiteFeedbackSelectScalar = {
+    id?: boolean
+    siteId?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    pageId?: boolean
+    rating?: boolean
+    comment?: boolean
+    status?: boolean
+    createdAt?: boolean
+  }
+
+  export type WebsiteFeedbackInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+  }
+  export type WebsiteFeedbackIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+  }
+
+  export type $WebsiteFeedbackPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "WebsiteFeedback"
+    objects: {
+      site: Prisma.$SitePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      siteId: string
+      tenantId: string
+      userId: string | null
+      pageId: string | null
+      rating: number
+      comment: string | null
+      status: string
+      createdAt: Date
+    }, ExtArgs["result"]["websiteFeedback"]>
+    composites: {}
+  }
+
+  type WebsiteFeedbackGetPayload<S extends boolean | null | undefined | WebsiteFeedbackDefaultArgs> = $Result.GetResult<Prisma.$WebsiteFeedbackPayload, S>
+
+  type WebsiteFeedbackCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<WebsiteFeedbackFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: WebsiteFeedbackCountAggregateInputType | true
+    }
+
+  export interface WebsiteFeedbackDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['WebsiteFeedback'], meta: { name: 'WebsiteFeedback' } }
+    /**
+     * Find zero or one WebsiteFeedback that matches the filter.
+     * @param {WebsiteFeedbackFindUniqueArgs} args - Arguments to find a WebsiteFeedback
+     * @example
+     * // Get one WebsiteFeedback
+     * const websiteFeedback = await prisma.websiteFeedback.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WebsiteFeedbackFindUniqueArgs>(args: SelectSubset<T, WebsiteFeedbackFindUniqueArgs<ExtArgs>>): Prisma__WebsiteFeedbackClient<$Result.GetResult<Prisma.$WebsiteFeedbackPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one WebsiteFeedback that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {WebsiteFeedbackFindUniqueOrThrowArgs} args - Arguments to find a WebsiteFeedback
+     * @example
+     * // Get one WebsiteFeedback
+     * const websiteFeedback = await prisma.websiteFeedback.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WebsiteFeedbackFindUniqueOrThrowArgs>(args: SelectSubset<T, WebsiteFeedbackFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WebsiteFeedbackClient<$Result.GetResult<Prisma.$WebsiteFeedbackPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first WebsiteFeedback that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebsiteFeedbackFindFirstArgs} args - Arguments to find a WebsiteFeedback
+     * @example
+     * // Get one WebsiteFeedback
+     * const websiteFeedback = await prisma.websiteFeedback.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WebsiteFeedbackFindFirstArgs>(args?: SelectSubset<T, WebsiteFeedbackFindFirstArgs<ExtArgs>>): Prisma__WebsiteFeedbackClient<$Result.GetResult<Prisma.$WebsiteFeedbackPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first WebsiteFeedback that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebsiteFeedbackFindFirstOrThrowArgs} args - Arguments to find a WebsiteFeedback
+     * @example
+     * // Get one WebsiteFeedback
+     * const websiteFeedback = await prisma.websiteFeedback.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WebsiteFeedbackFindFirstOrThrowArgs>(args?: SelectSubset<T, WebsiteFeedbackFindFirstOrThrowArgs<ExtArgs>>): Prisma__WebsiteFeedbackClient<$Result.GetResult<Prisma.$WebsiteFeedbackPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more WebsiteFeedbacks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebsiteFeedbackFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WebsiteFeedbacks
+     * const websiteFeedbacks = await prisma.websiteFeedback.findMany()
+     * 
+     * // Get first 10 WebsiteFeedbacks
+     * const websiteFeedbacks = await prisma.websiteFeedback.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const websiteFeedbackWithIdOnly = await prisma.websiteFeedback.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WebsiteFeedbackFindManyArgs>(args?: SelectSubset<T, WebsiteFeedbackFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WebsiteFeedbackPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a WebsiteFeedback.
+     * @param {WebsiteFeedbackCreateArgs} args - Arguments to create a WebsiteFeedback.
+     * @example
+     * // Create one WebsiteFeedback
+     * const WebsiteFeedback = await prisma.websiteFeedback.create({
+     *   data: {
+     *     // ... data to create a WebsiteFeedback
+     *   }
+     * })
+     * 
+     */
+    create<T extends WebsiteFeedbackCreateArgs>(args: SelectSubset<T, WebsiteFeedbackCreateArgs<ExtArgs>>): Prisma__WebsiteFeedbackClient<$Result.GetResult<Prisma.$WebsiteFeedbackPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many WebsiteFeedbacks.
+     * @param {WebsiteFeedbackCreateManyArgs} args - Arguments to create many WebsiteFeedbacks.
+     * @example
+     * // Create many WebsiteFeedbacks
+     * const websiteFeedback = await prisma.websiteFeedback.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WebsiteFeedbackCreateManyArgs>(args?: SelectSubset<T, WebsiteFeedbackCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many WebsiteFeedbacks and returns the data saved in the database.
+     * @param {WebsiteFeedbackCreateManyAndReturnArgs} args - Arguments to create many WebsiteFeedbacks.
+     * @example
+     * // Create many WebsiteFeedbacks
+     * const websiteFeedback = await prisma.websiteFeedback.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many WebsiteFeedbacks and only return the `id`
+     * const websiteFeedbackWithIdOnly = await prisma.websiteFeedback.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WebsiteFeedbackCreateManyAndReturnArgs>(args?: SelectSubset<T, WebsiteFeedbackCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WebsiteFeedbackPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a WebsiteFeedback.
+     * @param {WebsiteFeedbackDeleteArgs} args - Arguments to delete one WebsiteFeedback.
+     * @example
+     * // Delete one WebsiteFeedback
+     * const WebsiteFeedback = await prisma.websiteFeedback.delete({
+     *   where: {
+     *     // ... filter to delete one WebsiteFeedback
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WebsiteFeedbackDeleteArgs>(args: SelectSubset<T, WebsiteFeedbackDeleteArgs<ExtArgs>>): Prisma__WebsiteFeedbackClient<$Result.GetResult<Prisma.$WebsiteFeedbackPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one WebsiteFeedback.
+     * @param {WebsiteFeedbackUpdateArgs} args - Arguments to update one WebsiteFeedback.
+     * @example
+     * // Update one WebsiteFeedback
+     * const websiteFeedback = await prisma.websiteFeedback.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WebsiteFeedbackUpdateArgs>(args: SelectSubset<T, WebsiteFeedbackUpdateArgs<ExtArgs>>): Prisma__WebsiteFeedbackClient<$Result.GetResult<Prisma.$WebsiteFeedbackPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more WebsiteFeedbacks.
+     * @param {WebsiteFeedbackDeleteManyArgs} args - Arguments to filter WebsiteFeedbacks to delete.
+     * @example
+     * // Delete a few WebsiteFeedbacks
+     * const { count } = await prisma.websiteFeedback.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WebsiteFeedbackDeleteManyArgs>(args?: SelectSubset<T, WebsiteFeedbackDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WebsiteFeedbacks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebsiteFeedbackUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WebsiteFeedbacks
+     * const websiteFeedback = await prisma.websiteFeedback.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WebsiteFeedbackUpdateManyArgs>(args: SelectSubset<T, WebsiteFeedbackUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one WebsiteFeedback.
+     * @param {WebsiteFeedbackUpsertArgs} args - Arguments to update or create a WebsiteFeedback.
+     * @example
+     * // Update or create a WebsiteFeedback
+     * const websiteFeedback = await prisma.websiteFeedback.upsert({
+     *   create: {
+     *     // ... data to create a WebsiteFeedback
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WebsiteFeedback we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WebsiteFeedbackUpsertArgs>(args: SelectSubset<T, WebsiteFeedbackUpsertArgs<ExtArgs>>): Prisma__WebsiteFeedbackClient<$Result.GetResult<Prisma.$WebsiteFeedbackPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of WebsiteFeedbacks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebsiteFeedbackCountArgs} args - Arguments to filter WebsiteFeedbacks to count.
+     * @example
+     * // Count the number of WebsiteFeedbacks
+     * const count = await prisma.websiteFeedback.count({
+     *   where: {
+     *     // ... the filter for the WebsiteFeedbacks we want to count
+     *   }
+     * })
+    **/
+    count<T extends WebsiteFeedbackCountArgs>(
+      args?: Subset<T, WebsiteFeedbackCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WebsiteFeedbackCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WebsiteFeedback.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebsiteFeedbackAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WebsiteFeedbackAggregateArgs>(args: Subset<T, WebsiteFeedbackAggregateArgs>): Prisma.PrismaPromise<GetWebsiteFeedbackAggregateType<T>>
+
+    /**
+     * Group by WebsiteFeedback.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebsiteFeedbackGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WebsiteFeedbackGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WebsiteFeedbackGroupByArgs['orderBy'] }
+        : { orderBy?: WebsiteFeedbackGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WebsiteFeedbackGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWebsiteFeedbackGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the WebsiteFeedback model
+   */
+  readonly fields: WebsiteFeedbackFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WebsiteFeedback.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WebsiteFeedbackClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    site<T extends SiteDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SiteDefaultArgs<ExtArgs>>): Prisma__SiteClient<$Result.GetResult<Prisma.$SitePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the WebsiteFeedback model
+   */ 
+  interface WebsiteFeedbackFieldRefs {
+    readonly id: FieldRef<"WebsiteFeedback", 'String'>
+    readonly siteId: FieldRef<"WebsiteFeedback", 'String'>
+    readonly tenantId: FieldRef<"WebsiteFeedback", 'String'>
+    readonly userId: FieldRef<"WebsiteFeedback", 'String'>
+    readonly pageId: FieldRef<"WebsiteFeedback", 'String'>
+    readonly rating: FieldRef<"WebsiteFeedback", 'Int'>
+    readonly comment: FieldRef<"WebsiteFeedback", 'String'>
+    readonly status: FieldRef<"WebsiteFeedback", 'String'>
+    readonly createdAt: FieldRef<"WebsiteFeedback", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * WebsiteFeedback findUnique
+   */
+  export type WebsiteFeedbackFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebsiteFeedback
+     */
+    select?: WebsiteFeedbackSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WebsiteFeedbackInclude<ExtArgs> | null
+    /**
+     * Filter, which WebsiteFeedback to fetch.
+     */
+    where: WebsiteFeedbackWhereUniqueInput
+  }
+
+  /**
+   * WebsiteFeedback findUniqueOrThrow
+   */
+  export type WebsiteFeedbackFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebsiteFeedback
+     */
+    select?: WebsiteFeedbackSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WebsiteFeedbackInclude<ExtArgs> | null
+    /**
+     * Filter, which WebsiteFeedback to fetch.
+     */
+    where: WebsiteFeedbackWhereUniqueInput
+  }
+
+  /**
+   * WebsiteFeedback findFirst
+   */
+  export type WebsiteFeedbackFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebsiteFeedback
+     */
+    select?: WebsiteFeedbackSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WebsiteFeedbackInclude<ExtArgs> | null
+    /**
+     * Filter, which WebsiteFeedback to fetch.
+     */
+    where?: WebsiteFeedbackWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WebsiteFeedbacks to fetch.
+     */
+    orderBy?: WebsiteFeedbackOrderByWithRelationInput | WebsiteFeedbackOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WebsiteFeedbacks.
+     */
+    cursor?: WebsiteFeedbackWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WebsiteFeedbacks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WebsiteFeedbacks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WebsiteFeedbacks.
+     */
+    distinct?: WebsiteFeedbackScalarFieldEnum | WebsiteFeedbackScalarFieldEnum[]
+  }
+
+  /**
+   * WebsiteFeedback findFirstOrThrow
+   */
+  export type WebsiteFeedbackFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebsiteFeedback
+     */
+    select?: WebsiteFeedbackSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WebsiteFeedbackInclude<ExtArgs> | null
+    /**
+     * Filter, which WebsiteFeedback to fetch.
+     */
+    where?: WebsiteFeedbackWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WebsiteFeedbacks to fetch.
+     */
+    orderBy?: WebsiteFeedbackOrderByWithRelationInput | WebsiteFeedbackOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WebsiteFeedbacks.
+     */
+    cursor?: WebsiteFeedbackWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WebsiteFeedbacks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WebsiteFeedbacks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WebsiteFeedbacks.
+     */
+    distinct?: WebsiteFeedbackScalarFieldEnum | WebsiteFeedbackScalarFieldEnum[]
+  }
+
+  /**
+   * WebsiteFeedback findMany
+   */
+  export type WebsiteFeedbackFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebsiteFeedback
+     */
+    select?: WebsiteFeedbackSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WebsiteFeedbackInclude<ExtArgs> | null
+    /**
+     * Filter, which WebsiteFeedbacks to fetch.
+     */
+    where?: WebsiteFeedbackWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WebsiteFeedbacks to fetch.
+     */
+    orderBy?: WebsiteFeedbackOrderByWithRelationInput | WebsiteFeedbackOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WebsiteFeedbacks.
+     */
+    cursor?: WebsiteFeedbackWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WebsiteFeedbacks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WebsiteFeedbacks.
+     */
+    skip?: number
+    distinct?: WebsiteFeedbackScalarFieldEnum | WebsiteFeedbackScalarFieldEnum[]
+  }
+
+  /**
+   * WebsiteFeedback create
+   */
+  export type WebsiteFeedbackCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebsiteFeedback
+     */
+    select?: WebsiteFeedbackSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WebsiteFeedbackInclude<ExtArgs> | null
+    /**
+     * The data needed to create a WebsiteFeedback.
+     */
+    data: XOR<WebsiteFeedbackCreateInput, WebsiteFeedbackUncheckedCreateInput>
+  }
+
+  /**
+   * WebsiteFeedback createMany
+   */
+  export type WebsiteFeedbackCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many WebsiteFeedbacks.
+     */
+    data: WebsiteFeedbackCreateManyInput | WebsiteFeedbackCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * WebsiteFeedback createManyAndReturn
+   */
+  export type WebsiteFeedbackCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebsiteFeedback
+     */
+    select?: WebsiteFeedbackSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many WebsiteFeedbacks.
+     */
+    data: WebsiteFeedbackCreateManyInput | WebsiteFeedbackCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WebsiteFeedbackIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WebsiteFeedback update
+   */
+  export type WebsiteFeedbackUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebsiteFeedback
+     */
+    select?: WebsiteFeedbackSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WebsiteFeedbackInclude<ExtArgs> | null
+    /**
+     * The data needed to update a WebsiteFeedback.
+     */
+    data: XOR<WebsiteFeedbackUpdateInput, WebsiteFeedbackUncheckedUpdateInput>
+    /**
+     * Choose, which WebsiteFeedback to update.
+     */
+    where: WebsiteFeedbackWhereUniqueInput
+  }
+
+  /**
+   * WebsiteFeedback updateMany
+   */
+  export type WebsiteFeedbackUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update WebsiteFeedbacks.
+     */
+    data: XOR<WebsiteFeedbackUpdateManyMutationInput, WebsiteFeedbackUncheckedUpdateManyInput>
+    /**
+     * Filter which WebsiteFeedbacks to update
+     */
+    where?: WebsiteFeedbackWhereInput
+  }
+
+  /**
+   * WebsiteFeedback upsert
+   */
+  export type WebsiteFeedbackUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebsiteFeedback
+     */
+    select?: WebsiteFeedbackSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WebsiteFeedbackInclude<ExtArgs> | null
+    /**
+     * The filter to search for the WebsiteFeedback to update in case it exists.
+     */
+    where: WebsiteFeedbackWhereUniqueInput
+    /**
+     * In case the WebsiteFeedback found by the `where` argument doesn't exist, create a new WebsiteFeedback with this data.
+     */
+    create: XOR<WebsiteFeedbackCreateInput, WebsiteFeedbackUncheckedCreateInput>
+    /**
+     * In case the WebsiteFeedback was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WebsiteFeedbackUpdateInput, WebsiteFeedbackUncheckedUpdateInput>
+  }
+
+  /**
+   * WebsiteFeedback delete
+   */
+  export type WebsiteFeedbackDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebsiteFeedback
+     */
+    select?: WebsiteFeedbackSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WebsiteFeedbackInclude<ExtArgs> | null
+    /**
+     * Filter which WebsiteFeedback to delete.
+     */
+    where: WebsiteFeedbackWhereUniqueInput
+  }
+
+  /**
+   * WebsiteFeedback deleteMany
+   */
+  export type WebsiteFeedbackDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WebsiteFeedbacks to delete
+     */
+    where?: WebsiteFeedbackWhereInput
+  }
+
+  /**
+   * WebsiteFeedback without action
+   */
+  export type WebsiteFeedbackDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebsiteFeedback
+     */
+    select?: WebsiteFeedbackSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WebsiteFeedbackInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model CrmApiKey
    */
 
@@ -55922,6 +59240,9 @@ export namespace Prisma {
     reactCode: string | null
     renderMode: $Enums.RenderMode | null
     publishedAt: Date | null
+    scheduledPublishAt: Date | null
+    customCss: string | null
+    customJs: string | null
     createdAt: Date | null
     updatedAt: Date | null
     deleted: boolean | null
@@ -55938,6 +59259,9 @@ export namespace Prisma {
     reactCode: string | null
     renderMode: $Enums.RenderMode | null
     publishedAt: Date | null
+    scheduledPublishAt: Date | null
+    customCss: string | null
+    customJs: string | null
     createdAt: Date | null
     updatedAt: Date | null
     deleted: boolean | null
@@ -55954,6 +59278,9 @@ export namespace Prisma {
     reactCode: number
     renderMode: number
     publishedAt: number
+    scheduledPublishAt: number
+    customCss: number
+    customJs: number
     createdAt: number
     updatedAt: number
     deleted: number
@@ -55973,6 +59300,9 @@ export namespace Prisma {
     reactCode?: true
     renderMode?: true
     publishedAt?: true
+    scheduledPublishAt?: true
+    customCss?: true
+    customJs?: true
     createdAt?: true
     updatedAt?: true
     deleted?: true
@@ -55989,6 +59319,9 @@ export namespace Prisma {
     reactCode?: true
     renderMode?: true
     publishedAt?: true
+    scheduledPublishAt?: true
+    customCss?: true
+    customJs?: true
     createdAt?: true
     updatedAt?: true
     deleted?: true
@@ -56005,6 +59338,9 @@ export namespace Prisma {
     reactCode?: true
     renderMode?: true
     publishedAt?: true
+    scheduledPublishAt?: true
+    customCss?: true
+    customJs?: true
     createdAt?: true
     updatedAt?: true
     deleted?: true
@@ -56095,6 +59431,9 @@ export namespace Prisma {
     reactCode: string | null
     renderMode: $Enums.RenderMode
     publishedAt: Date | null
+    scheduledPublishAt: Date | null
+    customCss: string | null
+    customJs: string | null
     createdAt: Date
     updatedAt: Date
     deleted: boolean
@@ -56129,6 +59468,9 @@ export namespace Prisma {
     reactCode?: boolean
     renderMode?: boolean
     publishedAt?: boolean
+    scheduledPublishAt?: boolean
+    customCss?: boolean
+    customJs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deleted?: boolean
@@ -56151,6 +59493,9 @@ export namespace Prisma {
     reactCode?: boolean
     renderMode?: boolean
     publishedAt?: boolean
+    scheduledPublishAt?: boolean
+    customCss?: boolean
+    customJs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deleted?: boolean
@@ -56169,6 +59514,9 @@ export namespace Prisma {
     reactCode?: boolean
     renderMode?: boolean
     publishedAt?: boolean
+    scheduledPublishAt?: boolean
+    customCss?: boolean
+    customJs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deleted?: boolean
@@ -56205,6 +59553,9 @@ export namespace Prisma {
       reactCode: string | null
       renderMode: $Enums.RenderMode
       publishedAt: Date | null
+      scheduledPublishAt: Date | null
+      customCss: string | null
+      customJs: string | null
       createdAt: Date
       updatedAt: Date
       deleted: boolean
@@ -56616,6 +59967,9 @@ export namespace Prisma {
     readonly reactCode: FieldRef<"Page", 'String'>
     readonly renderMode: FieldRef<"Page", 'RenderMode'>
     readonly publishedAt: FieldRef<"Page", 'DateTime'>
+    readonly scheduledPublishAt: FieldRef<"Page", 'DateTime'>
+    readonly customCss: FieldRef<"Page", 'String'>
+    readonly customJs: FieldRef<"Page", 'String'>
     readonly createdAt: FieldRef<"Page", 'DateTime'>
     readonly updatedAt: FieldRef<"Page", 'DateTime'>
     readonly deleted: FieldRef<"Page", 'Boolean'>
@@ -60948,6 +64302,9 @@ export namespace Prisma {
     maxPages: number | null
     aiCredits: number | null
     teamMembers: number | null
+    aiAgentRunLimitPerHour: number | null
+    aiAgentFollowupLimitPerHour: number | null
+    builderAgentLimitPerHour: number | null
   }
 
   export type PlanSumAggregateOutputType = {
@@ -60955,6 +64312,9 @@ export namespace Prisma {
     maxPages: number | null
     aiCredits: number | null
     teamMembers: number | null
+    aiAgentRunLimitPerHour: number | null
+    aiAgentFollowupLimitPerHour: number | null
+    builderAgentLimitPerHour: number | null
   }
 
   export type PlanMinAggregateOutputType = {
@@ -60965,6 +64325,9 @@ export namespace Prisma {
     maxPages: number | null
     aiCredits: number | null
     teamMembers: number | null
+    aiAgentRunLimitPerHour: number | null
+    aiAgentFollowupLimitPerHour: number | null
+    builderAgentLimitPerHour: number | null
     isPublic: boolean | null
     createdAt: Date | null
   }
@@ -60977,6 +64340,9 @@ export namespace Prisma {
     maxPages: number | null
     aiCredits: number | null
     teamMembers: number | null
+    aiAgentRunLimitPerHour: number | null
+    aiAgentFollowupLimitPerHour: number | null
+    builderAgentLimitPerHour: number | null
     isPublic: boolean | null
     createdAt: Date | null
   }
@@ -60989,6 +64355,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour: number
+    aiAgentFollowupLimitPerHour: number
+    builderAgentLimitPerHour: number
     isPublic: number
     createdAt: number
     _all: number
@@ -61000,6 +64369,9 @@ export namespace Prisma {
     maxPages?: true
     aiCredits?: true
     teamMembers?: true
+    aiAgentRunLimitPerHour?: true
+    aiAgentFollowupLimitPerHour?: true
+    builderAgentLimitPerHour?: true
   }
 
   export type PlanSumAggregateInputType = {
@@ -61007,6 +64379,9 @@ export namespace Prisma {
     maxPages?: true
     aiCredits?: true
     teamMembers?: true
+    aiAgentRunLimitPerHour?: true
+    aiAgentFollowupLimitPerHour?: true
+    builderAgentLimitPerHour?: true
   }
 
   export type PlanMinAggregateInputType = {
@@ -61017,6 +64392,9 @@ export namespace Prisma {
     maxPages?: true
     aiCredits?: true
     teamMembers?: true
+    aiAgentRunLimitPerHour?: true
+    aiAgentFollowupLimitPerHour?: true
+    builderAgentLimitPerHour?: true
     isPublic?: true
     createdAt?: true
   }
@@ -61029,6 +64407,9 @@ export namespace Prisma {
     maxPages?: true
     aiCredits?: true
     teamMembers?: true
+    aiAgentRunLimitPerHour?: true
+    aiAgentFollowupLimitPerHour?: true
+    builderAgentLimitPerHour?: true
     isPublic?: true
     createdAt?: true
   }
@@ -61041,6 +64422,9 @@ export namespace Prisma {
     maxPages?: true
     aiCredits?: true
     teamMembers?: true
+    aiAgentRunLimitPerHour?: true
+    aiAgentFollowupLimitPerHour?: true
+    builderAgentLimitPerHour?: true
     isPublic?: true
     createdAt?: true
     _all?: true
@@ -61140,6 +64524,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour: number
+    aiAgentFollowupLimitPerHour: number
+    builderAgentLimitPerHour: number
     isPublic: boolean
     createdAt: Date
     _count: PlanCountAggregateOutputType | null
@@ -61171,6 +64558,9 @@ export namespace Prisma {
     maxPages?: boolean
     aiCredits?: boolean
     teamMembers?: boolean
+    aiAgentRunLimitPerHour?: boolean
+    aiAgentFollowupLimitPerHour?: boolean
+    builderAgentLimitPerHour?: boolean
     isPublic?: boolean
     createdAt?: boolean
     pricing?: boolean | Plan$pricingArgs<ExtArgs>
@@ -61188,6 +64578,9 @@ export namespace Prisma {
     maxPages?: boolean
     aiCredits?: boolean
     teamMembers?: boolean
+    aiAgentRunLimitPerHour?: boolean
+    aiAgentFollowupLimitPerHour?: boolean
+    builderAgentLimitPerHour?: boolean
     isPublic?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["plan"]>
@@ -61200,6 +64593,9 @@ export namespace Prisma {
     maxPages?: boolean
     aiCredits?: boolean
     teamMembers?: boolean
+    aiAgentRunLimitPerHour?: boolean
+    aiAgentFollowupLimitPerHour?: boolean
+    builderAgentLimitPerHour?: boolean
     isPublic?: boolean
     createdAt?: boolean
   }
@@ -61229,6 +64625,9 @@ export namespace Prisma {
       maxPages: number
       aiCredits: number
       teamMembers: number
+      aiAgentRunLimitPerHour: number
+      aiAgentFollowupLimitPerHour: number
+      builderAgentLimitPerHour: number
       isPublic: boolean
       createdAt: Date
     }, ExtArgs["result"]["plan"]>
@@ -61635,6 +65034,9 @@ export namespace Prisma {
     readonly maxPages: FieldRef<"Plan", 'Int'>
     readonly aiCredits: FieldRef<"Plan", 'Int'>
     readonly teamMembers: FieldRef<"Plan", 'Int'>
+    readonly aiAgentRunLimitPerHour: FieldRef<"Plan", 'Int'>
+    readonly aiAgentFollowupLimitPerHour: FieldRef<"Plan", 'Int'>
+    readonly builderAgentLimitPerHour: FieldRef<"Plan", 'Int'>
     readonly isPublic: FieldRef<"Plan", 'Boolean'>
     readonly createdAt: FieldRef<"Plan", 'DateTime'>
   }
@@ -86909,6 +90311,48 @@ export namespace Prisma {
   export type CrmCommunicationScalarFieldEnum = (typeof CrmCommunicationScalarFieldEnum)[keyof typeof CrmCommunicationScalarFieldEnum]
 
 
+  export const AgentRunScalarFieldEnum: {
+    id: 'id',
+    siteId: 'siteId',
+    tenantId: 'tenantId',
+    agentId: 'agentId',
+    pageId: 'pageId',
+    prompt: 'prompt',
+    summary: 'summary',
+    findings: 'findings',
+    generatedBy: 'generatedBy',
+    createdAt: 'createdAt'
+  };
+
+  export type AgentRunScalarFieldEnum = (typeof AgentRunScalarFieldEnum)[keyof typeof AgentRunScalarFieldEnum]
+
+
+  export const AgentMessageScalarFieldEnum: {
+    id: 'id',
+    runId: 'runId',
+    role: 'role',
+    content: 'content',
+    createdAt: 'createdAt'
+  };
+
+  export type AgentMessageScalarFieldEnum = (typeof AgentMessageScalarFieldEnum)[keyof typeof AgentMessageScalarFieldEnum]
+
+
+  export const WebsiteFeedbackScalarFieldEnum: {
+    id: 'id',
+    siteId: 'siteId',
+    tenantId: 'tenantId',
+    userId: 'userId',
+    pageId: 'pageId',
+    rating: 'rating',
+    comment: 'comment',
+    status: 'status',
+    createdAt: 'createdAt'
+  };
+
+  export type WebsiteFeedbackScalarFieldEnum = (typeof WebsiteFeedbackScalarFieldEnum)[keyof typeof WebsiteFeedbackScalarFieldEnum]
+
+
   export const CrmApiKeyScalarFieldEnum: {
     id: 'id',
     siteId: 'siteId',
@@ -86980,6 +90424,9 @@ export namespace Prisma {
     reactCode: 'reactCode',
     renderMode: 'renderMode',
     publishedAt: 'publishedAt',
+    scheduledPublishAt: 'scheduledPublishAt',
+    customCss: 'customCss',
+    customJs: 'customJs',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     deleted: 'deleted',
@@ -87050,6 +90497,9 @@ export namespace Prisma {
     maxPages: 'maxPages',
     aiCredits: 'aiCredits',
     teamMembers: 'teamMembers',
+    aiAgentRunLimitPerHour: 'aiAgentRunLimitPerHour',
+    aiAgentFollowupLimitPerHour: 'aiAgentFollowupLimitPerHour',
+    builderAgentLimitPerHour: 'builderAgentLimitPerHour',
     isPublic: 'isPublic',
     createdAt: 'createdAt'
   };
@@ -89510,9 +92960,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionListRelationFilter
     crmLeads?: CrmLeadListRelationFilter
     crmApiKeys?: CrmApiKeyListRelationFilter
+    agentRuns?: AgentRunListRelationFilter
     integrations?: SiteIntegrationListRelationFilter
     shop?: XOR<ShopNullableRelationFilter, ShopWhereInput> | null
     v12Project?: XOR<V12ProjectNullableRelationFilter, V12ProjectWhereInput> | null
+    feedback?: WebsiteFeedbackListRelationFilter
   }
 
   export type SiteOrderByWithRelationInput = {
@@ -89542,9 +92994,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionOrderByRelationAggregateInput
     crmLeads?: CrmLeadOrderByRelationAggregateInput
     crmApiKeys?: CrmApiKeyOrderByRelationAggregateInput
+    agentRuns?: AgentRunOrderByRelationAggregateInput
     integrations?: SiteIntegrationOrderByRelationAggregateInput
     shop?: ShopOrderByWithRelationInput
     v12Project?: V12ProjectOrderByWithRelationInput
+    feedback?: WebsiteFeedbackOrderByRelationAggregateInput
   }
 
   export type SiteWhereUniqueInput = Prisma.AtLeast<{
@@ -89578,9 +93032,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionListRelationFilter
     crmLeads?: CrmLeadListRelationFilter
     crmApiKeys?: CrmApiKeyListRelationFilter
+    agentRuns?: AgentRunListRelationFilter
     integrations?: SiteIntegrationListRelationFilter
     shop?: XOR<ShopNullableRelationFilter, ShopWhereInput> | null
     v12Project?: XOR<V12ProjectNullableRelationFilter, V12ProjectWhereInput> | null
+    feedback?: WebsiteFeedbackListRelationFilter
   }, "id" | "tenantId_slug">
 
   export type SiteOrderByWithAggregationInput = {
@@ -91492,6 +94948,221 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"CrmCommunication"> | Date | string
   }
 
+  export type AgentRunWhereInput = {
+    AND?: AgentRunWhereInput | AgentRunWhereInput[]
+    OR?: AgentRunWhereInput[]
+    NOT?: AgentRunWhereInput | AgentRunWhereInput[]
+    id?: StringFilter<"AgentRun"> | string
+    siteId?: StringFilter<"AgentRun"> | string
+    tenantId?: StringFilter<"AgentRun"> | string
+    agentId?: StringFilter<"AgentRun"> | string
+    pageId?: StringNullableFilter<"AgentRun"> | string | null
+    prompt?: StringNullableFilter<"AgentRun"> | string | null
+    summary?: StringFilter<"AgentRun"> | string
+    findings?: JsonFilter<"AgentRun">
+    generatedBy?: StringFilter<"AgentRun"> | string
+    createdAt?: DateTimeFilter<"AgentRun"> | Date | string
+    site?: XOR<SiteRelationFilter, SiteWhereInput>
+    messages?: AgentMessageListRelationFilter
+  }
+
+  export type AgentRunOrderByWithRelationInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    agentId?: SortOrder
+    pageId?: SortOrderInput | SortOrder
+    prompt?: SortOrderInput | SortOrder
+    summary?: SortOrder
+    findings?: SortOrder
+    generatedBy?: SortOrder
+    createdAt?: SortOrder
+    site?: SiteOrderByWithRelationInput
+    messages?: AgentMessageOrderByRelationAggregateInput
+  }
+
+  export type AgentRunWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AgentRunWhereInput | AgentRunWhereInput[]
+    OR?: AgentRunWhereInput[]
+    NOT?: AgentRunWhereInput | AgentRunWhereInput[]
+    siteId?: StringFilter<"AgentRun"> | string
+    tenantId?: StringFilter<"AgentRun"> | string
+    agentId?: StringFilter<"AgentRun"> | string
+    pageId?: StringNullableFilter<"AgentRun"> | string | null
+    prompt?: StringNullableFilter<"AgentRun"> | string | null
+    summary?: StringFilter<"AgentRun"> | string
+    findings?: JsonFilter<"AgentRun">
+    generatedBy?: StringFilter<"AgentRun"> | string
+    createdAt?: DateTimeFilter<"AgentRun"> | Date | string
+    site?: XOR<SiteRelationFilter, SiteWhereInput>
+    messages?: AgentMessageListRelationFilter
+  }, "id">
+
+  export type AgentRunOrderByWithAggregationInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    agentId?: SortOrder
+    pageId?: SortOrderInput | SortOrder
+    prompt?: SortOrderInput | SortOrder
+    summary?: SortOrder
+    findings?: SortOrder
+    generatedBy?: SortOrder
+    createdAt?: SortOrder
+    _count?: AgentRunCountOrderByAggregateInput
+    _max?: AgentRunMaxOrderByAggregateInput
+    _min?: AgentRunMinOrderByAggregateInput
+  }
+
+  export type AgentRunScalarWhereWithAggregatesInput = {
+    AND?: AgentRunScalarWhereWithAggregatesInput | AgentRunScalarWhereWithAggregatesInput[]
+    OR?: AgentRunScalarWhereWithAggregatesInput[]
+    NOT?: AgentRunScalarWhereWithAggregatesInput | AgentRunScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AgentRun"> | string
+    siteId?: StringWithAggregatesFilter<"AgentRun"> | string
+    tenantId?: StringWithAggregatesFilter<"AgentRun"> | string
+    agentId?: StringWithAggregatesFilter<"AgentRun"> | string
+    pageId?: StringNullableWithAggregatesFilter<"AgentRun"> | string | null
+    prompt?: StringNullableWithAggregatesFilter<"AgentRun"> | string | null
+    summary?: StringWithAggregatesFilter<"AgentRun"> | string
+    findings?: JsonWithAggregatesFilter<"AgentRun">
+    generatedBy?: StringWithAggregatesFilter<"AgentRun"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"AgentRun"> | Date | string
+  }
+
+  export type AgentMessageWhereInput = {
+    AND?: AgentMessageWhereInput | AgentMessageWhereInput[]
+    OR?: AgentMessageWhereInput[]
+    NOT?: AgentMessageWhereInput | AgentMessageWhereInput[]
+    id?: StringFilter<"AgentMessage"> | string
+    runId?: StringFilter<"AgentMessage"> | string
+    role?: StringFilter<"AgentMessage"> | string
+    content?: StringFilter<"AgentMessage"> | string
+    createdAt?: DateTimeFilter<"AgentMessage"> | Date | string
+    run?: XOR<AgentRunRelationFilter, AgentRunWhereInput>
+  }
+
+  export type AgentMessageOrderByWithRelationInput = {
+    id?: SortOrder
+    runId?: SortOrder
+    role?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+    run?: AgentRunOrderByWithRelationInput
+  }
+
+  export type AgentMessageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AgentMessageWhereInput | AgentMessageWhereInput[]
+    OR?: AgentMessageWhereInput[]
+    NOT?: AgentMessageWhereInput | AgentMessageWhereInput[]
+    runId?: StringFilter<"AgentMessage"> | string
+    role?: StringFilter<"AgentMessage"> | string
+    content?: StringFilter<"AgentMessage"> | string
+    createdAt?: DateTimeFilter<"AgentMessage"> | Date | string
+    run?: XOR<AgentRunRelationFilter, AgentRunWhereInput>
+  }, "id">
+
+  export type AgentMessageOrderByWithAggregationInput = {
+    id?: SortOrder
+    runId?: SortOrder
+    role?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+    _count?: AgentMessageCountOrderByAggregateInput
+    _max?: AgentMessageMaxOrderByAggregateInput
+    _min?: AgentMessageMinOrderByAggregateInput
+  }
+
+  export type AgentMessageScalarWhereWithAggregatesInput = {
+    AND?: AgentMessageScalarWhereWithAggregatesInput | AgentMessageScalarWhereWithAggregatesInput[]
+    OR?: AgentMessageScalarWhereWithAggregatesInput[]
+    NOT?: AgentMessageScalarWhereWithAggregatesInput | AgentMessageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AgentMessage"> | string
+    runId?: StringWithAggregatesFilter<"AgentMessage"> | string
+    role?: StringWithAggregatesFilter<"AgentMessage"> | string
+    content?: StringWithAggregatesFilter<"AgentMessage"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"AgentMessage"> | Date | string
+  }
+
+  export type WebsiteFeedbackWhereInput = {
+    AND?: WebsiteFeedbackWhereInput | WebsiteFeedbackWhereInput[]
+    OR?: WebsiteFeedbackWhereInput[]
+    NOT?: WebsiteFeedbackWhereInput | WebsiteFeedbackWhereInput[]
+    id?: StringFilter<"WebsiteFeedback"> | string
+    siteId?: StringFilter<"WebsiteFeedback"> | string
+    tenantId?: StringFilter<"WebsiteFeedback"> | string
+    userId?: StringNullableFilter<"WebsiteFeedback"> | string | null
+    pageId?: StringNullableFilter<"WebsiteFeedback"> | string | null
+    rating?: IntFilter<"WebsiteFeedback"> | number
+    comment?: StringNullableFilter<"WebsiteFeedback"> | string | null
+    status?: StringFilter<"WebsiteFeedback"> | string
+    createdAt?: DateTimeFilter<"WebsiteFeedback"> | Date | string
+    site?: XOR<SiteRelationFilter, SiteWhereInput>
+  }
+
+  export type WebsiteFeedbackOrderByWithRelationInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    pageId?: SortOrderInput | SortOrder
+    rating?: SortOrder
+    comment?: SortOrderInput | SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    site?: SiteOrderByWithRelationInput
+  }
+
+  export type WebsiteFeedbackWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: WebsiteFeedbackWhereInput | WebsiteFeedbackWhereInput[]
+    OR?: WebsiteFeedbackWhereInput[]
+    NOT?: WebsiteFeedbackWhereInput | WebsiteFeedbackWhereInput[]
+    siteId?: StringFilter<"WebsiteFeedback"> | string
+    tenantId?: StringFilter<"WebsiteFeedback"> | string
+    userId?: StringNullableFilter<"WebsiteFeedback"> | string | null
+    pageId?: StringNullableFilter<"WebsiteFeedback"> | string | null
+    rating?: IntFilter<"WebsiteFeedback"> | number
+    comment?: StringNullableFilter<"WebsiteFeedback"> | string | null
+    status?: StringFilter<"WebsiteFeedback"> | string
+    createdAt?: DateTimeFilter<"WebsiteFeedback"> | Date | string
+    site?: XOR<SiteRelationFilter, SiteWhereInput>
+  }, "id">
+
+  export type WebsiteFeedbackOrderByWithAggregationInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    pageId?: SortOrderInput | SortOrder
+    rating?: SortOrder
+    comment?: SortOrderInput | SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    _count?: WebsiteFeedbackCountOrderByAggregateInput
+    _avg?: WebsiteFeedbackAvgOrderByAggregateInput
+    _max?: WebsiteFeedbackMaxOrderByAggregateInput
+    _min?: WebsiteFeedbackMinOrderByAggregateInput
+    _sum?: WebsiteFeedbackSumOrderByAggregateInput
+  }
+
+  export type WebsiteFeedbackScalarWhereWithAggregatesInput = {
+    AND?: WebsiteFeedbackScalarWhereWithAggregatesInput | WebsiteFeedbackScalarWhereWithAggregatesInput[]
+    OR?: WebsiteFeedbackScalarWhereWithAggregatesInput[]
+    NOT?: WebsiteFeedbackScalarWhereWithAggregatesInput | WebsiteFeedbackScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"WebsiteFeedback"> | string
+    siteId?: StringWithAggregatesFilter<"WebsiteFeedback"> | string
+    tenantId?: StringWithAggregatesFilter<"WebsiteFeedback"> | string
+    userId?: StringNullableWithAggregatesFilter<"WebsiteFeedback"> | string | null
+    pageId?: StringNullableWithAggregatesFilter<"WebsiteFeedback"> | string | null
+    rating?: IntWithAggregatesFilter<"WebsiteFeedback"> | number
+    comment?: StringNullableWithAggregatesFilter<"WebsiteFeedback"> | string | null
+    status?: StringWithAggregatesFilter<"WebsiteFeedback"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"WebsiteFeedback"> | Date | string
+  }
+
   export type CrmApiKeyWhereInput = {
     AND?: CrmApiKeyWhereInput | CrmApiKeyWhereInput[]
     OR?: CrmApiKeyWhereInput[]
@@ -91818,6 +95489,9 @@ export namespace Prisma {
     reactCode?: StringNullableFilter<"Page"> | string | null
     renderMode?: EnumRenderModeFilter<"Page"> | $Enums.RenderMode
     publishedAt?: DateTimeNullableFilter<"Page"> | Date | string | null
+    scheduledPublishAt?: DateTimeNullableFilter<"Page"> | Date | string | null
+    customCss?: StringNullableFilter<"Page"> | string | null
+    customJs?: StringNullableFilter<"Page"> | string | null
     createdAt?: DateTimeFilter<"Page"> | Date | string
     updatedAt?: DateTimeFilter<"Page"> | Date | string
     deleted?: BoolFilter<"Page"> | boolean
@@ -91839,6 +95513,9 @@ export namespace Prisma {
     reactCode?: SortOrderInput | SortOrder
     renderMode?: SortOrder
     publishedAt?: SortOrderInput | SortOrder
+    scheduledPublishAt?: SortOrderInput | SortOrder
+    customCss?: SortOrderInput | SortOrder
+    customJs?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deleted?: SortOrder
@@ -91864,6 +95541,9 @@ export namespace Prisma {
     reactCode?: StringNullableFilter<"Page"> | string | null
     renderMode?: EnumRenderModeFilter<"Page"> | $Enums.RenderMode
     publishedAt?: DateTimeNullableFilter<"Page"> | Date | string | null
+    scheduledPublishAt?: DateTimeNullableFilter<"Page"> | Date | string | null
+    customCss?: StringNullableFilter<"Page"> | string | null
+    customJs?: StringNullableFilter<"Page"> | string | null
     createdAt?: DateTimeFilter<"Page"> | Date | string
     updatedAt?: DateTimeFilter<"Page"> | Date | string
     deleted?: BoolFilter<"Page"> | boolean
@@ -91885,6 +95565,9 @@ export namespace Prisma {
     reactCode?: SortOrderInput | SortOrder
     renderMode?: SortOrder
     publishedAt?: SortOrderInput | SortOrder
+    scheduledPublishAt?: SortOrderInput | SortOrder
+    customCss?: SortOrderInput | SortOrder
+    customJs?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deleted?: SortOrder
@@ -91908,6 +95591,9 @@ export namespace Prisma {
     reactCode?: StringNullableWithAggregatesFilter<"Page"> | string | null
     renderMode?: EnumRenderModeWithAggregatesFilter<"Page"> | $Enums.RenderMode
     publishedAt?: DateTimeNullableWithAggregatesFilter<"Page"> | Date | string | null
+    scheduledPublishAt?: DateTimeNullableWithAggregatesFilter<"Page"> | Date | string | null
+    customCss?: StringNullableWithAggregatesFilter<"Page"> | string | null
+    customJs?: StringNullableWithAggregatesFilter<"Page"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Page"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Page"> | Date | string
     deleted?: BoolWithAggregatesFilter<"Page"> | boolean
@@ -92201,6 +95887,9 @@ export namespace Prisma {
     maxPages?: IntFilter<"Plan"> | number
     aiCredits?: IntFilter<"Plan"> | number
     teamMembers?: IntFilter<"Plan"> | number
+    aiAgentRunLimitPerHour?: IntFilter<"Plan"> | number
+    aiAgentFollowupLimitPerHour?: IntFilter<"Plan"> | number
+    builderAgentLimitPerHour?: IntFilter<"Plan"> | number
     isPublic?: BoolFilter<"Plan"> | boolean
     createdAt?: DateTimeFilter<"Plan"> | Date | string
     pricing?: PlanPricingListRelationFilter
@@ -92217,6 +95906,9 @@ export namespace Prisma {
     maxPages?: SortOrder
     aiCredits?: SortOrder
     teamMembers?: SortOrder
+    aiAgentRunLimitPerHour?: SortOrder
+    aiAgentFollowupLimitPerHour?: SortOrder
+    builderAgentLimitPerHour?: SortOrder
     isPublic?: SortOrder
     createdAt?: SortOrder
     pricing?: PlanPricingOrderByRelationAggregateInput
@@ -92236,6 +95928,9 @@ export namespace Prisma {
     maxPages?: IntFilter<"Plan"> | number
     aiCredits?: IntFilter<"Plan"> | number
     teamMembers?: IntFilter<"Plan"> | number
+    aiAgentRunLimitPerHour?: IntFilter<"Plan"> | number
+    aiAgentFollowupLimitPerHour?: IntFilter<"Plan"> | number
+    builderAgentLimitPerHour?: IntFilter<"Plan"> | number
     isPublic?: BoolFilter<"Plan"> | boolean
     createdAt?: DateTimeFilter<"Plan"> | Date | string
     pricing?: PlanPricingListRelationFilter
@@ -92252,6 +95947,9 @@ export namespace Prisma {
     maxPages?: SortOrder
     aiCredits?: SortOrder
     teamMembers?: SortOrder
+    aiAgentRunLimitPerHour?: SortOrder
+    aiAgentFollowupLimitPerHour?: SortOrder
+    builderAgentLimitPerHour?: SortOrder
     isPublic?: SortOrder
     createdAt?: SortOrder
     _count?: PlanCountOrderByAggregateInput
@@ -92272,6 +95970,9 @@ export namespace Prisma {
     maxPages?: IntWithAggregatesFilter<"Plan"> | number
     aiCredits?: IntWithAggregatesFilter<"Plan"> | number
     teamMembers?: IntWithAggregatesFilter<"Plan"> | number
+    aiAgentRunLimitPerHour?: IntWithAggregatesFilter<"Plan"> | number
+    aiAgentFollowupLimitPerHour?: IntWithAggregatesFilter<"Plan"> | number
+    builderAgentLimitPerHour?: IntWithAggregatesFilter<"Plan"> | number
     isPublic?: BoolWithAggregatesFilter<"Plan"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Plan"> | Date | string
   }
@@ -96065,9 +99766,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateInput = {
@@ -96096,9 +99799,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUpdateInput = {
@@ -96127,9 +99832,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateInput = {
@@ -96158,9 +99865,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteCreateManyInput = {
@@ -98267,6 +101976,238 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AgentRunCreateInput = {
+    id?: string
+    tenantId: string
+    agentId: string
+    pageId?: string | null
+    prompt?: string | null
+    summary: string
+    findings: JsonNullValueInput | InputJsonValue
+    generatedBy?: string
+    createdAt?: Date | string
+    site: SiteCreateNestedOneWithoutAgentRunsInput
+    messages?: AgentMessageCreateNestedManyWithoutRunInput
+  }
+
+  export type AgentRunUncheckedCreateInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    agentId: string
+    pageId?: string | null
+    prompt?: string | null
+    summary: string
+    findings: JsonNullValueInput | InputJsonValue
+    generatedBy?: string
+    createdAt?: Date | string
+    messages?: AgentMessageUncheckedCreateNestedManyWithoutRunInput
+  }
+
+  export type AgentRunUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    agentId?: StringFieldUpdateOperationsInput | string
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: StringFieldUpdateOperationsInput | string
+    findings?: JsonNullValueInput | InputJsonValue
+    generatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    site?: SiteUpdateOneRequiredWithoutAgentRunsNestedInput
+    messages?: AgentMessageUpdateManyWithoutRunNestedInput
+  }
+
+  export type AgentRunUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    agentId?: StringFieldUpdateOperationsInput | string
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: StringFieldUpdateOperationsInput | string
+    findings?: JsonNullValueInput | InputJsonValue
+    generatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    messages?: AgentMessageUncheckedUpdateManyWithoutRunNestedInput
+  }
+
+  export type AgentRunCreateManyInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    agentId: string
+    pageId?: string | null
+    prompt?: string | null
+    summary: string
+    findings: JsonNullValueInput | InputJsonValue
+    generatedBy?: string
+    createdAt?: Date | string
+  }
+
+  export type AgentRunUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    agentId?: StringFieldUpdateOperationsInput | string
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: StringFieldUpdateOperationsInput | string
+    findings?: JsonNullValueInput | InputJsonValue
+    generatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgentRunUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    agentId?: StringFieldUpdateOperationsInput | string
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: StringFieldUpdateOperationsInput | string
+    findings?: JsonNullValueInput | InputJsonValue
+    generatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgentMessageCreateInput = {
+    id?: string
+    role: string
+    content: string
+    createdAt?: Date | string
+    run: AgentRunCreateNestedOneWithoutMessagesInput
+  }
+
+  export type AgentMessageUncheckedCreateInput = {
+    id?: string
+    runId: string
+    role: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type AgentMessageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    run?: AgentRunUpdateOneRequiredWithoutMessagesNestedInput
+  }
+
+  export type AgentMessageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    runId?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgentMessageCreateManyInput = {
+    id?: string
+    runId: string
+    role: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type AgentMessageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgentMessageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    runId?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebsiteFeedbackCreateInput = {
+    id?: string
+    tenantId: string
+    userId?: string | null
+    pageId?: string | null
+    rating: number
+    comment?: string | null
+    status?: string
+    createdAt?: Date | string
+    site: SiteCreateNestedOneWithoutFeedbackInput
+  }
+
+  export type WebsiteFeedbackUncheckedCreateInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    userId?: string | null
+    pageId?: string | null
+    rating: number
+    comment?: string | null
+    status?: string
+    createdAt?: Date | string
+  }
+
+  export type WebsiteFeedbackUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    site?: SiteUpdateOneRequiredWithoutFeedbackNestedInput
+  }
+
+  export type WebsiteFeedbackUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebsiteFeedbackCreateManyInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    userId?: string | null
+    pageId?: string | null
+    rating: number
+    comment?: string | null
+    status?: string
+    createdAt?: Date | string
+  }
+
+  export type WebsiteFeedbackUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebsiteFeedbackUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type CrmApiKeyCreateInput = {
     id?: string
     name: string
@@ -98603,6 +102544,9 @@ export namespace Prisma {
     reactCode?: string | null
     renderMode?: $Enums.RenderMode
     publishedAt?: Date | string | null
+    scheduledPublishAt?: Date | string | null
+    customCss?: string | null
+    customJs?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -98624,6 +102568,9 @@ export namespace Prisma {
     reactCode?: string | null
     renderMode?: $Enums.RenderMode
     publishedAt?: Date | string | null
+    scheduledPublishAt?: Date | string | null
+    customCss?: string | null
+    customJs?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -98643,6 +102590,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -98664,6 +102614,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -98684,6 +102637,9 @@ export namespace Prisma {
     reactCode?: string | null
     renderMode?: $Enums.RenderMode
     publishedAt?: Date | string | null
+    scheduledPublishAt?: Date | string | null
+    customCss?: string | null
+    customJs?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -98700,6 +102656,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -98717,6 +102676,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -99002,6 +102964,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour?: number
+    aiAgentFollowupLimitPerHour?: number
+    builderAgentLimitPerHour?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingCreateNestedManyWithoutPlanInput
@@ -99018,6 +102983,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour?: number
+    aiAgentFollowupLimitPerHour?: number
+    builderAgentLimitPerHour?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingUncheckedCreateNestedManyWithoutPlanInput
@@ -99034,6 +103002,9 @@ export namespace Prisma {
     maxPages?: IntFieldUpdateOperationsInput | number
     aiCredits?: IntFieldUpdateOperationsInput | number
     teamMembers?: IntFieldUpdateOperationsInput | number
+    aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
+    aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
+    builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUpdateManyWithoutPlanNestedInput
@@ -99050,6 +103021,9 @@ export namespace Prisma {
     maxPages?: IntFieldUpdateOperationsInput | number
     aiCredits?: IntFieldUpdateOperationsInput | number
     teamMembers?: IntFieldUpdateOperationsInput | number
+    aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
+    aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
+    builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUncheckedUpdateManyWithoutPlanNestedInput
@@ -99066,6 +103040,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour?: number
+    aiAgentFollowupLimitPerHour?: number
+    builderAgentLimitPerHour?: number
     isPublic?: boolean
     createdAt?: Date | string
   }
@@ -99078,6 +103055,9 @@ export namespace Prisma {
     maxPages?: IntFieldUpdateOperationsInput | number
     aiCredits?: IntFieldUpdateOperationsInput | number
     teamMembers?: IntFieldUpdateOperationsInput | number
+    aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
+    aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
+    builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -99090,6 +103070,9 @@ export namespace Prisma {
     maxPages?: IntFieldUpdateOperationsInput | number
     aiCredits?: IntFieldUpdateOperationsInput | number
     teamMembers?: IntFieldUpdateOperationsInput | number
+    aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
+    aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
+    builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -102807,6 +106790,12 @@ export namespace Prisma {
     none?: CrmApiKeyWhereInput
   }
 
+  export type AgentRunListRelationFilter = {
+    every?: AgentRunWhereInput
+    some?: AgentRunWhereInput
+    none?: AgentRunWhereInput
+  }
+
   export type SiteIntegrationListRelationFilter = {
     every?: SiteIntegrationWhereInput
     some?: SiteIntegrationWhereInput
@@ -102821,6 +106810,12 @@ export namespace Prisma {
   export type V12ProjectNullableRelationFilter = {
     is?: V12ProjectWhereInput | null
     isNot?: V12ProjectWhereInput | null
+  }
+
+  export type WebsiteFeedbackListRelationFilter = {
+    every?: WebsiteFeedbackWhereInput
+    some?: WebsiteFeedbackWhereInput
+    none?: WebsiteFeedbackWhereInput
   }
 
   export type PageOrderByRelationAggregateInput = {
@@ -102843,7 +106838,15 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type AgentRunOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type SiteIntegrationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type WebsiteFeedbackOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -104346,6 +108349,126 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type AgentMessageListRelationFilter = {
+    every?: AgentMessageWhereInput
+    some?: AgentMessageWhereInput
+    none?: AgentMessageWhereInput
+  }
+
+  export type AgentMessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AgentRunCountOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    agentId?: SortOrder
+    pageId?: SortOrder
+    prompt?: SortOrder
+    summary?: SortOrder
+    findings?: SortOrder
+    generatedBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AgentRunMaxOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    agentId?: SortOrder
+    pageId?: SortOrder
+    prompt?: SortOrder
+    summary?: SortOrder
+    generatedBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AgentRunMinOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    agentId?: SortOrder
+    pageId?: SortOrder
+    prompt?: SortOrder
+    summary?: SortOrder
+    generatedBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AgentRunRelationFilter = {
+    is?: AgentRunWhereInput
+    isNot?: AgentRunWhereInput
+  }
+
+  export type AgentMessageCountOrderByAggregateInput = {
+    id?: SortOrder
+    runId?: SortOrder
+    role?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AgentMessageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    runId?: SortOrder
+    role?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AgentMessageMinOrderByAggregateInput = {
+    id?: SortOrder
+    runId?: SortOrder
+    role?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WebsiteFeedbackCountOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    pageId?: SortOrder
+    rating?: SortOrder
+    comment?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WebsiteFeedbackAvgOrderByAggregateInput = {
+    rating?: SortOrder
+  }
+
+  export type WebsiteFeedbackMaxOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    pageId?: SortOrder
+    rating?: SortOrder
+    comment?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WebsiteFeedbackMinOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    pageId?: SortOrder
+    rating?: SortOrder
+    comment?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WebsiteFeedbackSumOrderByAggregateInput = {
+    rating?: SortOrder
+  }
+
   export type CrmApiKeyCountOrderByAggregateInput = {
     id?: SortOrder
     siteId?: SortOrder
@@ -104542,6 +108665,9 @@ export namespace Prisma {
     reactCode?: SortOrder
     renderMode?: SortOrder
     publishedAt?: SortOrder
+    scheduledPublishAt?: SortOrder
+    customCss?: SortOrder
+    customJs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deleted?: SortOrder
@@ -104559,6 +108685,9 @@ export namespace Prisma {
     reactCode?: SortOrder
     renderMode?: SortOrder
     publishedAt?: SortOrder
+    scheduledPublishAt?: SortOrder
+    customCss?: SortOrder
+    customJs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deleted?: SortOrder
@@ -104575,6 +108704,9 @@ export namespace Prisma {
     reactCode?: SortOrder
     renderMode?: SortOrder
     publishedAt?: SortOrder
+    scheduledPublishAt?: SortOrder
+    customCss?: SortOrder
+    customJs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deleted?: SortOrder
@@ -104777,6 +108909,9 @@ export namespace Prisma {
     maxPages?: SortOrder
     aiCredits?: SortOrder
     teamMembers?: SortOrder
+    aiAgentRunLimitPerHour?: SortOrder
+    aiAgentFollowupLimitPerHour?: SortOrder
+    builderAgentLimitPerHour?: SortOrder
     isPublic?: SortOrder
     createdAt?: SortOrder
   }
@@ -104786,6 +108921,9 @@ export namespace Prisma {
     maxPages?: SortOrder
     aiCredits?: SortOrder
     teamMembers?: SortOrder
+    aiAgentRunLimitPerHour?: SortOrder
+    aiAgentFollowupLimitPerHour?: SortOrder
+    builderAgentLimitPerHour?: SortOrder
   }
 
   export type PlanMaxOrderByAggregateInput = {
@@ -104796,6 +108934,9 @@ export namespace Prisma {
     maxPages?: SortOrder
     aiCredits?: SortOrder
     teamMembers?: SortOrder
+    aiAgentRunLimitPerHour?: SortOrder
+    aiAgentFollowupLimitPerHour?: SortOrder
+    builderAgentLimitPerHour?: SortOrder
     isPublic?: SortOrder
     createdAt?: SortOrder
   }
@@ -104808,6 +108949,9 @@ export namespace Prisma {
     maxPages?: SortOrder
     aiCredits?: SortOrder
     teamMembers?: SortOrder
+    aiAgentRunLimitPerHour?: SortOrder
+    aiAgentFollowupLimitPerHour?: SortOrder
+    builderAgentLimitPerHour?: SortOrder
     isPublic?: SortOrder
     createdAt?: SortOrder
   }
@@ -104817,6 +108961,9 @@ export namespace Prisma {
     maxPages?: SortOrder
     aiCredits?: SortOrder
     teamMembers?: SortOrder
+    aiAgentRunLimitPerHour?: SortOrder
+    aiAgentFollowupLimitPerHour?: SortOrder
+    builderAgentLimitPerHour?: SortOrder
   }
 
   export type PlanRelationFilter = {
@@ -108011,6 +112158,13 @@ export namespace Prisma {
     connect?: CrmApiKeyWhereUniqueInput | CrmApiKeyWhereUniqueInput[]
   }
 
+  export type AgentRunCreateNestedManyWithoutSiteInput = {
+    create?: XOR<AgentRunCreateWithoutSiteInput, AgentRunUncheckedCreateWithoutSiteInput> | AgentRunCreateWithoutSiteInput[] | AgentRunUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: AgentRunCreateOrConnectWithoutSiteInput | AgentRunCreateOrConnectWithoutSiteInput[]
+    createMany?: AgentRunCreateManySiteInputEnvelope
+    connect?: AgentRunWhereUniqueInput | AgentRunWhereUniqueInput[]
+  }
+
   export type SiteIntegrationCreateNestedManyWithoutSiteInput = {
     create?: XOR<SiteIntegrationCreateWithoutSiteInput, SiteIntegrationUncheckedCreateWithoutSiteInput> | SiteIntegrationCreateWithoutSiteInput[] | SiteIntegrationUncheckedCreateWithoutSiteInput[]
     connectOrCreate?: SiteIntegrationCreateOrConnectWithoutSiteInput | SiteIntegrationCreateOrConnectWithoutSiteInput[]
@@ -108028,6 +112182,13 @@ export namespace Prisma {
     create?: XOR<V12ProjectCreateWithoutSiteInput, V12ProjectUncheckedCreateWithoutSiteInput>
     connectOrCreate?: V12ProjectCreateOrConnectWithoutSiteInput
     connect?: V12ProjectWhereUniqueInput
+  }
+
+  export type WebsiteFeedbackCreateNestedManyWithoutSiteInput = {
+    create?: XOR<WebsiteFeedbackCreateWithoutSiteInput, WebsiteFeedbackUncheckedCreateWithoutSiteInput> | WebsiteFeedbackCreateWithoutSiteInput[] | WebsiteFeedbackUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: WebsiteFeedbackCreateOrConnectWithoutSiteInput | WebsiteFeedbackCreateOrConnectWithoutSiteInput[]
+    createMany?: WebsiteFeedbackCreateManySiteInputEnvelope
+    connect?: WebsiteFeedbackWhereUniqueInput | WebsiteFeedbackWhereUniqueInput[]
   }
 
   export type SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput = {
@@ -108127,6 +112288,13 @@ export namespace Prisma {
     connect?: CrmApiKeyWhereUniqueInput | CrmApiKeyWhereUniqueInput[]
   }
 
+  export type AgentRunUncheckedCreateNestedManyWithoutSiteInput = {
+    create?: XOR<AgentRunCreateWithoutSiteInput, AgentRunUncheckedCreateWithoutSiteInput> | AgentRunCreateWithoutSiteInput[] | AgentRunUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: AgentRunCreateOrConnectWithoutSiteInput | AgentRunCreateOrConnectWithoutSiteInput[]
+    createMany?: AgentRunCreateManySiteInputEnvelope
+    connect?: AgentRunWhereUniqueInput | AgentRunWhereUniqueInput[]
+  }
+
   export type SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput = {
     create?: XOR<SiteIntegrationCreateWithoutSiteInput, SiteIntegrationUncheckedCreateWithoutSiteInput> | SiteIntegrationCreateWithoutSiteInput[] | SiteIntegrationUncheckedCreateWithoutSiteInput[]
     connectOrCreate?: SiteIntegrationCreateOrConnectWithoutSiteInput | SiteIntegrationCreateOrConnectWithoutSiteInput[]
@@ -108144,6 +112312,13 @@ export namespace Prisma {
     create?: XOR<V12ProjectCreateWithoutSiteInput, V12ProjectUncheckedCreateWithoutSiteInput>
     connectOrCreate?: V12ProjectCreateOrConnectWithoutSiteInput
     connect?: V12ProjectWhereUniqueInput
+  }
+
+  export type WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput = {
+    create?: XOR<WebsiteFeedbackCreateWithoutSiteInput, WebsiteFeedbackUncheckedCreateWithoutSiteInput> | WebsiteFeedbackCreateWithoutSiteInput[] | WebsiteFeedbackUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: WebsiteFeedbackCreateOrConnectWithoutSiteInput | WebsiteFeedbackCreateOrConnectWithoutSiteInput[]
+    createMany?: WebsiteFeedbackCreateManySiteInputEnvelope
+    connect?: WebsiteFeedbackWhereUniqueInput | WebsiteFeedbackWhereUniqueInput[]
   }
 
   export type EnumSiteStatusFieldUpdateOperationsInput = {
@@ -108350,6 +112525,20 @@ export namespace Prisma {
     deleteMany?: CrmApiKeyScalarWhereInput | CrmApiKeyScalarWhereInput[]
   }
 
+  export type AgentRunUpdateManyWithoutSiteNestedInput = {
+    create?: XOR<AgentRunCreateWithoutSiteInput, AgentRunUncheckedCreateWithoutSiteInput> | AgentRunCreateWithoutSiteInput[] | AgentRunUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: AgentRunCreateOrConnectWithoutSiteInput | AgentRunCreateOrConnectWithoutSiteInput[]
+    upsert?: AgentRunUpsertWithWhereUniqueWithoutSiteInput | AgentRunUpsertWithWhereUniqueWithoutSiteInput[]
+    createMany?: AgentRunCreateManySiteInputEnvelope
+    set?: AgentRunWhereUniqueInput | AgentRunWhereUniqueInput[]
+    disconnect?: AgentRunWhereUniqueInput | AgentRunWhereUniqueInput[]
+    delete?: AgentRunWhereUniqueInput | AgentRunWhereUniqueInput[]
+    connect?: AgentRunWhereUniqueInput | AgentRunWhereUniqueInput[]
+    update?: AgentRunUpdateWithWhereUniqueWithoutSiteInput | AgentRunUpdateWithWhereUniqueWithoutSiteInput[]
+    updateMany?: AgentRunUpdateManyWithWhereWithoutSiteInput | AgentRunUpdateManyWithWhereWithoutSiteInput[]
+    deleteMany?: AgentRunScalarWhereInput | AgentRunScalarWhereInput[]
+  }
+
   export type SiteIntegrationUpdateManyWithoutSiteNestedInput = {
     create?: XOR<SiteIntegrationCreateWithoutSiteInput, SiteIntegrationUncheckedCreateWithoutSiteInput> | SiteIntegrationCreateWithoutSiteInput[] | SiteIntegrationUncheckedCreateWithoutSiteInput[]
     connectOrCreate?: SiteIntegrationCreateOrConnectWithoutSiteInput | SiteIntegrationCreateOrConnectWithoutSiteInput[]
@@ -108382,6 +112571,20 @@ export namespace Prisma {
     delete?: V12ProjectWhereInput | boolean
     connect?: V12ProjectWhereUniqueInput
     update?: XOR<XOR<V12ProjectUpdateToOneWithWhereWithoutSiteInput, V12ProjectUpdateWithoutSiteInput>, V12ProjectUncheckedUpdateWithoutSiteInput>
+  }
+
+  export type WebsiteFeedbackUpdateManyWithoutSiteNestedInput = {
+    create?: XOR<WebsiteFeedbackCreateWithoutSiteInput, WebsiteFeedbackUncheckedCreateWithoutSiteInput> | WebsiteFeedbackCreateWithoutSiteInput[] | WebsiteFeedbackUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: WebsiteFeedbackCreateOrConnectWithoutSiteInput | WebsiteFeedbackCreateOrConnectWithoutSiteInput[]
+    upsert?: WebsiteFeedbackUpsertWithWhereUniqueWithoutSiteInput | WebsiteFeedbackUpsertWithWhereUniqueWithoutSiteInput[]
+    createMany?: WebsiteFeedbackCreateManySiteInputEnvelope
+    set?: WebsiteFeedbackWhereUniqueInput | WebsiteFeedbackWhereUniqueInput[]
+    disconnect?: WebsiteFeedbackWhereUniqueInput | WebsiteFeedbackWhereUniqueInput[]
+    delete?: WebsiteFeedbackWhereUniqueInput | WebsiteFeedbackWhereUniqueInput[]
+    connect?: WebsiteFeedbackWhereUniqueInput | WebsiteFeedbackWhereUniqueInput[]
+    update?: WebsiteFeedbackUpdateWithWhereUniqueWithoutSiteInput | WebsiteFeedbackUpdateWithWhereUniqueWithoutSiteInput[]
+    updateMany?: WebsiteFeedbackUpdateManyWithWhereWithoutSiteInput | WebsiteFeedbackUpdateManyWithWhereWithoutSiteInput[]
+    deleteMany?: WebsiteFeedbackScalarWhereInput | WebsiteFeedbackScalarWhereInput[]
   }
 
   export type SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput = {
@@ -108576,6 +112779,20 @@ export namespace Prisma {
     deleteMany?: CrmApiKeyScalarWhereInput | CrmApiKeyScalarWhereInput[]
   }
 
+  export type AgentRunUncheckedUpdateManyWithoutSiteNestedInput = {
+    create?: XOR<AgentRunCreateWithoutSiteInput, AgentRunUncheckedCreateWithoutSiteInput> | AgentRunCreateWithoutSiteInput[] | AgentRunUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: AgentRunCreateOrConnectWithoutSiteInput | AgentRunCreateOrConnectWithoutSiteInput[]
+    upsert?: AgentRunUpsertWithWhereUniqueWithoutSiteInput | AgentRunUpsertWithWhereUniqueWithoutSiteInput[]
+    createMany?: AgentRunCreateManySiteInputEnvelope
+    set?: AgentRunWhereUniqueInput | AgentRunWhereUniqueInput[]
+    disconnect?: AgentRunWhereUniqueInput | AgentRunWhereUniqueInput[]
+    delete?: AgentRunWhereUniqueInput | AgentRunWhereUniqueInput[]
+    connect?: AgentRunWhereUniqueInput | AgentRunWhereUniqueInput[]
+    update?: AgentRunUpdateWithWhereUniqueWithoutSiteInput | AgentRunUpdateWithWhereUniqueWithoutSiteInput[]
+    updateMany?: AgentRunUpdateManyWithWhereWithoutSiteInput | AgentRunUpdateManyWithWhereWithoutSiteInput[]
+    deleteMany?: AgentRunScalarWhereInput | AgentRunScalarWhereInput[]
+  }
+
   export type SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput = {
     create?: XOR<SiteIntegrationCreateWithoutSiteInput, SiteIntegrationUncheckedCreateWithoutSiteInput> | SiteIntegrationCreateWithoutSiteInput[] | SiteIntegrationUncheckedCreateWithoutSiteInput[]
     connectOrCreate?: SiteIntegrationCreateOrConnectWithoutSiteInput | SiteIntegrationCreateOrConnectWithoutSiteInput[]
@@ -108608,6 +112825,20 @@ export namespace Prisma {
     delete?: V12ProjectWhereInput | boolean
     connect?: V12ProjectWhereUniqueInput
     update?: XOR<XOR<V12ProjectUpdateToOneWithWhereWithoutSiteInput, V12ProjectUpdateWithoutSiteInput>, V12ProjectUncheckedUpdateWithoutSiteInput>
+  }
+
+  export type WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput = {
+    create?: XOR<WebsiteFeedbackCreateWithoutSiteInput, WebsiteFeedbackUncheckedCreateWithoutSiteInput> | WebsiteFeedbackCreateWithoutSiteInput[] | WebsiteFeedbackUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: WebsiteFeedbackCreateOrConnectWithoutSiteInput | WebsiteFeedbackCreateOrConnectWithoutSiteInput[]
+    upsert?: WebsiteFeedbackUpsertWithWhereUniqueWithoutSiteInput | WebsiteFeedbackUpsertWithWhereUniqueWithoutSiteInput[]
+    createMany?: WebsiteFeedbackCreateManySiteInputEnvelope
+    set?: WebsiteFeedbackWhereUniqueInput | WebsiteFeedbackWhereUniqueInput[]
+    disconnect?: WebsiteFeedbackWhereUniqueInput | WebsiteFeedbackWhereUniqueInput[]
+    delete?: WebsiteFeedbackWhereUniqueInput | WebsiteFeedbackWhereUniqueInput[]
+    connect?: WebsiteFeedbackWhereUniqueInput | WebsiteFeedbackWhereUniqueInput[]
+    update?: WebsiteFeedbackUpdateWithWhereUniqueWithoutSiteInput | WebsiteFeedbackUpdateWithWhereUniqueWithoutSiteInput[]
+    updateMany?: WebsiteFeedbackUpdateManyWithWhereWithoutSiteInput | WebsiteFeedbackUpdateManyWithWhereWithoutSiteInput[]
+    deleteMany?: WebsiteFeedbackScalarWhereInput | WebsiteFeedbackScalarWhereInput[]
   }
 
   export type SiteCreateNestedOneWithoutIntegrationsInput = {
@@ -109989,6 +114220,90 @@ export namespace Prisma {
     upsert?: CrmLeadUpsertWithoutCommunicationsInput
     connect?: CrmLeadWhereUniqueInput
     update?: XOR<XOR<CrmLeadUpdateToOneWithWhereWithoutCommunicationsInput, CrmLeadUpdateWithoutCommunicationsInput>, CrmLeadUncheckedUpdateWithoutCommunicationsInput>
+  }
+
+  export type SiteCreateNestedOneWithoutAgentRunsInput = {
+    create?: XOR<SiteCreateWithoutAgentRunsInput, SiteUncheckedCreateWithoutAgentRunsInput>
+    connectOrCreate?: SiteCreateOrConnectWithoutAgentRunsInput
+    connect?: SiteWhereUniqueInput
+  }
+
+  export type AgentMessageCreateNestedManyWithoutRunInput = {
+    create?: XOR<AgentMessageCreateWithoutRunInput, AgentMessageUncheckedCreateWithoutRunInput> | AgentMessageCreateWithoutRunInput[] | AgentMessageUncheckedCreateWithoutRunInput[]
+    connectOrCreate?: AgentMessageCreateOrConnectWithoutRunInput | AgentMessageCreateOrConnectWithoutRunInput[]
+    createMany?: AgentMessageCreateManyRunInputEnvelope
+    connect?: AgentMessageWhereUniqueInput | AgentMessageWhereUniqueInput[]
+  }
+
+  export type AgentMessageUncheckedCreateNestedManyWithoutRunInput = {
+    create?: XOR<AgentMessageCreateWithoutRunInput, AgentMessageUncheckedCreateWithoutRunInput> | AgentMessageCreateWithoutRunInput[] | AgentMessageUncheckedCreateWithoutRunInput[]
+    connectOrCreate?: AgentMessageCreateOrConnectWithoutRunInput | AgentMessageCreateOrConnectWithoutRunInput[]
+    createMany?: AgentMessageCreateManyRunInputEnvelope
+    connect?: AgentMessageWhereUniqueInput | AgentMessageWhereUniqueInput[]
+  }
+
+  export type SiteUpdateOneRequiredWithoutAgentRunsNestedInput = {
+    create?: XOR<SiteCreateWithoutAgentRunsInput, SiteUncheckedCreateWithoutAgentRunsInput>
+    connectOrCreate?: SiteCreateOrConnectWithoutAgentRunsInput
+    upsert?: SiteUpsertWithoutAgentRunsInput
+    connect?: SiteWhereUniqueInput
+    update?: XOR<XOR<SiteUpdateToOneWithWhereWithoutAgentRunsInput, SiteUpdateWithoutAgentRunsInput>, SiteUncheckedUpdateWithoutAgentRunsInput>
+  }
+
+  export type AgentMessageUpdateManyWithoutRunNestedInput = {
+    create?: XOR<AgentMessageCreateWithoutRunInput, AgentMessageUncheckedCreateWithoutRunInput> | AgentMessageCreateWithoutRunInput[] | AgentMessageUncheckedCreateWithoutRunInput[]
+    connectOrCreate?: AgentMessageCreateOrConnectWithoutRunInput | AgentMessageCreateOrConnectWithoutRunInput[]
+    upsert?: AgentMessageUpsertWithWhereUniqueWithoutRunInput | AgentMessageUpsertWithWhereUniqueWithoutRunInput[]
+    createMany?: AgentMessageCreateManyRunInputEnvelope
+    set?: AgentMessageWhereUniqueInput | AgentMessageWhereUniqueInput[]
+    disconnect?: AgentMessageWhereUniqueInput | AgentMessageWhereUniqueInput[]
+    delete?: AgentMessageWhereUniqueInput | AgentMessageWhereUniqueInput[]
+    connect?: AgentMessageWhereUniqueInput | AgentMessageWhereUniqueInput[]
+    update?: AgentMessageUpdateWithWhereUniqueWithoutRunInput | AgentMessageUpdateWithWhereUniqueWithoutRunInput[]
+    updateMany?: AgentMessageUpdateManyWithWhereWithoutRunInput | AgentMessageUpdateManyWithWhereWithoutRunInput[]
+    deleteMany?: AgentMessageScalarWhereInput | AgentMessageScalarWhereInput[]
+  }
+
+  export type AgentMessageUncheckedUpdateManyWithoutRunNestedInput = {
+    create?: XOR<AgentMessageCreateWithoutRunInput, AgentMessageUncheckedCreateWithoutRunInput> | AgentMessageCreateWithoutRunInput[] | AgentMessageUncheckedCreateWithoutRunInput[]
+    connectOrCreate?: AgentMessageCreateOrConnectWithoutRunInput | AgentMessageCreateOrConnectWithoutRunInput[]
+    upsert?: AgentMessageUpsertWithWhereUniqueWithoutRunInput | AgentMessageUpsertWithWhereUniqueWithoutRunInput[]
+    createMany?: AgentMessageCreateManyRunInputEnvelope
+    set?: AgentMessageWhereUniqueInput | AgentMessageWhereUniqueInput[]
+    disconnect?: AgentMessageWhereUniqueInput | AgentMessageWhereUniqueInput[]
+    delete?: AgentMessageWhereUniqueInput | AgentMessageWhereUniqueInput[]
+    connect?: AgentMessageWhereUniqueInput | AgentMessageWhereUniqueInput[]
+    update?: AgentMessageUpdateWithWhereUniqueWithoutRunInput | AgentMessageUpdateWithWhereUniqueWithoutRunInput[]
+    updateMany?: AgentMessageUpdateManyWithWhereWithoutRunInput | AgentMessageUpdateManyWithWhereWithoutRunInput[]
+    deleteMany?: AgentMessageScalarWhereInput | AgentMessageScalarWhereInput[]
+  }
+
+  export type AgentRunCreateNestedOneWithoutMessagesInput = {
+    create?: XOR<AgentRunCreateWithoutMessagesInput, AgentRunUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: AgentRunCreateOrConnectWithoutMessagesInput
+    connect?: AgentRunWhereUniqueInput
+  }
+
+  export type AgentRunUpdateOneRequiredWithoutMessagesNestedInput = {
+    create?: XOR<AgentRunCreateWithoutMessagesInput, AgentRunUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: AgentRunCreateOrConnectWithoutMessagesInput
+    upsert?: AgentRunUpsertWithoutMessagesInput
+    connect?: AgentRunWhereUniqueInput
+    update?: XOR<XOR<AgentRunUpdateToOneWithWhereWithoutMessagesInput, AgentRunUpdateWithoutMessagesInput>, AgentRunUncheckedUpdateWithoutMessagesInput>
+  }
+
+  export type SiteCreateNestedOneWithoutFeedbackInput = {
+    create?: XOR<SiteCreateWithoutFeedbackInput, SiteUncheckedCreateWithoutFeedbackInput>
+    connectOrCreate?: SiteCreateOrConnectWithoutFeedbackInput
+    connect?: SiteWhereUniqueInput
+  }
+
+  export type SiteUpdateOneRequiredWithoutFeedbackNestedInput = {
+    create?: XOR<SiteCreateWithoutFeedbackInput, SiteUncheckedCreateWithoutFeedbackInput>
+    connectOrCreate?: SiteCreateOrConnectWithoutFeedbackInput
+    upsert?: SiteUpsertWithoutFeedbackInput
+    connect?: SiteWhereUniqueInput
+    update?: XOR<XOR<SiteUpdateToOneWithWhereWithoutFeedbackInput, SiteUpdateWithoutFeedbackInput>, SiteUncheckedUpdateWithoutFeedbackInput>
   }
 
   export type SiteCreateNestedOneWithoutCrmApiKeysInput = {
@@ -114405,9 +118720,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutTenantInput = {
@@ -114435,9 +118752,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutTenantInput = {
@@ -116794,9 +121113,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutMediaAssetsInput = {
@@ -116824,9 +121145,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutMediaAssetsInput = {
@@ -116955,9 +121278,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutMediaAssetsInput = {
@@ -116985,9 +121310,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type UserUpsertWithoutMediaAssetsInput = {
@@ -117182,6 +121509,9 @@ export namespace Prisma {
     reactCode?: string | null
     renderMode?: $Enums.RenderMode
     publishedAt?: Date | string | null
+    scheduledPublishAt?: Date | string | null
+    customCss?: string | null
+    customJs?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -117201,6 +121531,9 @@ export namespace Prisma {
     reactCode?: string | null
     renderMode?: $Enums.RenderMode
     publishedAt?: Date | string | null
+    scheduledPublishAt?: Date | string | null
+    customCss?: string | null
+    customJs?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -117657,6 +121990,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AgentRunCreateWithoutSiteInput = {
+    id?: string
+    tenantId: string
+    agentId: string
+    pageId?: string | null
+    prompt?: string | null
+    summary: string
+    findings: JsonNullValueInput | InputJsonValue
+    generatedBy?: string
+    createdAt?: Date | string
+    messages?: AgentMessageCreateNestedManyWithoutRunInput
+  }
+
+  export type AgentRunUncheckedCreateWithoutSiteInput = {
+    id?: string
+    tenantId: string
+    agentId: string
+    pageId?: string | null
+    prompt?: string | null
+    summary: string
+    findings: JsonNullValueInput | InputJsonValue
+    generatedBy?: string
+    createdAt?: Date | string
+    messages?: AgentMessageUncheckedCreateNestedManyWithoutRunInput
+  }
+
+  export type AgentRunCreateOrConnectWithoutSiteInput = {
+    where: AgentRunWhereUniqueInput
+    create: XOR<AgentRunCreateWithoutSiteInput, AgentRunUncheckedCreateWithoutSiteInput>
+  }
+
+  export type AgentRunCreateManySiteInputEnvelope = {
+    data: AgentRunCreateManySiteInput | AgentRunCreateManySiteInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SiteIntegrationCreateWithoutSiteInput = {
     id?: string
     appSlug: string
@@ -117759,6 +122128,38 @@ export namespace Prisma {
   export type V12ProjectCreateOrConnectWithoutSiteInput = {
     where: V12ProjectWhereUniqueInput
     create: XOR<V12ProjectCreateWithoutSiteInput, V12ProjectUncheckedCreateWithoutSiteInput>
+  }
+
+  export type WebsiteFeedbackCreateWithoutSiteInput = {
+    id?: string
+    tenantId: string
+    userId?: string | null
+    pageId?: string | null
+    rating: number
+    comment?: string | null
+    status?: string
+    createdAt?: Date | string
+  }
+
+  export type WebsiteFeedbackUncheckedCreateWithoutSiteInput = {
+    id?: string
+    tenantId: string
+    userId?: string | null
+    pageId?: string | null
+    rating: number
+    comment?: string | null
+    status?: string
+    createdAt?: Date | string
+  }
+
+  export type WebsiteFeedbackCreateOrConnectWithoutSiteInput = {
+    where: WebsiteFeedbackWhereUniqueInput
+    create: XOR<WebsiteFeedbackCreateWithoutSiteInput, WebsiteFeedbackUncheckedCreateWithoutSiteInput>
+  }
+
+  export type WebsiteFeedbackCreateManySiteInputEnvelope = {
+    data: WebsiteFeedbackCreateManySiteInput | WebsiteFeedbackCreateManySiteInput[]
+    skipDuplicates?: boolean
   }
 
   export type TenantUpsertWithoutSitesInput = {
@@ -117876,6 +122277,9 @@ export namespace Prisma {
     reactCode?: StringNullableFilter<"Page"> | string | null
     renderMode?: EnumRenderModeFilter<"Page"> | $Enums.RenderMode
     publishedAt?: DateTimeNullableFilter<"Page"> | Date | string | null
+    scheduledPublishAt?: DateTimeNullableFilter<"Page"> | Date | string | null
+    customCss?: StringNullableFilter<"Page"> | string | null
+    customJs?: StringNullableFilter<"Page"> | string | null
     createdAt?: DateTimeFilter<"Page"> | Date | string
     updatedAt?: DateTimeFilter<"Page"> | Date | string
     deleted?: BoolFilter<"Page"> | boolean
@@ -118152,6 +122556,38 @@ export namespace Prisma {
     revokedAt?: DateTimeNullableFilter<"CrmApiKey"> | Date | string | null
   }
 
+  export type AgentRunUpsertWithWhereUniqueWithoutSiteInput = {
+    where: AgentRunWhereUniqueInput
+    update: XOR<AgentRunUpdateWithoutSiteInput, AgentRunUncheckedUpdateWithoutSiteInput>
+    create: XOR<AgentRunCreateWithoutSiteInput, AgentRunUncheckedCreateWithoutSiteInput>
+  }
+
+  export type AgentRunUpdateWithWhereUniqueWithoutSiteInput = {
+    where: AgentRunWhereUniqueInput
+    data: XOR<AgentRunUpdateWithoutSiteInput, AgentRunUncheckedUpdateWithoutSiteInput>
+  }
+
+  export type AgentRunUpdateManyWithWhereWithoutSiteInput = {
+    where: AgentRunScalarWhereInput
+    data: XOR<AgentRunUpdateManyMutationInput, AgentRunUncheckedUpdateManyWithoutSiteInput>
+  }
+
+  export type AgentRunScalarWhereInput = {
+    AND?: AgentRunScalarWhereInput | AgentRunScalarWhereInput[]
+    OR?: AgentRunScalarWhereInput[]
+    NOT?: AgentRunScalarWhereInput | AgentRunScalarWhereInput[]
+    id?: StringFilter<"AgentRun"> | string
+    siteId?: StringFilter<"AgentRun"> | string
+    tenantId?: StringFilter<"AgentRun"> | string
+    agentId?: StringFilter<"AgentRun"> | string
+    pageId?: StringNullableFilter<"AgentRun"> | string | null
+    prompt?: StringNullableFilter<"AgentRun"> | string | null
+    summary?: StringFilter<"AgentRun"> | string
+    findings?: JsonFilter<"AgentRun">
+    generatedBy?: StringFilter<"AgentRun"> | string
+    createdAt?: DateTimeFilter<"AgentRun"> | Date | string
+  }
+
   export type SiteIntegrationUpsertWithWhereUniqueWithoutSiteInput = {
     where: SiteIntegrationWhereUniqueInput
     update: XOR<SiteIntegrationUpdateWithoutSiteInput, SiteIntegrationUncheckedUpdateWithoutSiteInput>
@@ -118270,6 +122706,37 @@ export namespace Prisma {
     checkpoints?: V12ProjectCheckpointUncheckedUpdateManyWithoutProjectNestedInput
   }
 
+  export type WebsiteFeedbackUpsertWithWhereUniqueWithoutSiteInput = {
+    where: WebsiteFeedbackWhereUniqueInput
+    update: XOR<WebsiteFeedbackUpdateWithoutSiteInput, WebsiteFeedbackUncheckedUpdateWithoutSiteInput>
+    create: XOR<WebsiteFeedbackCreateWithoutSiteInput, WebsiteFeedbackUncheckedCreateWithoutSiteInput>
+  }
+
+  export type WebsiteFeedbackUpdateWithWhereUniqueWithoutSiteInput = {
+    where: WebsiteFeedbackWhereUniqueInput
+    data: XOR<WebsiteFeedbackUpdateWithoutSiteInput, WebsiteFeedbackUncheckedUpdateWithoutSiteInput>
+  }
+
+  export type WebsiteFeedbackUpdateManyWithWhereWithoutSiteInput = {
+    where: WebsiteFeedbackScalarWhereInput
+    data: XOR<WebsiteFeedbackUpdateManyMutationInput, WebsiteFeedbackUncheckedUpdateManyWithoutSiteInput>
+  }
+
+  export type WebsiteFeedbackScalarWhereInput = {
+    AND?: WebsiteFeedbackScalarWhereInput | WebsiteFeedbackScalarWhereInput[]
+    OR?: WebsiteFeedbackScalarWhereInput[]
+    NOT?: WebsiteFeedbackScalarWhereInput | WebsiteFeedbackScalarWhereInput[]
+    id?: StringFilter<"WebsiteFeedback"> | string
+    siteId?: StringFilter<"WebsiteFeedback"> | string
+    tenantId?: StringFilter<"WebsiteFeedback"> | string
+    userId?: StringNullableFilter<"WebsiteFeedback"> | string | null
+    pageId?: StringNullableFilter<"WebsiteFeedback"> | string | null
+    rating?: IntFilter<"WebsiteFeedback"> | number
+    comment?: StringNullableFilter<"WebsiteFeedback"> | string | null
+    status?: StringFilter<"WebsiteFeedback"> | string
+    createdAt?: DateTimeFilter<"WebsiteFeedback"> | Date | string
+  }
+
   export type SiteCreateWithoutIntegrationsInput = {
     id?: string
     logoUrl?: string | null
@@ -118296,8 +122763,10 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutIntegrationsInput = {
@@ -118326,8 +122795,10 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutIntegrationsInput = {
@@ -118372,8 +122843,10 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutIntegrationsInput = {
@@ -118402,8 +122875,10 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteCreateWithoutV12ProjectInput = {
@@ -118432,8 +122907,10 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutV12ProjectInput = {
@@ -118462,8 +122939,10 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutV12ProjectInput = {
@@ -118659,8 +123138,10 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutV12ProjectInput = {
@@ -118689,8 +123170,10 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutV12ProjectsInput = {
@@ -119153,8 +123636,10 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutShopInput = {
@@ -119183,8 +123668,10 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutShopInput = {
@@ -119493,8 +123980,10 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutShopInput = {
@@ -119523,8 +124012,10 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type ShopProductUpsertWithWhereUniqueWithoutShopInput = {
@@ -122070,9 +126561,11 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutCrmLeadsInput = {
@@ -122100,9 +126593,11 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutCrmLeadsInput = {
@@ -122176,9 +126671,11 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutCrmLeadsInput = {
@@ -122206,9 +126703,11 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type CrmCommunicationUpsertWithWhereUniqueWithoutLeadInput = {
@@ -122353,6 +126852,413 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SiteCreateWithoutAgentRunsInput = {
+    id?: string
+    logoUrl?: string | null
+    name: string
+    slug: string
+    status?: $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutSitesInput
+    subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
+    pages?: PageCreateNestedManyWithoutSiteInput
+    complianceAudits?: ComplianceAuditCreateNestedManyWithoutSiteInput
+    snapshots?: SiteSnapshotCreateNestedManyWithoutSiteInput
+    renders?: SiteRenderCreateNestedManyWithoutSiteInput
+    domains?: SiteDomainCreateNestedManyWithoutSiteInput
+    blueprints?: BlueprintCreateNestedManyWithoutSiteInput
+    legacyDomains?: DomainCreateNestedManyWithoutSiteInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
+    layout?: SiteLayoutCreateNestedOneWithoutSiteInput
+    aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
+    crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
+    crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
+    shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
+  }
+
+  export type SiteUncheckedCreateWithoutAgentRunsInput = {
+    id?: string
+    tenantId: string
+    logoUrl?: string | null
+    name: string
+    slug: string
+    status?: $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
+    pages?: PageUncheckedCreateNestedManyWithoutSiteInput
+    complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
+    snapshots?: SiteSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    renders?: SiteRenderUncheckedCreateNestedManyWithoutSiteInput
+    domains?: SiteDomainUncheckedCreateNestedManyWithoutSiteInput
+    blueprints?: BlueprintUncheckedCreateNestedManyWithoutSiteInput
+    legacyDomains?: DomainUncheckedCreateNestedManyWithoutSiteInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
+    layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
+    crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
+    crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
+    shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
+  }
+
+  export type SiteCreateOrConnectWithoutAgentRunsInput = {
+    where: SiteWhereUniqueInput
+    create: XOR<SiteCreateWithoutAgentRunsInput, SiteUncheckedCreateWithoutAgentRunsInput>
+  }
+
+  export type AgentMessageCreateWithoutRunInput = {
+    id?: string
+    role: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type AgentMessageUncheckedCreateWithoutRunInput = {
+    id?: string
+    role: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type AgentMessageCreateOrConnectWithoutRunInput = {
+    where: AgentMessageWhereUniqueInput
+    create: XOR<AgentMessageCreateWithoutRunInput, AgentMessageUncheckedCreateWithoutRunInput>
+  }
+
+  export type AgentMessageCreateManyRunInputEnvelope = {
+    data: AgentMessageCreateManyRunInput | AgentMessageCreateManyRunInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SiteUpsertWithoutAgentRunsInput = {
+    update: XOR<SiteUpdateWithoutAgentRunsInput, SiteUncheckedUpdateWithoutAgentRunsInput>
+    create: XOR<SiteCreateWithoutAgentRunsInput, SiteUncheckedCreateWithoutAgentRunsInput>
+    where?: SiteWhereInput
+  }
+
+  export type SiteUpdateToOneWithWhereWithoutAgentRunsInput = {
+    where?: SiteWhereInput
+    data: XOR<SiteUpdateWithoutAgentRunsInput, SiteUncheckedUpdateWithoutAgentRunsInput>
+  }
+
+  export type SiteUpdateWithoutAgentRunsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
+    subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
+    pages?: PageUpdateManyWithoutSiteNestedInput
+    complianceAudits?: ComplianceAuditUpdateManyWithoutSiteNestedInput
+    snapshots?: SiteSnapshotUpdateManyWithoutSiteNestedInput
+    renders?: SiteRenderUpdateManyWithoutSiteNestedInput
+    domains?: SiteDomainUpdateManyWithoutSiteNestedInput
+    blueprints?: BlueprintUpdateManyWithoutSiteNestedInput
+    legacyDomains?: DomainUpdateManyWithoutSiteNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
+    layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
+    crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
+    crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
+    shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
+  }
+
+  export type SiteUncheckedUpdateWithoutAgentRunsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
+    pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
+    complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
+    snapshots?: SiteSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    renders?: SiteRenderUncheckedUpdateManyWithoutSiteNestedInput
+    domains?: SiteDomainUncheckedUpdateManyWithoutSiteNestedInput
+    blueprints?: BlueprintUncheckedUpdateManyWithoutSiteNestedInput
+    legacyDomains?: DomainUncheckedUpdateManyWithoutSiteNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
+    layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
+    crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
+    crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
+    shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
+  }
+
+  export type AgentMessageUpsertWithWhereUniqueWithoutRunInput = {
+    where: AgentMessageWhereUniqueInput
+    update: XOR<AgentMessageUpdateWithoutRunInput, AgentMessageUncheckedUpdateWithoutRunInput>
+    create: XOR<AgentMessageCreateWithoutRunInput, AgentMessageUncheckedCreateWithoutRunInput>
+  }
+
+  export type AgentMessageUpdateWithWhereUniqueWithoutRunInput = {
+    where: AgentMessageWhereUniqueInput
+    data: XOR<AgentMessageUpdateWithoutRunInput, AgentMessageUncheckedUpdateWithoutRunInput>
+  }
+
+  export type AgentMessageUpdateManyWithWhereWithoutRunInput = {
+    where: AgentMessageScalarWhereInput
+    data: XOR<AgentMessageUpdateManyMutationInput, AgentMessageUncheckedUpdateManyWithoutRunInput>
+  }
+
+  export type AgentMessageScalarWhereInput = {
+    AND?: AgentMessageScalarWhereInput | AgentMessageScalarWhereInput[]
+    OR?: AgentMessageScalarWhereInput[]
+    NOT?: AgentMessageScalarWhereInput | AgentMessageScalarWhereInput[]
+    id?: StringFilter<"AgentMessage"> | string
+    runId?: StringFilter<"AgentMessage"> | string
+    role?: StringFilter<"AgentMessage"> | string
+    content?: StringFilter<"AgentMessage"> | string
+    createdAt?: DateTimeFilter<"AgentMessage"> | Date | string
+  }
+
+  export type AgentRunCreateWithoutMessagesInput = {
+    id?: string
+    tenantId: string
+    agentId: string
+    pageId?: string | null
+    prompt?: string | null
+    summary: string
+    findings: JsonNullValueInput | InputJsonValue
+    generatedBy?: string
+    createdAt?: Date | string
+    site: SiteCreateNestedOneWithoutAgentRunsInput
+  }
+
+  export type AgentRunUncheckedCreateWithoutMessagesInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    agentId: string
+    pageId?: string | null
+    prompt?: string | null
+    summary: string
+    findings: JsonNullValueInput | InputJsonValue
+    generatedBy?: string
+    createdAt?: Date | string
+  }
+
+  export type AgentRunCreateOrConnectWithoutMessagesInput = {
+    where: AgentRunWhereUniqueInput
+    create: XOR<AgentRunCreateWithoutMessagesInput, AgentRunUncheckedCreateWithoutMessagesInput>
+  }
+
+  export type AgentRunUpsertWithoutMessagesInput = {
+    update: XOR<AgentRunUpdateWithoutMessagesInput, AgentRunUncheckedUpdateWithoutMessagesInput>
+    create: XOR<AgentRunCreateWithoutMessagesInput, AgentRunUncheckedCreateWithoutMessagesInput>
+    where?: AgentRunWhereInput
+  }
+
+  export type AgentRunUpdateToOneWithWhereWithoutMessagesInput = {
+    where?: AgentRunWhereInput
+    data: XOR<AgentRunUpdateWithoutMessagesInput, AgentRunUncheckedUpdateWithoutMessagesInput>
+  }
+
+  export type AgentRunUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    agentId?: StringFieldUpdateOperationsInput | string
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: StringFieldUpdateOperationsInput | string
+    findings?: JsonNullValueInput | InputJsonValue
+    generatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    site?: SiteUpdateOneRequiredWithoutAgentRunsNestedInput
+  }
+
+  export type AgentRunUncheckedUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    agentId?: StringFieldUpdateOperationsInput | string
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: StringFieldUpdateOperationsInput | string
+    findings?: JsonNullValueInput | InputJsonValue
+    generatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SiteCreateWithoutFeedbackInput = {
+    id?: string
+    logoUrl?: string | null
+    name: string
+    slug: string
+    status?: $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutSitesInput
+    subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
+    pages?: PageCreateNestedManyWithoutSiteInput
+    complianceAudits?: ComplianceAuditCreateNestedManyWithoutSiteInput
+    snapshots?: SiteSnapshotCreateNestedManyWithoutSiteInput
+    renders?: SiteRenderCreateNestedManyWithoutSiteInput
+    domains?: SiteDomainCreateNestedManyWithoutSiteInput
+    blueprints?: BlueprintCreateNestedManyWithoutSiteInput
+    legacyDomains?: DomainCreateNestedManyWithoutSiteInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
+    layout?: SiteLayoutCreateNestedOneWithoutSiteInput
+    aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
+    crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
+    crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
+    shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+  }
+
+  export type SiteUncheckedCreateWithoutFeedbackInput = {
+    id?: string
+    tenantId: string
+    logoUrl?: string | null
+    name: string
+    slug: string
+    status?: $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
+    pages?: PageUncheckedCreateNestedManyWithoutSiteInput
+    complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
+    snapshots?: SiteSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    renders?: SiteRenderUncheckedCreateNestedManyWithoutSiteInput
+    domains?: SiteDomainUncheckedCreateNestedManyWithoutSiteInput
+    blueprints?: BlueprintUncheckedCreateNestedManyWithoutSiteInput
+    legacyDomains?: DomainUncheckedCreateNestedManyWithoutSiteInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
+    layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
+    crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
+    crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
+    shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+  }
+
+  export type SiteCreateOrConnectWithoutFeedbackInput = {
+    where: SiteWhereUniqueInput
+    create: XOR<SiteCreateWithoutFeedbackInput, SiteUncheckedCreateWithoutFeedbackInput>
+  }
+
+  export type SiteUpsertWithoutFeedbackInput = {
+    update: XOR<SiteUpdateWithoutFeedbackInput, SiteUncheckedUpdateWithoutFeedbackInput>
+    create: XOR<SiteCreateWithoutFeedbackInput, SiteUncheckedCreateWithoutFeedbackInput>
+    where?: SiteWhereInput
+  }
+
+  export type SiteUpdateToOneWithWhereWithoutFeedbackInput = {
+    where?: SiteWhereInput
+    data: XOR<SiteUpdateWithoutFeedbackInput, SiteUncheckedUpdateWithoutFeedbackInput>
+  }
+
+  export type SiteUpdateWithoutFeedbackInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
+    subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
+    pages?: PageUpdateManyWithoutSiteNestedInput
+    complianceAudits?: ComplianceAuditUpdateManyWithoutSiteNestedInput
+    snapshots?: SiteSnapshotUpdateManyWithoutSiteNestedInput
+    renders?: SiteRenderUpdateManyWithoutSiteNestedInput
+    domains?: SiteDomainUpdateManyWithoutSiteNestedInput
+    blueprints?: BlueprintUpdateManyWithoutSiteNestedInput
+    legacyDomains?: DomainUpdateManyWithoutSiteNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
+    layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
+    crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
+    crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
+    shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+  }
+
+  export type SiteUncheckedUpdateWithoutFeedbackInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
+    pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
+    complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
+    snapshots?: SiteSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    renders?: SiteRenderUncheckedUpdateManyWithoutSiteNestedInput
+    domains?: SiteDomainUncheckedUpdateManyWithoutSiteNestedInput
+    blueprints?: BlueprintUncheckedUpdateManyWithoutSiteNestedInput
+    legacyDomains?: DomainUncheckedUpdateManyWithoutSiteNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
+    layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
+    crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
+    crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
+    shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+  }
+
   export type SiteCreateWithoutCrmApiKeysInput = {
     id?: string
     logoUrl?: string | null
@@ -122378,9 +127284,11 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutCrmApiKeysInput = {
@@ -122408,9 +127316,11 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutCrmApiKeysInput = {
@@ -122454,9 +127364,11 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutCrmApiKeysInput = {
@@ -122484,9 +127396,11 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteCreateWithoutCmsCollectionsInput = {
@@ -122514,9 +127428,11 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutCmsCollectionsInput = {
@@ -122544,9 +127460,11 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutCmsCollectionsInput = {
@@ -122616,9 +127534,11 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutCmsCollectionsInput = {
@@ -122646,9 +127566,11 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type CmsEntryUpsertWithWhereUniqueWithoutCollectionInput = {
@@ -122768,9 +127690,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutLayoutInput = {
@@ -122798,9 +127722,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutLayoutInput = {
@@ -122844,9 +127770,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutLayoutInput = {
@@ -122874,9 +127802,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteCreateWithoutLegacyDomainsInput = {
@@ -122904,9 +127834,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutLegacyDomainsInput = {
@@ -122934,9 +127866,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutLegacyDomainsInput = {
@@ -122980,9 +127914,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutLegacyDomainsInput = {
@@ -123010,9 +127946,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteCreateWithoutPagesInput = {
@@ -123040,9 +127978,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutPagesInput = {
@@ -123070,9 +128010,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutPagesInput = {
@@ -123191,9 +128133,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutPagesInput = {
@@ -123221,9 +128165,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type BlueprintUpsertWithoutPageInput = {
@@ -123310,6 +128256,9 @@ export namespace Prisma {
     reactCode?: string | null
     renderMode?: $Enums.RenderMode
     publishedAt?: Date | string | null
+    scheduledPublishAt?: Date | string | null
+    customCss?: string | null
+    customJs?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -123330,6 +128279,9 @@ export namespace Prisma {
     reactCode?: string | null
     renderMode?: $Enums.RenderMode
     publishedAt?: Date | string | null
+    scheduledPublishAt?: Date | string | null
+    customCss?: string | null
+    customJs?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -123364,6 +128316,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -123384,6 +128339,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -123402,6 +128360,9 @@ export namespace Prisma {
     reactCode?: string | null
     renderMode?: $Enums.RenderMode
     publishedAt?: Date | string | null
+    scheduledPublishAt?: Date | string | null
+    customCss?: string | null
+    customJs?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -123422,6 +128383,9 @@ export namespace Prisma {
     reactCode?: string | null
     renderMode?: $Enums.RenderMode
     publishedAt?: Date | string | null
+    scheduledPublishAt?: Date | string | null
+    customCss?: string | null
+    customJs?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -123462,9 +128426,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutAiSnapshotsInput = {
@@ -123492,9 +128458,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutAiSnapshotsInput = {
@@ -123586,6 +128554,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -123606,6 +128577,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -123652,9 +128626,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutAiSnapshotsInput = {
@@ -123682,9 +128658,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutAiSnapshotsInput = {
@@ -123766,6 +128744,9 @@ export namespace Prisma {
     reactCode?: string | null
     renderMode?: $Enums.RenderMode
     publishedAt?: Date | string | null
+    scheduledPublishAt?: Date | string | null
+    customCss?: string | null
+    customJs?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -123786,6 +128767,9 @@ export namespace Prisma {
     reactCode?: string | null
     renderMode?: $Enums.RenderMode
     publishedAt?: Date | string | null
+    scheduledPublishAt?: Date | string | null
+    customCss?: string | null
+    customJs?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -123826,9 +128810,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutBlueprintsInput = {
@@ -123856,9 +128842,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutBlueprintsInput = {
@@ -123982,6 +128970,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -124002,6 +128993,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -124048,9 +129042,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutBlueprintsInput = {
@@ -124078,9 +129074,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutBlueprintsInput = {
@@ -124501,6 +129499,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour?: number
+    aiAgentFollowupLimitPerHour?: number
+    builderAgentLimitPerHour?: number
     isPublic?: boolean
     createdAt?: Date | string
     subscriptions?: SubscriptionCreateNestedManyWithoutPlanInput
@@ -124516,6 +129517,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour?: number
+    aiAgentFollowupLimitPerHour?: number
+    builderAgentLimitPerHour?: number
     isPublic?: boolean
     createdAt?: Date | string
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutPlanInput
@@ -124547,6 +129551,9 @@ export namespace Prisma {
     maxPages?: IntFieldUpdateOperationsInput | number
     aiCredits?: IntFieldUpdateOperationsInput | number
     teamMembers?: IntFieldUpdateOperationsInput | number
+    aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
+    aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
+    builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: SubscriptionUpdateManyWithoutPlanNestedInput
@@ -124562,6 +129569,9 @@ export namespace Prisma {
     maxPages?: IntFieldUpdateOperationsInput | number
     aiCredits?: IntFieldUpdateOperationsInput | number
     teamMembers?: IntFieldUpdateOperationsInput | number
+    aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
+    aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
+    builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutPlanNestedInput
@@ -124577,6 +129587,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour?: number
+    aiAgentFollowupLimitPerHour?: number
+    builderAgentLimitPerHour?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingCreateNestedManyWithoutPlanInput
@@ -124592,6 +129605,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour?: number
+    aiAgentFollowupLimitPerHour?: number
+    builderAgentLimitPerHour?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingUncheckedCreateNestedManyWithoutPlanInput
@@ -124623,6 +129639,9 @@ export namespace Prisma {
     maxPages?: IntFieldUpdateOperationsInput | number
     aiCredits?: IntFieldUpdateOperationsInput | number
     teamMembers?: IntFieldUpdateOperationsInput | number
+    aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
+    aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
+    builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUpdateManyWithoutPlanNestedInput
@@ -124638,6 +129657,9 @@ export namespace Prisma {
     maxPages?: IntFieldUpdateOperationsInput | number
     aiCredits?: IntFieldUpdateOperationsInput | number
     teamMembers?: IntFieldUpdateOperationsInput | number
+    aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
+    aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
+    builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUncheckedUpdateManyWithoutPlanNestedInput
@@ -125426,6 +130448,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour?: number
+    aiAgentFollowupLimitPerHour?: number
+    builderAgentLimitPerHour?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingCreateNestedManyWithoutPlanInput
@@ -125441,6 +130466,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour?: number
+    aiAgentFollowupLimitPerHour?: number
+    builderAgentLimitPerHour?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingUncheckedCreateNestedManyWithoutPlanInput
@@ -125705,6 +130733,9 @@ export namespace Prisma {
     maxPages?: IntFieldUpdateOperationsInput | number
     aiCredits?: IntFieldUpdateOperationsInput | number
     teamMembers?: IntFieldUpdateOperationsInput | number
+    aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
+    aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
+    builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUpdateManyWithoutPlanNestedInput
@@ -125720,6 +130751,9 @@ export namespace Prisma {
     maxPages?: IntFieldUpdateOperationsInput | number
     aiCredits?: IntFieldUpdateOperationsInput | number
     teamMembers?: IntFieldUpdateOperationsInput | number
+    aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
+    aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
+    builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUncheckedUpdateManyWithoutPlanNestedInput
@@ -125752,9 +130786,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutSubscriptionsInput = {
@@ -125782,9 +130818,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutSubscriptionsInput = {
@@ -125865,6 +130903,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour?: number
+    aiAgentFollowupLimitPerHour?: number
+    builderAgentLimitPerHour?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingCreateNestedManyWithoutPlanInput
@@ -125880,6 +130921,9 @@ export namespace Prisma {
     maxPages: number
     aiCredits: number
     teamMembers: number
+    aiAgentRunLimitPerHour?: number
+    aiAgentFollowupLimitPerHour?: number
+    builderAgentLimitPerHour?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingUncheckedCreateNestedManyWithoutPlanInput
@@ -125928,9 +130972,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutSubscriptionsInput = {
@@ -125958,9 +131004,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutSiteSubscriptionsInput = {
@@ -126053,6 +131101,9 @@ export namespace Prisma {
     maxPages?: IntFieldUpdateOperationsInput | number
     aiCredits?: IntFieldUpdateOperationsInput | number
     teamMembers?: IntFieldUpdateOperationsInput | number
+    aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
+    aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
+    builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUpdateManyWithoutPlanNestedInput
@@ -126068,6 +131119,9 @@ export namespace Prisma {
     maxPages?: IntFieldUpdateOperationsInput | number
     aiCredits?: IntFieldUpdateOperationsInput | number
     teamMembers?: IntFieldUpdateOperationsInput | number
+    aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
+    aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
+    builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUncheckedUpdateManyWithoutPlanNestedInput
@@ -126100,9 +131154,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutComplianceAuditsInput = {
@@ -126130,9 +131186,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutComplianceAuditsInput = {
@@ -126241,9 +131299,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutComplianceAuditsInput = {
@@ -126271,9 +131331,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutComplianceAuditsInput = {
@@ -126372,9 +131434,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutSnapshotsInput = {
@@ -126402,9 +131466,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutSnapshotsInput = {
@@ -126571,9 +131637,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutSnapshotsInput = {
@@ -126601,9 +131669,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutSiteSnapshotsInput = {
@@ -126807,9 +131877,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutRendersInput = {
@@ -126837,9 +131909,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutRendersInput = {
@@ -127007,9 +132081,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutRendersInput = {
@@ -127037,9 +132113,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutSiteRendersInput = {
@@ -127258,9 +132336,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutDomainsInput = {
@@ -127288,9 +132368,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    agentRuns?: AgentRunUncheckedCreateNestedManyWithoutSiteInput
     integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+    feedback?: WebsiteFeedbackUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutDomainsInput = {
@@ -127399,9 +132481,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutDomainsInput = {
@@ -127429,9 +132513,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type TenantUpsertWithoutSiteDomainsInput = {
@@ -129383,9 +134469,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutTenantInput = {
@@ -129413,9 +134501,11 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    agentRuns?: AgentRunUncheckedUpdateManyWithoutSiteNestedInput
     integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+    feedback?: WebsiteFeedbackUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateManyWithoutTenantInput = {
@@ -130122,6 +135212,9 @@ export namespace Prisma {
     reactCode?: string | null
     renderMode?: $Enums.RenderMode
     publishedAt?: Date | string | null
+    scheduledPublishAt?: Date | string | null
+    customCss?: string | null
+    customJs?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -130276,12 +135369,35 @@ export namespace Prisma {
     revokedAt?: Date | string | null
   }
 
+  export type AgentRunCreateManySiteInput = {
+    id?: string
+    tenantId: string
+    agentId: string
+    pageId?: string | null
+    prompt?: string | null
+    summary: string
+    findings: JsonNullValueInput | InputJsonValue
+    generatedBy?: string
+    createdAt?: Date | string
+  }
+
   export type SiteIntegrationCreateManySiteInput = {
     id?: string
     appSlug: string
     config?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type WebsiteFeedbackCreateManySiteInput = {
+    id?: string
+    tenantId: string
+    userId?: string | null
+    pageId?: string | null
+    rating: number
+    comment?: string | null
+    status?: string
+    createdAt?: Date | string
   }
 
   export type SiteSubscriptionUpdateWithoutSiteInput = {
@@ -130319,6 +135435,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -130338,6 +135457,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -130357,6 +135479,9 @@ export namespace Prisma {
     reactCode?: NullableStringFieldUpdateOperationsInput | string | null
     renderMode?: EnumRenderModeFieldUpdateOperationsInput | $Enums.RenderMode
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customCss?: NullableStringFieldUpdateOperationsInput | string | null
+    customJs?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -130815,6 +135940,44 @@ export namespace Prisma {
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type AgentRunUpdateWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    agentId?: StringFieldUpdateOperationsInput | string
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: StringFieldUpdateOperationsInput | string
+    findings?: JsonNullValueInput | InputJsonValue
+    generatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    messages?: AgentMessageUpdateManyWithoutRunNestedInput
+  }
+
+  export type AgentRunUncheckedUpdateWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    agentId?: StringFieldUpdateOperationsInput | string
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: StringFieldUpdateOperationsInput | string
+    findings?: JsonNullValueInput | InputJsonValue
+    generatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    messages?: AgentMessageUncheckedUpdateManyWithoutRunNestedInput
+  }
+
+  export type AgentRunUncheckedUpdateManyWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    agentId?: StringFieldUpdateOperationsInput | string
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: StringFieldUpdateOperationsInput | string
+    findings?: JsonNullValueInput | InputJsonValue
+    generatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SiteIntegrationUpdateWithoutSiteInput = {
     id?: StringFieldUpdateOperationsInput | string
     appSlug?: StringFieldUpdateOperationsInput | string
@@ -130837,6 +136000,39 @@ export namespace Prisma {
     config?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebsiteFeedbackUpdateWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebsiteFeedbackUncheckedUpdateWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebsiteFeedbackUncheckedUpdateManyWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    pageId?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type V12ProjectFileCreateManyProjectInput = {
@@ -131951,6 +137147,34 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AgentMessageCreateManyRunInput = {
+    id?: string
+    role: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type AgentMessageUpdateWithoutRunInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgentMessageUncheckedUpdateWithoutRunInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgentMessageUncheckedUpdateManyWithoutRunInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type CmsEntryCreateManyCollectionInput = {
     id?: string
     data: JsonNullValueInput | InputJsonValue
@@ -132603,6 +137827,10 @@ export namespace Prisma {
      */
     export type CrmLeadCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CrmLeadCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use AgentRunCountOutputTypeDefaultArgs instead
+     */
+    export type AgentRunCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AgentRunCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use CmsCollectionCountOutputTypeDefaultArgs instead
      */
     export type CmsCollectionCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CmsCollectionCountOutputTypeDefaultArgs<ExtArgs>
@@ -132798,6 +138026,18 @@ export namespace Prisma {
      * @deprecated Use CrmCommunicationDefaultArgs instead
      */
     export type CrmCommunicationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CrmCommunicationDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AgentRunDefaultArgs instead
+     */
+    export type AgentRunArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AgentRunDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AgentMessageDefaultArgs instead
+     */
+    export type AgentMessageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AgentMessageDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use WebsiteFeedbackDefaultArgs instead
+     */
+    export type WebsiteFeedbackArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = WebsiteFeedbackDefaultArgs<ExtArgs>
     /**
      * @deprecated Use CrmApiKeyDefaultArgs instead
      */

@@ -17,6 +17,7 @@ import {
   Save,
   Settings2,
   Sparkles,
+  Timer,
   Users,
   Video,
   Box,
@@ -46,6 +47,9 @@ type Plan = {
   aiCredits: number;
   teamMembers: number;
   isPublic: boolean;
+  aiAgentRunLimitPerHour: number;
+  aiAgentFollowupLimitPerHour: number;
+  builderAgentLimitPerHour: number;
   features?: PlanFeature[];
   pricing?: PlanPrice[];
   _count?: {
@@ -98,6 +102,10 @@ type FormState = {
   priceYearly: number;
   currency: string;
 
+  aiAgentRunLimitPerHour: number;
+  aiAgentFollowupLimitPerHour: number;
+  builderAgentLimitPerHour: number;
+
   maxAutomaticRepairs: number;
   maxConcurrency: number;
 
@@ -123,6 +131,10 @@ const DEFAULT_FORM: FormState = {
   priceMonthly: 0,
   priceYearly: 0,
   currency: "INR",
+
+  aiAgentRunLimitPerHour: 20,
+  aiAgentFollowupLimitPerHour: 40,
+  builderAgentLimitPerHour: 30,
 
   maxAutomaticRepairs: 0,
   maxConcurrency: 1,
@@ -208,6 +220,10 @@ function planToForm(plan: Plan): FormState {
     priceMonthly: monthly?.amount ?? 0,
     priceYearly: yearly?.amount ?? 0,
     currency: monthly?.currency ?? yearly?.currency ?? "INR",
+
+    aiAgentRunLimitPerHour: plan.aiAgentRunLimitPerHour,
+    aiAgentFollowupLimitPerHour: plan.aiAgentFollowupLimitPerHour,
+    builderAgentLimitPerHour: plan.builderAgentLimitPerHour,
 
     maxAutomaticRepairs:
       featureInteger(
@@ -434,6 +450,9 @@ export default function PlanEditor({
             aiCredits: form.aiCredits,
             teamMembers: form.teamMembers,
             isPublic: form.isPublic,
+            aiAgentRunLimitPerHour: form.aiAgentRunLimitPerHour,
+            aiAgentFollowupLimitPerHour: form.aiAgentFollowupLimitPerHour,
+            builderAgentLimitPerHour: form.builderAgentLimitPerHour,
             priceMonthly:
               plan.pricing?.some((price) => price.billingCycle === "monthly") || form.priceMonthly > 0
                 ? form.priceMonthly
@@ -902,6 +921,54 @@ export default function PlanEditor({
                   </option>
                 </select>
               </Field>
+            </div>
+          </Section>
+
+          <Section
+            icon={<Timer size={18} />}
+            eyebrow="Guardrails"
+            title="AI rate limits"
+            description="Maximum AI Agent and Builder AI requests per hour, per user, on this plan."
+          >
+            <div className="grid gap-4 sm:grid-cols-3">
+              <NumberField
+                label="Agent runs / hour"
+                icon={<Timer size={15} />}
+                value={form.aiAgentRunLimitPerHour}
+                minimum={0}
+                onChange={(value) =>
+                  setForm((current) => ({
+                    ...current,
+                    aiAgentRunLimitPerHour: value,
+                  }))
+                }
+              />
+
+              <NumberField
+                label="Agent follow-ups / hour"
+                icon={<Timer size={15} />}
+                value={form.aiAgentFollowupLimitPerHour}
+                minimum={0}
+                onChange={(value) =>
+                  setForm((current) => ({
+                    ...current,
+                    aiAgentFollowupLimitPerHour: value,
+                  }))
+                }
+              />
+
+              <NumberField
+                label="Builder AI requests / hour"
+                icon={<Timer size={15} />}
+                value={form.builderAgentLimitPerHour}
+                minimum={0}
+                onChange={(value) =>
+                  setForm((current) => ({
+                    ...current,
+                    builderAgentLimitPerHour: value,
+                  }))
+                }
+              />
             </div>
           </Section>
         </div>

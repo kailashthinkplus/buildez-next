@@ -22,6 +22,8 @@ interface MediaLibraryProps {
   pickerMode?: boolean;
   onSelect?(asset: MediaAsset): void;
   compact?: boolean;
+  /** Skip the full-page hero (heading, description, stat cards, decorative blur) for narrow hosts like a builder sidebar. */
+  hideHero?: boolean;
 }
 
 export default function MediaLibrary({
@@ -31,6 +33,7 @@ export default function MediaLibrary({
   pickerMode = false,
   onSelect,
   compact = false,
+  hideHero = false,
 }: MediaLibraryProps) {
   const [tab, setTab] = useState<MediaLibraryTab>("library");
   const [selectedAsset, setSelectedAsset] = useState<MediaAsset | null>(null);
@@ -64,6 +67,64 @@ export default function MediaLibrary({
   function handleSelect(asset: MediaAsset) {
     setSelectedAsset(asset);
     setDetailsAsset(asset);
+  }
+
+  if (hideHero) {
+    return (
+      <div className="flex h-full min-h-0 flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => refresh()}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border dashboard-border dashboard-hover"
+            title="Refresh media"
+          >
+            <RefreshCw size={14} aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("upload")}
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[#1349A3] px-3 py-2 text-xs font-semibold text-white hover:bg-[#1D5FC7]"
+          >
+            <Upload size={14} aria-hidden />
+            Upload
+          </button>
+          <span className="shrink-0 text-[11px] dashboard-faint">{assets.length} assets</span>
+        </div>
+
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border dashboard-border dashboard-card-strong">
+          <div className="border-b dashboard-border p-3">
+            <MediaSearch onSearch={search} />
+            <div className="mt-3">
+              <MediaTabs value={tab} onChange={setTab} />
+            </div>
+            {error && (
+              <p className="mt-2 rounded-md border border-red-500/20 bg-red-500/10 px-2.5 py-1.5 text-xs text-red-200">
+                {error}
+              </p>
+            )}
+          </div>
+          <div className="min-h-0 flex-1 overflow-hidden">
+            {tab === "library" && (
+              <MediaGrid assets={assets} loading={loading} selectedAsset={selectedAsset} onSelect={handleSelect} onDelete={handleDelete} columns="two" />
+            )}
+            {tab === "upload" && (
+              <MediaUpload uploading={uploading} onUpload={async (files) => { await uploadImages(files); await refresh(); setTab("library"); }} />
+            )}
+            {tab === "ai" && (
+              <MediaAIGenerator generating={generating} onGenerate={generateImages} onFinished={async () => { await refresh(); setTab("library"); }} />
+            )}
+          </div>
+        </div>
+
+        <MediaAssetDetailsModal
+          asset={detailsAsset}
+          onClose={() => setDetailsAsset(null)}
+          onDelete={handleDelete}
+          onUse={onSelect ? (asset) => { onSelect(asset); setDetailsAsset(null); } : undefined}
+        />
+      </div>
+    );
   }
 
   return (

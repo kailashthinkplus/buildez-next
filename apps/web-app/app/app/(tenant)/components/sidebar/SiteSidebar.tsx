@@ -25,7 +25,6 @@ import {
   UsersRound,
   ListTree,
   CircleGauge,
-  Globe2,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useWorkspace } from "../WorkspaceContext";
@@ -88,13 +87,10 @@ export function SiteSidebar({
 
   return (
     <div className={`h-full py-4 flex flex-col overflow-y-auto ${compact ? "px-2" : "px-3"}`}>
-      {/* LOGO + SITE NAME */}
+      {/* LOGO */}
       <div className={`flex items-center justify-between ${compact ? "justify-center" : "px-2"}`}>
-        <div className={`flex ${compact ? "items-center" : "flex-col"}`}>
-          {compact ? <span className="grid h-10 w-10 place-items-center overflow-hidden rounded-xl border dashboard-border dashboard-subtle">{currentWebsite.faviconUrl || currentWebsite.logoUrl ? <img src={currentWebsite.faviconUrl || currentWebsite.logoUrl || ""} alt="" className="h-full w-full object-contain p-1"/> : <Globe2 size={20} className="text-blue-500"/>}</span> : <DashboardLogo />}
-          {!compact ? <span className="max-w-[150px] truncate text-[11px] dashboard-muted mt-0.5">
-            {currentWebsite.name}
-          </span> : null}
+        <div className="flex items-center">
+          {compact ? <img src="/favicon.png" alt="BuildEZ" className="h-9 w-9 object-contain" /> : <DashboardLogo />}
         </div>
         <button
           onClick={() => setMobileOpen(false)}
@@ -104,8 +100,8 @@ export function SiteSidebar({
         </button>
       </div>
 
-      {sections.map((section) => (
-        <div key={section.title} className={compact ? "mb-3" : "mb-5"}>
+      {sections.map((section, index) => (
+        <div key={section.title} className={`${compact ? "mb-3" : "mb-5"} ${index === 0 ? "pt-6" : ""}`}>
           {!compact ? <div className="px-3 text-[10px] uppercase tracking-[.14em] font-semibold dashboard-faint mb-2">
             {section.title}
           </div> : <div className="mx-2 mb-2 border-t dashboard-border"/>}

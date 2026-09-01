@@ -8,6 +8,7 @@ import { TenantHeader } from "./components/TenantHeader";
 import { WorkspaceProvider } from "./components/WorkspaceContext";
 import { TenantBootstrap } from "./components/TenantBootstrap";
 import { SidebarShell } from "./components/sidebar/SidebarShell";
+import { DashboardFooter } from "./components/DashboardFooter";
 
 export default function TenantLayout({
   children,
@@ -33,7 +34,10 @@ export default function TenantLayout({
             />
 
             <main className="flex-1 overflow-y-auto px-4 py-5 sm:px-6 md:px-8">
-              {children}
+              <div className="flex min-h-full flex-col">
+                <div className="flex-1">{children}</div>
+                <DashboardFooter />
+              </div>
             </main>
 
           </div>

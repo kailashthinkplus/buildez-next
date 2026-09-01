@@ -11,13 +11,20 @@ type WebsiteThumbnailProps = {
   pageSlug?: string;
   updatedAt?: string;
   hasMeaningfulPreview?: boolean;
+  renderMode?: string;
   className?: string;
 };
 
-type PreviewDetails = { meaningful: boolean; previewUrl: string | null; version: number };
+type PreviewDetails = {
+  meaningful: boolean;
+  previewUrl: string | null;
+  version: number;
+  inspectable?: boolean;
+};
 
-export function WebsiteThumbnail({ siteId, siteName, siteSlug, pageId, pageSlug, updatedAt, hasMeaningfulPreview, className = "" }: WebsiteThumbnailProps) {
-  const directUrl = siteSlug && pageId && pageSlug && hasMeaningfulPreview
+export function WebsiteThumbnail({ siteId, siteName, siteSlug, pageId, pageSlug, updatedAt, hasMeaningfulPreview, renderMode, className = "" }: WebsiteThumbnailProps) {
+  const usesProjectPreview = renderMode === "REACT" && Boolean(pageId && pageSlug && hasMeaningfulPreview);
+  const directUrl = !usesProjectPreview && siteSlug && pageId && pageSlug && hasMeaningfulPreview
     ? `/preview/${encodeURIComponent(siteSlug)}/${encodeURIComponent(pageSlug)}`
     : null;
   const [details, setDetails] = useState<PreviewDetails | null>(directUrl ? { meaningful: true, previewUrl: directUrl, version: Date.parse(updatedAt || "") || Date.now() } : null);
@@ -30,6 +37,34 @@ export function WebsiteThumbnail({ siteId, siteName, siteSlug, pageId, pageSlug,
       setDetails({ meaningful: true, previewUrl: directUrl, version: Date.parse(updatedAt || "") || Date.now() });
       return;
     }
+    if (usesProjectPreview && pageSlug) {
+      const controller = new AbortController();
+      fetch("/api/builder-v3/preview/start", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ siteId }),
+        signal: controller.signal,
+      })
+        .then(async (response) => {
+          const payload = await response.json();
+          if (!response.ok) throw new Error("Page preview failed to start");
+          const preview = payload?.data && typeof payload.data === "object" ? payload.data : payload;
+          if (typeof preview?.url !== "string") throw new Error("Page preview returned an invalid URL");
+          const url = new URL(preview.url);
+          url.pathname = pageSlug === "home" ? "/" : `/${pageSlug.replace(/^\/+|\/+$/g, "")}`;
+          return url.toString();
+        })
+        .then((previewUrl) => setDetails({
+          meaningful: true,
+          previewUrl,
+          version: Date.parse(updatedAt || "") || Date.now(),
+          inspectable: false,
+        }))
+        .catch(() => {
+          if (!controller.signal.aborted) setDetails({ meaningful: false, previewUrl: null, version: 0 });
+        });
+      return () => controller.abort();
+    }
     if (hasMeaningfulPreview === false && pageId) {
       setDetails({ meaningful: false, previewUrl: null, version: Date.parse(updatedAt || "") || 0 });
       return;
@@ -40,7 +75,7 @@ export function WebsiteThumbnail({ siteId, siteName, siteSlug, pageId, pageSlug,
       .then((payload) => { if (payload) setDetails(payload); })
       .catch(() => undefined);
     return () => controller.abort();
-  }, [directUrl, hasMeaningfulPreview, pageId, siteId, updatedAt]);
+  }, [directUrl, hasMeaningfulPreview, pageId, pageSlug, siteId, updatedAt, usesProjectPreview]);
 
   useEffect(() => () => {
     if (inspectionTimer.current) clearTimeout(inspectionTimer.current);
@@ -81,7 +116,7 @@ export function WebsiteThumbnail({ siteId, siteName, siteSlug, pageId, pageSlug,
         loading="lazy"
         tabIndex={-1}
         aria-hidden="true"
-        onLoad={(event) => inspectPreview(event.currentTarget)}
+        onLoad={(event) => details?.inspectable === false ? setPreviewReady(true) : inspectPreview(event.currentTarget)}
         onError={() => setPreviewReady(false)}
         className={`pointer-events-none absolute left-0 top-0 h-[250%] w-[250%] origin-top-left scale-[0.4] border-0 bg-white transition-opacity duration-300 ${previewReady ? "opacity-100" : "opacity-0"}`}
         sandbox="allow-scripts allow-same-origin"

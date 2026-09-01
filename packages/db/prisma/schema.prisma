@@ -662,9 +662,11 @@ model Site {
   cmsCollections   CmsCollection[]
   crmLeads         CrmLead[]
   crmApiKeys       CrmApiKey[]
+  agentRuns        AgentRun[]
   integrations     SiteIntegration[]
   shop             Shop?
   v12Project       V12Project?
+  feedback         WebsiteFeedback[]
 
   @@unique([tenantId, slug])
   @@index([tenantId])
@@ -1088,6 +1090,58 @@ model CrmCommunication {
   @@index([leadId, createdAt])
 }
 
+// =======================================
+// AI AGENTS
+// =======================================
+
+model AgentRun {
+  id          String   @id @default(cuid())
+  siteId      String
+  tenantId    String
+  agentId     String
+  pageId      String?
+  prompt      String?
+  summary     String
+  findings    Json
+  generatedBy String   @default("analytics")
+  createdAt   DateTime @default(now())
+
+  site     Site           @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  messages AgentMessage[]
+
+  @@index([siteId, agentId, createdAt])
+  @@index([siteId, createdAt])
+}
+
+model AgentMessage {
+  id        String   @id @default(cuid())
+  runId     String
+  role      String
+  content   String
+  createdAt DateTime @default(now())
+
+  run AgentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, createdAt])
+}
+
+model WebsiteFeedback {
+  id        String   @id @default(cuid())
+  siteId    String
+  tenantId  String
+  userId    String?
+  pageId    String?
+  rating    Int
+  comment   String?
+  status    String   @default("NEW")
+  createdAt DateTime @default(now())
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, createdAt])
+  @@index([status])
+}
+
 model CrmApiKey {
   id         String    @id @default(cuid())
   siteId     String
@@ -1166,7 +1220,10 @@ model Page {
   reactCode  String?    @db.Text // Generated React TSX code
   renderMode RenderMode @default(BLUEPRINT) // Blueprint or React
 
-  publishedAt DateTime?
+  publishedAt        DateTime?
+  scheduledPublishAt DateTime?
+  customCss          String?    @db.Text
+  customJs           String?    @db.Text
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -1186,6 +1243,7 @@ model Page {
   @@index([siteId])
   @@index([status])
   @@index([renderMode]) // ✅ NEW: Query by render mode
+  @@index([scheduledPublishAt])
 }
 
 model PreviewToken {
@@ -1277,6 +1335,10 @@ model Plan {
   maxPages    Int
   aiCredits   Int
   teamMembers Int
+
+  aiAgentRunLimitPerHour       Int @default(20)
+  aiAgentFollowupLimitPerHour  Int @default(40)
+  builderAgentLimitPerHour     Int @default(30)
 
   isPublic Boolean @default(true)
 

@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, ChevronLeft, ChevronRight, FileText, Loader2, Paperclip, RotateCcw, Send, Sparkles, Square, X } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Check, ChevronDown, ChevronLeft, ChevronRight, FileText, Loader2, Paperclip, RotateCcw, Send, Sparkles, Square, Star, Wand2, X } from "lucide-react";
 
 import {
   AI_ATTACHMENT_ACCEPT,
   getAgentAttachmentError,
 } from "@/modules/ai-v12/attachments";
+import { PromptGeneratorModal } from "./PromptGeneratorModal";
 import {
   COLOR_MOOD_OPTIONS,
   DEFAULT_CREATIVE_DIRECTION,
@@ -42,7 +44,17 @@ export type V12AgentEvent = Readonly<{
   actions?: readonly V12AgentAction[];
 }>;
 
+const COMPOSER_MAX_HEIGHT = 200;
+
+function formatMessageTimestamp(timestamp: string) {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
 export default function V12AgentPanel({
+  siteId,
+  pageId,
   connected,
   events,
   running,
@@ -54,7 +66,10 @@ export default function V12AgentPanel({
   initialContext = "Website",
   selectedElementLabel,
   autoFocus = false,
+  autoSubmit = false,
 }: {
+  siteId: string;
+  pageId?: string;
   connected: boolean;
   events: readonly V12AgentEvent[];
   running: boolean;
@@ -62,6 +77,7 @@ export default function V12AgentPanel({
   initialContext?: V12AgentContext;
   selectedElementLabel?: string;
   autoFocus?: boolean;
+  autoSubmit?: boolean;
   onSubmit(prompt: string, mode: "auto" | "discuss", attachments: readonly File[], creativeDirection: CreativeDirection, context: V12AgentContext): Promise<void>;
   onCancel(): void;
   onReset(): Promise<void>;
@@ -89,6 +105,8 @@ export default function V12AgentPanel({
   const [pendingFullPageContext, setPendingFullPageContext] = useState<V12AgentContext>("Page");
   const [showCreativeDirection, setShowCreativeDirection] = useState(false);
   const completingCreativeDirectionRef = useRef(false);
+  const [showPromptGenerator, setShowPromptGenerator] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
   useEffect(() => {
     if (appliedInitialPromptRef.current) return;
@@ -115,6 +133,13 @@ export default function V12AgentPanel({
   }, [autoFocus, initialContext, initialPrompt]);
 
   useEffect(() => {
+    const composer = composerRef.current;
+    if (!composer) return;
+    composer.style.height = "auto";
+    composer.style.height = `${Math.min(composer.scrollHeight, COMPOSER_MAX_HEIGHT)}px`;
+  }, [prompt]);
+
+  useEffect(() => {
     if (!running) { setElapsed(0); return; }
     const started = Date.now();
     const timer = window.setInterval(() => setElapsed(Math.floor((Date.now() - started) / 1000)), 1000);
@@ -122,22 +147,6 @@ export default function V12AgentPanel({
   }, [running]);
 
   const elapsedLabel = `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`;
-
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      conversationEndRef.current?.scrollIntoView({
-        behavior: running ? "smooth" : "auto",
-        block: "end",
-      });
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, [
-    events.length,
-    events[events.length - 1]?.title,
-    events[events.length - 1]?.detail,
-    running,
-  ]);
 
   useEffect(() => {
     /*
@@ -157,6 +166,46 @@ export default function V12AgentPanel({
     setGenerationExpanded(false);
   }, [running, events.length]);
 
+  async function dispatchPrompt(
+    value: string,
+    submittedAttachments: File[],
+    submitMode: "auto" | "discuss",
+    submitContext: V12AgentContext,
+  ) {
+    if (
+      running ||
+      showCreativeDirection ||
+      (!value && submittedAttachments.length === 0) ||
+      !connected
+    ) {
+      return;
+    }
+
+    const isFirstFullPagePrompt =
+      events.length === 0 &&
+      (submitContext === "Website" || submitContext === "Page");
+
+    if (isFirstFullPagePrompt) {
+      setPendingFullPagePrompt(value);
+      setPendingFullPageAttachments(submittedAttachments);
+      setPendingFullPageMode(submitMode);
+      setPendingFullPageContext(submitContext);
+      setCreativeDirection(DEFAULT_CREATIVE_DIRECTION);
+      setDirectionReady(false);
+      setDirectionVersion(version => version + 1);
+      setShowCreativeDirection(true);
+      return;
+    }
+
+    await onSubmit(
+      value,
+      submitMode,
+      submittedAttachments,
+      creativeDirection,
+      submitContext
+    );
+  }
+
   async function submit() {
     const value = prompt.trim();
 
@@ -174,30 +223,18 @@ export default function V12AgentPanel({
     setPrompt("");
     setAttachments([]);
 
-    const isFirstFullPagePrompt =
-      events.length === 0 &&
-      (context === "Website" || context === "Page");
-
-    if (isFirstFullPagePrompt) {
-      setPendingFullPagePrompt(value);
-      setPendingFullPageAttachments(submittedAttachments);
-      setPendingFullPageMode(mode);
-      setPendingFullPageContext(context);
-      setCreativeDirection(DEFAULT_CREATIVE_DIRECTION);
-      setDirectionReady(false);
-      setDirectionVersion(version => version + 1);
-      setShowCreativeDirection(true);
-      return;
-    }
-
-    await onSubmit(
-      value,
-      mode,
-      submittedAttachments,
-      creativeDirection,
-      context
-    );
+    await dispatchPrompt(value, submittedAttachments, mode, context);
   }
+
+  const autoSubmittedRef = useRef(false);
+  useEffect(() => {
+    if (autoSubmittedRef.current || !autoSubmit || !connected) return;
+    const value = initialPrompt.trim();
+    if (!value) return;
+    autoSubmittedRef.current = true;
+    setPrompt("");
+    void dispatchPrompt(value, [], "auto", initialContext);
+  }, [autoSubmit, connected, initialContext, initialPrompt]);
 
   async function completeCreativeDirection() {
     if (
@@ -500,6 +537,22 @@ export default function V12AgentPanel({
           pendingFullPagePrompt?.trim()
     );
 
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      conversationEndRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [
+    messageEvents.length,
+    groupedProgress.length,
+    currentProgressTitle,
+    showCreativeDirection,
+  ]);
+
   return <aside className="flex h-full w-[360px] shrink-0 flex-col bg-[#15171c]">
     <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-5">
       <div className="min-w-0 flex-1">
@@ -566,13 +619,13 @@ export default function V12AgentPanel({
           </div>
         </div>
       )}
-      {messageEvents.map((event) => (
+      {messageEvents.map((event, index) => (
         <div
           key={event.id}
-          className={`flex ${
+          className={`flex flex-col ${
             event.role === "assistant"
-              ? "mr-6 justify-start"
-              : "ml-8 justify-end"
+              ? "mr-6 items-start"
+              : "ml-8 items-end"
           }`}
         >
           <div
@@ -615,7 +668,34 @@ export default function V12AgentPanel({
                   ))}
                 </div>
               )}
+
+            {event.role === "assistant" &&
+              event.status === "completed" &&
+              index === messageEvents.length - 1 &&
+              !running && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.requestAnimationFrame(() => composerRef.current?.focus());
+                    }}
+                    className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-white/70 transition hover:border-white/25 hover:bg-white/10 hover:text-white"
+                  >
+                    Request a change
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowFeedbackModal(true)}
+                    className="flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1.5 text-[11px] font-medium text-amber-200 transition hover:border-amber-300/50 hover:bg-amber-500/20"
+                  >
+                    <Star size={11} /> Rate this design
+                  </button>
+                </div>
+              )}
           </div>
+          <span className="mt-1 px-1 text-[10px] text-white/30">
+            {formatMessageTimestamp(event.timestamp)}
+          </span>
         </div>
       ))}
 
@@ -757,7 +837,8 @@ export default function V12AgentPanel({
             : "What would you like to build or change?"
         }
         aria-describedby="ai-composer-hint"
-        className="h-28 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 text-sm outline-none focus:border-blue-400 disabled:cursor-not-allowed disabled:opacity-40"
+        rows={1}
+        className="max-h-[200px] min-h-[48px] w-full resize-none overflow-y-auto rounded-xl border border-white/10 bg-black/20 p-3 text-sm outline-none transition-[height] duration-150 ease-out focus:border-blue-400 disabled:cursor-not-allowed disabled:opacity-40"
       />
       <p id="ai-composer-hint" className="mt-1 px-1 text-[10px] text-white/30">Enter to send · images/files 50 MB · ZIP projects up to 1 GB</p>
       {attachmentError && <p role="alert" className="mt-1 px-1 text-[11px] text-red-300">{attachmentError}</p>}
@@ -765,6 +846,15 @@ export default function V12AgentPanel({
         <input ref={fileInputRef} type="file" accept={AI_ATTACHMENT_ACCEPT} multiple className="hidden" onChange={(event) => { selectAttachments(Array.from(event.target.files ?? [])); event.target.value = ""; }}/>
         <button type="button" onClick={() => fileInputRef.current?.click()} aria-label="Attach a design, file, or ZIP project" title="Attach files (50 MB) or one ZIP project (1 GB)" className="rounded-lg p-2 text-white/55 hover:bg-white/10"><Paperclip size={16}/></button>
         <select value={mode} onChange={(event) => setMode(event.target.value as "auto" | "discuss")} className="rounded-lg bg-white/5 px-2 py-2 text-xs"><option value="auto">Auto</option><option value="discuss">Discuss</option></select>
+        <button
+          type="button"
+          onClick={() => setShowPromptGenerator(true)}
+          aria-label="Open prompt generator"
+          title="Prompt generator"
+          className="rounded-lg p-2 text-white/55 hover:bg-white/10 hover:text-white"
+        >
+          <Wand2 size={15} />
+        </button>
         <div className="flex-1"/>
         {running ? (
           <button
@@ -840,18 +930,135 @@ export default function V12AgentPanel({
         }
       }
     `}</style>
+
+    {showPromptGenerator && (
+      <PromptGeneratorModal
+        siteId={siteId}
+        context={context}
+        selectedElementLabel={selectedElementLabel}
+        creativeDirection={creativeDirection}
+        initialPrompt={prompt}
+        onClose={() => setShowPromptGenerator(false)}
+        onInsert={(text) => {
+          setPrompt(text);
+          setShowPromptGenerator(false);
+          window.requestAnimationFrame(() => composerRef.current?.focus());
+        }}
+      />
+    )}
+
+    {showFeedbackModal && (
+      <FeedbackModal
+        siteId={siteId}
+        pageId={pageId}
+        onClose={() => setShowFeedbackModal(false)}
+      />
+    )}
   </aside>;
 }
 
+function FeedbackModal({
+  siteId,
+  pageId,
+  onClose,
+}: {
+  siteId: string;
+  pageId?: string;
+  onClose(): void;
+}) {
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  async function submitFeedback() {
+    if (!rating || submitting) return;
+    setSubmitting(true);
+    setError("");
+    try {
+      const response = await fetch(`/api/sites/${siteId}/feedback`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ rating, comment, pageId }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload?.error || "Could not submit feedback.");
+      setSubmitted(true);
+      window.setTimeout(onClose, 1400);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Could not submit feedback.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return createPortal(
+    <div className="fixed inset-0 z-[40000] grid place-items-center bg-black/70 p-4 backdrop-blur-md" onClick={onClose}>
+      <div
+        className="w-full max-w-sm overflow-hidden rounded-2xl border border-white/10 bg-[#15171c]/90 text-white shadow-2xl backdrop-blur-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+          <h2 className="text-sm font-semibold">Rate this design</h2>
+          <button onClick={onClose} aria-label="Close" className="rounded-lg p-1.5 text-white/50 hover:bg-white/10 hover:text-white">
+            <X size={16} />
+          </button>
+        </div>
+
+        {submitted ? (
+          <div className="p-6 text-center text-sm text-white/70">Thanks for the feedback!</div>
+        ) : (
+          <div className="space-y-4 p-5">
+            <div className="flex justify-center gap-1.5">
+              {[1, 2, 3, 4, 5].map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setRating(value)}
+                  onMouseEnter={() => setHoverRating(value)}
+                  onMouseLeave={() => setHoverRating(0)}
+                  aria-label={`${value} star${value === 1 ? "" : "s"}`}
+                  className="p-0.5"
+                >
+                  <Star
+                    size={28}
+                    className={(hoverRating || rating) >= value ? "fill-amber-400 text-amber-400" : "text-white/20"}
+                  />
+                </button>
+              ))}
+            </div>
+            <textarea
+              value={comment}
+              onChange={(event) => setComment(event.target.value)}
+              placeholder="Anything you liked or want different? (optional)"
+              className="h-24 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 text-sm outline-none focus:border-blue-400"
+            />
+            {error && <p role="alert" className="text-xs text-red-300">{error}</p>}
+            <button
+              onClick={() => void submitFeedback()}
+              disabled={!rating || submitting}
+              className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-3 py-2.5 text-xs font-semibold text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {submitting ? "Submitting…" : "Submit feedback"}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body,
+  );
+}
 
 function ProTipsCarousel({ onClose }: { onClose(): void }) {
   const tips = [
     {
-      eyebrow: "Design to code",
+      eyebrow: "Design to functional site",
       title: "Already have a UI design?",
       body:
-        "Upload a screenshot, Figma export, UI image or PDF and BuildEZ AI can recreate the design as production-ready React code.",
-      gif: "/pro-tips/ui-to-code.gif",
+        "Upload a screenshot, Figma export, UI image or PDF and BuildEZ AI can recreate the design as a production-ready functional site.",
+      image: "/pro-tips/ui-to-code.webp",
       alt: "AI converting an existing UI design into website code",
       accent: "from-blue-500/20 via-sky-400/10 to-transparent",
     },
@@ -860,7 +1067,7 @@ function ProTipsCarousel({ onClose }: { onClose(): void }) {
       title: "Build rich 3D & animated websites",
       body:
         "Ask for cinematic scroll experiences, parallax, shaders, WebGL, interactive product showcases, 3D scenes and advanced motion.",
-      gif: "/pro-tips/immersive-3d.gif",
+      image: "/pro-tips/immersive-3d.webp",
       alt: "Interactive 3D animated website experience",
       accent: "from-violet-500/20 via-fuchsia-400/10 to-transparent",
     },
@@ -869,7 +1076,7 @@ function ProTipsCarousel({ onClose }: { onClose(): void }) {
       title: "Or keep it beautifully simple",
       body:
         "Build professional corporate, SaaS, healthcare, portfolio, commerce and landing pages with responsive layouts and polished interactions.",
-      gif: "/pro-tips/traditional-site.gif",
+      image: "/pro-tips/traditional-site.webp",
       alt: "Modern traditional business website",
       accent: "from-emerald-500/20 via-cyan-400/10 to-transparent",
     },
@@ -922,14 +1129,19 @@ function ProTipsCarousel({ onClose }: { onClose(): void }) {
         </div>
 
         <div className="px-4">
-          <div className="overflow-hidden rounded-xl border border-white/10 bg-black/25">
-            <img
-              key={tip.gif}
-              src={tip.gif}
-              alt={tip.alt}
-              className="aspect-[16/9] w-full object-cover"
-              draggable={false}
-            />
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-white/10 bg-black/25">
+            {tips.map((item, itemIndex) => (
+              <img
+                key={item.image}
+                src={item.image}
+                alt={item.alt}
+                loading="eager"
+                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
+                  itemIndex === index ? "opacity-100" : "opacity-0"
+                }`}
+                draggable={false}
+              />
+            ))}
           </div>
         </div>
 

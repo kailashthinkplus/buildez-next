@@ -52,11 +52,11 @@ export function SidebarShell({ mobileOpen, setMobileOpen }: Props) {
       </AnimatePresence>
 
       {/* DESKTOP */}
-      <aside className={`relative hidden h-full shrink-0 transition-[width] duration-200 lg:block ${isSite && siteSidebarCollapsed ? "w-[72px]" : "w-[248px]"}`}>
+      <aside className={`relative z-20 -mt-2 hidden h-[calc(100%+0.5rem)] shrink-0 pt-2 transition-[width] duration-200 sm:-mt-3 sm:h-[calc(100%+0.75rem)] sm:pt-3 lg:block ${isSite && siteSidebarCollapsed ? "w-[72px]" : "w-[248px]"}`}>
         <div className="h-full overflow-hidden">
           {isSite ? <SiteSidebar setMobileOpen={setMobileOpen} compact={siteSidebarCollapsed} /> : <GlobalSidebar setMobileOpen={setMobileOpen} />}
         </div>
-        {isSite ? <button type="button" onClick={toggleSiteSidebar} aria-label={siteSidebarCollapsed ? "Expand website sidebar" : "Collapse website sidebar"} title={siteSidebarCollapsed ? "Expand website sidebar" : "Collapse website sidebar"} className="dashboard-panel absolute right-0 top-1/2 z-20 grid h-8 w-8 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full border dashboard-border shadow-lg dashboard-hover">{siteSidebarCollapsed ? <ChevronRight size={16}/> : <ChevronLeft size={16}/>}</button> : null}
+        {isSite ? <button type="button" onClick={toggleSiteSidebar} aria-label={siteSidebarCollapsed ? "Expand website sidebar" : "Collapse website sidebar"} title={siteSidebarCollapsed ? "Expand website sidebar" : "Collapse website sidebar"} className="dashboard-panel absolute right-0 top-1/2 z-30 grid h-8 w-8 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full border dashboard-border shadow-lg dashboard-hover">{siteSidebarCollapsed ? <ChevronRight size={16}/> : <ChevronLeft size={16}/>}</button> : null}
       </aside>
     </>
   );

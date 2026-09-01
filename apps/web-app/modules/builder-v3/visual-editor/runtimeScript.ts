@@ -40,6 +40,8 @@ export function createBuilderRuntimeScript(sessionId: string) {
     else if(m.type==="BUILDEZ_REQUEST_PARENT_SELECTION"&&selected){const p=selected.parentElement?.closest(SELECTOR);if(p){selected=p;scheduleRefresh();post("BUILDEZ_ELEMENT_SELECTED",data(p))}}
     else if(m.type==="BUILDEZ_SELECTION_CLEARED"){selected=null;scheduleRefresh();post("BUILDEZ_SELECTION_CLEARED",{})}
     else if(m.type==="BUILDEZ_SCROLL_TO_ELEMENT"&&selected)selected.scrollIntoView({behavior:"smooth",block:"center"})
+    else if(m.type==="BUILDEZ_REQUEST_TREE"){const nodes=[...document.querySelectorAll(SELECTOR)].map(el=>{const parentEl=el.parentElement&&el.parentElement.closest(SELECTOR);const text=(el.textContent||"").trim().slice(0,40);return {elementId:el.dataset.buildezId,parentElementId:parentEl?parentEl.dataset.buildezId:null,kind:el.dataset.buildezKind||"element",tagName:el.tagName.toLowerCase(),label:text||el.tagName.toLowerCase()}});post("BUILDEZ_TREE_DATA",{elements:nodes})}
+    else if(m.type==="BUILDEZ_SELECT_ELEMENT"&&m.payload?.elementId){const el=document.querySelector(SELECTOR+'[data-buildez-id="'+CSS.escape(String(m.payload.elementId))+'"]');if(el){selected=el;scheduleRefresh();post("BUILDEZ_ELEMENT_SELECTED",data(el));el.scrollIntoView({behavior:"smooth",block:"center"})}}
   });
   new ResizeObserver(scheduleRefresh).observe(document.documentElement);
   new MutationObserver(records=>{if(records.some(record=>!(record.target instanceof Element)||!record.target.closest("[data-buildez-overlay]"))){scheduleRefresh();requestAnimationFrame(()=>revealBuiltElements())}}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:["class","src","hidden"]});

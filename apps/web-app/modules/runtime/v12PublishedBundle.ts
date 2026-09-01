@@ -19,6 +19,76 @@ function addRouterBasename(content: string, siteId: string) {
   return content.replace(/<BrowserRouter(?=\s|>)/g, `<BrowserRouter basename=${JSON.stringify(publishedBase(siteId).replace(/\/$/, ""))}`);
 }
 
+/*
+ * The published V12 output is a single client-routed SPA shell — there is no
+ * per-request server render to inject page-specific <head> tags into. Instead
+ * this bootstraps a tiny client script that, on every route change, fetches
+ * that page's saved custom CSS/JS (kept live via /api/runtime/v12-custom-code,
+ * decoupled from this build's own revision cache) and applies it. Best-effort
+ * and defensive throughout — it must never be able to break a live site.
+ */
+async function injectCustomCodeBootstrap(outputRoot: string, siteId: string) {
+  const indexPath = path.join(outputRoot, "index.html");
+  let html: string;
+  try {
+    html = await readFile(indexPath, "utf8");
+  } catch {
+    return;
+  }
+  if (html.includes("data-buildez-custom-code")) return;
+
+  const basename = publishedBase(siteId).replace(/\/$/, "");
+  const api = `/api/runtime/v12-custom-code/${encodeURIComponent(siteId)}`;
+  const script = `<script data-buildez-custom-code>(function(){
+try{
+var base=${JSON.stringify(basename)};
+var api=${JSON.stringify(api)};
+function slugFor(pathname){
+var trimmed=pathname.indexOf(base)===0?pathname.slice(base.length):pathname;
+trimmed=trimmed.replace(/^\\/+|\\/+$/g,"");
+return trimmed||"home";
+}
+var lastSlug=null;
+function apply(){
+try{
+var slug=slugFor(location.pathname);
+if(slug===lastSlug)return;
+lastSlug=slug;
+fetch(api+"?slug="+encodeURIComponent(slug),{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(data){
+if(!data)return;
+var existingStyle=document.getElementById("buildez-custom-css");
+if(existingStyle)existingStyle.remove();
+if(data.customCss){
+var style=document.createElement("style");
+style.id="buildez-custom-css";
+style.textContent=data.customCss;
+document.head.appendChild(style);
+}
+var existingScript=document.getElementById("buildez-custom-js");
+if(existingScript)existingScript.remove();
+if(data.customJs){
+var custom=document.createElement("script");
+custom.id="buildez-custom-js";
+custom.textContent=data.customJs;
+document.body.appendChild(custom);
+}
+}).catch(function(){});
+}catch(e){}
+}
+var pushState=history.pushState;
+history.pushState=function(){pushState.apply(this,arguments);setTimeout(apply,0);};
+var replaceState=history.replaceState;
+history.replaceState=function(){replaceState.apply(this,arguments);setTimeout(apply,0);};
+window.addEventListener("popstate",apply);
+window.addEventListener("load",apply);
+if(document.readyState==="complete")apply();
+}catch(e){}
+})();</script>`;
+
+  const injected = html.includes("</body>") ? html.replace("</body>", `${script}</body>`) : `${html}${script}`;
+  await writeFile(indexPath, injected, "utf8");
+}
+
 async function buildPublishedProject(siteId: string, tenantId: string) {
   const project = await prisma.v12Project.findFirst({ where: { siteId, tenantId }, select: { currentRevision: true } });
   if (!project) throw new Error("Published project not found");
@@ -61,6 +131,7 @@ async function buildPublishedProject(siteId: string, tenantId: string) {
     child.once("error", reject);
     child.once("exit", code => code === 0 ? resolve() : reject(new Error(`Published website build failed (${code ?? "signal"}): ${output.trim()}`)));
   });
+  await injectCustomCodeBootstrap(outputRoot, siteId);
   await mkdir(root, { recursive: true });
   await writeFile(markerPath, String(project.currentRevision), "utf8");
   return outputRoot;

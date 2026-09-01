@@ -3,6 +3,8 @@ import { prisma } from "@buildez/db";
 import { ApiError } from "@/lib/api/errors";
 import { getUser } from "@/lib/auth/getUser";
 import { getTenantPlan } from "@/lib/plan/getPlan";
+import { assertPromptAllowed } from "@/lib/ai/moderation";
+import { enforceAiRateLimit } from "@/lib/ai/aiRateLimit";
 import { estimateV12Credits } from "@/modules/ai-v12/creditPolicy";
 import {
   captureV12Credits,
@@ -266,6 +268,17 @@ export async function POST(req: NextRequest) {
 
   const attachments = form.getAll("attachments").filter((value): value is File => value instanceof File);
   if (!siteId || (!prompt && !attachments.length)) return Response.json({ error: "A request or reference is required." }, { status: 400 });
+
+  try {
+    await enforceAiRateLimit("builder-agent", auth.user.id, tenantPlan?.plan?.builderAgentLimitPerHour ?? 30);
+    assertPromptAllowed(prompt);
+  } catch (error) {
+    const status = error instanceof ApiError ? error.status : 500;
+    const code = error instanceof ApiError ? error.code : undefined;
+    const message = error instanceof Error ? error.message : "Request could not be processed.";
+    return Response.json({ code, error: { message, code } }, { status });
+  }
+
   const attachmentError = getAgentAttachmentError(attachments);
   if (attachmentError) {
     const hasUnsupportedFile = attachments.some((file) => !getAgentAttachmentKind(file));

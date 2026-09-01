@@ -1,95 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Accessibility,
-  ArrowRight,
   Check,
   ChevronRight,
   CircleGauge,
   Gauge,
   Globe2,
-  BriefcaseBusiness,
   Loader2,
-  MousePointerClick,
-  Megaphone,
-  MessageCircle,
-  MessagesSquare,
   Play,
-  Search,
   Send,
-  ShieldCheck,
   Sparkles,
   WandSparkles,
-  X,
   Zap,
-  type LucideIcon,
+  History,
+  Bot,
 } from "lucide-react";
 
-import type {
-  InsightAgent,
-  InsightAgentId,
-  InsightFinding,
-  InsightReport,
-} from "@/modules/insights/types";
+import type { InsightAgent, InsightAgentId, InsightReport } from "@/modules/insights/types";
 import { useWorkspace } from "../../components/WorkspaceContext";
 import { AIChannels } from "./AIChannels";
-
-type AgentRun = {
-  id: string;
-  agent: InsightAgent;
-  completedAt: string;
-  summary: string;
-  actions: InsightFinding[];
-};
-
-const agentIcons: Record<InsightAgentId, LucideIcon> = {
-  "seo-agent": Search,
-  "geo-agent": Globe2,
-  "speed-agent": Zap,
-  "accessibility-agent": Accessibility,
-  "conversion-agent": MousePointerClick,
-  "quality-agent": ShieldCheck,
-  "business-agent": BriefcaseBusiness,
-  "marketing-agent": Megaphone,
-  "whatsapp-agent": MessageCircle,
-  "chatbot-agent": MessagesSquare,
-};
-
-const agentTones: Record<InsightAgentId, string> = {
-  "seo-agent": "from-blue-500/20 to-cyan-500/5 text-blue-500",
-  "geo-agent": "from-violet-500/20 to-fuchsia-500/5 text-violet-500",
-  "speed-agent": "from-amber-500/20 to-orange-500/5 text-amber-500",
-  "accessibility-agent": "from-cyan-500/20 to-blue-500/5 text-cyan-500",
-  "conversion-agent": "from-emerald-500/20 to-teal-500/5 text-emerald-500",
-  "quality-agent": "from-rose-500/20 to-pink-500/5 text-rose-500",
-  "business-agent": "from-indigo-500/20 to-blue-500/5 text-indigo-500",
-  "marketing-agent": "from-pink-500/20 to-orange-500/5 text-pink-500",
-  "whatsapp-agent": "from-emerald-500/20 to-green-500/5 text-emerald-500",
-  "chatbot-agent": "from-sky-500/20 to-indigo-500/5 text-sky-500",
-};
-
-function fixHref(siteId: string, finding: InsightFinding) {
-  const query = new URLSearchParams({
-    panel: "ai",
-    context: "Page",
-    prompt: finding.fixPrompt,
-  });
-  if (finding.pageId) query.set("pageId", finding.pageId);
-  return `/app/builder-v3/${siteId}?${query.toString()}`;
-}
+import { agentIcons, agentTones, HeroMetric, Score, Status, type RunHistoryEntry } from "./shared";
 
 export default function AIAgentsPage() {
   const { siteSlug } = useParams<{ siteSlug: string }>();
+  const router = useRouter();
   const { websites, loading: workspaceLoading } = useWorkspace();
   const website = websites.find((item) => item.slug === siteSlug);
   const [agents, setAgents] = useState<InsightAgent[]>([]);
   const [report, setReport] = useState<InsightReport>();
+  const [runHistory, setRunHistory] = useState<RunHistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [runningId, setRunningId] = useState<InsightAgentId>();
-  const [activeRun, setActiveRun] = useState<AgentRun>();
   const [prompt, setPrompt] = useState("");
   const [error, setError] = useState("");
   const business = website?.name || siteSlug;
@@ -106,7 +49,6 @@ export default function AIAgentsPage() {
     setError("");
     setAgents([]);
     setReport(undefined);
-    setActiveRun(undefined);
     try {
       const response = await fetch(
         `/api/sites/${encodeURIComponent(website.id)}/ai-agents`,
@@ -119,6 +61,7 @@ export default function AIAgentsPage() {
       }
       setAgents(payload.agents || []);
       setReport(payload.report);
+      setRunHistory(payload.recentRuns || []);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Your AI team could not be loaded");
     } finally {
@@ -135,35 +78,9 @@ export default function AIAgentsPage() {
     [agents],
   );
 
-  async function runAgent(agentId: InsightAgentId, request = prompt) {
-    if (!website?.id || runningId) return;
-    setRunningId(agentId);
-    setError("");
-    try {
-      const response = await fetch(
-        `/api/sites/${encodeURIComponent(website.id)}/ai-agents`,
-        {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ agentId, prompt: request }),
-        },
-      );
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload?.error || "The agent could not finish");
-      setActiveRun(payload.run);
-      setPrompt("");
-      setAgents((current) =>
-        current.map((agent) =>
-          agent.id === agentId
-            ? { ...agent, lastRunAt: payload.run.completedAt }
-            : agent,
-        ),
-      );
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "The agent could not finish");
-    } finally {
-      setRunningId(undefined);
-    }
+  function openAgent(agentId: InsightAgentId, withPrompt?: string) {
+    const query = withPrompt?.trim() ? `?prompt=${encodeURIComponent(withPrompt.trim())}` : "";
+    router.push(`/app/${siteSlug}/ai/${agentId}${query}`);
   }
 
   if (loading && !agents.length) {
@@ -231,18 +148,18 @@ export default function AIAgentsPage() {
                 onChange={(event) => setPrompt(event.target.value)}
                 onKeyDown={(event) => {
                   if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && recommendedAgent) {
-                    void runAgent(recommendedAgent.id);
+                    openAgent(recommendedAgent.id, prompt);
                   }
                 }}
                 placeholder="For example: What is stopping this website from ranking and converting?"
                 className="min-h-16 flex-1 resize-none bg-transparent px-3 py-2 text-sm leading-6 outline-none placeholder:text-white/30"
               />
               <button
-                onClick={() => recommendedAgent && void runAgent(recommendedAgent.id)}
-                disabled={!prompt.trim() || Boolean(runningId) || !recommendedAgent}
+                onClick={() => recommendedAgent && openAgent(recommendedAgent.id, prompt)}
+                disabled={!prompt.trim() || !recommendedAgent}
                 className="flex h-11 shrink-0 items-center justify-center gap-2 self-end rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-40"
               >
-                {runningId ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                <Send size={16} />
                 Ask team
               </button>
             </div>
@@ -276,70 +193,64 @@ export default function AIAgentsPage() {
         </div>
       </section>
 
-      {activeRun && (
-        <section className="mt-5 rounded-2xl border border-blue-300/30 bg-blue-500/[.07] p-5 sm:p-6">
-          <div className="flex items-start gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-600 text-white">
-              <Check size={18} />
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="font-semibold">{activeRun.agent.name} completed the run</h2>
-                <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-300">
-                  Ready for review
-                </span>
-              </div>
-              <p className="mt-1 text-sm leading-6 dashboard-muted">{activeRun.summary}</p>
-            </div>
-            <button
-              onClick={() => setActiveRun(undefined)}
-              aria-label="Close agent result"
-              className="rounded-lg p-2 dashboard-muted dashboard-hover"
-            >
-              <X size={16} />
-            </button>
-          </div>
-          {activeRun.actions.length > 0 && (
-            <div className="mt-5 grid gap-3 lg:grid-cols-3">
-              {activeRun.actions.map((action) => (
-                <div key={action.id} className="rounded-xl border dashboard-border bg-[var(--dashboard-surface)] p-4">
-                  <div className="flex items-center gap-2">
-                    <Priority priority={action.priority} />
-                    <span className="text-[10px] dashboard-faint">{action.pageTitle}</span>
-                  </div>
-                  <h3 className="mt-3 text-sm font-semibold">{action.title}</h3>
-                  <p className="mt-1 line-clamp-2 text-xs leading-5 dashboard-muted">{action.description}</p>
-                  <Link
-                    href={fixHref(website?.id || "", action)}
-                    className="mt-4 flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-300"
-                  >
-                    Review in builder <ArrowRight size={13} />
-                  </Link>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
-
       <section className="mt-8">
         <div>
           <h2 className="text-lg font-semibold">Specialist agents</h2>
           <p className="mt-1 text-xs dashboard-muted">
-            Run one specialist or ask the team to route a goal automatically.
+            Open a specialist to run it, review every finding, and ask follow-up questions.
           </p>
         </div>
         <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {agents.map((agent) => (
-            <AgentCard
-              key={agent.id}
-              agent={agent}
-              running={runningId === agent.id}
-              onRun={() => void runAgent(agent.id)}
-            />
+            <AgentCard key={agent.id} agent={agent} siteSlug={String(siteSlug)} />
           ))}
         </div>
       </section>
+
+      {runHistory.length > 0 && (
+        <section className="mt-8">
+          <div>
+            <h2 className="flex items-center gap-2 text-lg font-semibold">
+              <History size={17} className="text-blue-500" /> Recent activity
+            </h2>
+            <p className="mt-1 text-xs dashboard-muted">
+              Past runs from your AI team, saved so you can pick up a conversation later.
+            </p>
+          </div>
+          <div className="mt-4 flex flex-col gap-2">
+            {runHistory.slice(0, 8).map((entry) => {
+              const Icon = agentIcons[entry.agentId] || Bot;
+              const agentName = agents.find((item) => item.id === entry.agentId)?.name || entry.agentId;
+              return (
+                <Link
+                  key={entry.id}
+                  href={`/app/${siteSlug}/ai/${entry.agentId}?run=${encodeURIComponent(entry.id)}`}
+                  className="dashboard-card flex items-start gap-3 rounded-xl p-4 text-left dashboard-hover"
+                >
+                  <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-gradient-to-br ${agentTones[entry.agentId]}`}>
+                    <Icon size={16} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-sm font-semibold">{agentName}</h3>
+                      {entry.generatedBy === "ai" && (
+                        <span className="rounded-full bg-violet-500/10 px-1.5 py-0.5 text-[9px] font-bold text-violet-600 dark:text-violet-300">
+                          AI
+                        </span>
+                      )}
+                      <span className="text-[10px] dashboard-faint">
+                        {new Date(entry.createdAt).toLocaleString()}
+                      </span>
+                    </div>
+                    <p className="mt-1 line-clamp-2 text-xs leading-5 dashboard-muted">{entry.summary}</p>
+                  </div>
+                  <ChevronRight className="mt-1 shrink-0 dashboard-faint" size={16} />
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {website?.id && <AIChannels siteId={website.id} />}
 
@@ -371,11 +282,10 @@ export default function AIAgentsPage() {
                 </p>
               </div>
               <button
-                onClick={() => void runAgent(recommendedAgent.id)}
-                disabled={Boolean(runningId)}
-                className="ml-auto flex shrink-0 items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white disabled:opacity-45"
+                onClick={() => openAgent(recommendedAgent.id)}
+                className="ml-auto flex shrink-0 items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white"
               >
-                <Play size={13} /> Run agent
+                <Play size={13} /> Open agent
               </button>
             </div>
           )}
@@ -401,18 +311,10 @@ export default function AIAgentsPage() {
   );
 }
 
-function AgentCard({
-  agent,
-  running,
-  onRun,
-}: {
-  agent: InsightAgent;
-  running: boolean;
-  onRun: () => void;
-}) {
+function AgentCard({ agent, siteSlug }: { agent: InsightAgent; siteSlug: string }) {
   const Icon = agentIcons[agent.id];
   return (
-    <article className="dashboard-card rounded-2xl p-5">
+    <Link href={`/app/${siteSlug}/ai/${agent.id}`} className="dashboard-card block rounded-2xl p-5 dashboard-hover">
       <div className="flex items-start justify-between">
         <span className={`grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br ${agentTones[agent.id]}`}>
           <Icon size={19} />
@@ -427,74 +329,10 @@ function AgentCard({
         <span className="text-[11px] dashboard-muted">
           {agent.opportunityCount} opportunit{agent.opportunityCount === 1 ? "y" : "ies"}
         </span>
-        <button
-          onClick={onRun}
-          disabled={running}
-          className="ml-auto flex items-center gap-1.5 rounded-lg border dashboard-border px-3 py-2 text-xs font-semibold dashboard-hover disabled:opacity-45"
-        >
-          {running ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
-          {running ? "Running" : "Run"}
-        </button>
+        <span className="ml-auto flex items-center gap-1.5 rounded-lg border dashboard-border px-3 py-2 text-xs font-semibold">
+          <Play size={13} /> Open
+        </span>
       </div>
-    </article>
-  );
-}
-
-function HeroMetric({
-  label,
-  value,
-  help,
-  icon: Icon,
-}: {
-  label: string;
-  value: string;
-  help: string;
-  icon: LucideIcon;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[.055] p-4 backdrop-blur-xl">
-      <Icon size={16} className="text-blue-300" />
-      <strong className="mt-4 block text-2xl">{value}</strong>
-      <p className="mt-1 text-xs font-medium">{label}</p>
-      <p className="mt-0.5 text-[10px] text-white/35">{help}</p>
-    </div>
-  );
-}
-
-function Status({ status }: { status: InsightAgent["status"] }) {
-  const style =
-    status === "ready"
-      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300"
-      : status === "attention"
-        ? "bg-amber-500/10 text-amber-600 dark:text-amber-300"
-        : "bg-blue-500/10 text-blue-600 dark:text-blue-300";
-  return (
-    <span className={`rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-wider ${style}`}>
-      {status === "attention" ? "Needs attention" : status}
-    </span>
-  );
-}
-
-function Score({ score }: { score: number }) {
-  const style =
-    score >= 90
-      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300"
-      : score >= 70
-        ? "bg-blue-500/10 text-blue-600 dark:text-blue-300"
-        : "bg-amber-500/10 text-amber-600 dark:text-amber-300";
-  return <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${style}`}>{score}/100</span>;
-}
-
-function Priority({ priority }: { priority: InsightFinding["priority"] }) {
-  const style =
-    priority === "high"
-      ? "bg-rose-500/10 text-rose-600 dark:text-rose-300"
-      : priority === "medium"
-        ? "bg-amber-500/10 text-amber-600 dark:text-amber-300"
-        : "bg-slate-500/10 dashboard-muted";
-  return (
-    <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${style}`}>
-      {priority}
-    </span>
+    </Link>
   );
 }

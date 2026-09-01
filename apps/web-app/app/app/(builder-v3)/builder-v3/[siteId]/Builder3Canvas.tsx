@@ -1,20 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  AlignLeft, ArrowLeft, Blocks, Box, Check, ChevronDown, ChevronsUpDown, CircleGauge,
-  ClipboardList, Cloud, Columns3, Droplet, ExternalLink, Eye, FormInput, Grid3X3, Image as ImageIcon,
+  AlignLeft, ArrowLeft, Blocks, Box, CalendarClock, Check, ChevronDown, ChevronsUpDown, CircleGauge,
+  ClipboardList, Cloud, Code2, Columns3, Droplet, EyeOff, ExternalLink, Eye, FormInput, Grid3X3, Image as ImageIcon,
   Images, Laptop, Layers, ListChecks, Loader2, Maximize2, Megaphone, MessagesSquare,
-  Moon, MousePointerClick, Package, PanelRightOpen, PanelsTopLeft, Plus, Redo2,
+  Moon, MoreVertical, MousePointerClick, Package, PanelRightOpen, PanelsTopLeft, Plus, Redo2, RefreshCw,
   Settings, ShoppingCart, Smartphone, Sparkles, Star, Sun, Tablet, TextCursorInput,
   Type, Undo2, Video, Wand2, X, type LucideIcon,
 } from "lucide-react";
 
 import type { BuilderV3CanvasMode } from "@/modules/builder-v3/canvas";
 import { V12AgentPanel, V12CreditMeter, type V12AgentEvent } from "@/modules/builder-v3/agent-ui";
-import { BUILDER_BRIDGE_VERSION, validateBuilderBridgeMessage, type BuilderSelection } from "@/modules/builder-v3/visual-editor/contracts";
+import { BUILDER_BRIDGE_VERSION, validateBuilderBridgeMessage, type BuilderSelection, type BuilderTreeNode } from "@/modules/builder-v3/visual-editor/contracts";
 import { NodeToolbar } from "@/modules/builder-v3/visual-editor/NodeToolbar";
 import { describeBuilderSelection } from "@/modules/builder-v3/visual-editor/selectionDescription";
 import { SourceInspector } from "@/modules/builder-v3/visual-editor/SourceInspector";
@@ -25,6 +25,7 @@ import {
   resolvePageCanvasState,
 } from "@/modules/builder-v3/pageCanvasState";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import MediaLibrary from "@/modules/builder-v2/media/components/MediaLibrary";
 
 type Device = "desktop" | "tablet" | "mobile";
 const widths: Record<Device, string> = {
@@ -153,7 +154,19 @@ function BlankCanvasGreeting({ onAI, onBlocks }: { onAI(): void; onBlocks(): voi
   </div>;
 }
 
-type BuilderPage = { id: string; title: string; slug: string; status: "DRAFT" | "PUBLISHED"; seoTitle: string; seoDescription: string; faviconUrl: string };
+type BuilderPage = {
+  id: string;
+  title: string;
+  slug: string;
+  status: "DRAFT" | "PUBLISHED";
+  seoTitle: string;
+  seoDescription: string;
+  faviconUrl: string;
+  publishedAt: string | null;
+  scheduledPublishAt: string | null;
+  customCss: string;
+  customJs: string;
+};
 
 type Builder3CanvasProps = {
   siteId: string;
@@ -163,6 +176,7 @@ type Builder3CanvasProps = {
   initialPanel?: LeftPanel;
   initialPrompt?: string;
   initialContext?: AgentContext;
+  initialAutoSubmit?: boolean;
 };
 
 export default function Builder3Canvas({
@@ -173,6 +187,7 @@ export default function Builder3Canvas({
   initialPanel,
   initialPrompt = "",
   initialContext = "Website",
+  initialAutoSubmit = false,
 }: Builder3CanvasProps) {
   const router = useRouter();
   const [mode, setMode] = useState<BuilderV3CanvasMode>("preview");
@@ -182,6 +197,7 @@ export default function Builder3Canvas({
   const [previewSessionId, setPreviewSessionId] = useState<string>();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [selection, setSelection] = useState<BuilderSelection>();
+  const [elementTree, setElementTree] = useState<BuilderTreeNode[] | null>(null);
   const [error, setError] = useState<string>();
   const [workspace, setWorkspace] = useState<{
     revision?: number;
@@ -210,8 +226,33 @@ export default function Builder3Canvas({
   const [publishing, setPublishing] = useState(false);
   const [pageStatus, setPageStatus] = useState<"DRAFT" | "PUBLISHED">(page?.status ?? "DRAFT");
   const [savedAt, setSavedAt] = useState<Date | null>(null);
-  const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [publishResult, setPublishResult] = useState<{ status: "success" | "failure"; message: string; url?: string } | null>(null);
+  const [kebabMenuOpen, setKebabMenuOpen] = useState(false);
+  const [unpublishing, setUnpublishing] = useState(false);
+  const [publishedAt, setPublishedAt] = useState<string | null>(page?.publishedAt ?? null);
+  const [scheduledPublishAt, setScheduledPublishAt] = useState<string | null>(page?.scheduledPublishAt ?? null);
+  const [showCustomCodeModal, setShowCustomCodeModal] = useState(false);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [customCss, setCustomCss] = useState(page?.customCss ?? "");
+  const [customJs, setCustomJs] = useState(page?.customJs ?? "");
+  const [savingCustomCode, setSavingCustomCode] = useState(false);
+  const [savingSchedule, setSavingSchedule] = useState(false);
+  const [toast, setToast] = useState<{ message: string; href?: string } | null>(null);
+  const [toastVisible, setToastVisible] = useState(false);
+  const toastTimerRef = useRef<number | undefined>(undefined);
+
+  const showToast = useCallback((message: string, href?: string) => {
+    setToast({ message, href });
+    setToastVisible(true);
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = window.setTimeout(() => setToastVisible(false), 5000);
+  }, []);
+
+  useEffect(() => {
+    if (toastVisible || !toast) return;
+    const timer = window.setTimeout(() => setToast(null), 300);
+    return () => window.clearTimeout(timer);
+  }, [toastVisible, toast]);
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
 
@@ -357,7 +398,7 @@ export default function Builder3Canvas({
   async function saveNow() {
     if (!workspace?.revision || saving) return;
     setSaving(true);
-    try { await checkpoint("Manual save"); setSavedAt(new Date()); setSaveModalOpen(true); }
+    try { await checkpoint("Manual save"); setSavedAt(new Date()); showToast("Changes saved"); }
     catch (reason) { setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.failed", title: "Save failed", detail: reason instanceof Error ? reason.message : "Could not save", timestamp: new Date().toISOString() }]); }
     finally { setSaving(false); }
   }
@@ -374,13 +415,87 @@ export default function Builder3Canvas({
       const publicUrl = canonicalPageUrl
         ?? `${window.location.origin}${publishedSitePath(siteSlug, page.slug)}`;
       setPageStatus("PUBLISHED");
-      setPublishResult({ status: "success", message: `${page.title} is now live.`, url: publicUrl });
+      setPublishedAt(new Date().toISOString());
+      setScheduledPublishAt(null);
+      showToast("Page published", publicUrl);
       setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.completed", title: "Page published", detail: `${page.title} is now live`, timestamp: new Date().toISOString() }]);
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Could not publish page";
       setPublishResult({ status: "failure", message });
       setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.failed", title: "Publish failed", detail: message, timestamp: new Date().toISOString() }]);
     } finally { setPublishing(false); }
+  }
+
+  async function unpublishNow() {
+    if (!page?.id || unpublishing) return;
+    setUnpublishing(true);
+    try {
+      const response = await fetch(`/api/pages/${page.id}/unpublish`, { method: "POST" });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(apiErrorMessage(payload, "Could not unpublish page"));
+      setPageStatus("DRAFT");
+      setKebabMenuOpen(false);
+      showToast("Page unpublished");
+      setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.completed", title: "Page unpublished", detail: `${page.title} is now a draft`, timestamp: new Date().toISOString() }]);
+    } catch (reason) {
+      const message = reason instanceof Error ? reason.message : "Could not unpublish page";
+      setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.failed", title: "Unpublish failed", detail: message, timestamp: new Date().toISOString() }]);
+    } finally { setUnpublishing(false); }
+  }
+
+  async function saveCustomCode() {
+    if (!page?.id || savingCustomCode) return;
+    setSavingCustomCode(true);
+    try {
+      const response = await fetch(`/api/pages/${page.id}/custom-code`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ customCss, customJs }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(apiErrorMessage(payload, "Could not save custom code"));
+      setShowCustomCodeModal(false);
+      showToast("Custom code saved");
+    } catch (reason) {
+      const message = reason instanceof Error ? reason.message : "Could not save custom code";
+      setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.failed", title: "Custom code not saved", detail: message, timestamp: new Date().toISOString() }]);
+    } finally { setSavingCustomCode(false); }
+  }
+
+  async function saveSchedule(dateTimeLocal: string) {
+    if (!page?.id || savingSchedule || !dateTimeLocal) return;
+    setSavingSchedule(true);
+    try {
+      const scheduledIso = new Date(dateTimeLocal).toISOString();
+      const response = await fetch(`/api/pages/${page.id}/schedule`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ scheduledPublishAt: scheduledIso }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(apiErrorMessage(payload, "Could not schedule publish"));
+      setScheduledPublishAt(scheduledIso);
+      setShowScheduleModal(false);
+      showToast(`Publish scheduled for ${new Date(scheduledIso).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}`);
+    } catch (reason) {
+      const message = reason instanceof Error ? reason.message : "Could not schedule publish";
+      setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.failed", title: "Schedule not saved", detail: message, timestamp: new Date().toISOString() }]);
+    } finally { setSavingSchedule(false); }
+  }
+
+  async function cancelSchedule() {
+    if (!page?.id || savingSchedule) return;
+    setSavingSchedule(true);
+    try {
+      const response = await fetch(`/api/pages/${page.id}/schedule`, { method: "DELETE" });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(apiErrorMessage(payload, "Could not cancel schedule"));
+      setScheduledPublishAt(null);
+      showToast("Scheduled publish cancelled");
+    } catch (reason) {
+      const message = reason instanceof Error ? reason.message : "Could not cancel schedule";
+      setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.failed", title: "Cancel failed", detail: message, timestamp: new Date().toISOString() }]);
+    } finally { setSavingSchedule(false); }
   }
 
   async function restoreHistory(direction: "undo" | "redo") {
@@ -530,6 +645,10 @@ export default function Builder3Canvas({
           : next);
       }
       if (event.data.type === "BUILDEZ_SELECTION_CLEARED") setSelection(undefined);
+      if (event.data.type === "BUILDEZ_TREE_DATA") {
+        const payload = event.data.payload as { elements?: BuilderTreeNode[] };
+        setElementTree(Array.isArray(payload?.elements) ? payload.elements : []);
+      }
       if (event.data.type === "BUILDEZ_INLINE_EDIT_COMMITTED") {
         const payload = event.data.payload as BuilderSelection & { value?: string };
         if (typeof payload.value === "string") void applyElementPatch(payload, { operation: "text", value: payload.value });
@@ -543,6 +662,11 @@ export default function Builder3Canvas({
     if (!previewSessionId || !previewUrl) return;
     iframeRef.current?.contentWindow?.postMessage({ version: BUILDER_BRIDGE_VERSION, sessionId: previewSessionId, type, payload }, new URL(previewUrl).origin);
   }
+
+  useEffect(() => {
+    if (leftPanel !== "layers" || !previewSessionId || !previewUrl) return;
+    sendCanvas("BUILDEZ_REQUEST_TREE");
+  }, [leftPanel, previewSessionId, previewUrl]);
 
   const pagePreviewUrl = (() => {
     if (!previewUrl) return undefined;
@@ -712,7 +836,6 @@ export default function Builder3Canvas({
           <Image src="/buildez-logo-dark.svg" alt="BuildEzy" width={118} height={39} priority className="mt-1 h-9 w-auto"/>
           <div className="relative"><button onClick={() => setSiteMenuOpen(open => !open)} className="ml-2 flex min-w-0 items-center gap-1.5 text-sm font-medium text-white/85 transition hover:text-white"><span className="max-w-[145px] truncate">{page?.title || "Untitled page"}</span><ChevronDown size={14} className={`text-white/40 transition ${siteMenuOpen ? "rotate-180" : ""}`}/></button>{siteMenuOpen && <div className="absolute left-2 top-full z-[20000] mt-4 w-56 rounded-xl border border-white/10 bg-[#0b0d12] p-2 shadow-2xl"><div className="truncate border-b border-white/10 px-3 pb-2 text-xs text-white/40">{siteName}</div><button onClick={() => router.push(`/app/${siteSlug}/pages`)} className="mt-1 w-full rounded-lg px-3 py-2 text-left text-sm text-white/70 hover:bg-white/10 hover:text-white">All pages</button><button onClick={() => { setSiteMenuOpen(false); setLeftPanel("settings"); }} className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/70 hover:bg-white/10 hover:text-white">Page settings</button></div>}</div>
           <span className={`rounded-full border px-2 py-0.5 text-xs ${pageStatus === "PUBLISHED" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400" : "border-blue-500/20 bg-blue-500/10 text-blue-400"}`}>{pageStatus === "PUBLISHED" ? "Published" : "Draft"}</span>
-          <V12CreditMeter running={agentRunning} />
         </div>
 
         <div className="flex flex-1 items-center justify-center gap-3">
@@ -732,9 +855,55 @@ export default function Builder3Canvas({
             <button onClick={() => setMode("edit")} className={`rounded-[9px] px-3 py-1.5 text-sm transition ${mode === "edit" ? "bg-blue-500/25 text-blue-300 shadow-sm" : "text-white/55 hover:text-white"}`}>Edit</button>
             <button onClick={() => setMode("preview")} className={`flex items-center gap-1.5 rounded-[9px] px-3 py-1.5 text-sm transition ${mode === "preview" ? "bg-blue-500/25 text-blue-300 shadow-sm" : "text-white/55 hover:text-white"}`}><Eye size={15}/>Preview</button>
           </div>
-          <div className="flex items-center gap-2 whitespace-nowrap text-sm text-white/70">{saving ? <Loader2 size={16} className="animate-spin"/> : savedAt ? <Check size={16} className="text-emerald-300"/> : <Cloud size={16}/>} {saving ? "Saving" : savedAt ? "Saved" : "Auto-saved"}</div>
-          <button onClick={() => void saveNow()} disabled={!workspace?.revision || saving} className="whitespace-nowrap rounded-xl border border-white/10 bg-white/[0.08] px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40">Save</button>
+          <V12CreditMeter running={agentRunning} />
+          <button onClick={() => void saveNow()} disabled={!workspace?.revision || saving} className="whitespace-nowrap rounded-xl border border-white/10 bg-white/[0.08] px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40">{saving ? <Loader2 size={16} className="mx-auto animate-spin"/> : "Save"}</button>
           <button onClick={() => void publishNow()} disabled={!page?.id || publishing || saving} className="whitespace-nowrap rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40">{publishing ? "Publishing…" : pageStatus === "PUBLISHED" ? "Republish" : "Publish"}</button>
+          <div className="relative">
+            <button
+              onClick={() => setKebabMenuOpen(open => !open)}
+              disabled={!page?.id}
+              aria-label="More publish options"
+              aria-expanded={kebabMenuOpen}
+              className="rounded-xl bg-white/[0.08] p-2 text-white/70 hover:bg-white/[0.12] disabled:opacity-30"
+            >
+              <MoreVertical size={16} />
+            </button>
+            {kebabMenuOpen && (
+              <div className="absolute right-0 top-full z-[20000] mt-2 w-64 overflow-hidden rounded-xl border border-white/10 bg-[#0b0d12] shadow-2xl" onMouseLeave={() => setKebabMenuOpen(false)}>
+                {publishedAt && (
+                  <div className="border-b border-white/10 px-3.5 py-2.5 text-[11px] text-white/40">
+                    Published {new Date(publishedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
+                  </div>
+                )}
+                {scheduledPublishAt && (
+                  <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-blue-500/10 px-3.5 py-2.5 text-[11px] text-blue-200">
+                    <span>Scheduled for {new Date(scheduledPublishAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}</span>
+                    <button onClick={() => void cancelSchedule()} disabled={savingSchedule} className="shrink-0 font-semibold text-blue-300 hover:text-blue-100 disabled:opacity-40">Cancel</button>
+                  </div>
+                )}
+                <button
+                  onClick={() => void unpublishNow()}
+                  disabled={pageStatus !== "PUBLISHED" || unpublishing}
+                  className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm text-white/75 hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                >
+                  <EyeOff size={15} /> {unpublishing ? "Unpublishing…" : "Unpublish"}
+                </button>
+                <button
+                  onClick={() => { setKebabMenuOpen(false); setShowScheduleModal(true); }}
+                  disabled={!page?.id}
+                  className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm text-white/75 hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                >
+                  <CalendarClock size={15} /> Schedule publish
+                </button>
+                <button
+                  onClick={() => { setKebabMenuOpen(false); setShowCustomCodeModal(true); }}
+                  className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm text-white/75 hover:bg-white/10 hover:text-white"
+                >
+                  <Code2 size={15} /> Custom CSS/JS
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -748,6 +917,8 @@ export default function Builder3Canvas({
         <div className={`absolute inset-y-0 left-[60px] z-[110] overflow-hidden border-r border-white/10 bg-[#15171c]/95 shadow-2xl shadow-black/50 backdrop-blur-2xl transition-[width] duration-300 ease-out ${leftPanel ? "w-[360px]" : "w-0 border-r-0"}`}>
         {leftPanel === "ai" && <V12AgentPanel
           key={`${selection?.elementId ?? "no-selection"}:${insightContext}:${insightPrompt || initialPrompt || "builder-agent"}`}
+          siteId={siteId}
+          pageId={page?.id}
           connected={Boolean(workspace) && !workspaceError}
           events={agentEvents}
           running={agentRunning}
@@ -765,6 +936,7 @@ export default function Builder3Canvas({
               : undefined
           }
           autoFocus={initialPanel === "ai" || Boolean(initialPrompt) || Boolean(insightPrompt)}
+          autoSubmit={initialAutoSubmit && !insightPrompt}
           onCancel={() => agentAbortRef.current?.abort()}
           onReset={async () => {
             setAgentEvents([]);
@@ -1227,7 +1399,28 @@ An uploaded codebase has already been imported into the current project. Read sr
             </section>)}
           </div>
         </aside>}
-        {leftPanel && !(["ai", "insights", "blocks"] as LeftPanel[]).includes(leftPanel) && <aside className="w-[360px] shrink-0 bg-[#11141c]"><div className="flex h-16 items-center justify-between border-b border-white/10 px-5"><strong className="capitalize">{leftPanel}</strong><button onClick={() => setLeftPanel(null)} className="rounded-lg p-2 text-white/50 transition hover:bg-white/10 hover:text-white"><X size={18}/></button></div><p className="p-5 text-sm text-white/45">The existing {leftPanel} tools remain available here.</p></aside>}
+        {leftPanel === "media" && (
+          <aside className="dark flex h-full min-h-0 w-[360px] shrink-0 flex-col overflow-hidden border-r border-[#292c33] bg-[#0e1117]">
+            <div className="flex h-16 shrink-0 items-center justify-between border-b border-[#292c33] px-5">
+              <strong className="text-xl font-semibold tracking-tight text-white">Media</strong>
+              <button onClick={() => setLeftPanel(null)} aria-label="Close media" className="rounded-lg p-2 text-white/60 transition hover:bg-white/10 hover:text-white"><X size={23}/></button>
+            </div>
+            <div className="min-h-0 flex-1 p-3">
+              <MediaLibrary siteId={siteId} compact hideHero />
+            </div>
+          </aside>
+        )}
+        {leftPanel === "colors" && <ColorsPanel siteId={siteId} onClose={() => setLeftPanel(null)} />}
+        {leftPanel === "settings" && <SettingsPanel siteSlug={siteSlug} siteName={siteName} pageStatus={pageStatus} onClose={() => setLeftPanel(null)} />}
+        {leftPanel === "layers" && (
+          <LayersPanel
+            tree={elementTree}
+            selectedElementId={selection?.elementId}
+            onSelect={id => sendCanvas("BUILDEZ_SELECT_ELEMENT", { elementId: id })}
+            onRefresh={() => sendCanvas("BUILDEZ_REQUEST_TREE")}
+            onClose={() => setLeftPanel(null)}
+          />
+        )}
         </div>
         <main
           className={`absolute inset-y-0 overflow-auto overscroll-contain transition-[left,right] duration-300 ease-out ${darkCanvas ? "bg-[#20232a]" : "bg-[#e8ecf2]"}`}
@@ -1281,14 +1474,20 @@ An uploaded codebase has already been imported into the current project. Read sr
         <div className={`absolute inset-y-0 right-0 z-[115] overflow-hidden transition-[width,transform,opacity] duration-300 ease-out ${inspectorCollapsed ? "pointer-events-none w-0 translate-x-8 opacity-0" : "w-[360px] translate-x-0 opacity-100"}`}><SourceInspector siteId={siteId} selection={mode === "edit" ? selection : undefined} disabled={saving} onPatch={patch => selection ? applyElementPatch(selection, patch) : Promise.resolve()} onOpenSource={() => selection && handleNodeAction("source")} onCollapse={() => setInspectorCollapsed(true)} onAIRequest={prompt=>{setInsightContext("Selected element");setInsightPrompt(prompt);setLeftPanel("ai")}}/></div>
         <button type="button" onClick={() => setInspectorCollapsed(false)} aria-label="Show inspector" title="Show inspector" className={`absolute right-3 top-3 z-[116] grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-[#15171c]/95 text-white/70 shadow-xl backdrop-blur-xl transition-[opacity,transform] duration-200 hover:text-white ${inspectorCollapsed ? "translate-x-0 opacity-100 delay-150" : "pointer-events-none translate-x-3 opacity-0"}`}><PanelRightOpen size={18}/></button>
       </section>
-      {saveModalOpen && <div role="dialog" aria-modal="true" aria-labelledby="save-dialog-title" className="fixed inset-0 z-[30000] grid place-items-center bg-black/65 p-5 backdrop-blur-sm" onMouseDown={(event) => { if (event.target === event.currentTarget) setSaveModalOpen(false); }}>
-        <div className="w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#11141c] text-white shadow-2xl shadow-black/60">
-          <div className="flex items-start justify-between border-b border-white/10 p-5"><div className="flex gap-3"><span className="grid h-10 w-10 place-items-center rounded-full bg-emerald-500/15 text-emerald-300"><Check size={20}/></span><div><h2 id="save-dialog-title" className="font-semibold">Page saved</h2><p className="mt-1 text-sm text-white/45">A recoverable V12 checkpoint was created.</p></div></div><button onClick={() => setSaveModalOpen(false)} aria-label="Close save confirmation" className="rounded-lg p-2 text-white/45 hover:bg-white/10 hover:text-white"><X size={18}/></button></div>
-          <div className="p-5"><div className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><div className="text-[11px] font-semibold uppercase tracking-wider text-white/35">Saved at</div><div className="mt-1 text-sm text-white/85">{savedAt?.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "medium" })}</div><div className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-white/35">Page URL</div><div className="mt-1 truncate rounded-lg bg-black/20 px-3 py-2 font-mono text-xs text-white/55">{canonicalPageUrl || "Page URL is not available yet"}</div>{pageStatus !== "PUBLISHED" && <div className="mt-2 text-xs text-white/35">This URL becomes available when the page is published.</div>}</div>
-            <div className="mt-5 flex justify-end gap-2"><button onClick={() => setSaveModalOpen(false)} className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/5">Close</button>{canonicalPageUrl && pageStatus === "PUBLISHED" && <a href={canonicalPageUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"><ExternalLink size={15}/>View page</a>}</div>
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`fixed bottom-5 right-5 z-[30000] transition-all duration-300 ${toastVisible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}
+        >
+          <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#171b22] px-4 py-3 text-sm text-white shadow-2xl shadow-black/50">
+            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-500/15 text-emerald-300"><Check size={15}/></span>
+            <span className="whitespace-nowrap">{toast.message}</span>
+            {toast.href && <a href={toast.href} target="_blank" rel="noreferrer" className="whitespace-nowrap text-xs font-semibold text-blue-300 hover:text-blue-200">View</a>}
+            <button onClick={() => setToastVisible(false)} aria-label="Dismiss notification" className="rounded-lg p-1 text-white/40 hover:bg-white/10 hover:text-white"><X size={14}/></button>
           </div>
         </div>
-      </div>}
+      )}
       {publishResult && <div role="dialog" aria-modal="true" aria-labelledby="publish-dialog-title" className="fixed inset-0 z-[30000] grid place-items-center bg-black/65 p-5 backdrop-blur-sm" onMouseDown={(event) => { if (event.target === event.currentTarget) setPublishResult(null); }}>
         <div className="w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#11141c] text-white shadow-2xl shadow-black/60">
           <div className="flex items-start justify-between border-b border-white/10 p-5"><div className="flex gap-3"><span className={`grid h-10 w-10 place-items-center rounded-full ${publishResult.status === "success" ? "bg-emerald-500/15 text-emerald-300" : "bg-rose-500/15 text-rose-300"}`}>{publishResult.status === "success" ? <Check size={20}/> : <X size={20}/>}</span><div><h2 id="publish-dialog-title" className="font-semibold">{publishResult.status === "success" ? "Website published" : "Publishing failed"}</h2><p className="mt-1 text-sm text-white/50">{publishResult.message}</p></div></div><button onClick={() => setPublishResult(null)} aria-label="Close publish result" className="rounded-lg p-2 text-white/45 hover:bg-white/10 hover:text-white"><X size={18}/></button></div>
@@ -1296,6 +1495,317 @@ An uploaded codebase has already been imported into the current project. Read sr
           <div className="flex justify-end gap-2 p-5"><button onClick={() => setPublishResult(null)} className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/5">Close</button>{publishResult.status === "success" && publishResult.url ? <a href={publishResult.url} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500"><ExternalLink size={15}/>View page</a> : <button onClick={() => { setPublishResult(null); void publishNow(); }} className="rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-500">Try again</button>}</div>
         </div>
       </div>}
+
+      {showCustomCodeModal && (
+        <div role="dialog" aria-modal="true" aria-labelledby="custom-code-dialog-title" className="fixed inset-0 z-[40000] grid place-items-center bg-black/70 p-5 backdrop-blur-md" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowCustomCodeModal(false); }}>
+          <div className="flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#11141c]/90 text-white shadow-2xl shadow-black/60 backdrop-blur-2xl">
+            <div className="flex items-start justify-between border-b border-white/10 p-5">
+              <div className="flex gap-3">
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-blue-500/15 text-blue-300"><Code2 size={18} /></span>
+                <div>
+                  <h2 id="custom-code-dialog-title" className="font-semibold">Custom CSS / JS</h2>
+                  <p className="mt-1 text-sm text-white/50">Injected on this page only, once published.</p>
+                </div>
+              </div>
+              <button onClick={() => setShowCustomCodeModal(false)} aria-label="Close" className="rounded-lg p-2 text-white/45 hover:bg-white/10 hover:text-white"><X size={18} /></button>
+            </div>
+            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-5">
+              <div>
+                <label htmlFor="custom-css-input" className="text-xs font-semibold text-white/70">Custom CSS</label>
+                <textarea id="custom-css-input" value={customCss} onChange={(event) => setCustomCss(event.target.value)} spellCheck={false} placeholder={".hero { padding-top: 4rem; }"} className="mt-2 h-32 w-full resize-none rounded-xl border border-white/10 bg-black/30 p-3 font-mono text-xs text-white/85 outline-none focus:border-blue-400" />
+              </div>
+              <div>
+                <label htmlFor="custom-js-input" className="text-xs font-semibold text-white/70">Custom JS</label>
+                <textarea id="custom-js-input" value={customJs} onChange={(event) => setCustomJs(event.target.value)} spellCheck={false} placeholder={"console.log('Loaded');"} className="mt-2 h-32 w-full resize-none rounded-xl border border-white/10 bg-black/30 p-3 font-mono text-xs text-white/85 outline-none focus:border-blue-400" />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 border-t border-white/10 p-5">
+              <button onClick={() => setShowCustomCodeModal(false)} className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/5">Cancel</button>
+              <button onClick={() => void saveCustomCode()} disabled={savingCustomCode} className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-40">{savingCustomCode ? "Saving…" : "Save"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showScheduleModal && (
+        <ScheduleModal
+          initialValue={scheduledPublishAt}
+          saving={savingSchedule}
+          onCancel={() => setShowScheduleModal(false)}
+          onSave={(value) => void saveSchedule(value)}
+        />
+      )}
     </main>
+  );
+}
+
+function ScheduleModal({
+  initialValue,
+  saving,
+  onCancel,
+  onSave,
+}: {
+  initialValue: string | null;
+  saving: boolean;
+  onCancel(): void;
+  onSave(dateTimeLocal: string): void;
+}) {
+  const toLocalInputValue = (iso: string | null) => {
+    const date = iso ? new Date(iso) : new Date(Date.now() + 60 * 60 * 1000);
+    const offset = date.getTimezoneOffset();
+    const local = new Date(date.getTime() - offset * 60 * 1000);
+    return local.toISOString().slice(0, 16);
+  };
+  const [value, setValue] = useState(toLocalInputValue(initialValue));
+  const minValue = toLocalInputValue(null).slice(0, 10) + "T00:00";
+
+  return (
+    <div role="dialog" aria-modal="true" aria-labelledby="schedule-dialog-title" className="fixed inset-0 z-[40000] grid place-items-center bg-black/70 p-5 backdrop-blur-md" onMouseDown={(event) => { if (event.target === event.currentTarget) onCancel(); }}>
+      <div className="w-full max-w-sm overflow-hidden rounded-2xl border border-white/10 bg-[#11141c]/90 text-white shadow-2xl shadow-black/60 backdrop-blur-2xl">
+        <div className="flex items-start justify-between border-b border-white/10 p-5">
+          <div className="flex gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-full bg-blue-500/15 text-blue-300"><CalendarClock size={18} /></span>
+            <div>
+              <h2 id="schedule-dialog-title" className="font-semibold">Schedule publish</h2>
+              <p className="mt-1 text-sm text-white/50">Publishes automatically at the chosen time.</p>
+            </div>
+          </div>
+          <button onClick={onCancel} aria-label="Close" className="rounded-lg p-2 text-white/45 hover:bg-white/10 hover:text-white"><X size={18} /></button>
+        </div>
+        <div className="p-5">
+          <label htmlFor="schedule-datetime-input" className="text-xs font-semibold text-white/70">Date &amp; time</label>
+          <input
+            id="schedule-datetime-input"
+            type="datetime-local"
+            value={value}
+            min={minValue}
+            onChange={(event) => setValue(event.target.value)}
+            className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 p-3 text-sm text-white outline-none focus:border-blue-400 [color-scheme:dark]"
+          />
+        </div>
+        <div className="flex justify-end gap-2 border-t border-white/10 p-5">
+          <button onClick={onCancel} className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/5">Cancel</button>
+          <button onClick={() => onSave(value)} disabled={saving || !value} className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-40">{saving ? "Scheduling…" : "Schedule"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const COLOR_FIELDS: Array<{ key: string; label: string }> = [
+  { key: "primary", label: "Primary" },
+  { key: "accent", label: "Accent" },
+  { key: "background", label: "Background" },
+  { key: "surface", label: "Surface" },
+  { key: "textPrimary", label: "Text (primary)" },
+  { key: "textSecondary", label: "Text (secondary)" },
+  { key: "border", label: "Border" },
+];
+
+function ColorsPanel({ siteId, onClose }: { siteId: string; onClose(): void }) {
+  const [tokens, setTokens] = useState<Record<string, unknown> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/sites/${siteId}/design-tokens`, { cache: "no-store" })
+      .then(response => response.json())
+      .then(payload => { if (!cancelled) setTokens((payload?.designTokens && typeof payload.designTokens === "object" ? payload.designTokens : {}) as Record<string, unknown>); })
+      .catch(() => { if (!cancelled) setError("Could not load colors."); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [siteId]);
+
+  const colors = (tokens?.colors && typeof tokens.colors === "object" ? tokens.colors : {}) as Record<string, string>;
+
+  function setColor(key: string, value: string) {
+    setTokens(current => ({ ...(current || {}), colors: { ...colors, [key]: value } }));
+  }
+
+  async function save() {
+    if (!tokens || saving) return;
+    setSaving(true);
+    setError("");
+    try {
+      const response = await fetch(`/api/sites/${siteId}/design-tokens`, {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ designTokens: tokens }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload?.error || "Could not save colors.");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Could not save colors.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <aside className="flex h-full min-h-0 w-[360px] shrink-0 flex-col overflow-hidden border-r border-white/10 bg-[#11141c]">
+      <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-5">
+        <strong className="text-xl font-semibold tracking-tight text-white">Colors</strong>
+        <button onClick={onClose} aria-label="Close colors" className="rounded-lg p-2 text-white/50 transition hover:bg-white/10 hover:text-white"><X size={18}/></button>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto p-4">
+        {loading ? (
+          <p className="text-sm text-white/45">Loading…</p>
+        ) : (
+          <>
+            <p className="mb-4 text-xs leading-5 text-white/40">
+              These brand colors guide future AI generations for this site. They don&apos;t retroactively re-theme pages already built — ask the AI to apply a new palette to update the live design.
+            </p>
+            <div className="space-y-3">
+              {COLOR_FIELDS.map(field => {
+                const value = typeof colors[field.key] === "string" ? colors[field.key] : "#000000";
+                return (
+                  <div key={field.key} className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={/^#[0-9a-fA-F]{6}$/.test(value) ? value : "#000000"}
+                      onChange={event => setColor(field.key, event.target.value)}
+                      className="h-9 w-9 shrink-0 cursor-pointer rounded-lg border border-white/10 bg-transparent p-0"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <label className="block text-[11px] text-white/50">{field.label}</label>
+                      <input
+                        type="text"
+                        value={value}
+                        onChange={event => setColor(field.key, event.target.value)}
+                        spellCheck={false}
+                        className="mt-0.5 w-full rounded-lg border border-white/10 bg-black/20 px-2 py-1 font-mono text-xs text-white/85 outline-none focus:border-blue-400"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {error && <p role="alert" className="mt-3 text-xs text-red-300">{error}</p>}
+          </>
+        )}
+      </div>
+      <div className="border-t border-white/10 p-4">
+        <button onClick={() => void save()} disabled={loading || saving} className="w-full rounded-xl bg-blue-600 px-3 py-2.5 text-xs font-semibold text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-40">{saving ? "Saving…" : "Save colors"}</button>
+      </div>
+    </aside>
+  );
+}
+
+function SettingsPanel({
+  siteSlug,
+  siteName,
+  pageStatus,
+  onClose,
+}: {
+  siteSlug: string;
+  siteName: string;
+  pageStatus: "DRAFT" | "PUBLISHED";
+  onClose(): void;
+}) {
+  return (
+    <aside className="flex h-full min-h-0 w-[360px] shrink-0 flex-col overflow-hidden border-r border-white/10 bg-[#11141c]">
+      <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-5">
+        <strong className="text-xl font-semibold tracking-tight text-white">Settings</strong>
+        <button onClick={onClose} aria-label="Close settings" className="rounded-lg p-2 text-white/50 transition hover:bg-white/10 hover:text-white"><X size={18}/></button>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto p-4">
+        <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-white/40">Website</div>
+          <div className="mt-1 text-sm font-medium text-white">{siteName}</div>
+          <span className={`mt-2 inline-block rounded-full border px-2 py-0.5 text-xs ${pageStatus === "PUBLISHED" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400" : "border-blue-500/20 bg-blue-500/10 text-blue-400"}`}>{pageStatus === "PUBLISHED" ? "Published" : "Draft"}</span>
+        </div>
+        <p className="mt-4 text-xs leading-5 text-white/45">
+          For domains, SEO, analytics, privacy and publishing controls, open the full site settings.
+        </p>
+        <a
+          href={`/app/${siteSlug}/settings`}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-4 flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-xs font-semibold text-white/80 hover:bg-white/10"
+        >
+          <ExternalLink size={14} /> Open site settings
+        </a>
+      </div>
+    </aside>
+  );
+}
+
+function LayersPanel({
+  tree,
+  selectedElementId,
+  onSelect,
+  onRefresh,
+  onClose,
+}: {
+  tree: BuilderTreeNode[] | null;
+  selectedElementId?: string;
+  onSelect(elementId: string): void;
+  onRefresh(): void;
+  onClose(): void;
+}) {
+  /*
+   * The generated site can render the same source component more than once
+   * (e.g. a card in a .map() list), and the instrumentation stamps
+   * data-buildez-id per JSX source location — so the same elementId can
+   * appear on multiple live DOM nodes. Deduplicate into a proper id-keyed
+   * tree (first occurrence wins) instead of repeatedly filtering the flat
+   * array, both for correctness and to guarantee unique React keys.
+   */
+  const byId = new Map<string, BuilderTreeNode>();
+  for (const node of tree || []) {
+    if (!byId.has(node.elementId)) byId.set(node.elementId, node);
+  }
+  const childIds = new Map<string, string[]>();
+  for (const node of byId.values()) {
+    if (!node.parentElementId || !byId.has(node.parentElementId)) continue;
+    const siblings = childIds.get(node.parentElementId) ?? [];
+    if (!siblings.includes(node.elementId)) siblings.push(node.elementId);
+    childIds.set(node.parentElementId, siblings);
+  }
+  const rootIds = [...byId.values()]
+    .filter(node => !node.parentElementId || !byId.has(node.parentElementId))
+    .map(node => node.elementId);
+
+  function renderNode(id: string, depth: number, visited: ReadonlySet<string>) {
+    const node = byId.get(id);
+    if (!node || visited.has(id)) return null;
+    const nextVisited = new Set(visited).add(id);
+    const children = childIds.get(id) ?? [];
+    return (
+      <div key={id}>
+        <button
+          onClick={() => onSelect(id)}
+          style={{ paddingLeft: `${12 + depth * 14}px` }}
+          className={`flex w-full items-center gap-2 rounded-lg py-1.5 pr-2 text-left text-xs transition ${selectedElementId === id ? "bg-blue-500/20 text-blue-200" : "text-white/65 hover:bg-white/5 hover:text-white"}`}
+        >
+          <span className="shrink-0 rounded border border-white/10 bg-white/5 px-1 py-0.5 font-mono text-[9px] uppercase text-white/40">{node.tagName}</span>
+          <span className="truncate">{node.label || node.kind}</span>
+        </button>
+        {children.map(childId => renderNode(childId, depth + 1, nextVisited))}
+      </div>
+    );
+  }
+
+  return (
+    <aside className="flex h-full min-h-0 w-[360px] shrink-0 flex-col overflow-hidden border-r border-white/10 bg-[#11141c]">
+      <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-5">
+        <strong className="text-xl font-semibold tracking-tight text-white">Layers</strong>
+        <div className="flex items-center gap-1">
+          <button onClick={onRefresh} aria-label="Refresh layers" title="Refresh" className="rounded-lg p-2 text-white/50 transition hover:bg-white/10 hover:text-white"><RefreshCw size={16}/></button>
+          <button onClick={onClose} aria-label="Close layers" className="rounded-lg p-2 text-white/50 transition hover:bg-white/10 hover:text-white"><X size={18}/></button>
+        </div>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto p-2">
+        {tree === null ? (
+          <p className="p-3 text-sm text-white/45">Loading layers…</p>
+        ) : !rootIds.length ? (
+          <p className="p-3 text-sm text-white/45">No elements found on this page yet.</p>
+        ) : (
+          rootIds.map(id => renderNode(id, 0, new Set()))
+        )}
+      </div>
+    </aside>
   );
 }

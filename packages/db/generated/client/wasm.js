@@ -660,6 +660,39 @@ exports.Prisma.CrmCommunicationScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.AgentRunScalarFieldEnum = {
+  id: 'id',
+  siteId: 'siteId',
+  tenantId: 'tenantId',
+  agentId: 'agentId',
+  pageId: 'pageId',
+  prompt: 'prompt',
+  summary: 'summary',
+  findings: 'findings',
+  generatedBy: 'generatedBy',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AgentMessageScalarFieldEnum = {
+  id: 'id',
+  runId: 'runId',
+  role: 'role',
+  content: 'content',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.WebsiteFeedbackScalarFieldEnum = {
+  id: 'id',
+  siteId: 'siteId',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  pageId: 'pageId',
+  rating: 'rating',
+  comment: 'comment',
+  status: 'status',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.CrmApiKeyScalarFieldEnum = {
   id: 'id',
   siteId: 'siteId',
@@ -716,6 +749,9 @@ exports.Prisma.PageScalarFieldEnum = {
   reactCode: 'reactCode',
   renderMode: 'renderMode',
   publishedAt: 'publishedAt',
+  scheduledPublishAt: 'scheduledPublishAt',
+  customCss: 'customCss',
+  customJs: 'customJs',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deleted: 'deleted',
@@ -771,6 +807,9 @@ exports.Prisma.PlanScalarFieldEnum = {
   maxPages: 'maxPages',
   aiCredits: 'aiCredits',
   teamMembers: 'teamMembers',
+  aiAgentRunLimitPerHour: 'aiAgentRunLimitPerHour',
+  aiAgentFollowupLimitPerHour: 'aiAgentFollowupLimitPerHour',
+  builderAgentLimitPerHour: 'builderAgentLimitPerHour',
   isPublic: 'isPublic',
   createdAt: 'createdAt'
 };
@@ -1312,6 +1351,9 @@ exports.Prisma.ModelName = {
   SupportRequest: 'SupportRequest',
   CrmLead: 'CrmLead',
   CrmCommunication: 'CrmCommunication',
+  AgentRun: 'AgentRun',
+  AgentMessage: 'AgentMessage',
+  WebsiteFeedback: 'WebsiteFeedback',
   CrmApiKey: 'CrmApiKey',
   CmsCollection: 'CmsCollection',
   CmsEntry: 'CmsEntry',
