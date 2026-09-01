@@ -15,10 +15,11 @@ import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
 type Props = {
   open: boolean;
   onClose: () => void;
+  onCreated?: () => void | Promise<void>;
   siteSlug: string;
 };
 
-export default function CreatePageModal({ open, onClose, siteSlug }: Props) {
+export default function CreatePageModal({ open, onClose, onCreated, siteSlug }: Props) {
   const [step, setStep] = useState<
     "choose" | "blank" | "ai" | "template" | "duplicate"
   >("choose");
@@ -63,12 +64,13 @@ export default function CreatePageModal({ open, onClose, siteSlug }: Props) {
         siteSlug,
       });
 
-await pageMutations.create.mutate({ title });
-console.log("🟩 [CreatePageModal] CREATE SUCCESS");
+      await pageMutations.create.mutate({ title });
+      console.log("🟩 [CreatePageModal] CREATE SUCCESS");
 
-
-      // 🚑 HARD RESET — GUARANTEED UI CONSISTENCY
-      window.location.reload();
+      setTitle("");
+      setStep("choose");
+      await onCreated?.();
+      onClose();
     } catch (err) {
       console.error("🟥 [CreatePageModal] Create page FAILED", err);
       setCreating(false);

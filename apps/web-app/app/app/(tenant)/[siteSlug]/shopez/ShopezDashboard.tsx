@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  AlertTriangle,
   BadgeIndianRupee,
   BarChart3,
   Box,
@@ -98,12 +99,18 @@ export default function ShopezDashboard({ site }: { site: Site }) {
     [products, setProducts] = useState<Product[]>([]),
     [orders, setOrders] = useState<Order[]>([]),
     [metrics, setMetrics] = useState<any>(),
+    [hasPaymentGateway, setHasPaymentGateway] = useState(true),
     [loading, setLoading] = useState(true),
     [error, setError] = useState("");
   const setTab = (value: (typeof tabs)[number]["id"]) => {
     setTabState(value);
     router.replace(`/app/${site.slug}/shopez?view=${value}`);
   };
+  useEffect(() => {
+    if (tabs.some((x) => x.id === requested) && requested !== tab) {
+      setTabState(requested as (typeof tabs)[number]["id"]);
+    }
+  }, [requested]);
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -115,6 +122,7 @@ export default function ShopezDashboard({ site }: { site: Site }) {
       ]);
       setShop(o.shop);
       setMetrics(o.metrics);
+      setHasPaymentGateway(Boolean(o.hasPaymentGateway));
       setProducts(p.products);
       setOrders(r.orders);
     } catch (e) {
@@ -182,6 +190,21 @@ export default function ShopezDashboard({ site }: { site: Site }) {
         </div>
       </header>
       <main>
+        {shop?.isPublished && !hasPaymentGateway && (
+          <div className="mb-5 flex flex-wrap items-center gap-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm">
+            <AlertTriangle size={17} className="shrink-0 text-amber-500" />
+            <p className="flex-1 dashboard-muted">
+              <strong className="text-amber-600 dark:text-amber-400">No payment gateway connected.</strong>{" "}
+              Shopez is live but customers can&apos;t pay yet. Add Razorpay, PayPal, or Cash on Delivery to start accepting orders.
+            </p>
+            <button
+              onClick={() => setTab("payments")}
+              className="shrink-0 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white"
+            >
+              Set up payments
+            </button>
+          </div>
+        )}
         {error && (
           <div className="mb-4 rounded-xl bg-rose-500/10 p-4 text-sm text-rose-500">
             {error}

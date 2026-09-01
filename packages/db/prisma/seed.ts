@@ -126,13 +126,42 @@ async function seedPlans() {
     },
 
     {
+      code: "AGENCY",
+      name: "Agency",
+      maxSites: 100,
+      maxPages: 20000,
+      aiCredits: 100000,
+      teamMembers: 100,
+      isPublic: true,
+      pricing: [
+        {
+          billingCycle: "monthly",
+          currency: "INR",
+          amount: 19999,
+        },
+      ],
+      features: [
+        ["custom_domain", "true"],
+        ["analytics", "true"],
+        ["ai_builder", "true"],
+        ["storage_gb", "2000"],
+        ["ssl", "true"],
+        ["team", "true"],
+        ["api", "true"],
+        ["white_label", "true"],
+        ["priority_support", "true"],
+        ["agency_workspace", "true"],
+      ],
+    },
+
+    {
       code: "ENTERPRISE",
       name: "Enterprise",
-      maxSites: 999999,
-      maxPages: 999999,
-      aiCredits: 999999,
-      teamMembers: 999999,
-      isPublic: false,
+      maxSites: 250,
+      maxPages: 50000,
+      aiCredits: 250000,
+      teamMembers: 250,
+      isPublic: true,
       pricing: [
         {
           billingCycle: "custom",
@@ -142,6 +171,8 @@ async function seedPlans() {
       ],
       features: [
         ["everything", "true"],
+        ["custom_limits", "true"],
+        ["dedicated_support", "true"],
       ],
     },
   ];
@@ -151,14 +182,16 @@ async function seedPlans() {
       where: {
         code: plan.code,
       },
-      update: {
-        name: plan.name,
-        maxSites: plan.maxSites,
-        maxPages: plan.maxPages,
-        aiCredits: plan.aiCredits,
-        teamMembers: plan.teamMembers,
-        isPublic: plan.isPublic,
-      },
+      update: plan.code === "ENTERPRISE"
+        ? { name: plan.name }
+        : {
+            name: plan.name,
+            maxSites: plan.maxSites,
+            maxPages: plan.maxPages,
+            aiCredits: plan.aiCredits,
+            teamMembers: plan.teamMembers,
+            isPublic: plan.isPublic,
+          },
       create: {
         code: plan.code,
         name: plan.name,

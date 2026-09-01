@@ -40,6 +40,93 @@ export function dodoPlanForProduct(productId: string) {
   return { planCode, billingCycle: cycle.toLowerCase() as BillingCycle };
 }
 
+/**
+ * `PlanPricing.dodoProductId` (kept in sync by `syncPlanPricingToDodo`) is the
+ * source of truth once a plan has been synced; the env var map is only a
+ * fallback for plans that predate that sync.
+ */
+export async function resolveDodoProductId(planCode: string, billingCycle: BillingCycle) {
+  const pricing = await prisma.planPricing.findUnique({
+    where: { planCode_billingCycle: { planCode: planCode.toUpperCase(), billingCycle } },
+    select: { id: true, dodoProductId: true },
+  });
+  if (pricing?.dodoProductId) return pricing.dodoProductId;
+
+  const envProductId = dodoProductId(planCode, billingCycle);
+  if (envProductId && pricing) {
+    // Promote the env-configured id into the DB so the next superadmin price
+    // edit updates this existing Dodo product instead of creating a new one.
+    await prisma.planPricing
+      .update({ where: { id: pricing.id }, data: { dodoProductId: envProductId } })
+      .catch(() => undefined);
+  }
+  return envProductId;
+}
+
+export async function resolveDodoPlanForProduct(productId: string) {
+  const pricing = await prisma.planPricing.findFirst({
+    where: { dodoProductId: productId },
+    select: { planCode: true, billingCycle: true },
+  });
+  if (pricing && (pricing.billingCycle === "monthly" || pricing.billingCycle === "yearly")) {
+    return { planCode: pricing.planCode, billingCycle: pricing.billingCycle as BillingCycle };
+  }
+  return dodoPlanForProduct(productId);
+}
+
+function dodoBillingInterval(billingCycle: BillingCycle) {
+  const interval = billingCycle === "yearly" ? "Year" as const : "Month" as const;
+  return {
+    payment_frequency_count: 1,
+    payment_frequency_interval: interval,
+    subscription_period_count: 1,
+    subscription_period_interval: interval,
+  };
+}
+
+/**
+ * Pushes a plan's current price to Dodo so checkout always matches what
+ * superadmin last saved. Creates the Dodo product on first sync (and stores
+ * its id on `PlanPricing`); on later syncs it updates the existing product's
+ * price in place, which only affects new checkouts — Dodo does not
+ * retroactively reprice already-active subscriptions.
+ */
+export async function syncPlanPricingToDodo(pricing: {
+  id: string;
+  planCode: string;
+  billingCycle: string;
+  amount: number;
+  currency: string;
+  dodoProductId: string | null;
+}, planName: string) {
+  if (pricing.billingCycle !== "monthly" && pricing.billingCycle !== "yearly") return null;
+
+  const client = dodoClient();
+  const price = {
+    type: "recurring_price" as const,
+    currency: pricing.currency as never,
+    discount: 0,
+    price: pricing.amount,
+    ...dodoBillingInterval(pricing.billingCycle),
+  };
+
+  if (pricing.dodoProductId) {
+    await client.products.update(pricing.dodoProductId, { price });
+    return pricing.dodoProductId;
+  }
+
+  const product = await client.products.create({
+    name: `${planName} (${pricing.billingCycle})`,
+    price,
+    tax_category: "saas",
+  });
+  await prisma.planPricing.update({
+    where: { id: pricing.id },
+    data: { dodoProductId: product.product_id },
+  });
+  return product.product_id;
+}
+
 export function parseDodoCreditPacks(value = process.env.DODO_PAYMENTS_CREDIT_PRODUCTS): DodoCreditPack[] {
   if (!value) return [];
   try {
@@ -81,6 +168,44 @@ export function dodoClient() {
   return new DodoPayments({ bearerToken, environment: dodoEnvironment() });
 }
 
+export function latestSucceededDodoPaymentId(payments: readonly unknown[]) {
+  return payments
+    .map(record)
+    .filter(
+      (payment) =>
+        payment.status === "succeeded" &&
+        typeof payment.payment_id === "string" &&
+        payment.payment_id.length > 0,
+    )
+    .sort((left, right) => {
+      const leftTime = date(left.created_at)?.getTime() ?? 0;
+      const rightTime = date(right.created_at)?.getTime() ?? 0;
+      return rightTime - leftTime;
+    })[0]?.payment_id as string | undefined;
+}
+
+export async function syncLatestDodoSubscriptionPayment(
+  subscriptionId: string,
+) {
+  if (!subscriptionId) return { ignored: true } as const;
+
+  const client = dodoClient();
+  const page = await client.payments.list({
+    subscription_id: subscriptionId,
+    status: "succeeded",
+    page_size: 100,
+  });
+  const paymentId = latestSucceededDodoPaymentId(page.items);
+  if (!paymentId) return { ignored: true } as const;
+
+  const payment = await client.payments.retrieve(paymentId);
+  return recordDodoSubscriptionPayment({
+    type: "payment.succeeded",
+    timestamp: payment.updated_at || payment.created_at,
+    data: { ...payment, payload_type: "Payment" },
+  });
+}
+
 function record(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
     ? value as Record<string, unknown>
@@ -114,7 +239,7 @@ export async function syncDodoSubscription(payload: unknown) {
   const metadata = record(data.metadata);
   const externalId = typeof data.subscription_id === "string" ? data.subscription_id : "";
   const productId = typeof data.product_id === "string" ? data.product_id : "";
-  const configuredPlan = dodoPlanForProduct(productId);
+  const configuredPlan = await resolveDodoPlanForProduct(productId);
   if (!externalId || !productId || !configuredPlan) {
     throw new Error("Dodo subscription product does not match configured plan pricing.");
   }
@@ -220,6 +345,43 @@ export async function fulfillDodoCreditPayment(payload: unknown) {
 
   const { addV12TopUpCredits } = await import("@/modules/ai-v12/creditAccounting");
   return prisma.$transaction(async (tx) => {
+    const amountMinor = typeof data.total_amount === "number" ? Math.max(0, Math.round(data.total_amount)) : 0;
+    const currency = typeof data.currency === "string" ? data.currency.toUpperCase() : pack.currency;
+    const paidAt = date(root.timestamp) || date(data.updated_at) || new Date();
+    const transaction = await tx.billingTransaction.upsert({
+      where: { providerPaymentId: paymentId },
+      update: {
+        status: "SUCCEEDED",
+        amountMinor,
+        currency,
+        paidAt,
+        type: "CREDIT_TOP_UP",
+        metadata: {
+          packKey: pack.key,
+          packName: pack.name,
+          credits: pack.credits,
+          invoiceUrl: typeof data.invoice_url === "string" ? data.invoice_url : null,
+          invoiceId: typeof data.invoice_id === "string" ? data.invoice_id : null,
+        },
+      },
+      create: {
+        tenantId,
+        userId,
+        providerPaymentId: paymentId,
+        type: "CREDIT_TOP_UP",
+        status: "SUCCEEDED",
+        amountMinor,
+        currency,
+        paidAt,
+        metadata: {
+          packKey: pack.key,
+          packName: pack.name,
+          credits: pack.credits,
+          invoiceUrl: typeof data.invoice_url === "string" ? data.invoice_url : null,
+          invoiceId: typeof data.invoice_id === "string" ? data.invoice_id : null,
+        },
+      },
+    });
     const created = await tx.aiCreditLedgerEntry.createMany({
       data: [{
         tenantId,
@@ -241,14 +403,124 @@ export async function fulfillDodoCreditPayment(payload: unknown) {
       }],
       skipDuplicates: true,
     });
-    if (created.count === 0) return { ignored: false, duplicate: true, credits: pack.credits };
+    if (created.count === 0) return { ignored: false, duplicate: true, credits: pack.credits, transactionId: transaction.id };
     await addV12TopUpCredits({ tenantId, amount: pack.credits }, tx);
-    return { ignored: false, duplicate: false, credits: pack.credits };
+    return { ignored: false, duplicate: false, credits: pack.credits, transactionId: transaction.id };
+  });
+}
+
+export async function recordDodoSubscriptionPayment(payload: unknown) {
+  const root = record(payload);
+  const data = record(root.data);
+  const subscriptionId = typeof data.subscription_id === "string" ? data.subscription_id : "";
+  const paymentId = typeof data.payment_id === "string" ? data.payment_id : "";
+  if (!subscriptionId || !paymentId || data.status !== "succeeded") return { ignored: true };
+
+  const metadata = record(data.metadata);
+  const productCart = Array.isArray(data.product_cart) ? data.product_cart.map(record) : [];
+  const productId = typeof productCart[0]?.product_id === "string" ? productCart[0].product_id as string : "";
+  let localSubscription = await prisma.subscription.findUnique({
+    where: { dodoSubscriptionId: subscriptionId },
+  });
+  const localBillingCycle = localSubscription?.billingCycle;
+  const configuredPlan =
+    (await resolveDodoPlanForProduct(productId)) ||
+    (localSubscription?.planCode &&
+    (localBillingCycle === "monthly" || localBillingCycle === "yearly")
+      ? {
+          planCode: localSubscription.planCode,
+          billingCycle: localBillingCycle,
+        }
+      : undefined);
+  const amountMinor = typeof data.total_amount === "number" ? Math.max(0, Math.round(data.total_amount)) : -1;
+  const currency = typeof data.currency === "string" ? data.currency.toUpperCase() : "";
+
+  if (!configuredPlan || amountMinor < 0 || !currency) {
+    throw new Error("Subscription payment ownership or amount could not be verified.");
+  }
+
+  if (!localSubscription) {
+    const metadataTenantId = typeof metadata.tenantId === "string" ? metadata.tenantId : "";
+    const metadataUserId = typeof metadata.userId === "string" ? metadata.userId : "";
+    const checkoutSessionId = typeof data.checkout_session_id === "string" ? data.checkout_session_id : "";
+    if (metadataTenantId || checkoutSessionId) {
+      localSubscription = await prisma.subscription.findFirst({
+        where: {
+          ...(checkoutSessionId ? { dodoCheckoutSessionId: checkoutSessionId } : { tenantHistoryId: metadataTenantId }),
+          ...(metadataUserId ? { userId: metadataUserId } : {}),
+          planCode: configuredPlan.planCode,
+          status: "PENDING",
+        },
+        orderBy: { createdAt: "desc" },
+      });
+    }
+  }
+  const tenantId = localSubscription?.tenantHistoryId || (typeof metadata.tenantId === "string" ? metadata.tenantId : "");
+  const userId = localSubscription?.userId || (typeof metadata.userId === "string" ? metadata.userId : "");
+  if (!tenantId || !userId || (localSubscription && localSubscription.planCode !== configuredPlan.planCode)) {
+    throw new Error("Subscription payment ownership or plan could not be verified.");
+  }
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { id: true } });
+  if (!tenant) throw new Error("Subscription payment workspace could not be verified.");
+
+  const paidAt = date(root.timestamp) || date(data.updated_at) || new Date();
+  return prisma.$transaction(async (tx) => {
+    if (localSubscription) {
+      await tx.subscription.update({
+        where: { id: localSubscription.id },
+        data: {
+          dodoSubscriptionId: subscriptionId,
+          paymentStatus: "PAID",
+          paidAt,
+          currency,
+        },
+      });
+    }
+
+    const transaction = await tx.billingTransaction.upsert({
+      where: { providerPaymentId: paymentId },
+      update: {
+        status: "SUCCEEDED",
+        amountMinor,
+        currency,
+        paidAt,
+        subscriptionId: localSubscription?.id,
+        planCode: configuredPlan.planCode,
+        billingCycle: configuredPlan.billingCycle,
+        metadata: {
+          checkoutSessionId: typeof data.checkout_session_id === "string" ? data.checkout_session_id : null,
+          invoiceUrl: typeof data.invoice_url === "string" ? data.invoice_url : null,
+          invoiceId: typeof data.invoice_id === "string" ? data.invoice_id : null,
+        },
+      },
+      create: {
+        tenantId,
+        userId,
+        subscriptionId: localSubscription?.id,
+        providerPaymentId: paymentId,
+        status: "SUCCEEDED",
+        amountMinor,
+        currency,
+        planCode: configuredPlan.planCode,
+        billingCycle: configuredPlan.billingCycle,
+        paidAt,
+        metadata: {
+          checkoutSessionId: typeof data.checkout_session_id === "string" ? data.checkout_session_id : null,
+          invoiceUrl: typeof data.invoice_url === "string" ? data.invoice_url : null,
+          invoiceId: typeof data.invoice_id === "string" ? data.invoice_id : null,
+        },
+      },
+    });
+
+    return { ignored: false, transactionId: transaction.id };
   });
 }
 
 export async function syncDodoWebhook(payload: unknown) {
   const root = record(payload);
   if (record(root.data).payload_type === "Subscription") return syncDodoSubscription(payload);
+  if (root.type === "payment.succeeded" && typeof record(root.data).subscription_id === "string") {
+    return recordDodoSubscriptionPayment(payload);
+  }
   return fulfillDodoCreditPayment(payload);
 }

@@ -2,6 +2,7 @@ import { prisma } from "@buildez/db";
 import { NextRequest, NextResponse } from "next/server";
 
 import { getUser } from "@/lib/auth/getUser";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
 
 const ranges = new Set([7, 30, 90]);
 
@@ -213,7 +214,7 @@ export async function GET(
           title: page.title,
           slug: page.slug,
           screenshotUrl: screenshotUrl || null,
-          liveUrl: `/published-preview/${encodeURIComponent(site.id)}${page.slug === "home" ? "" : `/${page.slug.split("/").map(encodeURIComponent).join("/")}`}`,
+          liveUrl: publishedSitePath(site.slug, page.slug),
         };
       }),
     });

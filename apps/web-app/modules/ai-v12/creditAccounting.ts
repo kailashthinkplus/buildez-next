@@ -49,12 +49,17 @@ export type V12CreditReservation = {
 };
 
 function enforcementEnabled() {
-  return (
-    String(
-      process.env.BUILDEZ_AI_CREDIT_ENFORCEMENT ||
-        "",
-    ).toLowerCase() === "true"
-  );
+  const configured =
+    process.env.BUILDEZ_AI_CREDIT_ENFORCEMENT
+      ?.trim()
+      .toLowerCase();
+
+  /*
+   * Charging is the safe production default. Shadow accounting must be an
+   * explicit operational choice; previously a missing environment variable
+   * silently made every successful generation free.
+   */
+  return configured !== "false";
 }
 
 async function logCreditEvent(input: {
@@ -526,10 +531,7 @@ export async function reserveV12Credits(input: {
         : "shadow",
   };
 
-  /*
-   * Shadow mode intentionally performs no persistent balance
-   * mutations while we calibrate pricing.
-   */
+  /* Explicit shadow mode intentionally performs no balance mutations. */
   if (!enforced) {
     console.log(
       "V12 CREDIT RESERVATION [SHADOW]:",
@@ -1363,4 +1365,3 @@ export async function releaseV12Credits(
     },
   );
 }
-

@@ -1,10 +1,11 @@
 // /apps/web-app/app/api/pages/route.ts
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { Prisma, prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 import { createInsightReport } from "@/modules/insights/server";
+import { ApiError } from "@/lib/api/errors";
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -134,6 +135,7 @@ export const GET = async (request: NextRequest) => {
         orderBy: { createdAt: "desc" },
         include: {
           site: { select: { id: true, slug: true } },
+          blueprint: { select: { id: true } },
         },
       }),
       prisma.page.count({ where }),
@@ -182,6 +184,8 @@ export const GET = async (request: NextRequest) => {
           asString(metadata.previewImageUrl) ||
           asString(metadata.previewUrl) ||
           asString(metadata.ogImage),
+        hasMeaningfulPreview:
+          Boolean(page.blueprint) || Boolean(page.reactCode && page.reactCode.trim().length > 80),
         aiScore: aiScores.get(page.id) ?? 0,
         isFrontPage: frontPageBySite.get(page.siteId) === page.id,
         aiRecommendationsTotal:
@@ -216,7 +220,7 @@ export const POST = async (request: NextRequest) => {
 
     if (!tenant) {
       console.warn("🔴 [PAGES][POST] Unauthorized");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new ApiError("Unauthorized", 401, "UNAUTHORIZED");
     }
 
     const body = await req.json();
@@ -226,18 +230,12 @@ export const POST = async (request: NextRequest) => {
 
     if (!title || typeof title !== "string") {
       console.warn("🔴 [PAGES][POST] Invalid title");
-      return NextResponse.json(
-        { error: "Title is required" },
-        { status: 400 }
-      );
+      throw new ApiError("Title is required", 400, "INVALID_TITLE");
     }
 
     if (!siteSlug || typeof siteSlug !== "string") {
       console.warn("🔴 [PAGES][POST] Missing siteSlug");
-      return NextResponse.json(
-        { error: "siteSlug is required" },
-        { status: 400 }
-      );
+      throw new ApiError("siteSlug is required", 400, "SITE_SLUG_REQUIRED");
     }
 
     console.log("🟢 [PAGES][POST] Resolving site:", siteSlug);
@@ -254,10 +252,7 @@ export const POST = async (request: NextRequest) => {
 
     if (!site) {
       console.warn("🔴 [PAGES][POST] Site not found:", siteSlug);
-      return NextResponse.json(
-        { error: "Site not found" },
-        { status: 404 }
-      );
+      throw new ApiError("Site not found", 404, "SITE_NOT_FOUND");
     }
 
     const baseSlug = title

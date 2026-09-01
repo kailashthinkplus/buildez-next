@@ -1,6 +1,7 @@
 // /app/api/onboarding/check-domain/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
+import { validDomain } from "@/lib/domain-provisioning";
 
 export async function POST(req: Request) {
   try {
@@ -10,8 +11,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Domain required" }, { status: 400 });
     }
 
+    const normalized = String(domain).toLowerCase().trim().replace(/^https?:\/\//, "").split("/")[0].replace(/\.$/, "");
+    const platformDomain = process.env.PLATFORM_DOMAIN || "getbuildezy.com";
+    if (!validDomain(normalized) || normalized === platformDomain || normalized.endsWith(`.${platformDomain}`)) {
+      return NextResponse.json({ error: "Enter a valid domain you own" }, { status: 400 });
+    }
+
     const exists = await prisma.siteDomain.findUnique({
-      where: { domain: domain.toLowerCase().trim() },
+      where: { domain: normalized },
     });
 
     return NextResponse.json({ available: !exists });

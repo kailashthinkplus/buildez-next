@@ -2,33 +2,43 @@
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 
 export function DashboardLogo({ compact = false }: { compact?: boolean }) {
   const pathname = usePathname();
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => queueMicrotask(() => setMounted(true)), []);
-
   const isShopez = pathname.split("/").includes("shopez");
-  const dark = mounted && resolvedTheme === "dark";
-  const src = isShopez
-    ? "/shopez-logo.webp"
-    : dark
-      ? "/buildez-logo-dark.svg"
-      : "/buildez-logo-light.svg";
+  const sizeClass = compact ? "h-8 w-[102px]" : "h-12 w-[142px]";
+
+  if (isShopez) {
+    return (
+      <Image
+        src="/shopez-logo.webp"
+        alt="Shopez"
+        width={799}
+        height={272}
+        priority
+        className={`${sizeClass} object-contain object-left`}
+      />
+    );
+  }
 
   return (
-    <Image
-      key={isShopez ? "shopez-logo" : dark ? "dashboard-logo-dark" : "dashboard-logo-light"}
-      src={src}
-      alt={isShopez ? "Shopez" : "BuildEZ"}
-      width={isShopez ? 799 : 210}
-      height={isShopez ? 272 : 103}
-      priority
-      className={`${compact ? "h-9 w-[116px]" : "h-[63px] w-[175px]"} object-contain object-left`}
-    />
+    <span className={`${sizeClass} relative block shrink-0`}>
+      <Image
+        src="/buildez-logo-light.svg"
+        alt="BuildEzy"
+        fill
+        priority
+        sizes={compact ? "102px" : "142px"}
+        className="object-contain object-left dark:hidden"
+      />
+      <Image
+        src="/buildez-logo-dark.svg"
+        alt=""
+        fill
+        priority
+        sizes={compact ? "102px" : "142px"}
+        className="hidden object-contain object-left dark:block"
+      />
+    </span>
   );
 }

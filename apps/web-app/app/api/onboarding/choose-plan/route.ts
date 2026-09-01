@@ -18,12 +18,27 @@ export async function POST(req: Request) {
     const body = await req.json();
     console.log("📥 [choose-plan] Body:", body);
 
-    const { planId, billing: billingCycle } = body;
+    const planCode = typeof body.planId === "string" ? body.planId.trim().toUpperCase() : "";
+    const billingCycle = body.billing === "yearly" ? "yearly" : body.billing === "monthly" ? "monthly" : "";
 
-    if (!planId || !billingCycle) {
+    if (!planCode || !billingCycle) {
       return NextResponse.json(
         { error: "Missing required fields: planId, billing" },
         { status: 400 }
+      );
+    }
+
+    const plan = await prisma.plan.findFirst({
+      where: { code: planCode, isPublic: true },
+      include: {
+        pricing: { where: { billingCycle, isActive: true }, take: 1 },
+      },
+    });
+
+    if (!plan || !plan.pricing[0]) {
+      return NextResponse.json(
+        { error: "That plan or billing cycle is no longer available." },
+        { status: 400 },
       );
     }
 
@@ -52,7 +67,7 @@ export async function POST(req: Request) {
     await prisma.userOnboarding.update({
       where: { userId: user.id },
       data: {
-        planCode: planId,
+        planCode,
         billingCycle,
 
         // DO NOT mark completed (only finish step does this)
@@ -63,12 +78,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true });
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("🔥 [choose-plan] ERROR:", err);
     return NextResponse.json(
       {
         error: "Internal Server Error",
-        detail: err.message,
+        detail: err instanceof Error ? err.message : "Unknown error",
       },
       { status: 500 }
     );

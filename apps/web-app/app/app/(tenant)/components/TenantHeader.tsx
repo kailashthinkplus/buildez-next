@@ -173,16 +173,16 @@ export function TenantHeader({
         <div className="md:hidden">
           <Image
             src="/buildez-logo-light.svg"
-            alt="BuildEZ"
-            width={100}
-            height={26}
+            alt="BuildEzy"
+            width={88}
+            height={23}
             className="block dark:hidden"
           />
           <Image
             src="/buildez-logo-dark.svg"
-            alt="BuildEZ"
-            width={100}
-            height={26}
+            alt="BuildEzy"
+            width={88}
+            height={23}
             className="hidden dark:block"
           />
         </div>
@@ -210,7 +210,7 @@ export function TenantHeader({
         role="search"
         className="relative hidden w-[360px] items-center xl:flex"
       >
-        <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-600 dark:text-slate-300" />
+        <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-600 dark:text-slate-300" />
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}

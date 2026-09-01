@@ -39,8 +39,8 @@ export default function SuperShell({ children, admin }: { children: React.ReactN
       <aside className={`${mobileOpen ? "translate-x-0" : "-translate-x-full"} dashboard-panel dashboard-border fixed inset-y-0 left-0 z-50 flex w-[250px] flex-col border-r px-3 py-4 transition-transform lg:relative lg:inset-auto lg:z-auto lg:h-full lg:w-[248px] lg:shrink-0 lg:translate-x-0 lg:border-r-0`}>
         <div className="flex items-center justify-between px-2">
           <Link href="/super/dashboard" aria-label="BuildEZ superadmin dashboard">
-            <Image src="/buildez-logo-light.svg" alt="BuildEZ" width={210} height={103} priority className="h-[63px] w-[175px] object-contain object-left dark:hidden" />
-            <Image src="/buildez-logo-dark.svg" alt="BuildEZ" width={210} height={103} priority className="hidden h-[63px] w-[175px] object-contain object-left dark:block" />
+            <Image src="/buildez-logo-light.svg" alt="BuildEzy" width={170} height={84} priority className="h-12 w-[142px] object-contain object-left dark:hidden" />
+            <Image src="/buildez-logo-dark.svg" alt="" width={170} height={84} priority className="hidden h-12 w-[142px] object-contain object-left dark:block" />
           </Link>
           <button className="rounded-lg p-2 dashboard-hover lg:hidden" onClick={() => setMobileOpen(false)}><X size={18} /></button>
         </div>
@@ -58,8 +58,8 @@ export default function SuperShell({ children, admin }: { children: React.ReactN
           <div className="flex items-center gap-3">
             <button className="rounded-lg p-2 dashboard-hover lg:hidden" onClick={() => setMobileOpen(true)}><Menu size={20} /></button>
             <div className="lg:hidden">
-              <Image src="/buildez-logo-light.svg" alt="BuildEZ" width={100} height={26} className="block dark:hidden" />
-              <Image src="/buildez-logo-dark.svg" alt="BuildEZ" width={100} height={26} className="hidden dark:block" />
+              <Image src="/buildez-logo-light.svg" alt="BuildEzy" width={88} height={23} className="block dark:hidden" />
+              <Image src="/buildez-logo-dark.svg" alt="" width={88} height={23} className="hidden dark:block" />
             </div>
           </div>
           <form action="/super/users" className="relative hidden w-[360px] items-center xl:flex">

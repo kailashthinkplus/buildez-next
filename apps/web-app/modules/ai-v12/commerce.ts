@@ -68,6 +68,11 @@ export type CommerceConversationContext = {
   stagedProductIds: string[];
   lastMissingInputs: string[];
   requestPrompt: string;
+  pendingClarification: {
+    question: string;
+    options: string[];
+    originalPrompt: string;
+  } | null;
 };
 
 const EMPTY_COMMERCE_CONTEXT: CommerceConversationContext = {
@@ -77,31 +82,53 @@ const EMPTY_COMMERCE_CONTEXT: CommerceConversationContext = {
   stagedProductIds: [],
   lastMissingInputs: [],
   requestPrompt: "",
+  pendingClarification: null,
 };
 
 const STRONG_COMMERCE_PATTERNS = [
+  // Explicit transactional ecommerce intent.
   /\be-?commerce\b/i,
-  /\bonline\s+store\b/i,
+  /\bonline\s+(?:shop|store)\b/i,
   /\bweb\s*shop\b/i,
-  /\bshop(?:ping)?\s+(?:site|website|store)\b/i,
-  /\badd\s+to\s+(?:cart|bag)\b/i,
-  /\bcheckout\b/i,
-  /\bproduct\s+(?:catalog|catalogue|grid|listing|detail|page)\b/i,
+  /\bshopping\s+(?:site|website|store)\b/i,
   /\bstorefront\b/i,
+
+  // Explicit buying / checkout functionality.
+  /\badd\s+to\s+(?:cart|bag)\b/i,
+  /\bshopping\s+cart\b/i,
+  /\bcheckout\b/i,
+  /\bbuy\s+(?:online|now)\b/i,
+  /\bonline\s+ordering\b/i,
+  /\bpayment\s+gateway\b/i,
+
+  // Explicit catalogue/store architecture.
+  /\bproduct\s+(?:catalog|catalogue|grid|listing|detail\s+pages?)\b/i,
+  /\b(?:catalog|catalogue)\s+(?:website|store|shop)\b/i,
   /\bretail\s+(?:site|website|store)\b/i,
-  /\b(?:fashion|clothing|skincare|beauty|jewel(?:ry|lery)|furniture|grocery|electronics|retail)\s+(?:shop|store|boutique)\b/i,
-  /\b(?:build|create|design|make)\b.{0,50}\b(?:shop|store|boutique)\b/i,
-  /\bwebsite\b.{0,50}\bsell(?:ing)?\b/i,
+
+  // A clearly retail-oriented named store is commerce.
+  // "boutique" is intentionally NOT included: a boutique brand,
+  // hotel, agency, perfume house, studio, etc. is not necessarily ecommerce.
+  /\b(?:fashion|clothing|skincare|cosmetics?|jewel(?:ry|lery)|furniture|grocery|electronics)\s+(?:shop|store)\b/i,
+
+  // Explicit instruction that the website must sell something.
+  /\bwebsite\b.{0,80}\bsell(?:ing)?\b/i,
+  /\bsell(?:ing)?\b.{0,80}\b(?:online|website|products?|goods?|merchandise)\b/i,
 ];
 
 const COMMERCE_SUPPORT_PATTERNS = [
+  // These are supporting signals only. None of these alone should switch
+  // the entire project into ShopEZ ecommerce mode.
+  /\bshop\s+page\b/i,
   /\bproducts?\b/i,
+  /\bproduct\s+line\b/i,
   /\bprices?\b/i,
   /\bcart\b/i,
   /\bcollections?\b/i,
   /\binventory\b/i,
   /\bvariants?\b/i,
-  /\bbuy\s+now\b/i,
+  /\b(?:sku|skus)\b/i,
+  /\bshipping\b/i,
 ];
 
 const NON_RETAIL_PRODUCT_PATTERN =
@@ -125,9 +152,28 @@ export function detectCommerceIntent(prompt: string): CommerceIntent {
     - (nonRetailProduct && !strongSignals.length ? 0.45 : 0)
     - (nonRetailStore ? 0.65 : 0);
   const confidence = Math.max(0, Math.min(0.99, score));
+  /*
+   * IMPORTANT:
+   *
+   * A product-oriented brand website is not automatically ecommerce.
+   * Words such as "product", "collection", "boutique" or a requested
+   * "Shop" page can describe an editorial / launch / showcase website.
+   *
+   * Enable ShopEZ automatically only when there is a strong transactional
+   * commerce signal, or when several independent commerce-support signals
+   * together make ecommerce intent unambiguous.
+   */
+  const supportOnlyCommerce =
+    !nonRetailProduct &&
+    supportSignals.length >= 4 &&
+    (
+      /\b(?:cart|inventory|variants?|sku|shipping|prices?)\b/i.test(normalized)
+    );
+
   return {
-    isEcommerce: !nonRetailStore
-      && (strongSignals.length > 0 || (!nonRetailProduct && supportSignals.length >= 3)),
+    isEcommerce:
+      !nonRetailStore &&
+      (strongSignals.length > 0 || supportOnlyCommerce),
     confidence,
     signals: [...strongSignals, ...supportSignals],
   };
@@ -153,6 +199,26 @@ export function readCommerceContext(value: unknown): CommerceConversationContext
     })
     : [];
   const phase = String(context.phase || "NONE") as CommerceConversationContext["phase"];
+
+  const rawPendingClarification =
+    context.pendingClarification &&
+    typeof context.pendingClarification === "object" &&
+    !Array.isArray(context.pendingClarification)
+      ? context.pendingClarification as Record<string, unknown>
+      : null;
+
+  const pendingClarification =
+    rawPendingClarification &&
+    typeof rawPendingClarification.question === "string" &&
+    Array.isArray(rawPendingClarification.options) &&
+    typeof rawPendingClarification.originalPrompt === "string"
+      ? {
+          question: rawPendingClarification.question,
+          options: rawPendingClarification.options.map(String),
+          originalPrompt: rawPendingClarification.originalPrompt,
+        }
+      : null;
+
   return {
     phase: ["NONE", "WAITING_FOR_CATALOG", "CATALOG_EXTRACTED", "PRODUCTS_STAGED", "DONE"].includes(phase)
       ? phase
@@ -168,6 +234,7 @@ export function readCommerceContext(value: unknown): CommerceConversationContext
     requestPrompt: typeof context.requestPrompt === "string"
       ? context.requestPrompt
       : "",
+    pendingClarification,
   };
 }
 
@@ -541,6 +608,17 @@ export async function stageExtractedProducts(input: {
     });
     staged.push({ id: product.id, created: true });
   }
+
+  // Products with real photos now exist — turn ShopEZ on so the storefront
+  // API (which only serves published shops) can actually surface them.
+  if (!shop.isPublished && staged.length > 0) {
+    shop = await prisma.shop.update({
+      where: { id: shop.id },
+      data: { isPublished: true },
+      include: { _count: { select: { products: true } } },
+    });
+  }
+
   return {
     shopId: shop.id,
     shopPublished: shop.isPublished,

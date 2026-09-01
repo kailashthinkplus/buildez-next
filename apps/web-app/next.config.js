@@ -3,6 +3,17 @@ const path = require("path");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Build Ezy marketing and authentication artwork is served from our R2 CDN.
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "assets.getbuildez.com",
+        pathname: "/marketing/**",
+      },
+    ],
+  },
+
   // Lint remains an independently audited gate. Do not let pre-existing
   // repository-wide lint debt prevent production compilation certification.
   eslint: {

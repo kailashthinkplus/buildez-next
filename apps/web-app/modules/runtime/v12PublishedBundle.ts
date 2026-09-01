@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { prisma } from "@buildez/db";
 
-import { listProjectFiles, normalizeGeneratedReactEffects, readProjectFile } from "../builder-v3/project-workspace";
+import { listProjectFiles, normalizeGeneratedProjectFile, readProjectFile } from "../builder-v3/project-workspace";
 
 const globalBuilds = globalThis as typeof globalThis & { __buildezV12PublishedBuilds?: Map<string, Promise<string>> };
 const activeBuilds = globalBuilds.__buildezV12PublishedBuilds ?? new Map<string, Promise<string>>();
@@ -43,8 +43,9 @@ async function buildPublishedProject(siteId: string, tenantId: string) {
     if (!target.startsWith(`${sourceRoot}${path.sep}`)) throw new Error("Published project path escaped its workspace");
     await mkdir(path.dirname(target), { recursive: true });
     let content = (await readProjectFile(siteId, tenantId, file.path)).content;
+    content = normalizeGeneratedProjectFile(content, file.path);
     if (/\.[jt]sx$/i.test(file.path)) {
-      content = addRouterBasename(normalizeGeneratedReactEffects(content, file.path), siteId);
+      content = addRouterBasename(content, siteId);
     }
     await writeFile(target, content, "utf8");
   }

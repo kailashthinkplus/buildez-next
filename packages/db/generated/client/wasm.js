@@ -187,6 +187,7 @@ exports.Prisma.OtpScalarFieldEnum = {
   id: 'id',
   email: 'email',
   phone: 'phone',
+  purpose: 'purpose',
   codeHash: 'codeHash',
   expiresAt: 'expiresAt',
   attempts: 'attempts',
@@ -373,6 +374,15 @@ exports.Prisma.SiteScalarFieldEnum = {
   deletedAt: 'deletedAt'
 };
 
+exports.Prisma.SiteIntegrationScalarFieldEnum = {
+  id: 'id',
+  siteId: 'siteId',
+  appSlug: 'appSlug',
+  config: 'config',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.V12ProjectScalarFieldEnum = {
   id: 'id',
   siteId: 'siteId',
@@ -410,6 +420,20 @@ exports.Prisma.V12ProjectCheckpointScalarFieldEnum = {
   snapshot: 'snapshot',
   createdBy: 'createdBy',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.V12GenerationJobScalarFieldEnum = {
+  id: 'id',
+  siteId: 'siteId',
+  tenantId: 'tenantId',
+  stage: 'stage',
+  status: 'status',
+  state: 'state',
+  input: 'input',
+  result: 'result',
+  error: 'error',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.ShopScalarFieldEnum = {
@@ -586,6 +610,21 @@ exports.Prisma.ShopPaymentIntegrationScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SupportRequestScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  name: 'name',
+  email: 'email',
+  subject: 'subject',
+  message: 'message',
+  pageUrl: 'pageUrl',
+  severity: 'severity',
+  status: 'status',
+  source: 'source',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.CrmLeadScalarFieldEnum = {
   id: 'id',
   siteId: 'siteId',
@@ -745,6 +784,7 @@ exports.Prisma.PlanPricingScalarFieldEnum = {
   isActive: 'isActive',
   razorpayPlanId: 'razorpayPlanId',
   stripePriceId: 'stripePriceId',
+  dodoProductId: 'dodoProductId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -831,6 +871,24 @@ exports.Prisma.SubscriptionScalarFieldEnum = {
   planId: 'planId'
 };
 
+exports.Prisma.BillingTransactionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  subscriptionId: 'subscriptionId',
+  providerPaymentId: 'providerPaymentId',
+  type: 'type',
+  status: 'status',
+  amountMinor: 'amountMinor',
+  currency: 'currency',
+  planCode: 'planCode',
+  billingCycle: 'billingCycle',
+  paidAt: 'paidAt',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SiteSubscriptionScalarFieldEnum = {
   id: 'id',
   siteId: 'siteId',
@@ -912,6 +970,13 @@ exports.Prisma.SiteDomainScalarFieldEnum = {
   status: 'status',
   cnameTarget: 'cnameTarget',
   verifiedAt: 'verifiedAt',
+  verificationToken: 'verificationToken',
+  dnsVerifiedAt: 'dnsVerifiedAt',
+  lastCheckedAt: 'lastCheckedAt',
+  lastDnsResult: 'lastDnsResult',
+  sslStatus: 'sslStatus',
+  sslActivatedAt: 'sslActivatedAt',
+  provider: 'provider',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -1225,10 +1290,12 @@ exports.Prisma.ModelName = {
   ThemeAsset: 'ThemeAsset',
   MediaAsset: 'MediaAsset',
   Site: 'Site',
+  SiteIntegration: 'SiteIntegration',
   V12Project: 'V12Project',
   V12ProjectFile: 'V12ProjectFile',
   V12ProjectRevision: 'V12ProjectRevision',
   V12ProjectCheckpoint: 'V12ProjectCheckpoint',
+  V12GenerationJob: 'V12GenerationJob',
   Shop: 'Shop',
   ShopProduct: 'ShopProduct',
   ShopProductImage: 'ShopProductImage',
@@ -1242,6 +1309,7 @@ exports.Prisma.ModelName = {
   ShopOrder: 'ShopOrder',
   ShopOrderItem: 'ShopOrderItem',
   ShopPaymentIntegration: 'ShopPaymentIntegration',
+  SupportRequest: 'SupportRequest',
   CrmLead: 'CrmLead',
   CrmCommunication: 'CrmCommunication',
   CrmApiKey: 'CrmApiKey',
@@ -1261,6 +1329,7 @@ exports.Prisma.ModelName = {
   AiCreditReservation: 'AiCreditReservation',
   AiCreditLedgerEntry: 'AiCreditLedgerEntry',
   Subscription: 'Subscription',
+  BillingTransaction: 'BillingTransaction',
   SiteSubscription: 'SiteSubscription',
   ComplianceAudit: 'ComplianceAudit',
   SystemNotification: 'SystemNotification',

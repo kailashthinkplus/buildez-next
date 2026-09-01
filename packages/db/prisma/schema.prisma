@@ -266,6 +266,11 @@ model Otp {
   email String?
   phone String?
 
+  // Scopes an OTP to what it's allowed to authorize, so a code issued
+  // for one flow (e.g. super-admin login) can never be replayed to
+  // authorize a different one (e.g. a tenant password reset).
+  purpose String @default("SUPER_ADMIN_LOGIN")
+
   codeHash  String
   expiresAt DateTime
 
@@ -657,11 +662,32 @@ model Site {
   cmsCollections   CmsCollection[]
   crmLeads         CrmLead[]
   crmApiKeys       CrmApiKey[]
+  integrations     SiteIntegration[]
   shop             Shop?
   v12Project       V12Project?
 
   @@unique([tenantId, slug])
   @@index([tenantId])
+}
+
+// =======================================
+// APPS MARKETPLACE / SITE INTEGRATIONS
+// =======================================
+
+model SiteIntegration {
+  id      String @id @default(cuid())
+  siteId  String
+  appSlug String
+
+  config Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@unique([siteId, appSlug])
+  @@index([siteId])
 }
 
 // =======================================
@@ -730,6 +756,26 @@ model V12ProjectCheckpoint {
 
   @@index([projectId, createdAt])
   @@index([revisionId])
+}
+
+// Tracks a V12 generation across multiple staged HTTP requests so no
+// single request has to run the whole pipeline (research + design +
+// media + codegen) within one function invocation's timeout.
+model V12GenerationJob {
+  id        String   @id @default(cuid())
+  siteId    String
+  tenantId  String
+  stage     String // "plan" | "generate"
+  status    String // "running" | "stage_complete" | "done" | "failed" | "needs_input"
+  state     Json? // serialized V12PipelineState once the plan stage completes
+  input     Json // original request: prompt, context, creativeDirection, selectedElement, mode, pageId
+  result    Json? // terminal result once status is "done" | "failed" | "needs_input"
+  error     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([siteId, tenantId])
+  @@index([tenantId, createdAt])
 }
 
 // =======================================
@@ -976,6 +1022,24 @@ model ShopPaymentIntegration {
   shop            Shop                @relation(fields: [shopId], references: [id], onDelete: Cascade)
 
   @@unique([shopId, provider])
+}
+
+model SupportRequest {
+  id        String    @id @default(cuid())
+  type      String    @default("SUPPORT")
+  name      String?
+  email     String
+  subject   String?
+  message   String
+  pageUrl   String?
+  severity  String?
+  status    String    @default("NEW")
+  source    String    @default("marketing-site")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([type, createdAt])
+  @@index([status])
 }
 
 model CrmLead {
@@ -1234,6 +1298,7 @@ model PlanPricing {
 
   razorpayPlanId String?
   stripePriceId  String?
+  dodoProductId  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1242,6 +1307,7 @@ model PlanPricing {
 
   @@unique([planCode, billingCycle])
   @@index([planCode])
+  @@index([dodoProductId])
 }
 
 model PlanFeature {
@@ -1398,6 +1464,28 @@ model Subscription {
   @@index([tenantHistoryId])
   @@index([userId])
   @@index([dodoCustomerId])
+}
+
+model BillingTransaction {
+  id                String   @id @default(cuid())
+  tenantId          String
+  userId            String?
+  subscriptionId    String?
+  providerPaymentId String   @unique
+  type              String   @default("SUBSCRIPTION")
+  status            String
+  amountMinor       Int
+  currency          String
+  planCode          String?
+  billingCycle      String?
+  paidAt            DateTime?
+  metadata          Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([tenantId, createdAt])
+  @@index([subscriptionId])
+  @@index([status])
 }
 
 model SiteSubscription {
@@ -1585,6 +1673,13 @@ model SiteDomain {
 
   cnameTarget String
   verifiedAt  DateTime?
+  verificationToken String? @unique
+  dnsVerifiedAt     DateTime?
+  lastCheckedAt     DateTime?
+  lastDnsResult     Json?
+  sslStatus         String @default("PENDING")
+  sslActivatedAt    DateTime?
+  provider          String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

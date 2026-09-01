@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { BookOpen, Bot, CheckCircle2, ChevronRight, LifeBuoy, Loader2, Search, Send, Ticket, X } from "lucide-react";
 
 import { SUPPORT_ARTICLES, searchSupportArticles, type SupportArticle } from "@/modules/support/knowledge";
@@ -10,6 +11,8 @@ type ChatMessage = { role: "assistant" | "user"; text: string; sources?: Array<{
 
 export default function HelpCenterPage() {
   const { currentWebsite } = useWorkspace();
+  const searchParams = useSearchParams();
+  const automaticMessageSent = useRef(false);
   const [query, setQuery] = useState("");
   const [article, setArticle] = useState<SupportArticle>();
   const [messages, setMessages] = useState<ChatMessage[]>([{ role: "assistant", text: "Hi! I’m your BuildEZ support agent. Ask me how to use a feature, troubleshoot an issue, or raise a ticket." }]);
@@ -21,10 +24,8 @@ export default function HelpCenterPage() {
   const [ticket, setTicket] = useState({ subject: "", category: "Technical issue", priority: "normal", details: "" });
   const articles = useMemo(() => query.trim() ? searchSupportArticles(query, 10) : SUPPORT_ARTICLES, [query]);
 
-  async function send(event: FormEvent) {
-    event.preventDefault();
-    const text = chatInput.trim();
-    if (!text || chatBusy) return;
+  const sendMessage = useCallback(async (text: string) => {
+    if (!text.trim()) return;
     setChatInput("");
     setMessages((current) => [...current, { role: "user", text }]);
     setChatBusy(true);
@@ -41,6 +42,22 @@ export default function HelpCenterPage() {
     } finally {
       setChatBusy(false);
     }
+  }, [currentWebsite?.id]);
+
+  useEffect(() => {
+    const message = searchParams.get("message")?.trim();
+    if (searchParams.get("send") !== "1" || !message || automaticMessageSent.current) return;
+    automaticMessageSent.current = true;
+    setChatInput(message);
+    window.history.replaceState(null, "", "/app/help");
+    void sendMessage(message);
+  }, [searchParams, sendMessage]);
+
+  async function send(event: FormEvent) {
+    event.preventDefault();
+    const text = chatInput.trim();
+    if (!text || chatBusy) return;
+    await sendMessage(text);
   }
 
   async function raiseTicket(event: FormEvent) {

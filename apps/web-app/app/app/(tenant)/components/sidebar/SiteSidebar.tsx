@@ -126,7 +126,7 @@ export function SiteSidebar({
       ))}
       <div className="mt-auto border-t dashboard-border pt-3 space-y-1">
         <Link href={`/app/help?site=${encodeURIComponent(currentWebsite.id)}`} title={compact ? "Help & support" : undefined} className={`flex items-center rounded-xl text-sm dashboard-muted dashboard-hover ${compact ? "h-10 justify-center" : "gap-3 px-3 py-2"}`}><CircleHelp size={17}/>{compact ? null : "Help & support"}</Link>
-        <Link href={`/published-preview/${encodeURIComponent(currentWebsite.id)}`} title={compact ? "View live website" : undefined} className={`mt-2 flex items-center justify-center rounded-xl bg-slate-700 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-600 dark:bg-zinc-700 dark:hover:bg-zinc-600 ${compact ? "h-10" : "gap-2 px-3 py-2.5"}`}><ExternalLink size={17}/>{compact ? null : "View live website"}</Link>
+        <Link href={`/${encodeURIComponent(currentWebsite.slug)}`} title={compact ? "View live website" : undefined} className={`mt-2 flex items-center justify-center rounded-xl bg-slate-700 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-600 dark:bg-zinc-700 dark:hover:bg-zinc-600 ${compact ? "h-10" : "gap-2 px-3 py-2.5"}`}><ExternalLink size={17}/>{compact ? null : "View live website"}</Link>
       </div>
     </div>
   );

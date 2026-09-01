@@ -7,6 +7,7 @@ import {
   Bot,
   Check,
   Coins,
+  CreditCard,
   Gauge,
   Globe2,
   Image as ImageIcon,
@@ -30,6 +31,12 @@ type PlanFeature = {
   type?: string | null;
 };
 
+type PlanPrice = {
+  billingCycle: string;
+  currency: string;
+  amount: number;
+};
+
 type Plan = {
   id: string;
   code: string;
@@ -40,7 +47,7 @@ type Plan = {
   teamMembers: number;
   isPublic: boolean;
   features?: PlanFeature[];
-  pricing?: unknown[];
+  pricing?: PlanPrice[];
   _count?: {
     subscriptions?: number;
     siteSubscriptions?: number;
@@ -87,6 +94,9 @@ type FormState = {
   aiCredits: number;
   teamMembers: number;
   isPublic: boolean;
+  priceMonthly: number;
+  priceYearly: number;
+  currency: string;
 
   maxAutomaticRepairs: number;
   maxConcurrency: number;
@@ -110,6 +120,9 @@ const DEFAULT_FORM: FormState = {
   teamMembers: 1,
 
   isPublic: true,
+  priceMonthly: 0,
+  priceYearly: 0,
+  currency: "INR",
 
   maxAutomaticRepairs: 0,
   maxConcurrency: 1,
@@ -182,6 +195,8 @@ function featureEnum<T extends string>(
 
 function planToForm(plan: Plan): FormState {
   const features = featureMap(plan.features);
+  const monthly = plan.pricing?.find((price) => price.billingCycle === "monthly");
+  const yearly = plan.pricing?.find((price) => price.billingCycle === "yearly");
 
   return {
     name: plan.name,
@@ -190,6 +205,9 @@ function planToForm(plan: Plan): FormState {
     aiCredits: plan.aiCredits,
     teamMembers: plan.teamMembers,
     isPublic: plan.isPublic,
+    priceMonthly: monthly?.amount ?? 0,
+    priceYearly: yearly?.amount ?? 0,
+    currency: monthly?.currency ?? yearly?.currency ?? "INR",
 
     maxAutomaticRepairs:
       featureInteger(
@@ -416,6 +434,15 @@ export default function PlanEditor({
             aiCredits: form.aiCredits,
             teamMembers: form.teamMembers,
             isPublic: form.isPublic,
+            priceMonthly:
+              plan.pricing?.some((price) => price.billingCycle === "monthly") || form.priceMonthly > 0
+                ? form.priceMonthly
+                : undefined,
+            priceYearly:
+              plan.pricing?.some((price) => price.billingCycle === "yearly") || form.priceYearly > 0
+                ? form.priceYearly
+                : undefined,
+            currency: form.currency,
 
             v12Features: {
               "v12.max_auto_repairs":
@@ -670,6 +697,38 @@ export default function PlanEditor({
                   }))
                 }
               />
+            </div>
+          </Section>
+
+          <Section
+            icon={<CreditCard size={18} />}
+            eyebrow="Billing"
+            title="Plan pricing"
+            description="Set the prices shown on the plan page and during onboarding."
+          >
+            <div className="grid gap-4 sm:grid-cols-3">
+              <NumberField
+                label="Monthly price"
+                icon={<CreditCard size={15} />}
+                value={form.priceMonthly}
+                minimum={0}
+                onChange={(value) => setForm((current) => ({ ...current, priceMonthly: value }))}
+              />
+              <NumberField
+                label="Yearly price"
+                icon={<CreditCard size={15} />}
+                value={form.priceYearly}
+                minimum={0}
+                onChange={(value) => setForm((current) => ({ ...current, priceYearly: value }))}
+              />
+              <Field label="Currency">
+                <input
+                  value={form.currency}
+                  maxLength={3}
+                  onChange={(event) => setForm((current) => ({ ...current, currency: event.target.value.toUpperCase() }))}
+                  className="dashboard-input w-full rounded-xl px-3 py-2.5 text-sm uppercase"
+                />
+              </Field>
             </div>
           </Section>
 

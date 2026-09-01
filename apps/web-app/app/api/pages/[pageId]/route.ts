@@ -6,8 +6,11 @@
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { Prisma, prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
+import { archiveDesignTokens } from "@/modules/pages/designTokenRegistration";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
 
 function slugify(value: string) {
   return value
@@ -228,25 +231,88 @@ export async function DELETE(
   console.log("🗑️ [PAGE][DELETE] START", { pageId });
 
   return apiHandler(async ({ auth }) => {
-    const deleted = await prisma.page.updateMany({
-      where: {
-        id: pageId,
-        deletedAt: null,
-        site: {
-          tenantId: auth.tenant.id,
+    const result = await prisma.$transaction(async (tx) => {
+      const page = await tx.page.findFirst({
+        where: {
+          id: pageId,
+          deleted: false,
+          deletedAt: null,
+          site: {
+            tenantId: auth.tenant.id,
+          },
         },
-      },
-      data: {
-        deleted: true,
-        deletedAt: new Date(),
-        deletedByUser: auth.user.id,
-      },
+        select: {
+          id: true,
+          siteId: true,
+          slug: true,
+          site: {
+            select: {
+              slug: true,
+              designTokens: true,
+              settings: true,
+            },
+          },
+        },
+      });
+
+      if (!page) {
+        throw new Error("Page not found");
+      }
+
+      await tx.page.update({
+        where: { id: page.id },
+        data: {
+          deleted: true,
+          deletedAt: new Date(),
+          deletedByUser: auth.user.id,
+        },
+      });
+
+      // Design tokens belong to the site's active page collection. Once the
+      // final active page is removed, clear the canonical registration so a
+      // future page cannot inherit an orphaned theme from the deleted site.
+      const clearedSite = await tx.site.updateMany({
+        where: {
+          id: page.siteId,
+          tenantId: auth.tenant.id,
+          deletedAt: null,
+          pages: {
+            none: {
+              deleted: false,
+              deletedAt: null,
+            },
+          },
+        },
+        data: {
+          designTokens: Prisma.DbNull,
+          ...(page.site.designTokens == null
+            ? {}
+            : {
+                settings: archiveDesignTokens(
+                  page.site.settings,
+                  page.site.designTokens,
+                ) as Prisma.InputJsonValue,
+              }),
+        },
+      });
+
+      return {
+        designTokensCleared: clearedSite.count > 0,
+        siteSlug: page.site.slug,
+        pageSlug: page.slug,
+      };
     });
 
-    if (!deleted.count) {
-      throw new Error("Page not found");
-    }
+    // A deleted page must stop rendering everywhere it was ever reachable —
+    // the auth-gated builder preview, the published site, and the site root
+    // (in case the deleted page was the homepage).
+    revalidatePath(`/preview/${result.siteSlug}/${result.pageSlug}`);
+    revalidatePath(publishedSitePath(result.siteSlug, result.pageSlug));
+    revalidatePath(publishedSitePath(result.siteSlug));
 
-    return { success: true };
+    return {
+      success: true,
+      designTokensCleared: result.designTokensCleared,
+    };
   })(request);
 }

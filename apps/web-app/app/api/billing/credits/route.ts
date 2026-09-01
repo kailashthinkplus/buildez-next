@@ -52,9 +52,10 @@ export async function POST(req: NextRequest) {
       cancel_url: `${req.nextUrl.origin}/app/workspace/billing?credits=cancelled`,
       feature_flags: { redirect_immediately: true },
     });
-    if (!session.checkout_url) throw new Error("Dodo Payments returned no checkout URL.");
+    if (!session.checkout_url) throw new Error("Payment service returned no checkout URL.");
     return Response.json({ checkoutUrl: session.checkout_url });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "Credit checkout could not be started." }, { status: 502 });
+    console.error("Credit checkout failed:", error);
+    return Response.json({ error: "Credit checkout could not be started." }, { status: 502 });
   }
 }

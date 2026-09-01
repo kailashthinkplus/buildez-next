@@ -18,6 +18,12 @@ const ALLOWED_TYPES = new Set([
   "image/vnd.microsoft.icon",
 ]);
 
+function record(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
 function extension(file: File) {
   const fromName = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "");
   if (fromName && fromName.length <= 5) return fromName;
@@ -49,7 +55,7 @@ export async function POST(
   const { siteId } = await params;
   const site = await prisma.site.findFirst({
     where: { id: siteId, tenantId: tenant.id, deletedAt: null },
-    select: { id: true },
+    select: { id: true, settings: true },
   });
   if (!site) return NextResponse.json({ error: "Website not found" }, { status: 404 });
 
@@ -93,5 +99,16 @@ export async function POST(
     update: { url: imageUrl, filename: file.name.slice(0, 240), fileSize: file.size, mimeType: file.type, updatedAt: new Date() },
     select: { id: true, url: true, filename: true, source: true },
   });
+  if (purposeValue === "favicon") {
+    await prisma.site.update({
+      where: { id: site.id },
+      data: {
+        settings: {
+          ...record(site.settings),
+          faviconUrl: imageUrl,
+        },
+      },
+    });
+  }
   return NextResponse.json({ imageUrl, asset });
 }

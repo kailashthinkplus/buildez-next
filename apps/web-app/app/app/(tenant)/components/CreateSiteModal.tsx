@@ -6,6 +6,9 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { useWorkspace } from "./WorkspaceContext";
 import { DashboardModalPortal } from "./ui/DashboardModalPortal";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
+
+const PLATFORM_DOMAIN = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || "getbuildezy.com";
 
 export type CreateSiteIntent = "dashboard" | "ai";
 
@@ -40,12 +43,11 @@ export default function CreateSiteModal({
  const [error, setError] = useState<string | null>(null);
  const [success, setSuccess] = useState(false);
 
- const planLimits = (
- plan?.plan as { limits?: { sites?: number } } | undefined
- )?.limits;
-
- const siteLimit =
- planLimits?.sites ?? (plan?.planCode === "starter" ? 1 : 999);
+ const configuredSiteLimit = plan?.Plan?.maxSites ?? plan?.plan?.maxSites;
+ const siteLimit = typeof configuredSiteLimit === "number"
+ && Number.isFinite(configuredSiteLimit)
+ ? Math.max(0, configuredSiteLimit)
+ : 1;
 
  const usedSites = websites.length;
  const remaining = Math.max(siteLimit - usedSites, 0);
@@ -56,6 +58,7 @@ export default function CreateSiteModal({
  : 0;
 
  const planName =
+ plan?.Plan?.name ??
  plan?.plan?.name ??
  plan?.planCode ??
  "Trial";
@@ -192,7 +195,7 @@ export default function CreateSiteModal({
  >
  <div className="flex items-center justify-between border-b dashboard-border px-6 py-4 md:px-8">
  <div>
- <div className="text-xs font-semibold uppercase tracking-[0.08em] text-[#7C5CFC]">
+ <div className="text-xs font-semibold uppercase tracking-[0.08em] text-[#1349A3] dark:text-blue-300">
  Website setup
  </div>
  <h2 className="mt-1 text-2xl font-semibold">
@@ -227,7 +230,7 @@ export default function CreateSiteModal({
  </h3>
  </div>
 
- <div className="dashboard-subtle flex h-10 w-10 items-center justify-center rounded-xl text-[#7C5CFC]">
+ <div className="dashboard-subtle flex h-10 w-10 items-center justify-center rounded-xl text-[#1349A3] dark:text-blue-300">
  <Rocket size={20} />
  </div>
  </div>
@@ -258,7 +261,7 @@ export default function CreateSiteModal({
  Remaining
  </div>
 
- <div className="mt-1 text-2xl font-semibold text-[#7C5CFC]">
+ <div className="mt-1 text-2xl font-semibold text-[#1349A3] dark:text-blue-300">
  {remaining}
  </div>
  </div>
@@ -266,7 +269,7 @@ export default function CreateSiteModal({
 
  <div className="mt-4 h-2 overflow-hidden rounded-full bg-black/5 dark:bg-white/10">
  <div
- className="h-full rounded-full bg-[#7C5CFC] transition-[width]"
+ className="h-full rounded-full bg-gradient-to-r from-[#1349A3] to-[#1D6CC5] transition-[width]"
  style={{ width: `${usagePercent}%` }}
  />
  </div>
@@ -293,7 +296,7 @@ export default function CreateSiteModal({
  window.location.assign("/app/workspace/billing");
  }}
  disabled={loading}
- className="mt-5 flex w-full items-center justify-center rounded-xl border border-[#7C5CFC]/35 bg-[#7C5CFC]/[0.06] px-4 py-2.5 text-sm font-semibold text-[#7C5CFC] transition hover:bg-[#7C5CFC]/[0.11] disabled:opacity-50"
+ className="mt-5 flex w-full items-center justify-center rounded-xl border border-[#1349A3]/35 bg-[#1349A3]/[0.06] px-4 py-2.5 text-sm font-semibold text-[#1349A3] transition hover:bg-[#1349A3]/[0.11] disabled:opacity-50 dark:text-blue-300"
  >
  Change plan
  </button>
@@ -365,9 +368,7 @@ export default function CreateSiteModal({
  />
 
  <p className="mt-2 text-xs dashboard-faint">
- {slug
- ? `${slug}.buildez.site`
- : "your-site.buildez.site"}
+ {PLATFORM_DOMAIN}{slug ? publishedSitePath(slug) : "/your-site"}
  </p>
  </div>
  </div>
@@ -379,7 +380,7 @@ export default function CreateSiteModal({
  ) : null}
 
  {success ? (
- <div className="mt-4 text-sm font-medium text-[#7C5CFC]">
+ <div className="mt-4 text-sm font-medium text-[#1349A3] dark:text-blue-300">
  Website created successfully.
  </div>
  ) : null}
@@ -403,7 +404,7 @@ export default function CreateSiteModal({
  !name.trim() ||
  !slug.trim()
  }
- className="flex items-center gap-2 rounded-xl bg-[#7C5CFC] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#6947E8] disabled:opacity-50"
+ className="dashboard-primary-button flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
  >
  {loading ? (
  <Loader2 size={16} className="animate-spin" />

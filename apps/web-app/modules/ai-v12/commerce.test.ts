@@ -73,3 +73,40 @@ test("catalogue retries resolve to the same ShopEZ product identity", () => {
     commerceProductIdentity("A2 face serum"),
   );
 });
+
+test("does not classify an editorial perfume launch with a Shop page as full ecommerce", () => {
+  const result = detectCommerceIntent(`
+    Design an immersive 3D website for Aurelia — a boutique perfume house
+    launching a new fragrance. Include a homepage, The Fragrance story page,
+    and a Shop page. Show the full product line with cinematic 3D presentation.
+  `);
+
+  assert.equal(result.isEcommerce, false);
+});
+
+test("does not classify boutique brand language alone as ecommerce", () => {
+  assert.equal(
+    detectCommerceIntent(
+      "Design a premium website for a boutique perfume house with product storytelling"
+    ).isEcommerce,
+    false,
+  );
+});
+
+test("a Shop page alone does not enable ShopEZ", () => {
+  assert.equal(
+    detectCommerceIntent(
+      "Create a luxury brand website with Home, Our Story and Shop pages"
+    ).isEcommerce,
+    false,
+  );
+});
+
+test("explicit transactional ecommerce still enables ShopEZ", () => {
+  assert.equal(
+    detectCommerceIntent(
+      "Build an online perfume store with product catalogue, add to cart and checkout"
+    ).isEcommerce,
+    true,
+  );
+});

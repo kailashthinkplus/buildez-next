@@ -12,19 +12,18 @@ const common = {
   platformDomain: "buildez.site",
 };
 
-test("published links always contain the exact site id", () => {
-  assert.equal(publishedSitePath("site_correct"), "/published-preview/site_correct");
+test("published links use readable website and page slugs", () => {
+  assert.equal(publishedSitePath("appwire"), "/appwire");
   assert.equal(
-    publishedSitePath("site_correct", "about/team"),
-    "/published-preview/site_correct/about/team",
+    publishedSitePath("appwire", "about/team"),
+    "/appwire/about/team",
   );
 });
 
 test("Insights accepts only URLs belonging to the selected site", () => {
-  assert.equal(isInsightUrlOwnedBySite({ ...common, url: "https://app.buildez.site/published-preview/site_correct/about" }), true);
+  assert.equal(isInsightUrlOwnedBySite({ ...common, url: "https://app.buildez.site/appwire/about" }), true);
   assert.equal(isInsightUrlOwnedBySite({ ...common, url: "https://appwire.example/about" }), true);
   assert.equal(isInsightUrlOwnedBySite({ ...common, url: "https://appwire.buildez.site/about" }), true);
-  assert.equal(isInsightUrlOwnedBySite({ ...common, url: "https://app.buildez.site/published-preview/site_other" }), false);
-  assert.equal(isInsightUrlOwnedBySite({ ...common, url: "https://app.buildez.site/appwire" }), false);
+  assert.equal(isInsightUrlOwnedBySite({ ...common, url: "https://app.buildez.site/site-other" }), false);
   assert.equal(isInsightUrlOwnedBySite({ ...common, url: "https://other-tenant.example" }), false);
 });

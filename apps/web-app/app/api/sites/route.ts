@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
+import { ApiError } from "@/lib/api/errors";
+import { enforceSiteLimit } from "@/lib/plan/enforce";
+import { isReservedPublicSiteSlug } from "@/lib/sites/public-slug";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -106,9 +109,27 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  if (isReservedPublicSiteSlug(slug)) {
+    return NextResponse.json(
+      { error: "That website address is reserved. Choose another one." },
+      { status: 409 },
+    );
+  }
+
+  try {
+    await enforceSiteLimit(tenant.id);
+  } catch (reason) {
+    if (reason instanceof ApiError) {
+      return NextResponse.json(
+        { error: reason.message, code: reason.code },
+        { status: reason.status },
+      );
+    }
+    throw reason;
+  }
+
   const existingSite = await prisma.site.findFirst({
     where: {
-      tenantId: tenant.id,
       slug,
       deletedAt: null,
     },

@@ -7,6 +7,7 @@ import {
   FolderTree,
   Users,
   CreditCard,
+  WalletCards,
   Settings,
   X,
   Sparkles,
@@ -39,6 +40,12 @@ export function GlobalSidebar({ setMobileOpen }: GlobalSidebarProps) {
       name: "Team",
       href: "/app/workspace/team",
       icon: Users,
+    },
+    {
+      id: "global-plans",
+      name: "Plans",
+      href: "/app/plans",
+      icon: WalletCards,
     },
     {
       id: "global-billing",

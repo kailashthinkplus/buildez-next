@@ -120,7 +120,7 @@ export function isInsightUrlOwnedBySite(input: {
   const target = new URL(input.url);
   const requestUrl = new URL(input.requestOrigin);
   const host = target.hostname.toLowerCase();
-  const exactPlatformPath = `/published-preview/${encodeURIComponent(input.siteId)}`;
+  const exactPlatformPath = `/${encodeURIComponent(input.siteSlug)}`;
   const isExactPlatformUrl =
     target.host.toLowerCase() === requestUrl.host.toLowerCase() &&
     (target.pathname === exactPlatformPath || target.pathname.startsWith(`${exactPlatformPath}/`));
@@ -158,7 +158,7 @@ export async function resolveOwnedInsightUrl(input: {
     siteId: site.id,
     siteSlug: site.slug,
     verifiedDomains: site.domains.map((connection) => connection.domain),
-    platformDomain: process.env.PLATFORM_DOMAIN || "buildez.site",
+    platformDomain: process.env.PLATFORM_DOMAIN || "getbuildezy.com",
   })) {
     throw new Error("This URL is not connected to the selected website");
   }

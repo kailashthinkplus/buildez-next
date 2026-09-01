@@ -28,7 +28,7 @@ export default function StepFinish({
   planCode: string;
   billingCycle: string;
   amountPaid: number;
-  dodoSubscriptionId?: string;
+  subscriptionReference?: string;
   currentPeriodEnd?: string;
 } | null>(null);
 
@@ -109,7 +109,11 @@ useEffect(() => {
       await refreshFromServer();
 
       // ⭐ Redirect IMMEDIATELY (avoid UI step flicker)
-      window.location.replace("/app/dashboard");
+      if (data.customDomainPending && data.siteSlug) {
+        window.location.replace(`/app/${encodeURIComponent(data.siteSlug)}/settings?tab=domains`);
+      } else {
+        window.location.replace("/app/dashboard");
+      }
       return;
 
     } catch (err) {
@@ -200,7 +204,7 @@ useEffect(() => {
             <p>
               <span className="text-white/50">Subscription ID:</span>{" "}
               <span className="font-mono text-[13px]">
-                {subscription?.dodoSubscriptionId ??
+                {subscription?.subscriptionReference ??
                   paymentSummary?.subscriptionId ?? "Processing"}
               </span>
             </p>

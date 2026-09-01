@@ -25,25 +25,11 @@ export type V12AgentContext =
   | "Selected element"
   | "Image";
 
-type V12CreditBalancePayload = {
-  planCode: string | null;
-
-  balance: {
-    included: {
-      limit: number;
-      used: number;
-      remaining: number;
-      periodStart: string | null;
-      periodEnd: string | null;
-    };
-
-    topUp: {
-      remaining: number;
-    };
-
-    totalRemaining: number;
-  };
-};
+export type V12AgentAction = Readonly<{
+  id: string;
+  label: string;
+  value: string;
+}>;
 
 export type V12AgentEvent = Readonly<{
   id: string;
@@ -52,6 +38,8 @@ export type V12AgentEvent = Readonly<{
   detail?: string;
   timestamp: string;
   role?: "user" | "assistant";
+  status?: "needs_input" | "completed" | "failed";
+  actions?: readonly V12AgentAction[];
 }>;
 
 export default function V12AgentPanel({
@@ -100,72 +88,7 @@ export default function V12AgentPanel({
   const [pendingFullPageMode, setPendingFullPageMode] = useState<"auto" | "discuss">("auto");
   const [pendingFullPageContext, setPendingFullPageContext] = useState<V12AgentContext>("Page");
   const [showCreativeDirection, setShowCreativeDirection] = useState(false);
-
-  const [creditBalance, setCreditBalance] =
-    useState<V12CreditBalancePayload | null>(null);
-
-  const [creditLoading, setCreditLoading] =
-    useState(false);
-
-  const [creditExpanded, setCreditExpanded] =
-    useState(false);
-
-  const previousRunningRef =
-    useRef(running);
-
-  async function loadCreditBalance() {
-    setCreditLoading(true);
-
-    try {
-      const response = await fetch(
-        "/api/builder-v3/credits",
-        {
-          cache: "no-store",
-        },
-      );
-
-      if (!response.ok) {
-        return;
-      }
-
-      const body =
-        await response.json();
-
-      setCreditBalance(
-        body as V12CreditBalancePayload,
-      );
-    } catch {
-      /*
-       * Credit display is informational.
-       * A failed balance refresh must never break the AI panel.
-       */
-    } finally {
-      setCreditLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    void loadCreditBalance();
-  }, []);
-
-  /*
-   * Refresh after a generation finishes so reserve/capture/release
-   * results are reflected without requiring a page reload.
-   */
-  useEffect(() => {
-    const wasRunning =
-      previousRunningRef.current;
-
-    previousRunningRef.current =
-      running;
-
-    if (
-      wasRunning &&
-      !running
-    ) {
-      void loadCreditBalance();
-    }
-  }, [running]);
+  const completingCreativeDirectionRef = useRef(false);
 
   useEffect(() => {
     if (appliedInitialPromptRef.current) return;
@@ -204,12 +127,17 @@ export default function V12AgentPanel({
     const frame = window.requestAnimationFrame(() => {
       conversationEndRef.current?.scrollIntoView({
         behavior: running ? "smooth" : "auto",
-        block: "nearest",
+        block: "end",
       });
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [events.length, events[events.length - 1]?.title, events[events.length - 1]?.detail, running]);
+  }, [
+    events.length,
+    events[events.length - 1]?.title,
+    events[events.length - 1]?.detail,
+    running,
+  ]);
 
   useEffect(() => {
     /*
@@ -272,7 +200,14 @@ export default function V12AgentPanel({
   }
 
   async function completeCreativeDirection() {
-    if (!pendingFullPagePrompt || running || !connected) return;
+    if (
+      !pendingFullPagePrompt ||
+      running ||
+      !connected ||
+      completingCreativeDirectionRef.current
+    ) return;
+
+    completingCreativeDirectionRef.current = true;
 
     const value = pendingFullPagePrompt;
     const submittedAttachments = pendingFullPageAttachments;
@@ -284,13 +219,17 @@ export default function V12AgentPanel({
     setPendingFullPagePrompt(null);
     setPendingFullPageAttachments([]);
 
-    await onSubmit(
-      value,
-      submittedMode,
-      submittedAttachments,
-      creativeDirection,
-      submittedContext
-    );
+    try {
+      await onSubmit(
+        value,
+        submittedMode,
+        submittedAttachments,
+        creativeDirection,
+        submittedContext
+      );
+    } finally {
+      completingCreativeDirectionRef.current = false;
+    }
   }
 
   function selectAttachments(selected: File[]) {
@@ -496,13 +435,31 @@ export default function V12AgentPanel({
       ? groupedProgress[groupedProgress.length - 1]
       : null;
 
-  const currentProgressTitle = running
-    ? selectedElementStatusLabel
-      ? `Updating ${selectedElementStatusLabel}`
-      : currentProgress?.title || "Preparing your request"
-    : selectedElementStatusLabel
-      ? `Updated ${selectedElementStatusLabel}`
-      : "Website generated";
+  const latestGenerationStatus = [...events]
+    .reverse()
+    .find((event) => event.status)?.status;
+
+  const waitingForInput =
+    !running && latestGenerationStatus === "needs_input";
+
+  const generationFailed =
+    !running &&
+    (
+      latestGenerationStatus === "failed" ||
+      currentProgress?.type === "tool.failed"
+    );
+
+  const currentProgressTitle = generationFailed
+    ? "Generation failed"
+    : waitingForInput
+      ? "Waiting for your response"
+      : running
+        ? selectedElementStatusLabel
+          ? `Updating ${selectedElementStatusLabel}`
+          : currentProgress?.title || "Preparing your request"
+        : selectedElementStatusLabel
+          ? `Updated ${selectedElementStatusLabel}`
+          : "Website generated";
 
   const previousProgress = running
     ? groupedProgress.slice(0, -1)
@@ -545,110 +502,13 @@ export default function V12AgentPanel({
 
   return <aside className="flex h-full w-[360px] shrink-0 flex-col bg-[#15171c]">
     <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-5">
-      <div className="flex min-w-0 flex-1 items-start justify-between gap-3">
+      <div className="min-w-0 flex-1">
         <div className="min-w-0">
           <strong>Build with AI</strong>
 
           <p className="mt-0.5 text-xs text-white/40">
             Create and refine your website
           </p>
-        </div>
-
-        <div className="relative shrink-0">
-          <button
-            type="button"
-            onClick={() =>
-              setCreditExpanded(
-                (current) => !current,
-              )
-            }
-            aria-expanded={creditExpanded}
-            aria-label="View AI credit balance"
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[.045] px-2.5 text-[11px] font-semibold text-white/65 transition hover:border-white/15 hover:bg-white/[.075] hover:text-white/85"
-          >
-            <span
-              aria-hidden="true"
-              className="text-[12px] text-blue-300/80"
-            >
-              ◈
-            </span>
-
-            {creditLoading &&
-            !creditBalance ? (
-              <Loader2
-                size={12}
-                className="animate-spin"
-              />
-            ) : (
-              <span className="tabular-nums">
-                {(
-                  creditBalance
-                    ?.balance
-                    .totalRemaining ?? 0
-                ).toLocaleString()}
-              </span>
-            )}
-          </button>
-
-          {creditExpanded && (
-            <div className="absolute right-0 top-10 z-50 w-56 overflow-hidden rounded-xl border border-white/10 bg-[#171b22] shadow-2xl shadow-black/40">
-              <div className="border-b border-white/10 px-3.5 py-3">
-                <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-white/35">
-                  AI Credits
-                </div>
-
-                <div className="mt-1 flex items-end justify-between gap-3">
-                  <div className="text-xl font-semibold tabular-nums text-white">
-                    {(
-                      creditBalance
-                        ?.balance
-                        .totalRemaining ?? 0
-                    ).toLocaleString()}
-                  </div>
-
-                  {creditBalance?.planCode && (
-                    <div className="pb-0.5 text-[10px] font-medium text-white/30">
-                      {creditBalance.planCode}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-2 px-3.5 py-3">
-                <CreditBalanceRow
-                  label="Included"
-                  value={
-                    creditBalance
-                      ?.balance
-                      .included
-                      .remaining ?? 0
-                  }
-                />
-
-                <CreditBalanceRow
-                  label="Top-up"
-                  value={
-                    creditBalance
-                      ?.balance
-                      .topUp
-                      .remaining ?? 0
-                  }
-                />
-
-                <div className="border-t border-white/10 pt-2">
-                  <CreditBalanceRow
-                    label="Available"
-                    value={
-                      creditBalance
-                        ?.balance
-                        .totalRemaining ?? 0
-                    }
-                    strong
-                  />
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
       <div className="flex items-center gap-1">
@@ -729,6 +589,32 @@ export default function V12AgentPanel({
                 {event.detail}
               </div>
             )}
+
+            {event.role === "assistant" &&
+              event.status === "needs_input" &&
+              Boolean(event.actions?.length) && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {event.actions?.map((action) => (
+                    <button
+                      key={action.id}
+                      type="button"
+                      disabled={running || !waitingForInput}
+                      onClick={() =>
+                        void onSubmit(
+                          action.value,
+                          mode,
+                          [],
+                          creativeDirection,
+                          context
+                        )
+                      }
+                      className="rounded-full border border-blue-400/30 bg-blue-500/10 px-3 py-1.5 text-[11px] font-medium text-blue-100 transition hover:border-blue-300/50 hover:bg-blue-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      {action.label}
+                    </button>
+                  ))}
+                </div>
+              )}
           </div>
         </div>
       ))}
@@ -755,6 +641,8 @@ export default function V12AgentPanel({
               className={
                 running
                   ? "buildez-generation-shine min-w-0 flex-1 truncate text-[15px] font-semibold leading-6"
+                  : generationFailed
+                    ? "min-w-0 flex-1 truncate text-[15px] font-semibold leading-6 text-red-300"
                   : "min-w-0 flex-1 truncate text-[15px] font-semibold leading-6 text-white/90"
               }
             >
@@ -816,8 +704,12 @@ export default function V12AgentPanel({
               ) : (
                 <div className="py-1 text-[12px] text-white/35">
                   {running
-                    ? "Starting generation…"
-                    : "Generation complete"}
+                      ? "Starting generation…"
+                      : generationFailed
+                        ? currentProgress?.detail || "The website was not changed."
+                        : waitingForInput
+                          ? "Generation will continue after your response."
+                          : "Generation complete"}
                 </div>
               )}
 
@@ -949,41 +841,6 @@ export default function V12AgentPanel({
       }
     `}</style>
   </aside>;
-}
-
-
-function CreditBalanceRow({
-  label,
-  value,
-  strong = false,
-}: {
-  label: string;
-  value: number;
-  strong?: boolean;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <span
-        className={
-          strong
-            ? "text-[11px] font-semibold text-white/65"
-            : "text-[11px] text-white/40"
-        }
-      >
-        {label}
-      </span>
-
-      <span
-        className={
-          strong
-            ? "text-[11px] font-semibold tabular-nums text-white"
-            : "text-[11px] font-medium tabular-nums text-white/65"
-        }
-      >
-        {value.toLocaleString()}
-      </span>
-    </div>
-  );
 }
 
 
@@ -1192,7 +1049,15 @@ function ProTipBulbIcon() {
 function CreativeDirectionWizard({ value, onChange, onComplete }: { value: CreativeDirection; onChange(value: CreativeDirection): void; onComplete(): void }) {
   const [step, setStep] = useState(0);
   const questionCount = 8;
-  const next = () => setStep(current => { const nextStep = Math.min(questionCount, current + 1); if (nextStep === questionCount) queueMicrotask(() => onComplete()); return nextStep; });
+  const completedRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
+  useEffect(() => {
+    if (step !== questionCount || completedRef.current) return;
+    completedRef.current = true;
+    onCompleteRef.current();
+  }, [step]);
+  const next = () => setStep(current => Math.min(questionCount, current + 1));
   const choose = <K extends keyof CreativeDirection,>(key: K, selected: CreativeDirection[K]) => {
     onChange({ ...value, [key]: selected });
     next();

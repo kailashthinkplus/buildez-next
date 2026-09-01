@@ -91,9 +91,14 @@ const fetcher = async (url: string) => {
     }
   */
 
-  return json?.data?.data ?? {
-    pages: [],
-    total: 0,
+  const payload = json?.data?.data ?? json?.data ?? json;
+
+  return {
+    pages: Array.isArray(payload?.pages) ? payload.pages : [],
+    total:
+      typeof payload?.total === "number" && Number.isFinite(payload.total)
+        ? payload.total
+        : 0,
   };
 };
 

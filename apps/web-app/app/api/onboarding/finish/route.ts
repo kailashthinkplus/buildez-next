@@ -1,8 +1,32 @@
 // /app/api/onboarding/finish/route.ts
 
+import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { getCurrentUser } from "@/lib/auth/session";
+import { nextAvailablePublicSiteSlug } from "@/lib/sites/public-slug";
+import { DOMAIN_SERVER_IP, validDomain } from "@/lib/domain-provisioning";
+
+async function ensurePendingCustomDomain(siteId: string, tenantId: string, requestedDomain: string | null) {
+  const platformDomain = process.env.PLATFORM_DOMAIN || "getbuildezy.com";
+  const domain = (requestedDomain || "").toLowerCase().trim().replace(/^https?:\/\//, "").split("/")[0].replace(/\.$/, "");
+  if (!validDomain(domain) || domain === platformDomain || domain.endsWith(`.${platformDomain}`)) return false;
+  const existing = await prisma.siteDomain.findUnique({ where: { domain } });
+  if (existing) {
+    if (existing.siteId !== siteId || existing.tenantId !== tenantId) throw new Error("DOMAIN_ALREADY_CONNECTED");
+    return true;
+  }
+  await prisma.siteDomain.create({
+    data: {
+      siteId,
+      tenantId,
+      domain,
+      cnameTarget: DOMAIN_SERVER_IP,
+      verificationToken: `buildez-verification=${crypto.randomBytes(24).toString("base64url")}`,
+    },
+  });
+  return true;
+}
 
 function onboardingBrand(onboarding: {
   businessName: string | null; profession: string | null; primaryUseCase: string | null;
@@ -75,6 +99,9 @@ if (!plan) {
 }
 
 const requiresPayment = plan.pricing.some((p) => p.amount > 0);
+    const publicSiteSlug = await nextAvailablePublicSiteSlug(
+      onboarding.domain?.split(".")[0] || onboarding.businessName || "website",
+    );
 
     // ===============================================================
     // 🅰️ PAID PLAN — Create Tenant + Activate Subscription
@@ -121,21 +148,21 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
           });
         }
 
-        // Mark onboarding complete
+        const existingSite = existingTenant.sites[0] || await prisma.site.create({
+          data: { name: onboarding.businessName || "My First Site", slug: publicSiteSlug, tenantId: existingTenant.id, designTokens: onboardingBrand(onboarding) },
+        });
+        await syncOnboardingBrand(existingSite.id, onboarding);
+        const customDomainPending = await ensurePendingCustomDomain(existingSite.id, existingTenant.id, onboarding.domain);
         await prisma.userOnboarding.update({
           where: { userId: user.id },
-          data: {
-            completed: true,
-            planCode: subscription.planCode,
-            billingCycle: subscription.billingCycle,
-          },
+          data: { completed: true, planCode: subscription.planCode, billingCycle: subscription.billingCycle },
         });
-
-        await syncOnboardingBrand(existingTenant.sites[0]?.id, onboarding);
         return NextResponse.json({
           ok: true,
           tenantId: existingTenant.id,
-          siteId: existingTenant.sites[0]?.id,
+          siteId: existingSite.id,
+          siteSlug: existingSite.slug,
+          customDomainPending,
           existed: true,
         });
       }
@@ -165,7 +192,7 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
           sites: {
             create: [{
               name: onboarding.businessName || "My First Site",
-              slug: "home",
+              slug: publicSiteSlug,
               designTokens: onboardingBrand(onboarding),
             }],
           },
@@ -176,6 +203,7 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
       });
 
       const siteId = tenant.sites[0].id;
+      const customDomainPending = await ensurePendingCustomDomain(siteId, tenant.id, onboarding.domain);
 
       console.log("🏁 Tenant created:", tenant.id);
 
@@ -209,6 +237,8 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
         ok: true,
         tenantId: tenant.id,
         siteId,
+        siteSlug: tenant.sites[0].slug,
+        customDomainPending,
       });
     }
 
@@ -296,7 +326,7 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
       const newSite = await prisma.site.create({
         data: {
           name: "My First Site",
-          slug: "home",
+          slug: publicSiteSlug,
           tenantId: tenant.id,
         },
       });
@@ -313,6 +343,7 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
       ok: true,
       tenantId: tenant.id,
       siteId: finalSiteId,
+      siteSlug: tenant.sites.find((site) => site.id === finalSiteId)?.slug || publicSiteSlug,
     });
 
   } catch (err: any) {

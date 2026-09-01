@@ -18,6 +18,7 @@ export interface Website {
   id: string;
   name: string;
   slug: string;
+  status?: string;
   logoUrl?: string | null;
   faviconUrl?: string | null;
 }
@@ -30,10 +31,12 @@ interface SubscriptionPlan {
   plan?: {
     name: string;
     code: string;
+    maxSites?: number;
   };
   Plan?: {
     name: string;
     code: string;
+    maxSites?: number;
   };
 }
 
@@ -48,6 +51,7 @@ interface WorkspaceContextProps {
   currentWebsite: Website | null;
 
   switchWebsite: (id: string) => void;
+  updateWebsite: (id: string, patch: Partial<Website>) => void;
 
   plan: SubscriptionPlan | null;
 
@@ -64,6 +68,8 @@ interface WorkspaceContextProps {
 const WorkspaceContext = createContext<WorkspaceContextProps | undefined>(
   undefined
 );
+
+const BUILDEZ_FAVICON_URL = "/favicon.png";
 
 const SITE_AREAS = new Set([
   "dashboard", "pages", "media", "cms", "themes", "apps", "shopez",
@@ -116,10 +122,18 @@ export function WorkspaceProvider({
         setTenant(json.data.tenant);
 
         const mappedSites: Website[] = (json.data.sites || []).map(
-          (s: any) => ({
+          (s: {
+            id: string;
+            name: string;
+            slug: string;
+            status?: string;
+            logoUrl?: unknown;
+            settings?: { faviconUrl?: unknown };
+          }) => ({
             id: s.id,
             name: s.name,
             slug: s.slug,
+            status: typeof s.status === "string" ? s.status : "DRAFT",
             logoUrl: typeof s.logoUrl === "string" ? s.logoUrl : null,
             faviconUrl: typeof s.settings?.faviconUrl === "string" ? s.settings.faviconUrl : null,
           })
@@ -154,6 +168,19 @@ export function WorkspaceProvider({
     }
   }, [currentWebsite?.id, pathname, websites]);
 
+  useEffect(() => {
+    const selector = 'link[data-buildez-site-favicon="true"]';
+    const existing = document.head.querySelector<HTMLLinkElement>(selector);
+
+    const link = existing ?? document.createElement("link");
+    link.rel = "icon";
+    link.href = BUILDEZ_FAVICON_URL;
+    link.dataset.buildezSiteFavicon = "true";
+    if (!existing) document.head.appendChild(link);
+
+    return () => link.remove();
+  }, []);
+
   /* ============================================================
      SITE SWITCH (EXPLICIT USER ACTION ONLY)
   ============================================================ */
@@ -170,6 +197,20 @@ export function WorkspaceProvider({
     [router, websites]
   );
 
+  const updateWebsite = useCallback(
+    (id: string, patch: Partial<Website>) => {
+      setWebsites((current) =>
+        current.map((website) =>
+          website.id === id ? { ...website, ...patch } : website,
+        ),
+      );
+      setCurrentWebsite((current) =>
+        current?.id === id ? { ...current, ...patch } : current,
+      );
+    },
+    [],
+  );
+
   /* ============================================================
      PROVIDER VALUE
   ============================================================ */
@@ -180,6 +221,7 @@ export function WorkspaceProvider({
         websites,
         currentWebsite,
         switchWebsite,
+        updateWebsite,
 
         plan,
 

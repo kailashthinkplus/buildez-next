@@ -6,10 +6,14 @@ import type { NextRequest } from "next/server";
    ========================================================== */
 const PUBLIC_ROUTES = [
   "/app/login",
+  "/app/signup",
   "/app/verify-otp",
+  "/app/forgot-password",
   "/api/auth/login",
+  "/api/auth/register",
   "/api/auth/send-otp",
   "/api/auth/verify-otp",
+  "/api/auth/forgot-password",
   "/api/auth/google",
   "/api/auth/google/callback",
   "/api/auth/recovery-login",
@@ -42,6 +46,10 @@ const ONBOARDING_ROUTES = [
   "/api/tenant/me",
 ];
 
+function hasRoutePrefix(pathname: string, prefix: string) {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
+
 /* ==========================================================
    3) MIDDLEWARE
    ========================================================== */
@@ -71,9 +79,20 @@ export async function middleware(req: NextRequest) {
 
   // Custom domains are resolved by the storefront itself. Keep platform and
   // local hosts on their normal routes and rewrite all tenant-domain pages.
-  const platformDomain = process.env.PLATFORM_DOMAIN || "buildez.app";
+  const platformDomain = process.env.PLATFORM_DOMAIN || "getbuildezy.com";
   const isPlatformHost = !host || host === "localhost" || host.endsWith(".localhost") || host === platformDomain || host.endsWith(`.${platformDomain}`);
-  if (!isPlatformHost && !pathname.startsWith("/api") && !pathname.startsWith("/app") && !pathname.startsWith("/_next")) {
+  const platformLabel = host.endsWith(`.${platformDomain}`) ? host.slice(0, -(platformDomain.length + 1)) : "";
+  const isTenantPlatformSubdomain = Boolean(platformLabel) && !new Set(["app", "www", "admin", "api"]).has(platformLabel);
+  const isPublicMarketingHome = pathname === "/" && isPlatformHost && (!platformLabel || platformLabel === "www") && host !== `app.${platformDomain}`;
+  if (isPublicMarketingHome) {
+    return NextResponse.next();
+  }
+  if (isTenantPlatformSubdomain && !hasRoutePrefix(pathname, "/api") && !hasRoutePrefix(pathname, "/app") && !hasRoutePrefix(pathname, "/_next")) {
+    const url = req.nextUrl.clone();
+    url.pathname = `/${platformLabel}${pathname === "/" ? "" : pathname}`;
+    return NextResponse.rewrite(url);
+  }
+  if (!isPlatformHost && !hasRoutePrefix(pathname, "/api") && !hasRoutePrefix(pathname, "/app") && !hasRoutePrefix(pathname, "/_next")) {
     const url = req.nextUrl.clone();
     url.pathname = `/domain-runtime/${host}${pathname === "/" ? "" : pathname}`;
     return NextResponse.rewrite(url);
@@ -99,16 +118,17 @@ export async function middleware(req: NextRequest) {
 // Split URL into path segments once
 const parts = pathname.split("/").filter(Boolean);
 
-// Runtime pages must have at least:
+// Public runtime pages use:
+// /siteSlug
 // /siteSlug/pageSlug
 // Example:
 //   /acme/home
 //   /acme/products/chair
 const isRuntime =
-  parts.length >= 2 &&
-  !pathname.startsWith("/app") &&
-  !pathname.startsWith("/preview") &&
-  !pathname.startsWith("/api");
+  parts.length >= 1 &&
+  !hasRoutePrefix(pathname, "/app") &&
+  !hasRoutePrefix(pathname, "/preview") &&
+  !hasRoutePrefix(pathname, "/api");
 
 console.log("🔎 isRuntime?", isRuntime);
 

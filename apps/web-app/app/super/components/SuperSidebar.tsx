@@ -30,6 +30,7 @@ import {
   AlertTriangle,
   Boxes,
   LifeBuoy,
+  Inbox,
   MessageSquare,
   HelpCircle,
   Plug,
@@ -172,7 +173,8 @@ export default function SuperSidebar({
           </Section>
 
           <Section title="SUPPORT" open={sections.support || collapsed} collapsed={collapsed} onToggle={() => toggleSection("support")}>
-            <NavLink href="/super/support/tickets" icon={LifeBuoy} label="Support Tickets" active={pathname.startsWith("/super/support/tickets")} collapsed={collapsed} />
+            <NavLink href="/super/support" icon={LifeBuoy} label="Support Tickets" active={pathname.startsWith("/super/support")} collapsed={collapsed} />
+            <NavLink href="/super/requests" icon={Inbox} label="Public Inbox" active={pathname.startsWith("/super/requests")} collapsed={collapsed} />
             <NavLink href="/super/support/chat" icon={MessageSquare} label="Live Chat" active={pathname.startsWith("/super/support/chat")} collapsed={collapsed} />
             <NavLink href="/super/support/help" icon={HelpCircle} label="Help Center" active={pathname.startsWith("/super/support/help")} collapsed={collapsed} />
           </Section>

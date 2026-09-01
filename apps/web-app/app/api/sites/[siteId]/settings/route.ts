@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
+import { isReservedPublicSiteSlug } from "@/lib/sites/public-slug";
 
 const text = (value: unknown, max = 500) =>
   typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -92,6 +93,29 @@ export async function PATCH(
     return NextResponse.json({ error: "Site not found" }, { status: 404 });
   }
 
+  if (
+    Object.keys(body).every((key) => key === "status") &&
+    (body.status === "DRAFT" || body.status === "PUBLISHED")
+  ) {
+    if (body.status === "PUBLISHED") {
+      const publishedPages = await prisma.page.count({
+        where: { siteId, status: "PUBLISHED", deletedAt: null },
+      });
+      if (!publishedPages) {
+        return NextResponse.json(
+          { error: "Publish at least one page before publishing the site" },
+          { status: 400 },
+        );
+      }
+    }
+
+    const updated = await prisma.site.update({
+      where: { id: site.id },
+      data: { status: body.status },
+    });
+    return NextResponse.json({ site: updated });
+  }
+
   const slug = text(body.slug, 80)
     .toLowerCase()
     .replace(/[^a-z0-9-]+/g, "-")
@@ -102,9 +126,14 @@ export async function PATCH(
       { status: 400 },
     );
   }
+  if (isReservedPublicSiteSlug(slug)) {
+    return NextResponse.json(
+      { error: "That site URL is reserved. Choose another one." },
+      { status: 409 },
+    );
+  }
   const duplicate = await prisma.site.findFirst({
     where: {
-      tenantId: site.tenantId,
       slug,
       id: { not: site.id },
       deletedAt: null,
@@ -167,7 +196,7 @@ export async function PATCH(
 
   let status = site.status;
   if (body.status === "DRAFT") status = "DRAFT";
-  if (body.status === "PUBLISHED") {
+  if (body.status === "PUBLISHED" && site.status !== "PUBLISHED") {
     const publishedPages = await prisma.page.count({
       where: { siteId, status: "PUBLISHED", deletedAt: null },
     });

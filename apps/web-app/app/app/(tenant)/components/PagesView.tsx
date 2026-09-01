@@ -11,7 +11,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
-  ImageIcon,
   FileText,
   Globe2,
   Clock3,
@@ -29,6 +28,7 @@ import DeletePageModal from "../pages/components/DeletePageModal";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
 
 import { usePages } from "../pages/hooks/usePages";
+import { WebsiteThumbnail } from "./WebsiteThumbnail";
 
 type Props = {
   siteSlug?: string;
@@ -47,7 +47,7 @@ type PageRow = {
   site?: { id?: string; slug?: string };
   siteSlug?: string;
   isFrontPage?: boolean;
-  screenshotUrl?: string;
+  hasMeaningfulPreview?: boolean;
   aiScore?: number;
 };
 
@@ -65,7 +65,7 @@ function getEditUrl(page: PageRow, fallbackSiteSlug?: string) {
 function getPreviewUrl(page: PageRow, fallbackSiteSlug?: string) {
   const resolvedSiteSlug = getPageSiteSlug(page, fallbackSiteSlug);
   return resolvedSiteSlug
-    ? `/preview/${resolvedSiteSlug}/${page.slug}-${page.id}`
+    ? `/preview/${resolvedSiteSlug}/${page.slug}`
     : "";
 }
 
@@ -424,14 +424,16 @@ export default function PagesView({ siteSlug }: Props) {
                           disabled={!previewUrl}
                           className="group block h-[72px] w-28 overflow-hidden rounded-xl border dashboard-border bg-white/70 text-left shadow-sm disabled:cursor-default dark:bg-white/5"
                         >
-                          {pageRow.screenshotUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={pageRow.screenshotUrl}
-                              alt={`${pageRow.title} screenshot preview`}
-                              className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                            />
-                          ) : previewUrl ? <iframe src={previewUrl} title={`${pageRow.title} live preview thumbnail`} loading="lazy" tabIndex={-1} className="pointer-events-none h-[288px] w-[448px] origin-top-left scale-25 border-0 bg-white"/> : <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-gradient-to-br from-white to-gray-100 dashboard-faint dark:from-white/10 dark:to-white/5"><ImageIcon className="h-5 w-5"/><span className="text-[10px] font-medium">Preview unavailable</span></div>}
+                          {pageRow.site?.id ? <WebsiteThumbnail
+                            siteId={pageRow.site.id}
+                            siteName={pageRow.title}
+                            siteSlug={getPageSiteSlug(pageRow, siteSlug)}
+                            pageId={pageRow.id}
+                            pageSlug={pageRow.slug}
+                            updatedAt={pageRow.updatedAt}
+                            hasMeaningfulPreview={pageRow.hasMeaningfulPreview === true}
+                            className="h-full w-full transition-transform group-hover:scale-105"
+                          /> : <img src="/website-placeholder.svg" alt={`${pageRow.title} website preview placeholder`} className="h-full w-full object-cover" />}
                         </button>
                       </td>
 
@@ -488,7 +490,7 @@ export default function PagesView({ siteSlug }: Props) {
                               );
                             }
                           }}
-                          onView={pageRow.status === "PUBLISHED" && pageRow.site?.id ? () => window.open(publishedSitePath(pageRow.site!.id!, pageRow.slug), "_blank", "noopener,noreferrer") : undefined}
+                          onView={pageRow.status === "PUBLISHED" && getPageSiteSlug(pageRow, siteSlug) ? () => window.open(publishedSitePath(getPageSiteSlug(pageRow, siteSlug), pageRow.slug), "_blank", "noopener,noreferrer") : undefined}
                           onDuplicate={async () => {
                             await duplicatePage(pageRow.id);
                           }}
@@ -540,9 +542,15 @@ export default function PagesView({ siteSlug }: Props) {
           <CreatePageModal
             open
             siteSlug={siteSlug}
+            onCreated={async () => {
+              setSearch("");
+              setPage(1);
+              setShowTrash(false);
+              setSelected([]);
+              await mutatePages();
+            }}
             onClose={() => {
               setCreatePageOpen(false);
-              mutatePages();
             }}
           />
         )}

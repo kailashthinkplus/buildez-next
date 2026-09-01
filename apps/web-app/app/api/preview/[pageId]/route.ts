@@ -39,8 +39,8 @@ export async function GET(
     /* ----------------------------------------------------------
        2️⃣ Fetch blueprint from DB
     ---------------------------------------------------------- */
-    const page = await prisma.page.findUnique({
-      where: { id: pageId },
+    const page = await prisma.page.findFirst({
+      where: { id: pageId, deletedAt: null, deleted: false },
       select: {
         blueprint: true,
       },

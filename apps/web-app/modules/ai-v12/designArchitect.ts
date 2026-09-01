@@ -71,6 +71,14 @@ export type V12DesignArchitectResult = {
 
   motionPlan: string[];
   performanceRequirements: string[];
+  commerce: {
+    mode: "NONE" | "OPTIONAL" | "REQUIRED";
+    confidence: number;
+    rationale: string;
+    needsClarification: boolean;
+    clarificationQuestion: string;
+    clarificationOptions: string[];
+  };
   rationale: string;
 };
 
@@ -100,6 +108,7 @@ const schema = {
     "mediaPlan",
     "motionPlan",
     "performanceRequirements",
+    "commerce",
     "rationale",
   ],
 
@@ -322,6 +331,44 @@ const schema = {
       },
     },
 
+    commerce: {
+      type: "object",
+      additionalProperties: false,
+      required: [
+        "mode",
+        "confidence",
+        "rationale",
+        "needsClarification",
+        "clarificationQuestion",
+        "clarificationOptions",
+      ],
+      properties: {
+        mode: {
+          type: "string",
+          enum: ["NONE", "OPTIONAL", "REQUIRED"],
+        },
+        confidence: {
+          type: "number",
+        },
+        rationale: {
+          type: "string",
+        },
+        needsClarification: {
+          type: "boolean",
+        },
+        clarificationQuestion: {
+          type: "string",
+        },
+        clarificationOptions: {
+          type: "array",
+          maxItems: 4,
+          items: {
+            type: "string",
+          },
+        },
+      },
+    },
+
     rationale: {
       type: "string",
     },
@@ -433,6 +480,16 @@ function fallbackPlan(
       "avoid unnecessary heavy dependencies",
     ],
 
+    commerce: {
+      mode: "NONE",
+      confidence: 0,
+      rationale:
+        "No new commerce capability inferred because semantic planning was unavailable.",
+      needsClarification: false,
+      clarificationQuestion: "",
+      clarificationOptions: [],
+    },
+
     rationale:
       "Deterministic fallback used because the Design Architect was unavailable.",
   };
@@ -492,10 +549,18 @@ export function enforceImmersiveMediaPlan(
   ];
 
   plan.mediaPlan.needsGeneratedImages = true;
+  plan.mediaPlan.needsVideo = true;
   const roles = new Set(plan.mediaPlan.images.map((item) => item.role.toLowerCase()));
   for (const candidate of candidates) {
     if (plan.mediaPlan.images.length >= 3) break;
     if (!roles.has(candidate.role.toLowerCase())) plan.mediaPlan.images.push(candidate);
+  }
+  if (!plan.mediaPlan.videos.length) {
+    plan.mediaPlan.videos.push({
+      role: "cinematic hero motion plate",
+      purpose: "Provide a short, seamless visual sequence that can loop or use scroll as its playhead without requiring live 3D",
+      prompt: `Animate the approved opening keyframe for this website into a restrained 5-8 second cinematic motion plate: ${plan.expandedBrief}. Preserve the primary subject, composition, lighting, negative space, and material fidelity. Use a slow camera move or physically plausible environmental motion. The first frame must work as a poster and the final frame must cut or loop cleanly. No text, logo, watermark, abrupt morphing, or subject substitution.`,
+    });
   }
   return plan;
 }
@@ -608,6 +673,47 @@ not around a fixed SaaS/landing-page formula.
 7. Keep the result practical for responsive frontend implementation.
 
 8. Create a subject-fidelity plan whenever the request has a primary visual subject. Extract category-defining silhouette cues, relative proportions, component topology, landmark features, material behavior, forbidden substitutions, and the desktop/mobile views that must prove recognizability. This applies universally rather than to any fixed product category. If the experience has no primary visual subject, state that explicitly and use empty cue arrays.
+9. Determine whether transactional commerce is actually part of the intended website experience.
+
+COMMERCE INTENT
+
+Interpret commerce from the meaning of the complete request, not from isolated words,
+page names, industries, product nouns, or lexical matches.
+
+Set commerce.mode to:
+
+NONE
+- The requested website does not require transactional purchasing functionality.
+- A brand may showcase products, collections, services, menus, work, or offerings
+  without being an ecommerce website.
+- A page or navigation label that could lead to products does not by itself require
+  transactional commerce.
+
+OPTIONAL
+- Both a non-transactional experience and a transactional commerce experience are
+  materially plausible from the request.
+- Use OPTIONAL only when choosing between them would materially change the site's
+  architecture or functionality.
+
+REQUIRED
+- The user's intended experience clearly requires transactional commerce functionality.
+
+Judge the visitor journey and requested functionality as a whole.
+Do not use business-category assumptions as evidence.
+Do not infer commerce merely because products are visually present.
+Do not infer commerce merely because something can theoretically be purchased.
+
+commerce.needsClarification may be true only when mode is OPTIONAL and resolving the
+ambiguity materially affects implementation.
+
+When clarification is needed:
+- clarificationQuestion must be a short user-facing question.
+- clarificationOptions must contain 2-4 concise meaningful answers.
+- One option should allow BuildEZ to make the decision for the user.
+
+When clarification is not needed:
+- clarificationQuestion must be an empty string.
+- clarificationOptions must be [].
 
 VISUAL QUALITY
 
@@ -777,11 +883,15 @@ EXPERIENCE TYPE CONTRACT
 
 USER CREATIVE DIRECTION.experienceType is authoritative:
 
-- "Immersive 3D / cinematic" requires a genuine IMMERSIVE_3D or
-  CINEMATIC experience with a coherent scroll narrative, layered depth,
-  sophisticated parallax, and real 3D/WebGL where it serves the concept.
-  Plan the external creative assets and approved libraries needed to
-  execute it; do not return a conventional landing page with a few fades.
+- "Immersive 3D / cinematic" requires a genuine CINEMATIC or IMMERSIVE_3D
+  experience with a coherent scroll narrative, layered depth, sophisticated
+  parallax, and authored visual set-pieces. Default to cinematic stills,
+  short motion plates, scroll-synced playback, pinned media stages and DOM
+  layering. Require real-time Three.js/WebGL only when imageStyle is "3D",
+  the free-text request explicitly asks for genuine interactive 3D/WebGL, or
+  the experience depends on manipulating spatial geometry. Do not return a
+  conventional landing page with a few fades, and do not turn ordinary
+  cinematic direction into primitive live 3D.
 - "Traditional modern" keeps the established polished responsive website
   path. Do not introduce heavy 3D/WebGL unless the free-text request
   explicitly asks for it.
@@ -882,23 +992,28 @@ Create one coherent implementation-ready design architecture.
         : "Traditional modern";
 
     if (experienceType === "Immersive 3D / cinematic") {
-      plan.experience = "IMMERSIVE_3D";
+      const needsLive3D = input.deterministicPlan.requires3D;
+      plan.experience = needsLive3D ? "IMMERSIVE_3D" : "CINEMATIC";
       plan.capabilities = [...new Set([
-        ...plan.capabilities,
-        "IMMERSIVE_3D" as const,
+        ...plan.capabilities.filter((capability) =>
+          needsLive3D || (capability !== "IMMERSIVE_3D" && capability !== "SHADER_WEBGL")
+        ),
+        ...(needsLive3D ? ["IMMERSIVE_3D" as const] : []),
         "PARALLAX" as const,
         "MOTION_RICH" as const,
-        "SHADER_WEBGL" as const,
+        ...(input.deterministicPlan.requiresWebGL ? ["SHADER_WEBGL" as const] : []),
       ])];
       plan.libraries = [...new Set([
-        ...plan.libraries,
+        ...plan.libraries.filter((library) =>
+          needsLive3D || !["three", "@react-three/fiber", "@react-three/drei"].includes(library)
+        ),
         "gsap",
-        "three",
-        "@react-three/fiber",
-        "@react-three/drei",
+        ...(needsLive3D
+          ? ["three", "@react-three/fiber", "@react-three/drei"]
+          : []),
       ])];
-      plan.mediaPlan.needs3DAssets = true;
-      plan.mediaPlan.needsShaderCode = true;
+      plan.mediaPlan.needs3DAssets = needsLive3D;
+      plan.mediaPlan.needsShaderCode = input.deterministicPlan.requiresWebGL;
       plan.mediaPlan.needsVideo = true;
       if (!plan.mediaPlan.videos.length) {
         plan.mediaPlan.videos = [{
@@ -909,9 +1024,10 @@ Create one coherent implementation-ready design architecture.
       }
       if (!plan.motionPlan.length) {
         plan.motionPlan = [
-          "GSAP ScrollTrigger timeline with pinned narrative scenes",
+          "Media-led GSAP ScrollTrigger timeline with pinned narrative scenes",
+          "Short motion plates may loop or use scroll as their playhead, with poster-backed failure states",
           "Layered foreground, subject and background parallax at bounded speeds",
-          "Pointer-responsive 3D depth with touch and reduced-motion fallbacks",
+          "Simplified mobile chapters and complete reduced-motion end states",
           "Section transitions that preserve one continuous visual story",
         ];
       }

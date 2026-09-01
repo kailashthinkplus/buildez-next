@@ -1,0 +1,3 @@
+# Install as /etc/sudoers.d/buildez-domain-provisioner using visudo -cf before enabling.
+# Replace www-data with the Unix account running the BuildEZ application.
+www-data ALL=(root) NOPASSWD: /var/www/buildez/apps/web-app/scripts/provision-nginx-domain.sh add *, /var/www/buildez/apps/web-app/scripts/provision-nginx-domain.sh remove *

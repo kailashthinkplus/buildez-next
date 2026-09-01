@@ -6,6 +6,7 @@ import test from "node:test";
 import { aiV12Boundary } from "./ai-v12";
 import { builderV3Boundary } from "./builder-v3";
 import { normalizeProjectPath } from "./builder-v3/project-workspace/path";
+import { normalizeGeneratedProjectFile } from "./builder-v3/project-workspace/reactSourceSafety";
 import { createCanvasModeContract, isBuilderV3CanvasMode } from "./builder-v3/canvas";
 import { validatePreviewMessage, validatePreviewProjectPaths } from "./builder-v3/preview";
 
@@ -58,6 +59,21 @@ test("V12 workspace paths are canonical and traversal-safe", () => {
   assert.equal(normalizeProjectPath("./src\\pages//Home.tsx"), "src/pages/Home.tsx");
   assert.throws(() => normalizeProjectPath("../secrets.env"), /traversal/);
   assert.throws(() => normalizeProjectPath("/etc/passwd"), /Invalid/);
+});
+
+test("generated Vite TypeScript configs remain buildable", () => {
+  const normalized = JSON.parse(normalizeGeneratedProjectFile(
+    JSON.stringify({
+      compilerOptions: {
+        moduleResolution: "Bundler",
+        allowImportingTsExtensions: true,
+      },
+    }),
+    "tsconfig.node.json",
+  ));
+
+  assert.equal(normalized.compilerOptions.allowImportingTsExtensions, true);
+  assert.equal(normalized.compilerOptions.noEmit, true);
 });
 
 test("preview and edit modes render the same canonical TSX project", () => {

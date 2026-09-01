@@ -2,6 +2,7 @@
 
 import OnboardingCard from "./components/OnboardingCard";
 import StepAccountType from "./components/StepAccountType";
+import StepPhoneVerify from "./components/StepPhoneVerify";
 import StepBusinessDetails from "./components/StepBusinessDetails";
 import StepChoosePlan from "./components/StepChoosePlan";
 import StepDomainLaunch from "./components/StepDomainLaunch";
@@ -41,13 +42,20 @@ export default function OnboardingPage() {
       )}
 
       {step === 1 && (
-        <StepBusinessDetails
+        <StepPhoneVerify
           onNext={() => goNext(2)}
           onBack={() => goBack(0)}
         />
       )}
 
       {step === 2 && (
+        <StepBusinessDetails
+          onNext={() => goNext(3)}
+          onBack={() => goBack(1)}
+        />
+      )}
+
+      {step === 3 && (
         <StepChoosePlan
           // ⭐ UPDATED → accept success payload
           onNext={(data?: any) => {
@@ -60,23 +68,23 @@ export default function OnboardingPage() {
                 subscriptionId: data.subscriptionId,
               });
             }
-            goNext(3);
+            goNext(4);
           }}
-          onBack={() => goBack(1)}
-        />
-      )}
-
-      {step === 3 && (
-        <StepDomainLaunch
-          onNext={() => goNext(4)}
           onBack={() => goBack(2)}
         />
       )}
 
       {step === 4 && (
+        <StepDomainLaunch
+          onNext={() => goNext(5)}
+          onBack={() => goBack(3)}
+        />
+      )}
+
+      {step === 5 && (
         <StepFinish
           paymentSummary={paymentSummary} // ⭐ NEW → pass to finish screen
-          onBack={() => goBack(3)}
+          onBack={() => goBack(4)}
         />
       )}
     </OnboardingCard>

@@ -5,7 +5,7 @@ import { randomUUID } from "node:crypto";
 
 import { materializePreviewProject } from "./materializePreview";
 import {
-  normalizeGeneratedReactEffects,
+  normalizeGeneratedProjectFile,
 } from "../project-workspace";
 import {
   createBuilderRuntimeScript,
@@ -327,13 +327,12 @@ export async function syncActivePreviewProjectFile(input: {
 
     let content = input.content;
 
-    if (/\.[jt]sx$/.test(input.path)) {
-      content =
-        normalizeGeneratedReactEffects(
-          content,
-          input.path
-        );
+    content = normalizeGeneratedProjectFile(
+      content,
+      input.path
+    );
 
+    if (/\.[jt]sx$/.test(input.path)) {
       content =
         instrumentTsxSource(
           content,

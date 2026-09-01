@@ -332,14 +332,12 @@ const statusTitle =
 const publishButtonLabel =
   savedPageStatus === "PUBLISHED" ? "Save changes" : "Publish";
 const pageSlug = currentPage?.slug ?? stripPageIdFromSlug(pageSlugWithId ?? "", pageId);
-const previewSlugWithId = currentPage
-  ? `${currentPage.slug}-${currentPage.id}`
-  : pageSlugWithId;
-const previewUrl = siteSlug && previewSlugWithId
-  ? `/preview/${siteSlug}/${previewSlugWithId}`
+const previewSlug = currentPage?.slug ?? stripPageIdFromSlug(pageSlugWithId ?? "", pageId);
+const previewUrl = siteSlug && previewSlug
+  ? `/preview/${siteSlug}/${previewSlug}`
   : "";
-const publicUrl = currentPage?.site.id && pageSlug
-  ? publishedSitePath(currentPage.site.id, pageSlug)
+const publicUrl = currentPage?.site.slug && pageSlug
+  ? publishedSitePath(currentPage.site.slug, pageSlug)
   : previewUrl;
 const currentPageTitle = currentPage?.title ?? pageTitle ?? "Untitled page";
   
@@ -477,9 +475,7 @@ async function handlePreview() {
     }
   }
 
-  const slugWithId = currentPage
-    ? `${currentPage.slug}-${currentPage.id}`
-    : pageSlugWithId;
+  const slugWithId = currentPage?.slug || pageSlugWithId;
 
   if (!slugWithId) {
     setToast({ message: "Preview unavailable", type: "error" });
@@ -543,7 +539,7 @@ const fullLastSavedAt = formatFullDate(lastSavedAt);
 
 
           <Image
-            src="/buildez-logo-dark.svg"
+              src="/buildez-logo-dark.svg"
             alt="BuildEZ"
             width={115}
             height={40}

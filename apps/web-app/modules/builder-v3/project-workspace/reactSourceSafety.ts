@@ -53,8 +53,41 @@ export function normalizeGeneratedReactEffects(content: string, filePath = "sour
     );
 }
 
+/**
+ * Normalize generated files that are accepted by both preview and publish.
+ * AI-authored Vite configs commonly enable `allowImportingTsExtensions`
+ * without also setting `noEmit`, which makes `tsc -b` fail before Vite can
+ * render anything.
+ */
+export function normalizeGeneratedProjectFile(content: string, filePath: string) {
+  if (/^(?:.*\/)?tsconfig(?:\.[^/]+)?\.json$/i.test(filePath)) {
+    try {
+      const parsed = JSON.parse(content) as {
+        compilerOptions?: Record<string, unknown>;
+      };
+      const compilerOptions = parsed.compilerOptions;
+
+      if (
+        compilerOptions?.allowImportingTsExtensions === true &&
+        compilerOptions.noEmit !== true &&
+        compilerOptions.emitDeclarationOnly !== true
+      ) {
+        compilerOptions.noEmit = true;
+        return `${JSON.stringify(parsed, null, 2)}\n`;
+      }
+    } catch {
+      // Validation will report malformed JSON; do not rewrite it here.
+    }
+  }
+
+  return /\.[jt]sx$/i.test(filePath)
+    ? normalizeGeneratedReactEffects(content, filePath)
+    : content;
+}
+
 export function normalizeGeneratedProjectFiles<T extends { path: string; content: string }>(files: readonly T[]) {
-  return files.map((file) => /\.[jt]sx$/i.test(file.path)
-    ? { ...file, content: normalizeGeneratedReactEffects(file.content, file.path) }
-    : file);
+  return files.map((file) => ({
+    ...file,
+    content: normalizeGeneratedProjectFile(file.content, file.path),
+  }));
 }

@@ -46,6 +46,11 @@ const ONBOARDING_ROUTES = [
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // The marketing homepage is public; product and account routes keep their guards.
+  if (pathname === "/") {
+    return NextResponse.next();
+  }
+
   console.log("\n==============================");
   console.log("🧭 MIDDLEWARE HIT");
   console.log("➡️ PATHNAME:", pathname);

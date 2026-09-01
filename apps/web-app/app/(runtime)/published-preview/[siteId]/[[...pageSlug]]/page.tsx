@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { prisma } from "@buildez/db";
 
-import { renderPublishedSitePage } from "@/modules/runtime/renderPublishedSitePage";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
 
 export const dynamic = "force-dynamic";
 
@@ -16,8 +16,5 @@ export default async function PublishedSitePreview({
     select: { id: true, slug: true },
   });
   if (!site) notFound();
-  return renderPublishedSitePage(site.slug, pageSlug?.[0], {
-    siteId: site.id,
-    preview: true,
-  });
+  permanentRedirect(publishedSitePath(site.slug, pageSlug?.join("/") || undefined));
 }

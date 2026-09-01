@@ -16,6 +16,10 @@ import {
 } from "@/modules/builder-v2/theme/siteLayout";
 import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
 
+// Deleted pages must never keep rendering here, and a stale render must
+// never be served from Next's route cache after a page is deleted.
+export const dynamic = "force-dynamic";
+
 /* ============================================================
    PREVIEW PAGE — APP ROUTER SAFE
    ------------------------------------------------------------
@@ -34,6 +38,8 @@ export default async function PreviewPage({
   const sitePages = await prisma.page.findMany({
     where: {
       site: { slug: siteSlug },
+      deletedAt: null,
+      deleted: false,
     },
     select: {
       id: true,

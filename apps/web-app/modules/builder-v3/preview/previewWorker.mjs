@@ -1,4 +1,6 @@
 import process from "node:process";
+import path from "node:path";
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import react from "@vitejs/plugin-react";
@@ -8,16 +10,27 @@ const port = Number(portValue);
 
 if (!root || !Number.isInteger(port) || !sessionId || !siteId) throw new Error("Invalid preview worker arguments");
 
+const projectRoot = path.resolve(root);
+const projectRequire = createRequire(path.join(projectRoot, "package.json"));
+const resolveProjectRuntime = (specifier) => {
+  try {
+    return projectRequire.resolve(specifier);
+  } catch {
+    return fileURLToPath(import.meta.resolve(specifier));
+  }
+};
+
 const runtimeAliases = {
-  react: fileURLToPath(import.meta.resolve("react")),
-  "react-dom/client": fileURLToPath(import.meta.resolve("react-dom/client")),
-  "react-router-dom": fileURLToPath(import.meta.resolve("react-router-dom")),
-  "react/jsx-runtime": fileURLToPath(import.meta.resolve("react/jsx-runtime")),
-  "react/jsx-dev-runtime": fileURLToPath(import.meta.resolve("react/jsx-dev-runtime")),
+  react: resolveProjectRuntime("react"),
+  "react-dom": resolveProjectRuntime("react-dom"),
+  "react-dom/client": resolveProjectRuntime("react-dom/client"),
+  "react-router-dom": resolveProjectRuntime("react-router-dom"),
+  "react/jsx-runtime": resolveProjectRuntime("react/jsx-runtime"),
+  "react/jsx-dev-runtime": resolveProjectRuntime("react/jsx-dev-runtime"),
 };
 
 const server = await createServer({
-  root,
+  root: projectRoot,
   configFile: false,
   plugins: [react()],
   resolve: {
@@ -28,7 +41,7 @@ const server = await createServer({
     host: "127.0.0.1",
     port,
     strictPort: true,
-    fs: { strict: true, allow: [root, process.cwd()] },
+    fs: { strict: true, allow: [projectRoot, process.cwd()] },
     proxy: {
       "/api/public/shopez": {
         target: process.env.BUILDEZ_PREVIEW_API_ORIGIN || "http://127.0.0.1:3000",

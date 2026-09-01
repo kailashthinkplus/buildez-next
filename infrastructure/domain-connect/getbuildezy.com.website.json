@@ -1,0 +1,13 @@
+{
+  "providerId": "getbuildezy.com",
+  "providerName": "BuildEZ",
+  "serviceId": "website",
+  "serviceName": "BuildEZ Website",
+  "version": 1,
+  "description": "Connect a domain to a published BuildEZ website.",
+  "syncRedirectDomain": "getbuildezy.com",
+  "records": [
+    { "type": "A", "host": "@", "pointsTo": "%serverIp%", "ttl": 600 },
+    { "type": "TXT", "host": "_buildez-verification", "data": "%verification%", "ttl": 600 }
+  ]
+}

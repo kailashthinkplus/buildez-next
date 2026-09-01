@@ -85,7 +85,7 @@ export function usePageMutations(siteSlug?: string) {
         console.warn("⚠️ Failed to parse SWR key:", key);
         return false;
       }
-    });
+    }, undefined, { revalidate: true });
   };
 
   return {
@@ -106,13 +106,15 @@ export function usePageMutations(siteSlug?: string) {
           siteSlug,
         });
 
-        await call("/api/pages", {
+        const result = await call("/api/pages", {
           title,
           siteSlug,
         });
 
         console.log("🟩 CREATE SUCCESS — refreshing pages");
         await refreshPages();
+
+        return result?.data?.data ?? result?.data ?? result;
       },
     },
 

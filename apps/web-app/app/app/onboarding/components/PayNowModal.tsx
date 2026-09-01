@@ -190,10 +190,19 @@ export default function PayNowModal({
               </p>
 
               <p className="text-4xl font-bold mt-2 drop-shadow-sm">
-                ₹{(price ?? 0).toLocaleString()}
+                ₹{(Math.round((price ?? 0) * 118) / 100).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
                 <span className="text-white/60 text-sm ml-1">
                   / {billing === "monthly" ? "month" : "year"}
                 </span>
+              </p>
+              <p className="mt-2 text-xs text-white/60">
+                ₹{(price ?? 0).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })} + 18% GST
               </p>
             </div>
 
@@ -234,7 +243,7 @@ export default function PayNowModal({
                 shadow-[0_0_20px_rgba(0,122,255,0.5)]
               `}
             >
-              {loading ? "Opening secure checkout…" : "Continue with Dodo →"}
+              {loading ? "Opening secure checkout…" : "Continue to payment →"}
             </button>
           </>
         )}

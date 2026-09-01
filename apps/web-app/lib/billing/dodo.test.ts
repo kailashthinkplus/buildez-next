@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { dodoPlanForProduct, parseDodoCreditPacks, parseDodoProductMap } from "./dodo";
+import {
+  dodoPlanForProduct,
+  latestSucceededDodoPaymentId,
+  parseDodoCreditPacks,
+  parseDodoProductMap,
+} from "./dodo";
 
 test("normalizes Dodo plan product mappings", () => {
   assert.deepEqual(parseDodoProductMap(JSON.stringify({ "starter:monthly": " pdt_starter " })), {
@@ -34,4 +39,27 @@ test("accepts only valid one-time credit pack configuration", () => {
     currency: "INR",
     productId: "pdt_small",
   }]);
+});
+
+test("selects the newest succeeded Dodo payment", () => {
+  assert.equal(
+    latestSucceededDodoPaymentId([
+      {
+        payment_id: "pay_failed",
+        status: "failed",
+        created_at: "2026-08-31T10:00:00.000Z",
+      },
+      {
+        payment_id: "pay_older",
+        status: "succeeded",
+        created_at: "2026-08-30T10:00:00.000Z",
+      },
+      {
+        payment_id: "pay_latest",
+        status: "succeeded",
+        created_at: "2026-08-31T09:00:00.000Z",
+      },
+    ]),
+    "pay_latest",
+  );
 });

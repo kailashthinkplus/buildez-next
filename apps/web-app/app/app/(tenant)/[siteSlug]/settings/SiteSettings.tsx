@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   BarChart3,
   Check,
@@ -20,6 +20,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { R2ImageUpload } from "@/components/media/R2ImageUpload";
+import { useWorkspace } from "../../components/WorkspaceContext";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
 
 type Site = { id: string; name: string; slug: string; status: string };
 type Domain = {
@@ -27,6 +29,11 @@ type Domain = {
   domain: string;
   status: string;
   cnameTarget: string;
+  verificationToken?: string | null;
+  sslStatus?: string;
+  provider?: string | null;
+  lastCheckedAt?: string | null;
+  lastDnsResult?: { readyResolvers?: number; totalResolvers?: number } | null;
 };
 type PageOption = { id: string; title: string; slug: string; status: string };
 type Form = Site & {
@@ -108,7 +115,9 @@ const tabs = [
 
 export default function SiteSettings({ site }: { site: Site }) {
   const router = useRouter();
-  const [tab, setTab] = useState<(typeof tabs)[number][0]>("general"),
+  const searchParams = useSearchParams();
+  const { updateWebsite } = useWorkspace();
+  const [tab, setTab] = useState<(typeof tabs)[number][0]>(searchParams.get("tab") === "domains" ? "domains" : "general"),
     [form, setForm] = useState<Form>(initial(site)),
     [pages, setPages] = useState<PageOption[]>([]),
     [loading, setLoading] = useState(true),
@@ -140,7 +149,15 @@ export default function SiteSettings({ site }: { site: Site }) {
       b = await r.json();
     setSaving(false);
     if (!r.ok) return setError(b.error || "Could not save settings");
-    setForm({ ...payload, ...b.site, ...b.site.settings });
+    const savedForm = { ...payload, ...b.site, ...b.site.settings } as Form;
+    setForm(savedForm);
+    updateWebsite(site.id, {
+      name: savedForm.name,
+      slug: savedForm.slug,
+      logoUrl: savedForm.logoUrl || null,
+      faviconUrl: savedForm.faviconUrl || null,
+    });
+    router.refresh();
     setSaved(true);
     setTimeout(() => setSaved(false), 1800);
   }
@@ -200,7 +217,7 @@ export default function SiteSettings({ site }: { site: Site }) {
         </nav>
         <main>
           {tab === "general" && (
-            <General form={form} set={setForm} pages={pages} />
+            <General form={form} set={setForm} pages={pages} save={save} />
           )}{" "}
           {tab === "localization" && <Localization form={form} set={setForm} />}{" "}
           {tab === "seo" && <Seo form={form} set={setForm} />}{" "}
@@ -225,10 +242,12 @@ function General({
   form,
   set,
   pages,
+  save,
 }: {
   form: Form;
   set: (x: Form) => void;
   pages: PageOption[];
+  save: (next?: Partial<Form>) => Promise<void>;
 }) {
   const pageOptions: [string, string][] = [
     ["", "Automatic (home or first published page)"],
@@ -273,7 +292,10 @@ function General({
             siteId={form.id}
             label="Browser favicon"
             value={form.faviconUrl}
-            onChange={(faviconUrl) => set({ ...form, faviconUrl })}
+            onChange={(faviconUrl) => {
+              set({ ...form, faviconUrl });
+              void save({ faviconUrl });
+            }}
             purpose="favicon"
             accept="image/png,image/svg+xml,image/x-icon,image/vnd.microsoft.icon"
             help="Use a square PNG, SVG, or ICO file."
@@ -434,7 +456,8 @@ function Seo({ form, set }: { form: Form; set: (x: Form) => void }) {
       </Card>
       <article className="rounded-2xl border dashboard-border bg-white p-5 dark:bg-white/[.03]">
         <p className="text-sm text-blue-600">
-          {form.canonicalUrl || `https://${form.slug}.buildez.app`}
+          {form.canonicalUrl ||
+            `https://${process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || "getbuildezy.com"}${publishedSitePath(form.slug)}`}
         </p>
         <h3 className="mt-1 text-xl text-[#1a0dab]">
           {form.seoTitle || form.name}
@@ -605,17 +628,24 @@ function Publishing({
   );
 }
 function Domains({ site }: { site: Site }) {
+  const searchParams = useSearchParams();
   const [domains, setDomains] = useState<Domain[]>([]),
     [platformUrl, setPlatformUrl] = useState(""),
+    [serverIp, setServerIp] = useState(""),
+    [canUseCustomDomain, setCanUseCustomDomain] = useState(false),
+    [integrations, setIntegrations] = useState({ cloudflare: false, godaddy: false }),
     [domain, setDomain] = useState(""),
     [working, setWorking] = useState(""),
-    [error, setError] = useState("");
+    [error, setError] = useState(searchParams.get("domainError") || "");
   const load = useCallback(async () => {
     const r = await fetch(`/api/sites/${site.id}/domains`),
       b = await r.json();
     if (r.ok) {
       setDomains(b.domains);
       setPlatformUrl(b.platformUrl);
+      setServerIp(b.serverIp || "");
+      setCanUseCustomDomain(b.canUseCustomDomain === true);
+      setIntegrations({ cloudflare: b.integrations?.cloudflare === true, godaddy: b.integrations?.godaddy === true });
     } else setError(b.error);
   }, [site.id]);
   useEffect(() => {
@@ -661,12 +691,9 @@ function Domains({ site }: { site: Site }) {
     <div className="space-y-5">
       <Card
         title="Connect a custom domain"
-        hint="BuildEZ automatically provisions the production Nginx site after you add the domain."
+        hint="Your custom address activates only after DNS ownership, propagation and secure access are confirmed."
       >
-        <div className="rounded-xl bg-blue-500/10 p-4 text-sm">
-          At your DNS provider, add an <strong>A record</strong> pointing to{" "}
-          <code className="font-semibold text-blue-600">206.189.129.113</code>.
-        </div>
+        {!canUseCustomDomain ? <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm"><strong>Platform address active</strong><p className="mt-1 dashboard-muted">Free websites publish at {platformUrl}. Upgrade to connect a domain you own.</p></div> : <div className="rounded-xl bg-blue-500/10 p-4 text-sm">Add the domain first. You can then connect through Cloudflare or GoDaddy, or copy the two DNS records shown below.</div>}
         <div className="mt-4 flex gap-2">
           <input
             value={domain}
@@ -675,13 +702,14 @@ function Domains({ site }: { site: Site }) {
             className="dashboard-input min-w-0 flex-1 rounded-xl p-3"
           />
           <button
-            disabled={!domain || working === "add"}
+            disabled={!canUseCustomDomain || !domain || working === "add"}
             onClick={() => void add()}
             className="rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white"
           >
             {working === "add" ? "Adding…" : "Add domain"}
           </button>
         </div>
+        {searchParams.get("domainConnected") === "1" && !error && <p className="mt-3 text-sm text-emerald-600">DNS records were connected. Verify propagation to activate secure publishing.</p>}
         {error && <p className="mt-3 text-sm text-rose-500">{error}</p>}
         <p className="mt-3 text-xs dashboard-muted">
           Platform address: {platformUrl}
@@ -693,9 +721,7 @@ function Domains({ site }: { site: Site }) {
             <Globe2 className="text-blue-500" />
             <div>
               <p className="font-semibold">{x.domain}</p>
-              <p className="text-xs dashboard-muted">
-                A → 206.189.129.113 · Shopez at /shop
-              </p>
+              <p className="text-xs dashboard-muted">Secure publishing: {x.sslStatus || "PENDING"}{x.provider ? ` · Connected with ${x.provider === "CLOUDFLARE" ? "Cloudflare" : "GoDaddy"}` : ""}</p>
             </div>
             <span
               className={`ml-auto rounded-full px-2 py-1 text-xs ${x.status === "VERIFIED" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}`}
@@ -703,10 +729,13 @@ function Domains({ site }: { site: Site }) {
               {x.status}
             </span>
           </div>
+          {x.status !== "VERIFIED" && <div className="mt-4 grid gap-2 md:grid-cols-2"><div className="rounded-xl border dashboard-border p-3"><p className="text-[10px] font-semibold uppercase dashboard-faint">Routing record</p><p className="mt-2 text-xs"><strong>A</strong> · {x.domain}</p><code className="mt-1 block break-all text-xs text-blue-600">{serverIp}</code><p className="mt-1 text-[10px] dashboard-faint">Use DNS only. Keep proxying off until activation.</p><button onClick={() => void navigator.clipboard.writeText(serverIp)} className="mt-2 flex items-center gap-1 text-[10px] font-semibold"><Copy size={12}/>Copy value</button></div><div className="rounded-xl border dashboard-border p-3"><p className="text-[10px] font-semibold uppercase dashboard-faint">Ownership record</p><p className="mt-2 break-all text-xs"><strong>TXT</strong> · _buildez-verification.{x.domain}</p><code className="mt-1 block break-all text-xs text-blue-600">{x.verificationToken}</code><button onClick={() => void navigator.clipboard.writeText(x.verificationToken || "")} className="mt-2 flex items-center gap-1 text-[10px] font-semibold"><Copy size={12}/>Copy value</button></div></div>}
+          {x.status !== "VERIFIED" && <div className="mt-3 flex flex-wrap gap-2">{integrations.cloudflare ? <a href={`/api/sites/${site.id}/domains/cloudflare/start?domainId=${encodeURIComponent(x.id)}`} className="rounded-xl border dashboard-border px-3 py-2 text-xs font-semibold dashboard-hover">Connect with Cloudflare</a> : null}{integrations.godaddy ? <a href={`/api/sites/${site.id}/domains/godaddy/start?domainId=${encodeURIComponent(x.id)}`} className="rounded-xl border dashboard-border px-3 py-2 text-xs font-semibold dashboard-hover">Connect with GoDaddy</a> : null}{!integrations.cloudflare && !integrations.godaddy ? <span className="text-xs dashboard-muted">Use the DNS records above. Assisted provider connection will appear when available.</span> : null}</div>}
+          {x.lastCheckedAt && <p className="mt-3 text-[10px] dashboard-faint">Last checked {new Date(x.lastCheckedAt).toLocaleString()} · {x.lastDnsResult?.readyResolvers || 0} of {x.lastDnsResult?.totalResolvers || 3} public resolvers ready</p>}
           <div className="mt-4 flex gap-2">
             <button
               onClick={() =>
-                void navigator.clipboard.writeText("206.189.129.113")
+                void navigator.clipboard.writeText(serverIp)
               }
               className="rounded-xl border dashboard-border p-2"
               aria-label="Copy server IP"

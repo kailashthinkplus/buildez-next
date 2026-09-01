@@ -21,6 +21,7 @@ import {
   capabilityPlanPrompt,
   requiresImmersiveToolchain,
   routeV12Capabilities,
+  type V12CapabilityPlan,
 } from "./capabilityRouter";
 import {
   planV12Experience,
@@ -44,10 +45,13 @@ import {
 } from "./executionPolicy";
 import { creativeMcpResultUrls, creativeMcpTools, hasConfiguredCreativeCapability } from "./creativeMcp";
 import { persistCreativeAsset } from "./persistCreativeAsset";
-import { immersiveAcceptanceFailures, requiresExternal3DModel } from "./experienceAcceptance";
+import { generateImmersiveFrameSequence } from "./immersiveFrameSequence";
+import { allowsUntextured3DGeometry, immersiveAcceptanceFailures, requiresExternal3DModel, requiresMultipleCameraViews } from "./experienceAcceptance";
+import { requestsFullPageGeneration } from "./generationIntent";
 import { Prisma, prisma } from "@buildez/db";
 import { prepareAgentReferences } from "./prepareReferences";
 import { normalizeThemeTokens } from "@/modules/builder-v2/theme/defaultTheme";
+import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
 import {
   generateSiteMedia,
   type GeneratedSiteMedia,
@@ -55,8 +59,6 @@ import {
 } from "./mediaGeneration";
 import {
   catalogMissingInputs,
-  commerceClarificationMessage,
-  detectCommerceIntent,
   ensureShopezProductImages,
   getOrCreateAgentConversation,
   persistCommerceAttachments,
@@ -85,6 +87,80 @@ export type V12SelectedElementTarget = {
   editableCapabilities: string[];
   projectRevision: number;
 };
+
+export type V12AgentInput = {
+  siteId: string;
+  pageId?: string;
+  tenantId: string;
+  userId: string;
+  planCode?: string | null;
+  planFeatures?: readonly V12PlanFeatureInput[] | null;
+  prompt: string;
+  context: "Website" | "Page" | "Selected element" | "Image";
+  selectedElement?: V12SelectedElementTarget;
+  creativeDirection: CreativeDirection;
+  mode: "auto" | "discuss";
+  attachments: File[];
+  signal: AbortSignal;
+  onProgress?(title: string, detail?: string, metadata?: { revision?: number; previewReady?: boolean }): void;
+};
+
+export type V12AgentAction = {
+  id: string;
+  label: string;
+  value: string;
+};
+
+export type V12AgentResult = {
+  message: string;
+  actions?: readonly V12AgentAction[];
+  files: AgentFile[];
+  revision: number;
+  fileCount: number;
+  model: string;
+  status?: "needs_input" | "completed";
+  preMutationCheckpointId?: string;
+};
+
+/*
+ * Everything the "generate" stage needs, computed once by the "plan"
+ * stage and persisted (as V12GenerationJob.state) across the HTTP
+ * request boundary. Splitting the pipeline this way means no single
+ * request has to run reference analysis + web research + design
+ * planning + media generation + code generation end to end, which is
+ * what pushed immersive/cinematic requests past the platform's
+ * request timeout.
+ */
+export type V12PipelineState = {
+  pageId: string;
+  selectedPage: { id: string; title: string; slug: string; renderMode: string } | null;
+  selectedPageRoute: string;
+  selectedPageHasProjectRoute: boolean;
+  isFreshFullPageGeneration: boolean;
+  effectivePrompt: string;
+  generationPrompt: string;
+  capabilityPlan: V12CapabilityPlan;
+  capabilityContext: string;
+  designArchitectPlan: V12DesignArchitectResult | null;
+  visualSpecification: string;
+  directReferenceInputs: Array<Record<string, unknown>>;
+  canonicalTheme: BuilderThemeTokens;
+  generatedMedia: GeneratedSiteMedia[];
+  creativeDirectorSpecification: string;
+  assetToolPlan: V12AssetToolPlan | null;
+  webResearchPrompt: string;
+  isEcommerce: boolean;
+  commercePrompt: string;
+  shouldRebuildFromScratch: boolean;
+  currentProject: string;
+  currentFiles: ProjectFile[];
+  hasReferenceInputs: boolean;
+  frameSequence: { frameUrls: string[] } | null;
+};
+
+export type V12PlanOutcome =
+  | { kind: "done"; result: V12AgentResult }
+  | { kind: "continue"; state: V12PipelineState };
 
 const selectedElementPatchSchema = {
   type: "object",
@@ -450,6 +526,64 @@ function parseResult(text: string, requireFiles: boolean) {
   if ((requireFiles && !files.length) || files.some(file => !file.path || !file.content)) throw new Error("The agent returned an invalid project file set.");
   if (files.length) validatePreviewProjectPaths(files.map(file => file.path));
   return { message: typeof value.message === "string" ? value.message : "Your page is ready to review.", files };
+}
+
+function ensureActiveWebsitePageRoute(input: {
+  files: readonly AgentFile[];
+  context: "Website" | "Page" | "Selected element" | "Image";
+  selectedPage?: { id: string; title: string; slug: string };
+}) {
+  const selectedPage = input.selectedPage;
+  if (input.context !== "Website" || !selectedPage || selectedPage.slug === "home") {
+    return [...input.files];
+  }
+
+  const route = `/${selectedPage.slug.replace(/^\/+|\/+$/g, "")}`;
+  const registryIndex = input.files.findIndex(
+    (file) => file.path === "src/buildez.pages.json",
+  );
+  if (registryIndex < 0) return [...input.files];
+
+  try {
+    const registry = JSON.parse(input.files[registryIndex].content);
+    if (!Array.isArray(registry)) return [...input.files];
+    if (registry.some((entry) => object(entry).route === route)) {
+      return [...input.files];
+    }
+
+    const homepage = registry.find((entry) => object(entry).route === "/");
+    if (!homepage) return [...input.files];
+
+    const homepageEntry = object(homepage);
+    const maxOrder = registry.reduce(
+      (highest, entry) => Math.max(highest, Number(object(entry).order) || 0),
+      0,
+    );
+    const now = new Date().toISOString();
+    const activeRouteEntry = {
+      ...homepageEntry,
+      id: `buildez-${selectedPage.id}`,
+      name: selectedPage.title,
+      title: selectedPage.title,
+      slug: selectedPage.slug,
+      route,
+      order: maxOrder + 1,
+      includeInNavigation: false,
+      isHomepage: false,
+      createdAt: homepageEntry.createdAt || now,
+      updatedAt: now,
+      aliasOf: "/",
+    };
+    const files = [...input.files];
+    files[registryIndex] = {
+      ...files[registryIndex],
+      content: `${JSON.stringify([...registry, activeRouteEntry], null, 2)}\n`,
+    };
+    return files;
+  } catch {
+    // The ordinary registry validator will surface malformed generated JSON.
+    return [...input.files];
+  }
 }
 
 async function syncGeneratedSiteMetadata(input: {
@@ -919,11 +1053,19 @@ ${JSON.stringify(creativeDirection, null, 2)}`,
   };
 }
 
-export async function runV12Agent(input: { siteId: string; pageId?: string; tenantId: string; userId: string;
- planCode?: string | null; planFeatures?: readonly V12PlanFeatureInput[] | null; prompt: string; context: "Website" | "Page" | "Selected element" | "Image"; selectedElement?: V12SelectedElementTarget; creativeDirection: CreativeDirection; mode: "auto" | "discuss"; attachments: File[]; signal: AbortSignal; onProgress?(title: string, detail?: string, metadata?: { revision?: number; previewReady?: boolean }): void }) {
+/*
+ * PLAN STAGE
+ *
+ * Reference analysis + web research + design architecture + media
+ * generation. Returns either a terminal result (selected-element edit,
+ * commerce clarification, image clarification — all fast, single-pass
+ * flows that never risked the timeout) or a "continue" outcome carrying
+ * the state the generate stage needs.
+ */
+export async function runV12AgentPlan(input: V12AgentInput): Promise<V12PlanOutcome> {
   if (imageRequestNeedsClarification(input.prompt)) {
     input.onProgress?.("Image details needed", "Waiting for subject and visual direction before generation");
-    return { message: IMAGE_CLARIFICATION_MESSAGE, files: [], revision: 0, fileCount: 0, model: "clarification" };
+    return { kind: "done", result: { message: IMAGE_CLARIFICATION_MESSAGE, files: [], revision: 0, fileCount: 0, model: "clarification" } };
   }
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OpenAI is not configured.");
@@ -1200,18 +1342,21 @@ export async function runV12Agent(input: { siteId: string; pageId?: string; tena
     );
 
     return {
-      message:
-        `Updated the selected ${target.tagName} without changing the surrounding page.`,
-      files: [
-        {
-          path: current.path,
-          content: patchedContent,
-        },
-      ],
-      revision: writeResult.revision,
-      fileCount: writeResult.changed ? 1 : 0,
-      model:
-        selectedElementExecutionPolicy.models.implementation,
+      kind: "done",
+      result: {
+        message:
+          `Updated the selected ${target.tagName} without changing the surrounding page.`,
+        files: [
+          {
+            path: current.path,
+            content: patchedContent,
+          },
+        ],
+        revision: writeResult.revision,
+        fileCount: writeResult.changed ? 1 : 0,
+        model:
+          selectedElementExecutionPolicy.models.implementation,
+      },
     };
   }
 
@@ -1264,6 +1409,11 @@ the result a real website. Typically this will be at least 4 distinct
 routes unless the user's request clearly justifies fewer.
 
 The home page MUST be route "/".
+
+When ACTIVE BUILDEZ PAGE below has a non-home route, also register that route
+as a non-navigation alias of the homepage in src/buildez.pages.json and make
+the application router render the homepage component at that route. This is
+the canvas route the user is actively building, so it must never be left blank.
 
 Create additional routes appropriate to the specific brief, for example
 services, capabilities, about, work/case studies, solutions, contact,
@@ -1327,9 +1477,46 @@ Do not expand this request into additional pages or routes.
     generationScope,
   );
 
-  const effectivePrompt = commerceContext.requestPrompt && currentPrompt
-    ? `${commerceContext.requestPrompt}\n\nAdditional catalogue details:\n${currentPrompt}`
-    : currentPrompt || commerceContext.requestPrompt;
+  const pendingCommerceClarification =
+    commerceContext.pendingClarification;
+
+  const resolvingCommerceClarification =
+    Boolean(
+      pendingCommerceClarification &&
+      currentPrompt
+    );
+
+  const continuingCommerceIntake =
+    commerceContext.phase === "WAITING_FOR_CATALOG" &&
+    Boolean(commerceContext.requestPrompt);
+
+  const effectivePrompt =
+    resolvingCommerceClarification &&
+    pendingCommerceClarification
+      ? `${pendingCommerceClarification.originalPrompt}
+
+CLARIFICATION REQUESTED:
+${pendingCommerceClarification.question}
+
+USER RESPONSE:
+${currentPrompt}`
+      : continuingCommerceIntake && currentPrompt
+        ? `${commerceContext.requestPrompt}\n\nAdditional catalogue details:\n${currentPrompt}`
+        : currentPrompt || commerceContext.requestPrompt;
+
+  if (resolvingCommerceClarification) {
+    commerceContext = {
+      ...commerceContext,
+      pendingClarification: null,
+    };
+
+    await saveCommerceContext({
+      conversationId: conversation.id,
+      existingContext: conversation.context,
+      commerce: commerceContext,
+      phase: "INTERVIEW",
+    });
+  }
   await recordAgentMessage({
     conversationId: conversation.id,
     role: "user",
@@ -1344,40 +1531,8 @@ Do not expand this request into additional pages or routes.
     },
     userId: input.userId,
   });
-  const promptCommerce = detectCommerceIntent(effectivePrompt);
   const existingProductCount = site.shop?._count.products || 0;
-  const commerceAlreadyExpected = commerceContext.intent || existingProductCount > 0;
-  if ((promptCommerce.isEcommerce || commerceAlreadyExpected) && existingProductCount === 0 && !input.attachments.length && !commerceContext.attachments.length) {
-    const missingInputs = ["product photos", "product names", "prices and currency"];
-    commerceContext = {
-      ...commerceContext,
-      phase: "WAITING_FOR_CATALOG",
-      intent: true,
-      lastMissingInputs: missingInputs,
-      requestPrompt: effectivePrompt,
-    };
-    await saveCommerceContext({
-      conversationId: conversation.id,
-      existingContext: conversation.context,
-      commerce: commerceContext,
-      phase: "INTERVIEW",
-    });
-    const message = commerceClarificationMessage(missingInputs);
-    await recordAgentMessage({
-      conversationId: conversation.id,
-      role: "assistant",
-      content: { text: message, status: "needs_input", missingInputs },
-    });
-    input.onProgress?.("Product catalogue needed", "Waiting for product photos and details before building the storefront");
-    return {
-      message,
-      files: [],
-      revision: project.currentRevision,
-      fileCount: 0,
-      model: "commerce-intake",
-      status: "needs_input" as const,
-    };
-  }
+
   const metadata = await listProjectFiles(input.siteId, input.tenantId);
   const currentFiles = await Promise.all(metadata.map(async file => ({ path: file.path, content: (await readProjectFile(input.siteId, input.tenantId, file.path)).content })));
   input.onProgress?.("Workspace loaded", `${currentFiles.length} existing files · revision ${project.currentRevision}`);
@@ -1476,16 +1631,15 @@ Do not expand this request into additional pages or routes.
 
   // A user can explicitly request a complete page/site generation
   // even when the currently selected route already exists.
-  const requestsFullPageGeneration =
-    /\b(build|create|design|generate|make|redesign|rebuild|revamp)\b[\s\S]{0,80}\b(website|site|landing page|homepage|home page|page)\b/i
-      .test(effectivePrompt);
+  const requestsCompletePageGeneration =
+    requestsFullPageGeneration(effectivePrompt);
 
   const isFreshFullPageGeneration =
     Boolean(effectivePrompt) &&
     (
       isFreshWebsiteGeneration ||
       isFreshPageGeneration ||
-      requestsFullPageGeneration
+      requestsCompletePageGeneration
     );
 
   /*
@@ -1737,6 +1891,77 @@ ${scopeContract}`,
       designVariationSeed: designVariationId,
       signal: input.signal,
     });
+
+    if (
+      !resolvingCommerceClarification &&
+      designArchitectPlan.commerce.mode === "OPTIONAL" &&
+      designArchitectPlan.commerce.needsClarification &&
+      designArchitectPlan.commerce.clarificationQuestion.trim() &&
+      designArchitectPlan.commerce.clarificationOptions.length
+    ) {
+      const question =
+        designArchitectPlan.commerce.clarificationQuestion.trim();
+
+      const options =
+        designArchitectPlan.commerce.clarificationOptions
+          .map((label) => label.trim())
+          .filter(Boolean)
+          .slice(0, 4);
+
+      if (options.length) {
+        const actions: V12AgentAction[] =
+          options.map((label, index) => ({
+            id: `commerce-clarification-${index + 1}`,
+            label,
+            value: label,
+          }));
+
+        commerceContext = {
+          ...commerceContext,
+          pendingClarification: {
+            question,
+            options,
+            originalPrompt: effectivePrompt,
+          },
+          requestPrompt: effectivePrompt,
+        };
+
+        await saveCommerceContext({
+          conversationId: conversation.id,
+          existingContext: conversation.context,
+          commerce: commerceContext,
+          phase: "INTERVIEW",
+        });
+
+        await recordAgentMessage({
+          conversationId: conversation.id,
+          role: "assistant",
+          content: {
+            text: question,
+            status: "needs_input",
+            actions,
+          },
+        });
+
+        input.onProgress?.(
+          "One choice needed",
+          "Choose an option to continue generation",
+        );
+
+        return {
+          kind: "done",
+          result: {
+            message: question,
+            actions,
+            files: [],
+            revision: project.currentRevision,
+            fileCount: 0,
+            model,
+            status: "needs_input" as const,
+          },
+        };
+      }
+    }
 
     // The unified architect may improve a short prompt.
     generationPrompt =
@@ -2122,10 +2347,27 @@ ${scopeContract}
     );
   }
 
-  const isEcommerce = promptCommerce.isEcommerce
-    || commerceAlreadyExpected
-    || referenceCommerce.isEcommerce
-    || referenceCommerce.products.length > 0;
+  const architectCommerceRequired =
+    designArchitectPlan?.commerce.mode === "REQUIRED";
+
+  /*
+   * Commerce authority:
+   * 1. Existing real ShopEZ catalogue
+   * 2. Persisted commerce for an already-built website
+   * 3. Semantic Design Architect (fresh generation)
+   * 4. Semantic reference analysis
+   *
+   * Product imagery alone must never activate ShopEZ.
+   */
+  const persistedCommerceForExistingSite =
+    !isFreshFullPageGeneration &&
+    commerceContext.intent;
+
+  const isEcommerce =
+    existingProductCount > 0 ||
+    persistedCommerceForExistingSite ||
+    architectCommerceRequired ||
+    referenceCommerce.isEcommerce;
   let commercePrompt = isEcommerce ? buildShopezPrompt(site.slug) : "";
   if (isEcommerce) {
     input.onProgress?.(
@@ -2148,42 +2390,43 @@ ${scopeContract}
       attachments: persistedAttachments,
       requestPrompt: effectivePrompt,
     };
-    const missingInputs = existingProductCount === 0
-      ? catalogMissingInputs(referenceCommerce.products)
-      : [];
-    if (existingProductCount === 0 && missingInputs.length) {
+    const missingInputs =
+      existingProductCount === 0
+        ? catalogMissingInputs(referenceCommerce.products)
+        : [];
+
+    const catalogueReady =
+      existingProductCount > 0 ||
+      missingInputs.length === 0;
+
+    if (!catalogueReady) {
+      /*
+       * Missing catalogue data must not block website generation.
+       * Preserve commerce intent, but do not persist unverified
+       * products, prices, inventory, or publish an empty catalogue.
+       */
       commerceContext = {
         ...commerceContext,
-        phase: "WAITING_FOR_CATALOG",
+        phase: "NONE",
         intent: true,
         attachments: persistedAttachments,
+        stagedProductIds: [],
         lastMissingInputs: missingInputs,
         requestPrompt: effectivePrompt,
       };
-      await saveCommerceContext({
-        conversationId: conversation.id,
-        existingContext: conversation.context,
-        commerce: commerceContext,
-        phase: "INTERVIEW",
-      });
-      const message = commerceClarificationMessage(missingInputs);
-      await recordAgentMessage({
-        conversationId: conversation.id,
-        role: "assistant",
-        content: { text: message, status: "needs_input", missingInputs },
-      });
-      input.onProgress?.("More product information needed", missingInputs.join(", "));
-      return {
-        message,
-        files: [],
-        revision: project.currentRevision,
-        fileCount: 0,
-        model,
-        status: "needs_input" as const,
-      };
+
+      input.onProgress?.(
+        "ShopEZ ready for catalogue",
+        "Continuing generation without publishing unverified product data",
+      );
     }
-    if (existingProductCount === 0) {
-      input.onProgress?.("Creating ShopEZ catalogue", "Cropping product media and staging verified catalogue fields");
+
+    if (existingProductCount === 0 && catalogueReady) {
+      input.onProgress?.(
+        "Creating ShopEZ catalogue",
+        "Cropping product media and staging verified catalogue fields",
+      );
+
       const staged = await stageExtractedProducts({
         siteId: input.siteId,
         tenantId: input.tenantId,
@@ -2191,6 +2434,7 @@ ${scopeContract}
         products: referenceCommerce.products,
         cropSources: prepared.cropSources,
       });
+
       commerceContext = {
         ...commerceContext,
         phase: "PRODUCTS_STAGED",
@@ -2200,17 +2444,20 @@ ${scopeContract}
         lastMissingInputs: [],
         requestPrompt: effectivePrompt,
       };
+
       await saveCommerceContext({
         conversationId: conversation.id,
         existingContext: conversation.context,
         commerce: commerceContext,
         phase: "READY",
       });
+
       input.onProgress?.(
         "ShopEZ catalogue ready",
         `${staged.createdCount} product${staged.createdCount === 1 ? "" : "s"} created${staged.reusedCount ? ` · ${staged.reusedCount} existing reused` : ""}`,
       );
-    } else {
+
+    } else if (existingProductCount > 0) {
       input.onProgress?.("Checking product media", "Filling missing ShopEZ product photography with generated catalog images");
       const media = await ensureShopezProductImages({
         siteId: input.siteId,
@@ -2246,7 +2493,7 @@ ${scopeContract}
   // ----------------------------------------------------------
 
   const shouldRebuildFromScratch =
-    requestsFullPageGeneration &&
+    requestsCompletePageGeneration &&
     isFreshFullPageGeneration &&
     prepared.inputs.length === 0;
 
@@ -2271,6 +2518,164 @@ BuildEZ project structure.`
       ? "FULL_REBUILD"
       : "INCREMENTAL_EDIT",
   );
+
+  // action / projectSchema / externalCreativeTools are cheap pure
+  // functions of persisted state + the fresh per-request input, so the
+  // generate stage recomputes them itself rather than persisting them.
+  const external3DModelRequired = requiresExternal3DModel(
+    effectivePrompt || generationPrompt || "",
+    capabilityPlan,
+  );
+  if (external3DModelRequired && !hasConfiguredCreativeCapability("threeD")) {
+    throw new Error(
+      "BuildEZ cannot create this high-fidelity 3D experience yet because no Builder 3D provider is configured. Configure MESHY_MCP_URL or SPLINE_MCP_URL, then retry. The project was not changed and BuildEZ will not substitute flat imagery or primitive geometry.",
+    );
+  }
+
+  // ----------------------------------------------------------
+  // IMMERSIVE 3D → FRAME SEQUENCE (replaces live Three.js/R3F)
+  //
+  // Hand-authored WebGL scenes reliably come out primitive and
+  // unpolished. When a hero image exists and a video+frame-extraction
+  // provider chain is configured, animate that image into a short
+  // cinematic clip and extract a frame sequence instead — the
+  // generate stage renders it on a scroll-scrubbed canvas rather than
+  // writing live geometry. This never touches anything outside the
+  // requires3D path: when it's not applicable, not configured, or
+  // fails, frameSequence stays null and generation proceeds exactly
+  // as it does today.
+  // ----------------------------------------------------------
+
+  let frameSequence: { frameUrls: string[] } | null = null;
+
+  if (capabilityPlan.requires3D && !external3DModelRequired) {
+    const heroImage = generatedMedia.find((media) => /hero|keyframe|primary|opening/i.test(media.role));
+
+    if (heroImage) {
+      input.onProgress?.(
+        "Animating the 3D scene",
+        "Generating a cinematic camera move and extracting a frame sequence",
+      );
+
+      frameSequence = await generateImmersiveFrameSequence({
+        siteId: input.siteId,
+        tenantId: input.tenantId,
+        userId: input.userId,
+        heroImageUrl: heroImage.url,
+        subjectPrompt: heroImage.prompt || effectivePrompt,
+        signal: input.signal,
+      });
+
+      if (frameSequence) {
+        input.onProgress?.(
+          "3D frame sequence ready",
+          `${frameSequence.frameUrls.length} frames generated for scroll-driven playback`,
+        );
+      }
+    }
+  }
+
+  input.onProgress?.(
+    "Design and research complete",
+    "Continuing to code generation",
+  );
+
+  return {
+    kind: "continue",
+    state: {
+      pageId,
+      selectedPage: selectedPage
+        ? {
+            id: selectedPage.id,
+            title: selectedPage.title,
+            slug: selectedPage.slug,
+            renderMode: selectedPage.renderMode,
+          }
+        : null,
+      selectedPageRoute,
+      selectedPageHasProjectRoute,
+      isFreshFullPageGeneration,
+      effectivePrompt,
+      generationPrompt,
+      capabilityPlan,
+      capabilityContext,
+      designArchitectPlan,
+      visualSpecification,
+      directReferenceInputs,
+      canonicalTheme,
+      generatedMedia,
+      creativeDirectorSpecification,
+      assetToolPlan,
+      webResearchPrompt,
+      isEcommerce,
+      commercePrompt,
+      shouldRebuildFromScratch,
+      currentProject,
+      currentFiles,
+      hasReferenceInputs: prepared.inputs.length > 0,
+      frameSequence,
+    },
+  };
+}
+
+/*
+ * GENERATE STAGE
+ *
+ * Runs the single project code-generation call (plus, on an acceptance
+ * failure, one bounded repair pass targeting only the failing files
+ * instead of a full-project regeneration), then verifies, checkpoints
+ * and commits the result. This is its own HTTP request/stage so a full
+ * project generation never has to share a timeout budget with the
+ * research/design/media work the plan stage already completed.
+ */
+export async function runV12AgentGenerate(
+  state: V12PipelineState,
+  input: V12AgentInput,
+): Promise<V12AgentResult> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("OpenAI is not configured.");
+
+  const project = await getOrCreateProject(input.siteId, input.tenantId);
+
+  const executionPolicy = resolveV12ExecutionPolicy(
+    input.planCode,
+    input.planFeatures,
+  );
+  const model = executionPolicy.models.implementation;
+
+  const conversation = await getOrCreateAgentConversation({
+    tenantId: input.tenantId,
+    siteId: input.siteId,
+    pageId: state.pageId,
+    userId: input.userId,
+  });
+  let commerceContext = readCommerceContext(conversation.context);
+
+  const {
+    selectedPage,
+    selectedPageRoute,
+    selectedPageHasProjectRoute,
+    isFreshFullPageGeneration,
+    effectivePrompt,
+    generationPrompt,
+    capabilityPlan,
+    capabilityContext,
+    designArchitectPlan,
+    visualSpecification,
+    directReferenceInputs,
+    canonicalTheme,
+    generatedMedia,
+    creativeDirectorSpecification,
+    assetToolPlan,
+    webResearchPrompt,
+    isEcommerce,
+    commercePrompt,
+    shouldRebuildFromScratch,
+    currentProject,
+    currentFiles,
+    hasReferenceInputs,
+    frameSequence,
+  } = state;
 
   const action = input.mode === "discuss" ? "Respond thoughtfully, but if the user requests a change, implement it." : "Build or modify the website now.";
   const projectSchema = {
@@ -2303,18 +2708,14 @@ BuildEZ project structure.`
         images: Boolean(assetToolPlan?.needsGeneratedImages),
         video: Boolean(assetToolPlan?.needsVideo),
         threeD: Boolean(assetToolPlan?.needs3DAssets),
-        design: prepared.inputs.length > 0,
+        design: hasReferenceInputs,
       })
     : [];
   const external3DModelRequired = requiresExternal3DModel(
     effectivePrompt || generationPrompt || "",
     capabilityPlan,
   );
-  if (external3DModelRequired && !hasConfiguredCreativeCapability("threeD")) {
-    throw new Error(
-      "BuildEZ cannot create this high-fidelity 3D experience yet because no Builder 3D provider is configured. Configure MESHY_MCP_URL or SPLINE_MCP_URL, then retry. The project was not changed and BuildEZ will not substitute flat imagery or primitive geometry.",
-    );
-  }
+
   const generationText = `You are BuildEZ, an autonomous creative director, senior website designer, motion designer, and frontend engineer. ${action}
 
 FULL-PAGE GENERATION PRIORITIES:
@@ -2401,14 +2802,35 @@ If the Capability Plan requires:
 implement those capabilities instead of downgrading the request to a standard landing page.
 
 For every experience with a primary visual subject, subject fidelity is a release gate. Follow the Design Architect's subject-fidelity plan: establish the requested subject's recognizable silhouette, proportions, topology, landmark features, materials and spatial orientation before adding stylization, shaders, particles, camera motion or copy. Validate the specified desktop and mobile views. A technically polished but unrecognizable substitute is not an acceptable fallback and must be revised before completion.
+${frameSequence ? `
+IMMERSIVE 3D VIA PRE-RENDERED FRAME SEQUENCE:
 
+A cinematic camera move around this experience's primary subject has already been rendered and split into ${frameSequence.frameUrls.length} sequential frames (listed below, in playback order). Use these frames as the 3D/immersive visual INSTEAD OF writing live Three.js/React Three Fiber geometry — the frame sequence already IS the 3D experience, and the live-3D bullets under IMMERSIVE ACCEPTANCE CONTRACT below do not apply to this subject.
+
+Implement a scroll-scrubbed frame-sequence component:
+- Preload every frame image.
+- Render them onto a single <canvas> element sized to fill its section.
+- Map scroll progress within that section (0 to 1) to a frame index (0 to ${frameSequence.frameUrls.length - 1}) and draw the corresponding frame via drawImage(), replacing the previous draw — never stack, cross-fade, or animate multiple <img> elements instead.
+- The mapping must feel like scrubbing through the camera move: smooth, monotonic, and updated every frame the user scrolls (requestAnimationFrame or a scroll listener), not a fixed-duration CSS/video autoplay.
+- Respect prefers-reduced-motion by holding on one representative frame instead of scrubbing.
+- Do NOT add @react-three/fiber, three, an R3F <Canvas>, or hand-authored WebGL geometry for this subject.
+
+FRAME SEQUENCE (playback order):
+${JSON.stringify(frameSequence.frameUrls)}
+` : ""}
 IMMERSIVE ACCEPTANCE CONTRACT:
-
+${frameSequence ? "\nThe live-3D bullets below do not apply to the subject covered by the pre-rendered frame sequence above; they still apply to any OTHER 3D/WebGL capability the Capability Plan requires.\n" : ""}
 - A full-screen shader plane, animated gradient, particle background, CSS perspective decoration, or ordinary reveal animation does not count as a 3D scene.
 - When 3D is required, implement a perspective 3D scene with a recognizable subject/model and scroll-directed camera or object choreography.
+- When multiple camera views are requested, define at least three distinct camera positions and look targets, then interpolate between them from real scroll progress.
 - Parallax requires simultaneous spatial separation, not one image drifting vertically. Implement at least three concurrent foreground/subject/background depth planes with distinct scroll transforms, or a scroll-driven perspective camera with visibly changing depth.
 - Mark DOM depth planes with data-buildez-depth-layer="foreground|subject|background|..." so the generated experience can be verified. Use at least three distinct values.
 - Preserve the realistic primary subject while adding depth. Do not trade subject fidelity for primitive real-time geometry.
+- For multi-camera journeys, derive an activeScene/activeShot from scroll progress and isolate bounded scene sets. Render or reveal only the active set and its immediate transition neighbor; never keep every set globally visible.
+- Keep every scene inside its own spatial bounds. Do not use giant rings, slabs, floors, particle clouds, or other primitives that cross unrelated camera frustums.
+- Inspect the opening frame, every camera-transition midpoint, and the final frame. Reject clipping, black occluders, unfinished backsides, empty darkness, and geometry larger than its intended set.
+- Never use random solid-color primitives as the primary 3D visual. Unless the ORIGINAL USER REQUEST explicitly asks for low-poly, wireframe, clay, flat-shaded, solid-color, untextured, or geometric-abstraction art, visible 3D subject surfaces must use a textured GLTF/GLB or physically detailed color/albedo, normal, roughness, metalness and ambient-occlusion maps. A single color, gradient or glow is not a detailed material.
+- Limit untextured materials to a few thin emissive light strips or clearly structural accents. Do not use plain boxes, spheres, rings, slabs or particles as filler.
 
 EXTERNAL CREATIVE TOOLCHAIN:
 
@@ -2527,6 +2949,9 @@ GENERATED MEDIA USAGE RULES:
 - Use object-fit/object-position deliberately.
 - Use overlays, masks, depth, gradients or framing only where the Creative Director calls for them.
 - If an asset is meant to be a hero visual, make it visually substantial rather than a tiny decorative thumbnail.
+- When imageStyle is "Photorealistic", the generated cinematic hero keyframe MUST be visible in the primary page/hero composition at useful opacity. It may not exist only in a WebGL fallback.
+- In a photorealistic immersive build, use the generated render as the realism layer and bounded 3D as spatial enhancement. Do not cover the approved render with dark primitive geometry, global sparkles, or random parallax decoration.
+- A dark color mood still requires readable material separation, visible surfaces, controlled highlights, and a complete default frame. Darkness may not conceal unfinished geometry.
 
 
 CURRENT PROJECT:
@@ -2600,27 +3025,83 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
   }
   input.onProgress?.("Model response received", "Validating the generated project before applying it");
   let parsedResult = parseResult(outputText(payload), input.mode === "auto");
+  const photorealisticPrimaryMediaUrls = input.creativeDirection.imageStyle === "Photorealistic"
+    ? generatedMedia
+        .filter((media) => /hero|keyframe|primary|opening/i.test(media.role))
+        .map((media) => media.url)
+    : [];
   let acceptanceFailures = immersiveAcceptanceFailures(parsedResult.files, capabilityPlan, {
     requiresExternalModel: external3DModelRequired,
+    requiresMultipleCameraViews: requiresMultipleCameraViews(effectivePrompt),
+    photorealisticPrimaryMediaUrls,
+    allowUntexturedGeometry: allowsUntextured3DGeometry(effectivePrompt),
+    requiresCinematicNarrative:
+      input.creativeDirection.experienceType === "Immersive 3D / cinematic" ||
+      designArchitectPlan?.experience === "CINEMATIC" ||
+      capabilityPlan.capabilities.includes("PARALLAX"),
   });
   if (parsedResult.files.length && acceptanceFailures.length) {
+    // Targeted repair instead of a full-project regeneration: the model
+    // already produced a complete, mostly-correct project, so send it
+    // back only that project plus the specific failures and ask for the
+    // files that must change. This is both faster (much smaller
+    // max_output_tokens than a full rebuild) and safer (files unrelated
+    // to the failure are never touched, so a repair pass can't
+    // reintroduce a different regression elsewhere in the site).
     input.onProgress?.(
       "Correcting immersive depth",
       "The first build did not contain the required 3D/parallax implementation",
     );
+    const repairText = `You are BuildEZ. REPAIR PASS.
+
+The following project was just generated but failed acceptance checks. Treat it as the current state of the project.
+
+${parsedResult.files.map((file) => `--- ${file.path} ---\n${file.content}`).join("\n\n")}
+
+ACCEPTANCE FAILURES TO FIX:
+${acceptanceFailures.map((failure) => `- ${failure}`).join("\n")}
+
+Return ONLY the files that must change to fix these specific failures. Do not resend files that are already correct, and do not rewrite unrelated pages, sections, or content. Preserve all working functionality, styling, and content exactly as implemented except where a change is required to fix a listed failure.
+
+Return JSON only: {"message":"specific fix summary","files":[{"path":"...","content":"..."}]}.`;
     payload = await requestOpenAiResponse({
       apiKey,
-      body: generationBody(
-        "medium",
-        24_000,
-        `REJECTED IMPLEMENTATION. Rebuild the complete project and correct every acceptance failure below. Do not remove working visual quality or subject fidelity.\n\n${acceptanceFailures.map((failure) => `- ${failure}`).join("\n")}`,
-      ),
+      body: {
+        model,
+        reasoning: { effort: "low" },
+        max_output_tokens: 16_000,
+        text: {
+          format: {
+            type: "json_schema",
+            name: "buildez_agent_result",
+            strict: true,
+            schema: projectSchema,
+          },
+        },
+        input: [{ role: "user", content: [{ type: "input_text", text: repairText }] }],
+      },
       signal: input.signal,
-      timeoutMs: 300_000,
+      timeoutMs: 165_000,
     });
-    parsedResult = parseResult(outputText(payload), input.mode === "auto");
+    const repairResult = parseResult(outputText(payload), input.mode === "auto");
+    const mergedFilesByPath = new Map(parsedResult.files.map((file) => [file.path, file] as const));
+    for (const file of repairResult.files) {
+      mergedFilesByPath.set(file.path, file);
+    }
+    parsedResult = {
+      message: repairResult.message || parsedResult.message,
+      files: [...mergedFilesByPath.values()],
+    };
     acceptanceFailures = immersiveAcceptanceFailures(parsedResult.files, capabilityPlan, {
       requiresExternalModel: external3DModelRequired,
+      requiresMultipleCameraViews: requiresMultipleCameraViews(effectivePrompt),
+      photorealisticPrimaryMediaUrls,
+      allowUntexturedGeometry: allowsUntextured3DGeometry(effectivePrompt),
+      requiresCinematicNarrative:
+        input.creativeDirection.experienceType === "Immersive 3D / cinematic" ||
+        designArchitectPlan?.experience === "CINEMATIC" ||
+        capabilityPlan.capabilities.includes("PARALLAX"),
+      hasFrameSequence3D: Boolean(frameSequence),
     });
     if (acceptanceFailures.length) {
       throw new Error(`Immersive generation did not pass acceptance: ${acceptanceFailures.join(" ")}`);
@@ -2657,7 +3138,11 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
     : parsedResult;
   const result = {
     ...resultWithDurableAssets,
-    files: normalizeGeneratedProjectFiles(resultWithDurableAssets.files),
+    files: normalizeGeneratedProjectFiles(ensureActiveWebsitePageRoute({
+      files: resultWithDurableAssets.files,
+      context: input.context,
+      selectedPage: selectedPage ?? undefined,
+    })),
   };
 
   console.log(

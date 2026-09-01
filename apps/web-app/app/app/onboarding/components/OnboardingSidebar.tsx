@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import {
   User,
+  Smartphone,
   Building2,
   CreditCard,
   Globe,
@@ -26,6 +27,7 @@ export default function OnboardingSidebar({
 
   const steps = [
     { label: "Account type", icon: User },
+    { label: "Verify phone", icon: Smartphone },
     {
       label:
         accountType === "business" ? "Business details" : "Profile details",

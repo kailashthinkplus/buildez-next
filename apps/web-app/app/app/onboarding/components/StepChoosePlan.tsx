@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 
 // Modals
 import PayNowModal from "./PayNowModal";
+import EnterpriseContactModal from "@/components/billing/EnterpriseContactModal";
 
 type Plan = {
   code: string;
@@ -14,14 +15,30 @@ type Plan = {
   tag?: string | null;
   priceMonthly?: number | null;
   priceYearly?: number | null;
+  currency: string;
+  checkoutEnabled: Record<"monthly" | "yearly", boolean>;
+  isCustom: boolean;
   features: string[];
 };
+
+function formatMoney(amount: number, currency: string) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
+function withGst(amount: number) {
+  return Math.round(amount * 118) / 100;
+}
 
 export default function StepChoosePlan({
   onNext,
   onBack,
 }: {
-  onNext: (data?: any) => void;
+  onNext: (data?: unknown) => void;
   onBack: () => void;
 }) {
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -31,23 +48,35 @@ export default function StepChoosePlan({
 
   const [showPayNow, setShowPayNow] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
+  const [enterpriseOpen, setEnterpriseOpen] = useState(false);
 
   useEffect(() => {
     const checkoutResult = new URLSearchParams(window.location.search).get("checkout");
     if (checkoutResult === "cancelled") {
       history.replaceState(null, "", "/app/onboarding");
-      setCheckoutError("Checkout was cancelled. Your plan has not changed.");
+      sessionStorage.removeItem("pending-plan-code");
+      window.setTimeout(() => setCheckoutError("Checkout was cancelled. Your plan has not changed."), 0);
       return;
     }
     if (checkoutResult !== "success") return;
     let cancelled = false;
     let attempts = 0;
+    const expectedPlan = sessionStorage.getItem("pending-plan-code");
     const confirmSubscription = async () => {
       attempts += 1;
+      if (expectedPlan) {
+        await fetch("/api/billing/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ planCode: expectedPlan }),
+        }).catch(() => null);
+      }
       const response = await fetch("/api/billing/current", { cache: "no-store" }).catch(() => null);
       const payload = response ? await response.json().catch(() => null) : null;
-      if (!cancelled && response?.ok && payload?.subscription?.status === "ACTIVE") {
+      const activePlan = payload?.subscription?.planCode?.toUpperCase();
+      if (!cancelled && response?.ok && payload?.subscription?.status === "ACTIVE" && (!expectedPlan || activePlan === expectedPlan.toUpperCase())) {
         history.replaceState(null, "", "/app/onboarding");
+        sessionStorage.removeItem("pending-plan-code");
         onNext();
         return;
       }
@@ -82,7 +111,7 @@ export default function StepChoosePlan({
     if (!selected) return;
     setLoading(true);
 
-    await fetch("/api/onboarding/choose-plan", {
+    const response = await fetch("/api/onboarding/choose-plan", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ planId: selected, billing }),
@@ -90,27 +119,31 @@ export default function StepChoosePlan({
 
     setLoading(false);
 
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      setCheckoutError(payload.error || "Your plan selection could not be saved.");
+      return;
+    }
+
     // Continue to domain step
     onNext();
   }
 
   const selectedPlan = plans.find((p) => p.code === selected);
 
-  const modalPrice = selectedPlan
+  const selectedPrice = selectedPlan
     ? billing === "monthly"
-      ? selectedPlan.priceMonthly ?? 0
-      : selectedPlan.priceYearly ?? 0
-    : 0;
+      ? selectedPlan.priceMonthly
+      : selectedPlan.priceYearly
+    : null;
+
+  const modalPrice = selectedPrice ?? 0;
 
   const modalFeatures = selectedPlan?.features ?? [];
 
-const planCode = selected?.toUpperCase() ?? "";
-
-const isFreePlan = planCode === "FREE";
-const isStarter = planCode === "STARTER";
-const isPro = planCode === "PRO";
-const isBusiness = planCode === "BUSINESS";
-const isEnterprise = planCode === "ENTERPRISE";
+  const isFreePlan = selectedPrice === 0;
+  const isPaidPlan = typeof selectedPrice === "number" && selectedPrice > 0;
+  const checkoutEnabled = selectedPlan?.checkoutEnabled[billing] ?? false;
 
   return (
     <div className="max-w-6xl mx-auto space-y-4 pt-4 pb-8">
@@ -131,16 +164,18 @@ const isEnterprise = planCode === "ENTERPRISE";
             body: JSON.stringify({ planId: selected, billing }),
           });
           if (!selection.ok) throw new Error("Your plan selection could not be saved.");
-          const response = await fetch("/api/billing/dodo/checkout", {
+          const response = await fetch("/api/billing/checkout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ planCode: selected, billingCycle: billing, returnPath: "/app/onboarding" }),
           });
           const payload = await response.json().catch(() => ({}));
           if (!response.ok || !payload.checkoutUrl) throw new Error(payload.error || "Secure checkout could not be started.");
+          sessionStorage.setItem("pending-plan-code", selected);
           window.location.assign(payload.checkoutUrl);
         }}
       />
+      <EnterpriseContactModal open={enterpriseOpen} onClose={() => setEnterpriseOpen(false)} />
 
       {/* HEADER */}
       <p className="text-left text-xs tracking-widest text-blue-400">
@@ -210,8 +245,8 @@ const isEnterprise = planCode === "ENTERPRISE";
           const isActive = selected === plan.code;
           const price =
             billing === "monthly"
-              ? plan.priceMonthly ?? 0
-              : plan.priceYearly ?? 0;
+              ? plan.priceMonthly
+              : plan.priceYearly;
 
           return (
             <div
@@ -235,11 +270,16 @@ const isEnterprise = planCode === "ENTERPRISE";
               <p className="text-sm text-white/60 mb-3">{plan.description}</p>
 
               <div className="text-2xl font-semibold mb-4">
-                ₹{price.toLocaleString()}
-                <span className="text-sm text-white/60 ml-1">
+                {plan.isCustom ? "Custom" : price === null || price === undefined ? "Not offered" : formatMoney(withGst(price), plan.currency)}
+                {!plan.isCustom && price !== null && price !== undefined && <span className="text-sm text-white/60 ml-1">
                   / {billing === "monthly" ? "month" : "year"}
-                </span>
+                </span>}
               </div>
+              {!plan.isCustom && typeof price === "number" && price > 0 ? (
+                <p className="-mt-3 mb-4 text-xs text-white/60">
+                  {formatMoney(price, plan.currency)} + 18% GST
+                </p>
+              ) : null}
 
               <ul className="space-y-1.5 text-sm text-white/70 mb-5">
                 {plan.features.map((f) => (
@@ -251,7 +291,11 @@ const isEnterprise = planCode === "ENTERPRISE";
               </ul>
 
               <button
-                onClick={() => setSelected(plan.code)}
+                onClick={() => {
+                  setSelected(plan.code);
+                  if (billing === "yearly" && plan.priceYearly === null) setBilling("monthly");
+                  if (billing === "monthly" && plan.priceMonthly === null && plan.priceYearly !== null) setBilling("yearly");
+                }}
                 className={`
                   w-full py-2 rounded-xl text-sm transition
                   ${
@@ -282,13 +326,14 @@ const isEnterprise = planCode === "ENTERPRISE";
   {isFreePlan && (
     <button
       onClick={submitFreePlan}
-      className="px-5 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500"
+      disabled={loading}
+      className="px-5 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50"
     >
-      Continue →
+      {loading ? "Saving…" : "Continue →"}
     </button>
   )}
 
-  {(isStarter || isPro || isBusiness) && (
+  {isPaidPlan && checkoutEnabled && (
     <button
         onClick={() => setShowPayNow(true)}
         className="px-5 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500"
@@ -297,13 +342,25 @@ const isEnterprise = planCode === "ENTERPRISE";
       </button>
   )}
 
-  {isEnterprise && (
+  {isPaidPlan && !checkoutEnabled && (
+    <span className="rounded-xl border border-amber-400/20 bg-amber-400/10 px-5 py-2 text-sm text-amber-200">
+      Currently unavailable
+    </span>
+  )}
+
+  {selectedPlan?.isCustom && (
     <button
-      onClick={() => window.location.href="/contact-sales"}
-      className="px-5 py-2 rounded-xl bg-purple-600 text-white"
+      onClick={() => setEnterpriseOpen(true)}
+      className="px-5 py-2 rounded-xl bg-[#1349A3] text-white hover:bg-[#1D5FC7]"
     >
-      Contact Sales →
+      Contact us →
     </button>
+  )}
+
+  {selectedPlan && !selectedPlan.isCustom && (selectedPrice === null || selectedPrice === undefined) && (
+    <span className="rounded-xl border border-white/10 px-5 py-2 text-sm text-white/60">
+      Choose an available billing cycle
+    </span>
   )}
 
 </div>

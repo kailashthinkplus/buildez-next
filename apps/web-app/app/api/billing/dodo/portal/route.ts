@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     select: { dodoCustomerId: true },
   });
   if (!subscription?.dodoCustomerId) {
-    return Response.json({ error: "No Dodo billing account is connected yet." }, { status: 404 });
+    return Response.json({ error: "No billing account is connected yet." }, { status: 404 });
   }
   try {
     const session = await dodoClient().customers.customerPortal.create(subscription.dodoCustomerId, {
@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
     });
     return Response.json({ portalUrl: session.link });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "Billing portal could not be opened." }, { status: 502 });
+    console.error("Billing portal failed:", error);
+    return Response.json({ error: "Billing portal could not be opened." }, { status: 502 });
   }
 }

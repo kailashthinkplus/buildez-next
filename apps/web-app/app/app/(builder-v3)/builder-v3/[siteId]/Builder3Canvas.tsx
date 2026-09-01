@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import type { BuilderV3CanvasMode } from "@/modules/builder-v3/canvas";
-import { V12AgentPanel, type V12AgentEvent } from "@/modules/builder-v3/agent-ui";
+import { V12AgentPanel, V12CreditMeter, type V12AgentEvent } from "@/modules/builder-v3/agent-ui";
 import { BUILDER_BRIDGE_VERSION, validateBuilderBridgeMessage, type BuilderSelection } from "@/modules/builder-v3/visual-editor/contracts";
 import { NodeToolbar } from "@/modules/builder-v3/visual-editor/NodeToolbar";
 import { describeBuilderSelection } from "@/modules/builder-v3/visual-editor/selectionDescription";
@@ -371,8 +371,8 @@ export default function Builder3Canvas({
       const response = await fetch(`/api/pages/${page.id}/publish`, { method: "POST" });
       const payload = await response.json();
       if (!response.ok) throw new Error(apiErrorMessage(payload, "Could not publish page"));
-      const publicPath = publishedSitePath(siteId, page.slug);
-      const publicUrl = `${window.location.origin}${publicPath}`;
+      const publicUrl = canonicalPageUrl
+        ?? `${window.location.origin}${publishedSitePath(siteSlug, page.slug)}`;
       setPageStatus("PUBLISHED");
       setPublishResult({ status: "success", message: `${page.title} is now live.`, url: publicUrl });
       setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.completed", title: "Page published", detail: `${page.title} is now live`, timestamp: new Date().toISOString() }]);
@@ -499,6 +499,12 @@ export default function Builder3Canvas({
       if (!validateBuilderBridgeMessage(event.data, { sessionId: previewSessionId, direction: "to-builder" })) return;
       if (event.data.type === "BUILDEZ_PREVIEW_READY") {
         setError(undefined);
+        setAgentEvents((events) => events.filter(
+          (event) => !(
+            event.type === "tool.failed" &&
+            event.title === "Preview render failed"
+          ),
+        ));
         /*
          * Treat preview.ready as the bridge handshake. The iframe load event
          * can race the injected editor listener during startup/HMR, so confirm
@@ -552,6 +558,10 @@ export default function Builder3Canvas({
     return url.toString().replace(/\/$/, "");
   })();
 
+  const canonicalPageUrl = page?.slug && builderOrigin
+    ? `${builderOrigin}${publishedSitePath(siteSlug, page.slug)}`
+    : undefined;
+
   const iframeUrl =
     pagePreviewUrl && builderOrigin
       ? `${pagePreviewUrl}${
@@ -575,6 +585,28 @@ export default function Builder3Canvas({
   });
 
   const showBlankPageState = pageCanvasState !== "page";
+  const showCanvasGeneration =
+    pageCanvasState === "generating" ||
+    (agentRunning && !previewUrl);
+  const showCanvasGreeting =
+    !showCanvasGeneration &&
+    (
+      pageCanvasState === "blank" ||
+      (
+        !previewUrl &&
+        !error &&
+        workspaceLoaded &&
+        !agentRunning &&
+        !workspaceError &&
+        (workspace?.files?.length ?? 0) === 0
+      ) ||
+      (
+        Boolean(previewUrl) &&
+        !agentRunning &&
+        Boolean(workspace) &&
+        (workspace?.files?.length ?? 0) === 0
+      )
+    );
 
   useEffect(() => {
     sendCanvas("BUILDEZ_EDIT_MODE_CHANGED", { mode });
@@ -674,12 +706,13 @@ export default function Builder3Canvas({
 
   return (
     <main className="flex min-h-screen flex-col bg-[#111318] text-white">
-      <header className="builder-chrome flex h-[56px] shrink-0 items-center border-b border-white/10 bg-[#0b0d12] px-6 backdrop-blur-xl">
+      <header className="builder-chrome relative z-[30000] flex h-[56px] shrink-0 items-center overflow-visible border-b border-white/10 bg-[#0b0d12] px-6 backdrop-blur-xl">
         <div className="flex w-[420px] min-w-0 items-center gap-3">
           <button onClick={() => router.push(`/app/${siteSlug}/pages`)} aria-label="Back to pages" className="rounded-xl p-2 text-white/70 transition hover:bg-white/10 hover:text-white"><ArrowLeft size={20}/></button>
-          <Image src="/buildez-logo-dark.svg" alt="BuildEZ" width={138} height={46} priority className="mt-1 h-11 w-auto"/>
+          <Image src="/buildez-logo-dark.svg" alt="BuildEzy" width={118} height={39} priority className="mt-1 h-9 w-auto"/>
           <div className="relative"><button onClick={() => setSiteMenuOpen(open => !open)} className="ml-2 flex min-w-0 items-center gap-1.5 text-sm font-medium text-white/85 transition hover:text-white"><span className="max-w-[145px] truncate">{page?.title || "Untitled page"}</span><ChevronDown size={14} className={`text-white/40 transition ${siteMenuOpen ? "rotate-180" : ""}`}/></button>{siteMenuOpen && <div className="absolute left-2 top-full z-[20000] mt-4 w-56 rounded-xl border border-white/10 bg-[#0b0d12] p-2 shadow-2xl"><div className="truncate border-b border-white/10 px-3 pb-2 text-xs text-white/40">{siteName}</div><button onClick={() => router.push(`/app/${siteSlug}/pages`)} className="mt-1 w-full rounded-lg px-3 py-2 text-left text-sm text-white/70 hover:bg-white/10 hover:text-white">All pages</button><button onClick={() => { setSiteMenuOpen(false); setLeftPanel("settings"); }} className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/70 hover:bg-white/10 hover:text-white">Page settings</button></div>}</div>
           <span className={`rounded-full border px-2 py-0.5 text-xs ${pageStatus === "PUBLISHED" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400" : "border-blue-500/20 bg-blue-500/10 text-blue-400"}`}>{pageStatus === "PUBLISHED" ? "Published" : "Draft"}</span>
+          <V12CreditMeter running={agentRunning} />
         </div>
 
         <div className="flex flex-1 items-center justify-center gap-3">
@@ -918,62 +951,124 @@ An uploaded codebase has already been imported into the current project. Read sr
                 }
               );
 
-              const response = await fetch(
-                "/api/builder-v3/agent/run",
-                {
-                  method: "POST",
-                  body: form,
-                  signal: controller.signal,
-                }
-              );
-
-              console.log(
-                "[BUILDEZ AGENT RESPONSE]",
-                {
-                  status: response.status,
-                  ok: response.ok,
-                  contentType:
-                    response.headers.get("content-type"),
-                }
-              );
-              if (!response.ok || !response.body) {
-                const payload = await response.json().catch(() => ({}));
-
-                if (
-                  response.status === 429 &&
-                  (
-                    payload?.code === "AI_CREDITS_EXCEEDED" ||
-                    payload?.error?.code === "AI_CREDITS_EXCEEDED"
-                  )
-                ) {
-                  const creditError = new Error(
-                    apiErrorMessage(
-                      payload,
-                      "You do not have enough AI credits for this generation."
-                    )
-                  );
-                  creditError.name = "AI_CREDITS_EXCEEDED";
-                  throw creditError;
-                }
-
-                throw new Error(apiErrorMessage(payload, "The agent could not start."));
-              }
-              const reader = response.body.getReader();
-              const decoder = new TextDecoder();
-              let buffered = "";
+              /*
+               * A generation is a resumable job that may span multiple
+               * HTTP requests (plan stage, then generate stage) so that
+               * no single request has to run the whole pipeline within
+               * one timeout window. A `stage.complete` event carries the
+               * jobId forward; this loop keeps re-POSTing until the
+               * agent sends a terminal `done` event.
+               */
               let completed = false;
               let previewUpdated = false;
-              while (true) {
-                const chunk = await reader.read();
-                if (chunk.done) break;
-                buffered += decoder.decode(chunk.value, { stream: true });
-                const lines = buffered.split("\n");
-                buffered = lines.pop() ?? "";
-                for (const line of lines) {
-                  if (!line.trim()) continue;
-                  const event = JSON.parse(line) as { type: string; title?: string; detail?: string; role?: "assistant"; revision?: number; status?: "needs_input" | "completed" };
-                  if (event.type === "done") { completed = event.status !== "needs_input"; continue; }
-                  if (event.type === "preview.updated") {
+              let nextForm: FormData | null = form;
+
+              while (nextForm) {
+                const requestForm = nextForm;
+                nextForm = null;
+
+                const response = await fetch(
+                  "/api/builder-v3/agent/run",
+                  {
+                    method: "POST",
+                    body: requestForm,
+                    signal: controller.signal,
+                  }
+                );
+
+                console.log(
+                  "[BUILDEZ AGENT RESPONSE]",
+                  {
+                    status: response.status,
+                    ok: response.ok,
+                    contentType:
+                      response.headers.get("content-type"),
+                  }
+                );
+                if (!response.ok || !response.body) {
+                  const payload = await response.json().catch(() => ({}));
+
+                  if (
+                    response.status === 429 &&
+                    (
+                      payload?.code === "AI_CREDITS_EXCEEDED" ||
+                      payload?.error?.code === "AI_CREDITS_EXCEEDED"
+                    )
+                  ) {
+                    const creditError = new Error(
+                      apiErrorMessage(
+                        payload,
+                        "You do not have enough AI credits for this generation."
+                      )
+                    );
+                    creditError.name = "AI_CREDITS_EXCEEDED";
+                    throw creditError;
+                  }
+
+                  throw new Error(apiErrorMessage(payload, "The agent could not start."));
+                }
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffered = "";
+                while (true) {
+                  const chunk = await reader.read();
+                  if (chunk.done) break;
+                  buffered += decoder.decode(chunk.value, { stream: true });
+                  const lines = buffered.split("\n");
+                  buffered = lines.pop() ?? "";
+                  for (const line of lines) {
+                    if (!line.trim()) continue;
+                    const event = JSON.parse(line) as {
+                      type: string;
+                      title?: string;
+                      detail?: string;
+                      role?: "assistant";
+                      revision?: number;
+                      status?: "needs_input" | "completed" | "failed";
+                      actions?: Array<{
+                        id: string;
+                        label: string;
+                        value: string;
+                      }>;
+                      jobId?: string;
+                      nextStage?: string;
+                    };
+                    if (event.type === "stage.complete" && event.jobId) {
+                      const resumeForm = new FormData();
+                      resumeForm.set("siteId", siteId);
+                      resumeForm.set("jobId", event.jobId);
+                      nextForm = resumeForm;
+                      continue;
+                    }
+                    if (event.type === "done") {
+                      completed = event.status === "completed";
+
+                      setAgentEvents(events => [
+                        ...events,
+                        {
+                          id: crypto.randomUUID(),
+                          type:
+                            event.status === "failed"
+                              ? "tool.failed"
+                              : "tool.completed",
+                          title:
+                            event.status === "needs_input"
+                              ? "Waiting for your response"
+                              : event.status === "failed"
+                                ? "Generation failed"
+                                : "Generation complete",
+                          detail:
+                            event.status === "needs_input"
+                              ? "Generation will continue after your response."
+                              : undefined,
+                          status: event.status,
+                          timestamp: new Date().toISOString(),
+                        },
+                      ]);
+
+                      continue;
+                    }
+                    if (event.type === "preview.updated") {
                     previewUpdated = true;
 
                     setWorkspace(current => ({
@@ -1020,7 +1115,22 @@ An uploaded codebase has already been imported into the current project. Read sr
 
                     continue;
                   }
-                  if (["message", "tool.started", "tool.completed", "tool.failed"].includes(event.type)) setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: event.type as V12AgentEvent["type"], role: event.role, title: event.title || "Agent update", detail: event.detail, timestamp: new Date().toISOString() }]);
+                  if (["message", "tool.started", "tool.completed", "tool.failed"].includes(event.type)) {
+                      setAgentEvents(events => [
+                        ...events,
+                        {
+                          id: crypto.randomUUID(),
+                          type: event.type as V12AgentEvent["type"],
+                          role: event.role,
+                          title: event.title || "Agent update",
+                          detail: event.detail,
+                          status: event.status,
+                          actions: event.actions,
+                          timestamp: new Date().toISOString(),
+                        },
+                      ]);
+                    }
+                  }
                 }
               }
               if (completed) {
@@ -1057,7 +1167,8 @@ An uploaded codebase has already been imported into the current project. Read sr
                  */
                 if (
                   effectiveAgentContext !==
-                  "Selected element"
+                    "Selected element" &&
+                  !previewUpdated
                 ) {
                   setPreviewGeneration(
                     value => value + 1
@@ -1126,6 +1237,8 @@ An uploaded codebase has already been imported into the current project. Read sr
             scrollbarGutter: "stable",
           }}
         >
+          {showCanvasGeneration && <GenerationArtwork />}
+          {showCanvasGreeting && <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")} />}
           <div
             className="relative min-h-full"
             style={{
@@ -1151,12 +1264,6 @@ An uploaded codebase has already been imported into the current project. Read sr
           >
           {!previewUrl && !error && !workspaceLoaded && <div className="min-h-[700px] bg-white"/>}
           {!previewUrl && !error && workspaceLoaded && (workspace?.files?.length ?? 0) > 0 && <div className="grid min-h-[700px] place-items-center bg-white text-sm text-slate-400"><div className="flex items-center gap-2"><span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"/>Preparing preview</div></div>}
-          {agentRunning && !previewUrl && <GenerationArtwork/>}
-          {!previewUrl && !error && workspaceLoaded && !agentRunning && !workspaceError && (workspace?.files?.length ?? 0) === 0 && <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>}
-          {pageCanvasState === "blank" && (
-            <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>
-          )}
-          {pageCanvasState === "generating" && <GenerationArtwork/>}
           {error && <div className="absolute inset-0 z-30 grid min-h-[700px] place-items-center bg-white p-8 text-center text-red-700"><div><strong>Preview unavailable</strong><p className="mt-2 max-w-xl text-sm">{error}</p><button type="button" onClick={() => setPreviewGeneration(value => value + 1)} className="mt-5 rounded-lg bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100">Retry preview</button></div></div>}
           {iframeUrl && !showBlankPageState && <iframe ref={iframeRef} key={`${previewUrl}-${previewGeneration}`} title={`${siteName} ${mode}`} src={iframeUrl} onLoad={() => {
             // A recovered Vite/React preview can load successfully after a
@@ -1166,7 +1273,6 @@ An uploaded codebase has already been imported into the current project. Read sr
             setError(undefined);
             sendCanvas("BUILDEZ_EDIT_MODE_CHANGED", { mode });
           }} className="h-full min-h-[700px] w-full border-0" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-same-origin" />}
-          {previewUrl && !agentRunning && workspace && (workspace.files?.length ?? 0) === 0 && <BlankCanvasGreeting onAI={() => setLeftPanel("ai")} onBlocks={() => setLeftPanel("blocks")}/>} 
           {mode === "edit" && previewUrl && <div className="pointer-events-none absolute right-3 top-3 z-[150] rounded-md border border-blue-300/30 bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-lg">Edit mode · select an element</div>}
           {mode === "edit" && previewUrl && selection && <NodeToolbar selection={selection} onAction={handleNodeAction}/>}
           </div>
@@ -1178,8 +1284,8 @@ An uploaded codebase has already been imported into the current project. Read sr
       {saveModalOpen && <div role="dialog" aria-modal="true" aria-labelledby="save-dialog-title" className="fixed inset-0 z-[30000] grid place-items-center bg-black/65 p-5 backdrop-blur-sm" onMouseDown={(event) => { if (event.target === event.currentTarget) setSaveModalOpen(false); }}>
         <div className="w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#11141c] text-white shadow-2xl shadow-black/60">
           <div className="flex items-start justify-between border-b border-white/10 p-5"><div className="flex gap-3"><span className="grid h-10 w-10 place-items-center rounded-full bg-emerald-500/15 text-emerald-300"><Check size={20}/></span><div><h2 id="save-dialog-title" className="font-semibold">Page saved</h2><p className="mt-1 text-sm text-white/45">A recoverable V12 checkpoint was created.</p></div></div><button onClick={() => setSaveModalOpen(false)} aria-label="Close save confirmation" className="rounded-lg p-2 text-white/45 hover:bg-white/10 hover:text-white"><X size={18}/></button></div>
-          <div className="p-5"><div className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><div className="text-[11px] font-semibold uppercase tracking-wider text-white/35">Saved at</div><div className="mt-1 text-sm text-white/85">{savedAt?.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "medium" })}</div><div className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-white/35">Preview link</div><div className="mt-1 truncate rounded-lg bg-black/20 px-3 py-2 font-mono text-xs text-white/55">{pagePreviewUrl || "Preview is not available yet"}</div></div>
-            <div className="mt-5 flex justify-end gap-2"><button onClick={() => setSaveModalOpen(false)} className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/5">Close</button>{pagePreviewUrl && <a href={pagePreviewUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"><ExternalLink size={15}/>View page</a>}</div>
+          <div className="p-5"><div className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><div className="text-[11px] font-semibold uppercase tracking-wider text-white/35">Saved at</div><div className="mt-1 text-sm text-white/85">{savedAt?.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "medium" })}</div><div className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-white/35">Page URL</div><div className="mt-1 truncate rounded-lg bg-black/20 px-3 py-2 font-mono text-xs text-white/55">{canonicalPageUrl || "Page URL is not available yet"}</div>{pageStatus !== "PUBLISHED" && <div className="mt-2 text-xs text-white/35">This URL becomes available when the page is published.</div>}</div>
+            <div className="mt-5 flex justify-end gap-2"><button onClick={() => setSaveModalOpen(false)} className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/5">Close</button>{canonicalPageUrl && pageStatus === "PUBLISHED" && <a href={canonicalPageUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"><ExternalLink size={15}/>View page</a>}</div>
           </div>
         </div>
       </div>}

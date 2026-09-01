@@ -76,6 +76,7 @@ export async function POST(
     const snapshotContent = blueprintData
       ? (isBuilderV2Blueprint(blueprintData) ? blueprintData : resolveBlueprintTree(blueprintData as unknown as BlueprintData))
       : { version: 12, renderMode: "REACT", projectId: project!.id, revision: project!.currentRevision, files: project!.files };
+    const publishedRenderMode = blueprintData ? "BLUEPRINT" : "REACT";
 
     /* ----------------------------------------------------------
        TRANSACTION
@@ -114,6 +115,7 @@ export async function POST(
         where: { id: page.id, siteId: execCtx.siteId, deletedAt: null, deleted: false },
         data: {
           status: "PUBLISHED",
+          renderMode: publishedRenderMode,
           publishedAt: new Date(),
         },
       });

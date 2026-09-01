@@ -21,5 +21,5 @@ export default async function SiteAppsPage({
 
   if (!site) return notFound();
 
-  return <AppsMarketplaceClient siteName={site.name} />;
+  return <AppsMarketplaceClient siteId={site.id} siteName={site.name} />;
 }

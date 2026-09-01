@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Certbot calls deploy hooks only after a certificate has actually renewed.
+# Validate the renewed OpenSSL-compatible certificate and key before switching Nginx.
+if [[ -n "${RENEWED_LINEAGE:-}" ]]; then
+  openssl x509 -in "$RENEWED_LINEAGE/fullchain.pem" -noout -checkend 604800
+  CERTIFICATE_KEY="$(openssl x509 -in "$RENEWED_LINEAGE/cert.pem" -pubkey -noout | openssl pkey -pubin -outform DER | sha256sum)"
+  PRIVATE_KEY="$(openssl pkey -in "$RENEWED_LINEAGE/privkey.pem" -pubout -outform DER | sha256sum)"
+  [[ "$CERTIFICATE_KEY" == "$PRIVATE_KEY" ]]
+fi
+nginx -t
+if command -v systemctl >/dev/null 2>&1; then
+  systemctl reload nginx
+else
+  nginx -s reload
+fi

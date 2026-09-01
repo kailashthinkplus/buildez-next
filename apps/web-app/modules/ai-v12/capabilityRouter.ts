@@ -43,10 +43,8 @@ export function routeV12Capabilities(
     "Immersive 3D / cinematic";
 
   if (immersiveExperience) {
-    capabilities.add("IMMERSIVE_3D");
     capabilities.add("PARALLAX");
     capabilities.add("MOTION_RICH");
-    capabilities.add("SHADER_WEBGL");
   }
 
   if (creativeDirection?.motionStyle === "Immersive parallax") {
@@ -141,8 +139,11 @@ export function routeV12Capabilities(
   const requires3D =
     capabilities.has("IMMERSIVE_3D");
 
+  // A cinematic website does not inherently need live WebGL, and a normal
+  // R3F scene does not inherently need a custom shader. Keep this flag scoped
+  // to an explicit shader/WebGL request so media-led scroll experiences do not
+  // get pushed into unnecessary real-time rendering work.
   const requiresWebGL =
-    requires3D ||
     capabilities.has("SHADER_WEBGL");
 
   const requiresAdvancedMotion =

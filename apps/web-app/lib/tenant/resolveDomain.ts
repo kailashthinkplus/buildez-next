@@ -64,7 +64,7 @@ export async function resolveDomain(host: string): Promise<DomainContext | null>
         Example: acme.buildez.app
   ------------------------------------------------------------ */
 
-  const PLATFORM_DOMAIN = process.env.PLATFORM_DOMAIN || "buildez.app";
+  const PLATFORM_DOMAIN = process.env.PLATFORM_DOMAIN || "getbuildezy.com";
 
   if (cleanHost.endsWith(`.${PLATFORM_DOMAIN}`)) {
     const subdomain = cleanHost.replace(`.${PLATFORM_DOMAIN}`, "");

@@ -104,6 +104,11 @@ export type MediaAsset = $Result.DefaultSelection<Prisma.$MediaAssetPayload>
  */
 export type Site = $Result.DefaultSelection<Prisma.$SitePayload>
 /**
+ * Model SiteIntegration
+ * 
+ */
+export type SiteIntegration = $Result.DefaultSelection<Prisma.$SiteIntegrationPayload>
+/**
  * Model V12Project
  * 
  */
@@ -123,6 +128,11 @@ export type V12ProjectRevision = $Result.DefaultSelection<Prisma.$V12ProjectRevi
  * 
  */
 export type V12ProjectCheckpoint = $Result.DefaultSelection<Prisma.$V12ProjectCheckpointPayload>
+/**
+ * Model V12GenerationJob
+ * 
+ */
+export type V12GenerationJob = $Result.DefaultSelection<Prisma.$V12GenerationJobPayload>
 /**
  * Model Shop
  * 
@@ -188,6 +198,11 @@ export type ShopOrderItem = $Result.DefaultSelection<Prisma.$ShopOrderItemPayloa
  * 
  */
 export type ShopPaymentIntegration = $Result.DefaultSelection<Prisma.$ShopPaymentIntegrationPayload>
+/**
+ * Model SupportRequest
+ * 
+ */
+export type SupportRequest = $Result.DefaultSelection<Prisma.$SupportRequestPayload>
 /**
  * Model CrmLead
  * 
@@ -283,6 +298,11 @@ export type AiCreditLedgerEntry = $Result.DefaultSelection<Prisma.$AiCreditLedge
  * 
  */
 export type Subscription = $Result.DefaultSelection<Prisma.$SubscriptionPayload>
+/**
+ * Model BillingTransaction
+ * 
+ */
+export type BillingTransaction = $Result.DefaultSelection<Prisma.$BillingTransactionPayload>
 /**
  * Model SiteSubscription
  * 
@@ -1005,6 +1025,16 @@ export class PrismaClient<
   get site(): Prisma.SiteDelegate<ExtArgs>;
 
   /**
+   * `prisma.siteIntegration`: Exposes CRUD operations for the **SiteIntegration** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SiteIntegrations
+    * const siteIntegrations = await prisma.siteIntegration.findMany()
+    * ```
+    */
+  get siteIntegration(): Prisma.SiteIntegrationDelegate<ExtArgs>;
+
+  /**
    * `prisma.v12Project`: Exposes CRUD operations for the **V12Project** model.
     * Example usage:
     * ```ts
@@ -1043,6 +1073,16 @@ export class PrismaClient<
     * ```
     */
   get v12ProjectCheckpoint(): Prisma.V12ProjectCheckpointDelegate<ExtArgs>;
+
+  /**
+   * `prisma.v12GenerationJob`: Exposes CRUD operations for the **V12GenerationJob** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more V12GenerationJobs
+    * const v12GenerationJobs = await prisma.v12GenerationJob.findMany()
+    * ```
+    */
+  get v12GenerationJob(): Prisma.V12GenerationJobDelegate<ExtArgs>;
 
   /**
    * `prisma.shop`: Exposes CRUD operations for the **Shop** model.
@@ -1173,6 +1213,16 @@ export class PrismaClient<
     * ```
     */
   get shopPaymentIntegration(): Prisma.ShopPaymentIntegrationDelegate<ExtArgs>;
+
+  /**
+   * `prisma.supportRequest`: Exposes CRUD operations for the **SupportRequest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SupportRequests
+    * const supportRequests = await prisma.supportRequest.findMany()
+    * ```
+    */
+  get supportRequest(): Prisma.SupportRequestDelegate<ExtArgs>;
 
   /**
    * `prisma.crmLead`: Exposes CRUD operations for the **CrmLead** model.
@@ -1363,6 +1413,16 @@ export class PrismaClient<
     * ```
     */
   get subscription(): Prisma.SubscriptionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.billingTransaction`: Exposes CRUD operations for the **BillingTransaction** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BillingTransactions
+    * const billingTransactions = await prisma.billingTransaction.findMany()
+    * ```
+    */
+  get billingTransaction(): Prisma.BillingTransactionDelegate<ExtArgs>;
 
   /**
    * `prisma.siteSubscription`: Exposes CRUD operations for the **SiteSubscription** model.
@@ -1992,10 +2052,12 @@ export namespace Prisma {
     ThemeAsset: 'ThemeAsset',
     MediaAsset: 'MediaAsset',
     Site: 'Site',
+    SiteIntegration: 'SiteIntegration',
     V12Project: 'V12Project',
     V12ProjectFile: 'V12ProjectFile',
     V12ProjectRevision: 'V12ProjectRevision',
     V12ProjectCheckpoint: 'V12ProjectCheckpoint',
+    V12GenerationJob: 'V12GenerationJob',
     Shop: 'Shop',
     ShopProduct: 'ShopProduct',
     ShopProductImage: 'ShopProductImage',
@@ -2009,6 +2071,7 @@ export namespace Prisma {
     ShopOrder: 'ShopOrder',
     ShopOrderItem: 'ShopOrderItem',
     ShopPaymentIntegration: 'ShopPaymentIntegration',
+    SupportRequest: 'SupportRequest',
     CrmLead: 'CrmLead',
     CrmCommunication: 'CrmCommunication',
     CrmApiKey: 'CrmApiKey',
@@ -2028,6 +2091,7 @@ export namespace Prisma {
     AiCreditReservation: 'AiCreditReservation',
     AiCreditLedgerEntry: 'AiCreditLedgerEntry',
     Subscription: 'Subscription',
+    BillingTransaction: 'BillingTransaction',
     SiteSubscription: 'SiteSubscription',
     ComplianceAudit: 'ComplianceAudit',
     SystemNotification: 'SystemNotification',
@@ -2060,7 +2124,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "userOnboarding" | "session" | "otp" | "authLog" | "verificationToken" | "refreshToken" | "loginAttempt" | "tenant" | "tenantEvent" | "team" | "teamMember" | "teamInvite" | "theme" | "themeVersion" | "themeAsset" | "mediaAsset" | "site" | "v12Project" | "v12ProjectFile" | "v12ProjectRevision" | "v12ProjectCheckpoint" | "shop" | "shopProduct" | "shopProductImage" | "shopProductOption" | "shopProductVariant" | "shopCollection" | "shopCollectionProduct" | "shopCustomer" | "shopCustomerSession" | "shopDiscount" | "shopOrder" | "shopOrderItem" | "shopPaymentIntegration" | "crmLead" | "crmCommunication" | "crmApiKey" | "cmsCollection" | "cmsEntry" | "siteLayout" | "domain" | "page" | "previewToken" | "aIBlueprintSnapshot" | "blueprint" | "blueprintHistory" | "plan" | "planPricing" | "planFeature" | "planUsage" | "aiCreditReservation" | "aiCreditLedgerEntry" | "subscription" | "siteSubscription" | "complianceAudit" | "systemNotification" | "siteSnapshot" | "pageSnapshot" | "siteRender" | "renderedPage" | "siteDomain" | "sslCertificate" | "trafficEvent" | "trafficRollupHourly" | "aiEvent" | "rateLimit" | "workspace" | "workspaceMember" | "aIMessage" | "aIConversation"
+      modelProps: "user" | "userOnboarding" | "session" | "otp" | "authLog" | "verificationToken" | "refreshToken" | "loginAttempt" | "tenant" | "tenantEvent" | "team" | "teamMember" | "teamInvite" | "theme" | "themeVersion" | "themeAsset" | "mediaAsset" | "site" | "siteIntegration" | "v12Project" | "v12ProjectFile" | "v12ProjectRevision" | "v12ProjectCheckpoint" | "v12GenerationJob" | "shop" | "shopProduct" | "shopProductImage" | "shopProductOption" | "shopProductVariant" | "shopCollection" | "shopCollectionProduct" | "shopCustomer" | "shopCustomerSession" | "shopDiscount" | "shopOrder" | "shopOrderItem" | "shopPaymentIntegration" | "supportRequest" | "crmLead" | "crmCommunication" | "crmApiKey" | "cmsCollection" | "cmsEntry" | "siteLayout" | "domain" | "page" | "previewToken" | "aIBlueprintSnapshot" | "blueprint" | "blueprintHistory" | "plan" | "planPricing" | "planFeature" | "planUsage" | "aiCreditReservation" | "aiCreditLedgerEntry" | "subscription" | "billingTransaction" | "siteSubscription" | "complianceAudit" | "systemNotification" | "siteSnapshot" | "pageSnapshot" | "siteRender" | "renderedPage" | "siteDomain" | "sslCertificate" | "trafficEvent" | "trafficRollupHourly" | "aiEvent" | "rateLimit" | "workspace" | "workspaceMember" | "aIMessage" | "aIConversation"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3324,6 +3388,76 @@ export namespace Prisma {
           }
         }
       }
+      SiteIntegration: {
+        payload: Prisma.$SiteIntegrationPayload<ExtArgs>
+        fields: Prisma.SiteIntegrationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SiteIntegrationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteIntegrationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SiteIntegrationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteIntegrationPayload>
+          }
+          findFirst: {
+            args: Prisma.SiteIntegrationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteIntegrationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SiteIntegrationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteIntegrationPayload>
+          }
+          findMany: {
+            args: Prisma.SiteIntegrationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteIntegrationPayload>[]
+          }
+          create: {
+            args: Prisma.SiteIntegrationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteIntegrationPayload>
+          }
+          createMany: {
+            args: Prisma.SiteIntegrationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SiteIntegrationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteIntegrationPayload>[]
+          }
+          delete: {
+            args: Prisma.SiteIntegrationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteIntegrationPayload>
+          }
+          update: {
+            args: Prisma.SiteIntegrationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteIntegrationPayload>
+          }
+          deleteMany: {
+            args: Prisma.SiteIntegrationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SiteIntegrationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.SiteIntegrationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteIntegrationPayload>
+          }
+          aggregate: {
+            args: Prisma.SiteIntegrationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSiteIntegration>
+          }
+          groupBy: {
+            args: Prisma.SiteIntegrationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SiteIntegrationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SiteIntegrationCountArgs<ExtArgs>
+            result: $Utils.Optional<SiteIntegrationCountAggregateOutputType> | number
+          }
+        }
+      }
       V12Project: {
         payload: Prisma.$V12ProjectPayload<ExtArgs>
         fields: Prisma.V12ProjectFieldRefs
@@ -3601,6 +3735,76 @@ export namespace Prisma {
           count: {
             args: Prisma.V12ProjectCheckpointCountArgs<ExtArgs>
             result: $Utils.Optional<V12ProjectCheckpointCountAggregateOutputType> | number
+          }
+        }
+      }
+      V12GenerationJob: {
+        payload: Prisma.$V12GenerationJobPayload<ExtArgs>
+        fields: Prisma.V12GenerationJobFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.V12GenerationJobFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12GenerationJobPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.V12GenerationJobFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12GenerationJobPayload>
+          }
+          findFirst: {
+            args: Prisma.V12GenerationJobFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12GenerationJobPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.V12GenerationJobFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12GenerationJobPayload>
+          }
+          findMany: {
+            args: Prisma.V12GenerationJobFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12GenerationJobPayload>[]
+          }
+          create: {
+            args: Prisma.V12GenerationJobCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12GenerationJobPayload>
+          }
+          createMany: {
+            args: Prisma.V12GenerationJobCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.V12GenerationJobCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12GenerationJobPayload>[]
+          }
+          delete: {
+            args: Prisma.V12GenerationJobDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12GenerationJobPayload>
+          }
+          update: {
+            args: Prisma.V12GenerationJobUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12GenerationJobPayload>
+          }
+          deleteMany: {
+            args: Prisma.V12GenerationJobDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.V12GenerationJobUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.V12GenerationJobUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V12GenerationJobPayload>
+          }
+          aggregate: {
+            args: Prisma.V12GenerationJobAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateV12GenerationJob>
+          }
+          groupBy: {
+            args: Prisma.V12GenerationJobGroupByArgs<ExtArgs>
+            result: $Utils.Optional<V12GenerationJobGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.V12GenerationJobCountArgs<ExtArgs>
+            result: $Utils.Optional<V12GenerationJobCountAggregateOutputType> | number
           }
         }
       }
@@ -4511,6 +4715,76 @@ export namespace Prisma {
           count: {
             args: Prisma.ShopPaymentIntegrationCountArgs<ExtArgs>
             result: $Utils.Optional<ShopPaymentIntegrationCountAggregateOutputType> | number
+          }
+        }
+      }
+      SupportRequest: {
+        payload: Prisma.$SupportRequestPayload<ExtArgs>
+        fields: Prisma.SupportRequestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SupportRequestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportRequestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SupportRequestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportRequestPayload>
+          }
+          findFirst: {
+            args: Prisma.SupportRequestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportRequestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SupportRequestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportRequestPayload>
+          }
+          findMany: {
+            args: Prisma.SupportRequestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportRequestPayload>[]
+          }
+          create: {
+            args: Prisma.SupportRequestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportRequestPayload>
+          }
+          createMany: {
+            args: Prisma.SupportRequestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SupportRequestCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportRequestPayload>[]
+          }
+          delete: {
+            args: Prisma.SupportRequestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportRequestPayload>
+          }
+          update: {
+            args: Prisma.SupportRequestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportRequestPayload>
+          }
+          deleteMany: {
+            args: Prisma.SupportRequestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SupportRequestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.SupportRequestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportRequestPayload>
+          }
+          aggregate: {
+            args: Prisma.SupportRequestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSupportRequest>
+          }
+          groupBy: {
+            args: Prisma.SupportRequestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SupportRequestGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SupportRequestCountArgs<ExtArgs>
+            result: $Utils.Optional<SupportRequestCountAggregateOutputType> | number
           }
         }
       }
@@ -5841,6 +6115,76 @@ export namespace Prisma {
           count: {
             args: Prisma.SubscriptionCountArgs<ExtArgs>
             result: $Utils.Optional<SubscriptionCountAggregateOutputType> | number
+          }
+        }
+      }
+      BillingTransaction: {
+        payload: Prisma.$BillingTransactionPayload<ExtArgs>
+        fields: Prisma.BillingTransactionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BillingTransactionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillingTransactionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BillingTransactionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillingTransactionPayload>
+          }
+          findFirst: {
+            args: Prisma.BillingTransactionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillingTransactionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BillingTransactionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillingTransactionPayload>
+          }
+          findMany: {
+            args: Prisma.BillingTransactionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillingTransactionPayload>[]
+          }
+          create: {
+            args: Prisma.BillingTransactionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillingTransactionPayload>
+          }
+          createMany: {
+            args: Prisma.BillingTransactionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BillingTransactionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillingTransactionPayload>[]
+          }
+          delete: {
+            args: Prisma.BillingTransactionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillingTransactionPayload>
+          }
+          update: {
+            args: Prisma.BillingTransactionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillingTransactionPayload>
+          }
+          deleteMany: {
+            args: Prisma.BillingTransactionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BillingTransactionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BillingTransactionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillingTransactionPayload>
+          }
+          aggregate: {
+            args: Prisma.BillingTransactionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBillingTransaction>
+          }
+          groupBy: {
+            args: Prisma.BillingTransactionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BillingTransactionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BillingTransactionCountArgs<ExtArgs>
+            result: $Utils.Optional<BillingTransactionCountAggregateOutputType> | number
           }
         }
       }
@@ -7633,6 +7977,7 @@ export namespace Prisma {
     cmsCollections: number
     crmLeads: number
     crmApiKeys: number
+    integrations: number
   }
 
   export type SiteCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7649,6 +7994,7 @@ export namespace Prisma {
     cmsCollections?: boolean | SiteCountOutputTypeCountCmsCollectionsArgs
     crmLeads?: boolean | SiteCountOutputTypeCountCrmLeadsArgs
     crmApiKeys?: boolean | SiteCountOutputTypeCountCrmApiKeysArgs
+    integrations?: boolean | SiteCountOutputTypeCountIntegrationsArgs
   }
 
   // Custom InputTypes
@@ -7751,6 +8097,13 @@ export namespace Prisma {
    */
   export type SiteCountOutputTypeCountCrmApiKeysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CrmApiKeyWhereInput
+  }
+
+  /**
+   * SiteCountOutputType without action
+   */
+  export type SiteCountOutputTypeCountIntegrationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SiteIntegrationWhereInput
   }
 
 
@@ -12061,6 +12414,7 @@ export namespace Prisma {
     id: string | null
     email: string | null
     phone: string | null
+    purpose: string | null
     codeHash: string | null
     expiresAt: Date | null
     attempts: number | null
@@ -12072,6 +12426,7 @@ export namespace Prisma {
     id: string | null
     email: string | null
     phone: string | null
+    purpose: string | null
     codeHash: string | null
     expiresAt: Date | null
     attempts: number | null
@@ -12083,6 +12438,7 @@ export namespace Prisma {
     id: number
     email: number
     phone: number
+    purpose: number
     codeHash: number
     expiresAt: number
     attempts: number
@@ -12104,6 +12460,7 @@ export namespace Prisma {
     id?: true
     email?: true
     phone?: true
+    purpose?: true
     codeHash?: true
     expiresAt?: true
     attempts?: true
@@ -12115,6 +12472,7 @@ export namespace Prisma {
     id?: true
     email?: true
     phone?: true
+    purpose?: true
     codeHash?: true
     expiresAt?: true
     attempts?: true
@@ -12126,6 +12484,7 @@ export namespace Prisma {
     id?: true
     email?: true
     phone?: true
+    purpose?: true
     codeHash?: true
     expiresAt?: true
     attempts?: true
@@ -12224,6 +12583,7 @@ export namespace Prisma {
     id: string
     email: string | null
     phone: string | null
+    purpose: string
     codeHash: string
     expiresAt: Date
     attempts: number
@@ -12254,6 +12614,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     phone?: boolean
+    purpose?: boolean
     codeHash?: boolean
     expiresAt?: boolean
     attempts?: boolean
@@ -12265,6 +12626,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     phone?: boolean
+    purpose?: boolean
     codeHash?: boolean
     expiresAt?: boolean
     attempts?: boolean
@@ -12276,6 +12638,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     phone?: boolean
+    purpose?: boolean
     codeHash?: boolean
     expiresAt?: boolean
     attempts?: boolean
@@ -12291,6 +12654,7 @@ export namespace Prisma {
       id: string
       email: string | null
       phone: string | null
+      purpose: string
       codeHash: string
       expiresAt: Date
       attempts: number
@@ -12692,6 +13056,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Otp", 'String'>
     readonly email: FieldRef<"Otp", 'String'>
     readonly phone: FieldRef<"Otp", 'String'>
+    readonly purpose: FieldRef<"Otp", 'String'>
     readonly codeHash: FieldRef<"Otp", 'String'>
     readonly expiresAt: FieldRef<"Otp", 'DateTime'>
     readonly attempts: FieldRef<"Otp", 'Int'>
@@ -26808,6 +27173,7 @@ export namespace Prisma {
     cmsCollections?: boolean | Site$cmsCollectionsArgs<ExtArgs>
     crmLeads?: boolean | Site$crmLeadsArgs<ExtArgs>
     crmApiKeys?: boolean | Site$crmApiKeysArgs<ExtArgs>
+    integrations?: boolean | Site$integrationsArgs<ExtArgs>
     shop?: boolean | Site$shopArgs<ExtArgs>
     v12Project?: boolean | Site$v12ProjectArgs<ExtArgs>
     _count?: boolean | SiteCountOutputTypeDefaultArgs<ExtArgs>
@@ -26858,6 +27224,7 @@ export namespace Prisma {
     cmsCollections?: boolean | Site$cmsCollectionsArgs<ExtArgs>
     crmLeads?: boolean | Site$crmLeadsArgs<ExtArgs>
     crmApiKeys?: boolean | Site$crmApiKeysArgs<ExtArgs>
+    integrations?: boolean | Site$integrationsArgs<ExtArgs>
     shop?: boolean | Site$shopArgs<ExtArgs>
     v12Project?: boolean | Site$v12ProjectArgs<ExtArgs>
     _count?: boolean | SiteCountOutputTypeDefaultArgs<ExtArgs>
@@ -26884,6 +27251,7 @@ export namespace Prisma {
       cmsCollections: Prisma.$CmsCollectionPayload<ExtArgs>[]
       crmLeads: Prisma.$CrmLeadPayload<ExtArgs>[]
       crmApiKeys: Prisma.$CrmApiKeyPayload<ExtArgs>[]
+      integrations: Prisma.$SiteIntegrationPayload<ExtArgs>[]
       shop: Prisma.$ShopPayload<ExtArgs> | null
       v12Project: Prisma.$V12ProjectPayload<ExtArgs> | null
     }
@@ -27278,6 +27646,7 @@ export namespace Prisma {
     cmsCollections<T extends Site$cmsCollectionsArgs<ExtArgs> = {}>(args?: Subset<T, Site$cmsCollectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CmsCollectionPayload<ExtArgs>, T, "findMany"> | Null>
     crmLeads<T extends Site$crmLeadsArgs<ExtArgs> = {}>(args?: Subset<T, Site$crmLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CrmLeadPayload<ExtArgs>, T, "findMany"> | Null>
     crmApiKeys<T extends Site$crmApiKeysArgs<ExtArgs> = {}>(args?: Subset<T, Site$crmApiKeysArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CrmApiKeyPayload<ExtArgs>, T, "findMany"> | Null>
+    integrations<T extends Site$integrationsArgs<ExtArgs> = {}>(args?: Subset<T, Site$integrationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteIntegrationPayload<ExtArgs>, T, "findMany"> | Null>
     shop<T extends Site$shopArgs<ExtArgs> = {}>(args?: Subset<T, Site$shopArgs<ExtArgs>>): Prisma__ShopClient<$Result.GetResult<Prisma.$ShopPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     v12Project<T extends Site$v12ProjectArgs<ExtArgs> = {}>(args?: Subset<T, Site$v12ProjectArgs<ExtArgs>>): Prisma__V12ProjectClient<$Result.GetResult<Prisma.$V12ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
@@ -27913,6 +28282,26 @@ export namespace Prisma {
   }
 
   /**
+   * Site.integrations
+   */
+  export type Site$integrationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteIntegration
+     */
+    select?: SiteIntegrationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SiteIntegrationInclude<ExtArgs> | null
+    where?: SiteIntegrationWhereInput
+    orderBy?: SiteIntegrationOrderByWithRelationInput | SiteIntegrationOrderByWithRelationInput[]
+    cursor?: SiteIntegrationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SiteIntegrationScalarFieldEnum | SiteIntegrationScalarFieldEnum[]
+  }
+
+  /**
    * Site.shop
    */
   export type Site$shopArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -27954,6 +28343,947 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: SiteInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SiteIntegration
+   */
+
+  export type AggregateSiteIntegration = {
+    _count: SiteIntegrationCountAggregateOutputType | null
+    _min: SiteIntegrationMinAggregateOutputType | null
+    _max: SiteIntegrationMaxAggregateOutputType | null
+  }
+
+  export type SiteIntegrationMinAggregateOutputType = {
+    id: string | null
+    siteId: string | null
+    appSlug: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SiteIntegrationMaxAggregateOutputType = {
+    id: string | null
+    siteId: string | null
+    appSlug: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SiteIntegrationCountAggregateOutputType = {
+    id: number
+    siteId: number
+    appSlug: number
+    config: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SiteIntegrationMinAggregateInputType = {
+    id?: true
+    siteId?: true
+    appSlug?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SiteIntegrationMaxAggregateInputType = {
+    id?: true
+    siteId?: true
+    appSlug?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SiteIntegrationCountAggregateInputType = {
+    id?: true
+    siteId?: true
+    appSlug?: true
+    config?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SiteIntegrationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SiteIntegration to aggregate.
+     */
+    where?: SiteIntegrationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SiteIntegrations to fetch.
+     */
+    orderBy?: SiteIntegrationOrderByWithRelationInput | SiteIntegrationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SiteIntegrationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SiteIntegrations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SiteIntegrations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SiteIntegrations
+    **/
+    _count?: true | SiteIntegrationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SiteIntegrationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SiteIntegrationMaxAggregateInputType
+  }
+
+  export type GetSiteIntegrationAggregateType<T extends SiteIntegrationAggregateArgs> = {
+        [P in keyof T & keyof AggregateSiteIntegration]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSiteIntegration[P]>
+      : GetScalarType<T[P], AggregateSiteIntegration[P]>
+  }
+
+
+
+
+  export type SiteIntegrationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SiteIntegrationWhereInput
+    orderBy?: SiteIntegrationOrderByWithAggregationInput | SiteIntegrationOrderByWithAggregationInput[]
+    by: SiteIntegrationScalarFieldEnum[] | SiteIntegrationScalarFieldEnum
+    having?: SiteIntegrationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SiteIntegrationCountAggregateInputType | true
+    _min?: SiteIntegrationMinAggregateInputType
+    _max?: SiteIntegrationMaxAggregateInputType
+  }
+
+  export type SiteIntegrationGroupByOutputType = {
+    id: string
+    siteId: string
+    appSlug: string
+    config: JsonValue | null
+    createdAt: Date
+    updatedAt: Date
+    _count: SiteIntegrationCountAggregateOutputType | null
+    _min: SiteIntegrationMinAggregateOutputType | null
+    _max: SiteIntegrationMaxAggregateOutputType | null
+  }
+
+  type GetSiteIntegrationGroupByPayload<T extends SiteIntegrationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SiteIntegrationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SiteIntegrationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SiteIntegrationGroupByOutputType[P]>
+            : GetScalarType<T[P], SiteIntegrationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SiteIntegrationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    siteId?: boolean
+    appSlug?: boolean
+    config?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["siteIntegration"]>
+
+  export type SiteIntegrationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    siteId?: boolean
+    appSlug?: boolean
+    config?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["siteIntegration"]>
+
+  export type SiteIntegrationSelectScalar = {
+    id?: boolean
+    siteId?: boolean
+    appSlug?: boolean
+    config?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SiteIntegrationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+  }
+  export type SiteIntegrationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    site?: boolean | SiteDefaultArgs<ExtArgs>
+  }
+
+  export type $SiteIntegrationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SiteIntegration"
+    objects: {
+      site: Prisma.$SitePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      siteId: string
+      appSlug: string
+      config: Prisma.JsonValue | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["siteIntegration"]>
+    composites: {}
+  }
+
+  type SiteIntegrationGetPayload<S extends boolean | null | undefined | SiteIntegrationDefaultArgs> = $Result.GetResult<Prisma.$SiteIntegrationPayload, S>
+
+  type SiteIntegrationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<SiteIntegrationFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: SiteIntegrationCountAggregateInputType | true
+    }
+
+  export interface SiteIntegrationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SiteIntegration'], meta: { name: 'SiteIntegration' } }
+    /**
+     * Find zero or one SiteIntegration that matches the filter.
+     * @param {SiteIntegrationFindUniqueArgs} args - Arguments to find a SiteIntegration
+     * @example
+     * // Get one SiteIntegration
+     * const siteIntegration = await prisma.siteIntegration.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SiteIntegrationFindUniqueArgs>(args: SelectSubset<T, SiteIntegrationFindUniqueArgs<ExtArgs>>): Prisma__SiteIntegrationClient<$Result.GetResult<Prisma.$SiteIntegrationPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one SiteIntegration that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {SiteIntegrationFindUniqueOrThrowArgs} args - Arguments to find a SiteIntegration
+     * @example
+     * // Get one SiteIntegration
+     * const siteIntegration = await prisma.siteIntegration.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SiteIntegrationFindUniqueOrThrowArgs>(args: SelectSubset<T, SiteIntegrationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SiteIntegrationClient<$Result.GetResult<Prisma.$SiteIntegrationPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first SiteIntegration that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteIntegrationFindFirstArgs} args - Arguments to find a SiteIntegration
+     * @example
+     * // Get one SiteIntegration
+     * const siteIntegration = await prisma.siteIntegration.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SiteIntegrationFindFirstArgs>(args?: SelectSubset<T, SiteIntegrationFindFirstArgs<ExtArgs>>): Prisma__SiteIntegrationClient<$Result.GetResult<Prisma.$SiteIntegrationPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first SiteIntegration that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteIntegrationFindFirstOrThrowArgs} args - Arguments to find a SiteIntegration
+     * @example
+     * // Get one SiteIntegration
+     * const siteIntegration = await prisma.siteIntegration.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SiteIntegrationFindFirstOrThrowArgs>(args?: SelectSubset<T, SiteIntegrationFindFirstOrThrowArgs<ExtArgs>>): Prisma__SiteIntegrationClient<$Result.GetResult<Prisma.$SiteIntegrationPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more SiteIntegrations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteIntegrationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SiteIntegrations
+     * const siteIntegrations = await prisma.siteIntegration.findMany()
+     * 
+     * // Get first 10 SiteIntegrations
+     * const siteIntegrations = await prisma.siteIntegration.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const siteIntegrationWithIdOnly = await prisma.siteIntegration.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SiteIntegrationFindManyArgs>(args?: SelectSubset<T, SiteIntegrationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteIntegrationPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a SiteIntegration.
+     * @param {SiteIntegrationCreateArgs} args - Arguments to create a SiteIntegration.
+     * @example
+     * // Create one SiteIntegration
+     * const SiteIntegration = await prisma.siteIntegration.create({
+     *   data: {
+     *     // ... data to create a SiteIntegration
+     *   }
+     * })
+     * 
+     */
+    create<T extends SiteIntegrationCreateArgs>(args: SelectSubset<T, SiteIntegrationCreateArgs<ExtArgs>>): Prisma__SiteIntegrationClient<$Result.GetResult<Prisma.$SiteIntegrationPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many SiteIntegrations.
+     * @param {SiteIntegrationCreateManyArgs} args - Arguments to create many SiteIntegrations.
+     * @example
+     * // Create many SiteIntegrations
+     * const siteIntegration = await prisma.siteIntegration.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SiteIntegrationCreateManyArgs>(args?: SelectSubset<T, SiteIntegrationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SiteIntegrations and returns the data saved in the database.
+     * @param {SiteIntegrationCreateManyAndReturnArgs} args - Arguments to create many SiteIntegrations.
+     * @example
+     * // Create many SiteIntegrations
+     * const siteIntegration = await prisma.siteIntegration.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SiteIntegrations and only return the `id`
+     * const siteIntegrationWithIdOnly = await prisma.siteIntegration.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SiteIntegrationCreateManyAndReturnArgs>(args?: SelectSubset<T, SiteIntegrationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteIntegrationPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a SiteIntegration.
+     * @param {SiteIntegrationDeleteArgs} args - Arguments to delete one SiteIntegration.
+     * @example
+     * // Delete one SiteIntegration
+     * const SiteIntegration = await prisma.siteIntegration.delete({
+     *   where: {
+     *     // ... filter to delete one SiteIntegration
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SiteIntegrationDeleteArgs>(args: SelectSubset<T, SiteIntegrationDeleteArgs<ExtArgs>>): Prisma__SiteIntegrationClient<$Result.GetResult<Prisma.$SiteIntegrationPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one SiteIntegration.
+     * @param {SiteIntegrationUpdateArgs} args - Arguments to update one SiteIntegration.
+     * @example
+     * // Update one SiteIntegration
+     * const siteIntegration = await prisma.siteIntegration.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SiteIntegrationUpdateArgs>(args: SelectSubset<T, SiteIntegrationUpdateArgs<ExtArgs>>): Prisma__SiteIntegrationClient<$Result.GetResult<Prisma.$SiteIntegrationPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more SiteIntegrations.
+     * @param {SiteIntegrationDeleteManyArgs} args - Arguments to filter SiteIntegrations to delete.
+     * @example
+     * // Delete a few SiteIntegrations
+     * const { count } = await prisma.siteIntegration.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SiteIntegrationDeleteManyArgs>(args?: SelectSubset<T, SiteIntegrationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SiteIntegrations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteIntegrationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SiteIntegrations
+     * const siteIntegration = await prisma.siteIntegration.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SiteIntegrationUpdateManyArgs>(args: SelectSubset<T, SiteIntegrationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one SiteIntegration.
+     * @param {SiteIntegrationUpsertArgs} args - Arguments to update or create a SiteIntegration.
+     * @example
+     * // Update or create a SiteIntegration
+     * const siteIntegration = await prisma.siteIntegration.upsert({
+     *   create: {
+     *     // ... data to create a SiteIntegration
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SiteIntegration we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SiteIntegrationUpsertArgs>(args: SelectSubset<T, SiteIntegrationUpsertArgs<ExtArgs>>): Prisma__SiteIntegrationClient<$Result.GetResult<Prisma.$SiteIntegrationPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of SiteIntegrations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteIntegrationCountArgs} args - Arguments to filter SiteIntegrations to count.
+     * @example
+     * // Count the number of SiteIntegrations
+     * const count = await prisma.siteIntegration.count({
+     *   where: {
+     *     // ... the filter for the SiteIntegrations we want to count
+     *   }
+     * })
+    **/
+    count<T extends SiteIntegrationCountArgs>(
+      args?: Subset<T, SiteIntegrationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SiteIntegrationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SiteIntegration.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteIntegrationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SiteIntegrationAggregateArgs>(args: Subset<T, SiteIntegrationAggregateArgs>): Prisma.PrismaPromise<GetSiteIntegrationAggregateType<T>>
+
+    /**
+     * Group by SiteIntegration.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteIntegrationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SiteIntegrationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SiteIntegrationGroupByArgs['orderBy'] }
+        : { orderBy?: SiteIntegrationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SiteIntegrationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSiteIntegrationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SiteIntegration model
+   */
+  readonly fields: SiteIntegrationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SiteIntegration.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SiteIntegrationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    site<T extends SiteDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SiteDefaultArgs<ExtArgs>>): Prisma__SiteClient<$Result.GetResult<Prisma.$SitePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SiteIntegration model
+   */ 
+  interface SiteIntegrationFieldRefs {
+    readonly id: FieldRef<"SiteIntegration", 'String'>
+    readonly siteId: FieldRef<"SiteIntegration", 'String'>
+    readonly appSlug: FieldRef<"SiteIntegration", 'String'>
+    readonly config: FieldRef<"SiteIntegration", 'Json'>
+    readonly createdAt: FieldRef<"SiteIntegration", 'DateTime'>
+    readonly updatedAt: FieldRef<"SiteIntegration", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SiteIntegration findUnique
+   */
+  export type SiteIntegrationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteIntegration
+     */
+    select?: SiteIntegrationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SiteIntegrationInclude<ExtArgs> | null
+    /**
+     * Filter, which SiteIntegration to fetch.
+     */
+    where: SiteIntegrationWhereUniqueInput
+  }
+
+  /**
+   * SiteIntegration findUniqueOrThrow
+   */
+  export type SiteIntegrationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteIntegration
+     */
+    select?: SiteIntegrationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SiteIntegrationInclude<ExtArgs> | null
+    /**
+     * Filter, which SiteIntegration to fetch.
+     */
+    where: SiteIntegrationWhereUniqueInput
+  }
+
+  /**
+   * SiteIntegration findFirst
+   */
+  export type SiteIntegrationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteIntegration
+     */
+    select?: SiteIntegrationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SiteIntegrationInclude<ExtArgs> | null
+    /**
+     * Filter, which SiteIntegration to fetch.
+     */
+    where?: SiteIntegrationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SiteIntegrations to fetch.
+     */
+    orderBy?: SiteIntegrationOrderByWithRelationInput | SiteIntegrationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SiteIntegrations.
+     */
+    cursor?: SiteIntegrationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SiteIntegrations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SiteIntegrations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SiteIntegrations.
+     */
+    distinct?: SiteIntegrationScalarFieldEnum | SiteIntegrationScalarFieldEnum[]
+  }
+
+  /**
+   * SiteIntegration findFirstOrThrow
+   */
+  export type SiteIntegrationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteIntegration
+     */
+    select?: SiteIntegrationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SiteIntegrationInclude<ExtArgs> | null
+    /**
+     * Filter, which SiteIntegration to fetch.
+     */
+    where?: SiteIntegrationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SiteIntegrations to fetch.
+     */
+    orderBy?: SiteIntegrationOrderByWithRelationInput | SiteIntegrationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SiteIntegrations.
+     */
+    cursor?: SiteIntegrationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SiteIntegrations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SiteIntegrations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SiteIntegrations.
+     */
+    distinct?: SiteIntegrationScalarFieldEnum | SiteIntegrationScalarFieldEnum[]
+  }
+
+  /**
+   * SiteIntegration findMany
+   */
+  export type SiteIntegrationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteIntegration
+     */
+    select?: SiteIntegrationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SiteIntegrationInclude<ExtArgs> | null
+    /**
+     * Filter, which SiteIntegrations to fetch.
+     */
+    where?: SiteIntegrationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SiteIntegrations to fetch.
+     */
+    orderBy?: SiteIntegrationOrderByWithRelationInput | SiteIntegrationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SiteIntegrations.
+     */
+    cursor?: SiteIntegrationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SiteIntegrations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SiteIntegrations.
+     */
+    skip?: number
+    distinct?: SiteIntegrationScalarFieldEnum | SiteIntegrationScalarFieldEnum[]
+  }
+
+  /**
+   * SiteIntegration create
+   */
+  export type SiteIntegrationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteIntegration
+     */
+    select?: SiteIntegrationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SiteIntegrationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SiteIntegration.
+     */
+    data: XOR<SiteIntegrationCreateInput, SiteIntegrationUncheckedCreateInput>
+  }
+
+  /**
+   * SiteIntegration createMany
+   */
+  export type SiteIntegrationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SiteIntegrations.
+     */
+    data: SiteIntegrationCreateManyInput | SiteIntegrationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SiteIntegration createManyAndReturn
+   */
+  export type SiteIntegrationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteIntegration
+     */
+    select?: SiteIntegrationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many SiteIntegrations.
+     */
+    data: SiteIntegrationCreateManyInput | SiteIntegrationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SiteIntegrationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SiteIntegration update
+   */
+  export type SiteIntegrationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteIntegration
+     */
+    select?: SiteIntegrationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SiteIntegrationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SiteIntegration.
+     */
+    data: XOR<SiteIntegrationUpdateInput, SiteIntegrationUncheckedUpdateInput>
+    /**
+     * Choose, which SiteIntegration to update.
+     */
+    where: SiteIntegrationWhereUniqueInput
+  }
+
+  /**
+   * SiteIntegration updateMany
+   */
+  export type SiteIntegrationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SiteIntegrations.
+     */
+    data: XOR<SiteIntegrationUpdateManyMutationInput, SiteIntegrationUncheckedUpdateManyInput>
+    /**
+     * Filter which SiteIntegrations to update
+     */
+    where?: SiteIntegrationWhereInput
+  }
+
+  /**
+   * SiteIntegration upsert
+   */
+  export type SiteIntegrationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteIntegration
+     */
+    select?: SiteIntegrationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SiteIntegrationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SiteIntegration to update in case it exists.
+     */
+    where: SiteIntegrationWhereUniqueInput
+    /**
+     * In case the SiteIntegration found by the `where` argument doesn't exist, create a new SiteIntegration with this data.
+     */
+    create: XOR<SiteIntegrationCreateInput, SiteIntegrationUncheckedCreateInput>
+    /**
+     * In case the SiteIntegration was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SiteIntegrationUpdateInput, SiteIntegrationUncheckedUpdateInput>
+  }
+
+  /**
+   * SiteIntegration delete
+   */
+  export type SiteIntegrationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteIntegration
+     */
+    select?: SiteIntegrationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SiteIntegrationInclude<ExtArgs> | null
+    /**
+     * Filter which SiteIntegration to delete.
+     */
+    where: SiteIntegrationWhereUniqueInput
+  }
+
+  /**
+   * SiteIntegration deleteMany
+   */
+  export type SiteIntegrationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SiteIntegrations to delete
+     */
+    where?: SiteIntegrationWhereInput
+  }
+
+  /**
+   * SiteIntegration without action
+   */
+  export type SiteIntegrationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteIntegration
+     */
+    select?: SiteIntegrationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SiteIntegrationInclude<ExtArgs> | null
   }
 
 
@@ -31976,6 +33306,944 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: V12ProjectCheckpointInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model V12GenerationJob
+   */
+
+  export type AggregateV12GenerationJob = {
+    _count: V12GenerationJobCountAggregateOutputType | null
+    _min: V12GenerationJobMinAggregateOutputType | null
+    _max: V12GenerationJobMaxAggregateOutputType | null
+  }
+
+  export type V12GenerationJobMinAggregateOutputType = {
+    id: string | null
+    siteId: string | null
+    tenantId: string | null
+    stage: string | null
+    status: string | null
+    error: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type V12GenerationJobMaxAggregateOutputType = {
+    id: string | null
+    siteId: string | null
+    tenantId: string | null
+    stage: string | null
+    status: string | null
+    error: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type V12GenerationJobCountAggregateOutputType = {
+    id: number
+    siteId: number
+    tenantId: number
+    stage: number
+    status: number
+    state: number
+    input: number
+    result: number
+    error: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type V12GenerationJobMinAggregateInputType = {
+    id?: true
+    siteId?: true
+    tenantId?: true
+    stage?: true
+    status?: true
+    error?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type V12GenerationJobMaxAggregateInputType = {
+    id?: true
+    siteId?: true
+    tenantId?: true
+    stage?: true
+    status?: true
+    error?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type V12GenerationJobCountAggregateInputType = {
+    id?: true
+    siteId?: true
+    tenantId?: true
+    stage?: true
+    status?: true
+    state?: true
+    input?: true
+    result?: true
+    error?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type V12GenerationJobAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which V12GenerationJob to aggregate.
+     */
+    where?: V12GenerationJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12GenerationJobs to fetch.
+     */
+    orderBy?: V12GenerationJobOrderByWithRelationInput | V12GenerationJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: V12GenerationJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12GenerationJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12GenerationJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned V12GenerationJobs
+    **/
+    _count?: true | V12GenerationJobCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: V12GenerationJobMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: V12GenerationJobMaxAggregateInputType
+  }
+
+  export type GetV12GenerationJobAggregateType<T extends V12GenerationJobAggregateArgs> = {
+        [P in keyof T & keyof AggregateV12GenerationJob]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateV12GenerationJob[P]>
+      : GetScalarType<T[P], AggregateV12GenerationJob[P]>
+  }
+
+
+
+
+  export type V12GenerationJobGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: V12GenerationJobWhereInput
+    orderBy?: V12GenerationJobOrderByWithAggregationInput | V12GenerationJobOrderByWithAggregationInput[]
+    by: V12GenerationJobScalarFieldEnum[] | V12GenerationJobScalarFieldEnum
+    having?: V12GenerationJobScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: V12GenerationJobCountAggregateInputType | true
+    _min?: V12GenerationJobMinAggregateInputType
+    _max?: V12GenerationJobMaxAggregateInputType
+  }
+
+  export type V12GenerationJobGroupByOutputType = {
+    id: string
+    siteId: string
+    tenantId: string
+    stage: string
+    status: string
+    state: JsonValue | null
+    input: JsonValue
+    result: JsonValue | null
+    error: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: V12GenerationJobCountAggregateOutputType | null
+    _min: V12GenerationJobMinAggregateOutputType | null
+    _max: V12GenerationJobMaxAggregateOutputType | null
+  }
+
+  type GetV12GenerationJobGroupByPayload<T extends V12GenerationJobGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<V12GenerationJobGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof V12GenerationJobGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], V12GenerationJobGroupByOutputType[P]>
+            : GetScalarType<T[P], V12GenerationJobGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type V12GenerationJobSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    siteId?: boolean
+    tenantId?: boolean
+    stage?: boolean
+    status?: boolean
+    state?: boolean
+    input?: boolean
+    result?: boolean
+    error?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["v12GenerationJob"]>
+
+  export type V12GenerationJobSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    siteId?: boolean
+    tenantId?: boolean
+    stage?: boolean
+    status?: boolean
+    state?: boolean
+    input?: boolean
+    result?: boolean
+    error?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["v12GenerationJob"]>
+
+  export type V12GenerationJobSelectScalar = {
+    id?: boolean
+    siteId?: boolean
+    tenantId?: boolean
+    stage?: boolean
+    status?: boolean
+    state?: boolean
+    input?: boolean
+    result?: boolean
+    error?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $V12GenerationJobPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "V12GenerationJob"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      siteId: string
+      tenantId: string
+      stage: string
+      status: string
+      state: Prisma.JsonValue | null
+      input: Prisma.JsonValue
+      result: Prisma.JsonValue | null
+      error: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["v12GenerationJob"]>
+    composites: {}
+  }
+
+  type V12GenerationJobGetPayload<S extends boolean | null | undefined | V12GenerationJobDefaultArgs> = $Result.GetResult<Prisma.$V12GenerationJobPayload, S>
+
+  type V12GenerationJobCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<V12GenerationJobFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: V12GenerationJobCountAggregateInputType | true
+    }
+
+  export interface V12GenerationJobDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['V12GenerationJob'], meta: { name: 'V12GenerationJob' } }
+    /**
+     * Find zero or one V12GenerationJob that matches the filter.
+     * @param {V12GenerationJobFindUniqueArgs} args - Arguments to find a V12GenerationJob
+     * @example
+     * // Get one V12GenerationJob
+     * const v12GenerationJob = await prisma.v12GenerationJob.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends V12GenerationJobFindUniqueArgs>(args: SelectSubset<T, V12GenerationJobFindUniqueArgs<ExtArgs>>): Prisma__V12GenerationJobClient<$Result.GetResult<Prisma.$V12GenerationJobPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one V12GenerationJob that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {V12GenerationJobFindUniqueOrThrowArgs} args - Arguments to find a V12GenerationJob
+     * @example
+     * // Get one V12GenerationJob
+     * const v12GenerationJob = await prisma.v12GenerationJob.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends V12GenerationJobFindUniqueOrThrowArgs>(args: SelectSubset<T, V12GenerationJobFindUniqueOrThrowArgs<ExtArgs>>): Prisma__V12GenerationJobClient<$Result.GetResult<Prisma.$V12GenerationJobPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first V12GenerationJob that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12GenerationJobFindFirstArgs} args - Arguments to find a V12GenerationJob
+     * @example
+     * // Get one V12GenerationJob
+     * const v12GenerationJob = await prisma.v12GenerationJob.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends V12GenerationJobFindFirstArgs>(args?: SelectSubset<T, V12GenerationJobFindFirstArgs<ExtArgs>>): Prisma__V12GenerationJobClient<$Result.GetResult<Prisma.$V12GenerationJobPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first V12GenerationJob that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12GenerationJobFindFirstOrThrowArgs} args - Arguments to find a V12GenerationJob
+     * @example
+     * // Get one V12GenerationJob
+     * const v12GenerationJob = await prisma.v12GenerationJob.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends V12GenerationJobFindFirstOrThrowArgs>(args?: SelectSubset<T, V12GenerationJobFindFirstOrThrowArgs<ExtArgs>>): Prisma__V12GenerationJobClient<$Result.GetResult<Prisma.$V12GenerationJobPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more V12GenerationJobs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12GenerationJobFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all V12GenerationJobs
+     * const v12GenerationJobs = await prisma.v12GenerationJob.findMany()
+     * 
+     * // Get first 10 V12GenerationJobs
+     * const v12GenerationJobs = await prisma.v12GenerationJob.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const v12GenerationJobWithIdOnly = await prisma.v12GenerationJob.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends V12GenerationJobFindManyArgs>(args?: SelectSubset<T, V12GenerationJobFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12GenerationJobPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a V12GenerationJob.
+     * @param {V12GenerationJobCreateArgs} args - Arguments to create a V12GenerationJob.
+     * @example
+     * // Create one V12GenerationJob
+     * const V12GenerationJob = await prisma.v12GenerationJob.create({
+     *   data: {
+     *     // ... data to create a V12GenerationJob
+     *   }
+     * })
+     * 
+     */
+    create<T extends V12GenerationJobCreateArgs>(args: SelectSubset<T, V12GenerationJobCreateArgs<ExtArgs>>): Prisma__V12GenerationJobClient<$Result.GetResult<Prisma.$V12GenerationJobPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many V12GenerationJobs.
+     * @param {V12GenerationJobCreateManyArgs} args - Arguments to create many V12GenerationJobs.
+     * @example
+     * // Create many V12GenerationJobs
+     * const v12GenerationJob = await prisma.v12GenerationJob.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends V12GenerationJobCreateManyArgs>(args?: SelectSubset<T, V12GenerationJobCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many V12GenerationJobs and returns the data saved in the database.
+     * @param {V12GenerationJobCreateManyAndReturnArgs} args - Arguments to create many V12GenerationJobs.
+     * @example
+     * // Create many V12GenerationJobs
+     * const v12GenerationJob = await prisma.v12GenerationJob.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many V12GenerationJobs and only return the `id`
+     * const v12GenerationJobWithIdOnly = await prisma.v12GenerationJob.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends V12GenerationJobCreateManyAndReturnArgs>(args?: SelectSubset<T, V12GenerationJobCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V12GenerationJobPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a V12GenerationJob.
+     * @param {V12GenerationJobDeleteArgs} args - Arguments to delete one V12GenerationJob.
+     * @example
+     * // Delete one V12GenerationJob
+     * const V12GenerationJob = await prisma.v12GenerationJob.delete({
+     *   where: {
+     *     // ... filter to delete one V12GenerationJob
+     *   }
+     * })
+     * 
+     */
+    delete<T extends V12GenerationJobDeleteArgs>(args: SelectSubset<T, V12GenerationJobDeleteArgs<ExtArgs>>): Prisma__V12GenerationJobClient<$Result.GetResult<Prisma.$V12GenerationJobPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one V12GenerationJob.
+     * @param {V12GenerationJobUpdateArgs} args - Arguments to update one V12GenerationJob.
+     * @example
+     * // Update one V12GenerationJob
+     * const v12GenerationJob = await prisma.v12GenerationJob.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends V12GenerationJobUpdateArgs>(args: SelectSubset<T, V12GenerationJobUpdateArgs<ExtArgs>>): Prisma__V12GenerationJobClient<$Result.GetResult<Prisma.$V12GenerationJobPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more V12GenerationJobs.
+     * @param {V12GenerationJobDeleteManyArgs} args - Arguments to filter V12GenerationJobs to delete.
+     * @example
+     * // Delete a few V12GenerationJobs
+     * const { count } = await prisma.v12GenerationJob.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends V12GenerationJobDeleteManyArgs>(args?: SelectSubset<T, V12GenerationJobDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more V12GenerationJobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12GenerationJobUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many V12GenerationJobs
+     * const v12GenerationJob = await prisma.v12GenerationJob.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends V12GenerationJobUpdateManyArgs>(args: SelectSubset<T, V12GenerationJobUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one V12GenerationJob.
+     * @param {V12GenerationJobUpsertArgs} args - Arguments to update or create a V12GenerationJob.
+     * @example
+     * // Update or create a V12GenerationJob
+     * const v12GenerationJob = await prisma.v12GenerationJob.upsert({
+     *   create: {
+     *     // ... data to create a V12GenerationJob
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the V12GenerationJob we want to update
+     *   }
+     * })
+     */
+    upsert<T extends V12GenerationJobUpsertArgs>(args: SelectSubset<T, V12GenerationJobUpsertArgs<ExtArgs>>): Prisma__V12GenerationJobClient<$Result.GetResult<Prisma.$V12GenerationJobPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of V12GenerationJobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12GenerationJobCountArgs} args - Arguments to filter V12GenerationJobs to count.
+     * @example
+     * // Count the number of V12GenerationJobs
+     * const count = await prisma.v12GenerationJob.count({
+     *   where: {
+     *     // ... the filter for the V12GenerationJobs we want to count
+     *   }
+     * })
+    **/
+    count<T extends V12GenerationJobCountArgs>(
+      args?: Subset<T, V12GenerationJobCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], V12GenerationJobCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a V12GenerationJob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12GenerationJobAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends V12GenerationJobAggregateArgs>(args: Subset<T, V12GenerationJobAggregateArgs>): Prisma.PrismaPromise<GetV12GenerationJobAggregateType<T>>
+
+    /**
+     * Group by V12GenerationJob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V12GenerationJobGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends V12GenerationJobGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: V12GenerationJobGroupByArgs['orderBy'] }
+        : { orderBy?: V12GenerationJobGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, V12GenerationJobGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetV12GenerationJobGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the V12GenerationJob model
+   */
+  readonly fields: V12GenerationJobFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for V12GenerationJob.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__V12GenerationJobClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the V12GenerationJob model
+   */ 
+  interface V12GenerationJobFieldRefs {
+    readonly id: FieldRef<"V12GenerationJob", 'String'>
+    readonly siteId: FieldRef<"V12GenerationJob", 'String'>
+    readonly tenantId: FieldRef<"V12GenerationJob", 'String'>
+    readonly stage: FieldRef<"V12GenerationJob", 'String'>
+    readonly status: FieldRef<"V12GenerationJob", 'String'>
+    readonly state: FieldRef<"V12GenerationJob", 'Json'>
+    readonly input: FieldRef<"V12GenerationJob", 'Json'>
+    readonly result: FieldRef<"V12GenerationJob", 'Json'>
+    readonly error: FieldRef<"V12GenerationJob", 'String'>
+    readonly createdAt: FieldRef<"V12GenerationJob", 'DateTime'>
+    readonly updatedAt: FieldRef<"V12GenerationJob", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * V12GenerationJob findUnique
+   */
+  export type V12GenerationJobFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12GenerationJob
+     */
+    select?: V12GenerationJobSelect<ExtArgs> | null
+    /**
+     * Filter, which V12GenerationJob to fetch.
+     */
+    where: V12GenerationJobWhereUniqueInput
+  }
+
+  /**
+   * V12GenerationJob findUniqueOrThrow
+   */
+  export type V12GenerationJobFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12GenerationJob
+     */
+    select?: V12GenerationJobSelect<ExtArgs> | null
+    /**
+     * Filter, which V12GenerationJob to fetch.
+     */
+    where: V12GenerationJobWhereUniqueInput
+  }
+
+  /**
+   * V12GenerationJob findFirst
+   */
+  export type V12GenerationJobFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12GenerationJob
+     */
+    select?: V12GenerationJobSelect<ExtArgs> | null
+    /**
+     * Filter, which V12GenerationJob to fetch.
+     */
+    where?: V12GenerationJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12GenerationJobs to fetch.
+     */
+    orderBy?: V12GenerationJobOrderByWithRelationInput | V12GenerationJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for V12GenerationJobs.
+     */
+    cursor?: V12GenerationJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12GenerationJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12GenerationJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of V12GenerationJobs.
+     */
+    distinct?: V12GenerationJobScalarFieldEnum | V12GenerationJobScalarFieldEnum[]
+  }
+
+  /**
+   * V12GenerationJob findFirstOrThrow
+   */
+  export type V12GenerationJobFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12GenerationJob
+     */
+    select?: V12GenerationJobSelect<ExtArgs> | null
+    /**
+     * Filter, which V12GenerationJob to fetch.
+     */
+    where?: V12GenerationJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12GenerationJobs to fetch.
+     */
+    orderBy?: V12GenerationJobOrderByWithRelationInput | V12GenerationJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for V12GenerationJobs.
+     */
+    cursor?: V12GenerationJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12GenerationJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12GenerationJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of V12GenerationJobs.
+     */
+    distinct?: V12GenerationJobScalarFieldEnum | V12GenerationJobScalarFieldEnum[]
+  }
+
+  /**
+   * V12GenerationJob findMany
+   */
+  export type V12GenerationJobFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12GenerationJob
+     */
+    select?: V12GenerationJobSelect<ExtArgs> | null
+    /**
+     * Filter, which V12GenerationJobs to fetch.
+     */
+    where?: V12GenerationJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V12GenerationJobs to fetch.
+     */
+    orderBy?: V12GenerationJobOrderByWithRelationInput | V12GenerationJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing V12GenerationJobs.
+     */
+    cursor?: V12GenerationJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V12GenerationJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V12GenerationJobs.
+     */
+    skip?: number
+    distinct?: V12GenerationJobScalarFieldEnum | V12GenerationJobScalarFieldEnum[]
+  }
+
+  /**
+   * V12GenerationJob create
+   */
+  export type V12GenerationJobCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12GenerationJob
+     */
+    select?: V12GenerationJobSelect<ExtArgs> | null
+    /**
+     * The data needed to create a V12GenerationJob.
+     */
+    data: XOR<V12GenerationJobCreateInput, V12GenerationJobUncheckedCreateInput>
+  }
+
+  /**
+   * V12GenerationJob createMany
+   */
+  export type V12GenerationJobCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many V12GenerationJobs.
+     */
+    data: V12GenerationJobCreateManyInput | V12GenerationJobCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * V12GenerationJob createManyAndReturn
+   */
+  export type V12GenerationJobCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12GenerationJob
+     */
+    select?: V12GenerationJobSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many V12GenerationJobs.
+     */
+    data: V12GenerationJobCreateManyInput | V12GenerationJobCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * V12GenerationJob update
+   */
+  export type V12GenerationJobUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12GenerationJob
+     */
+    select?: V12GenerationJobSelect<ExtArgs> | null
+    /**
+     * The data needed to update a V12GenerationJob.
+     */
+    data: XOR<V12GenerationJobUpdateInput, V12GenerationJobUncheckedUpdateInput>
+    /**
+     * Choose, which V12GenerationJob to update.
+     */
+    where: V12GenerationJobWhereUniqueInput
+  }
+
+  /**
+   * V12GenerationJob updateMany
+   */
+  export type V12GenerationJobUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update V12GenerationJobs.
+     */
+    data: XOR<V12GenerationJobUpdateManyMutationInput, V12GenerationJobUncheckedUpdateManyInput>
+    /**
+     * Filter which V12GenerationJobs to update
+     */
+    where?: V12GenerationJobWhereInput
+  }
+
+  /**
+   * V12GenerationJob upsert
+   */
+  export type V12GenerationJobUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12GenerationJob
+     */
+    select?: V12GenerationJobSelect<ExtArgs> | null
+    /**
+     * The filter to search for the V12GenerationJob to update in case it exists.
+     */
+    where: V12GenerationJobWhereUniqueInput
+    /**
+     * In case the V12GenerationJob found by the `where` argument doesn't exist, create a new V12GenerationJob with this data.
+     */
+    create: XOR<V12GenerationJobCreateInput, V12GenerationJobUncheckedCreateInput>
+    /**
+     * In case the V12GenerationJob was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<V12GenerationJobUpdateInput, V12GenerationJobUncheckedUpdateInput>
+  }
+
+  /**
+   * V12GenerationJob delete
+   */
+  export type V12GenerationJobDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12GenerationJob
+     */
+    select?: V12GenerationJobSelect<ExtArgs> | null
+    /**
+     * Filter which V12GenerationJob to delete.
+     */
+    where: V12GenerationJobWhereUniqueInput
+  }
+
+  /**
+   * V12GenerationJob deleteMany
+   */
+  export type V12GenerationJobDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which V12GenerationJobs to delete
+     */
+    where?: V12GenerationJobWhereInput
+  }
+
+  /**
+   * V12GenerationJob without action
+   */
+  export type V12GenerationJobDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V12GenerationJob
+     */
+    select?: V12GenerationJobSelect<ExtArgs> | null
   }
 
 
@@ -45769,6 +48037,968 @@ export namespace Prisma {
 
 
   /**
+   * Model SupportRequest
+   */
+
+  export type AggregateSupportRequest = {
+    _count: SupportRequestCountAggregateOutputType | null
+    _min: SupportRequestMinAggregateOutputType | null
+    _max: SupportRequestMaxAggregateOutputType | null
+  }
+
+  export type SupportRequestMinAggregateOutputType = {
+    id: string | null
+    type: string | null
+    name: string | null
+    email: string | null
+    subject: string | null
+    message: string | null
+    pageUrl: string | null
+    severity: string | null
+    status: string | null
+    source: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SupportRequestMaxAggregateOutputType = {
+    id: string | null
+    type: string | null
+    name: string | null
+    email: string | null
+    subject: string | null
+    message: string | null
+    pageUrl: string | null
+    severity: string | null
+    status: string | null
+    source: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SupportRequestCountAggregateOutputType = {
+    id: number
+    type: number
+    name: number
+    email: number
+    subject: number
+    message: number
+    pageUrl: number
+    severity: number
+    status: number
+    source: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SupportRequestMinAggregateInputType = {
+    id?: true
+    type?: true
+    name?: true
+    email?: true
+    subject?: true
+    message?: true
+    pageUrl?: true
+    severity?: true
+    status?: true
+    source?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SupportRequestMaxAggregateInputType = {
+    id?: true
+    type?: true
+    name?: true
+    email?: true
+    subject?: true
+    message?: true
+    pageUrl?: true
+    severity?: true
+    status?: true
+    source?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SupportRequestCountAggregateInputType = {
+    id?: true
+    type?: true
+    name?: true
+    email?: true
+    subject?: true
+    message?: true
+    pageUrl?: true
+    severity?: true
+    status?: true
+    source?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SupportRequestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SupportRequest to aggregate.
+     */
+    where?: SupportRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupportRequests to fetch.
+     */
+    orderBy?: SupportRequestOrderByWithRelationInput | SupportRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SupportRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupportRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupportRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SupportRequests
+    **/
+    _count?: true | SupportRequestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SupportRequestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SupportRequestMaxAggregateInputType
+  }
+
+  export type GetSupportRequestAggregateType<T extends SupportRequestAggregateArgs> = {
+        [P in keyof T & keyof AggregateSupportRequest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSupportRequest[P]>
+      : GetScalarType<T[P], AggregateSupportRequest[P]>
+  }
+
+
+
+
+  export type SupportRequestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupportRequestWhereInput
+    orderBy?: SupportRequestOrderByWithAggregationInput | SupportRequestOrderByWithAggregationInput[]
+    by: SupportRequestScalarFieldEnum[] | SupportRequestScalarFieldEnum
+    having?: SupportRequestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SupportRequestCountAggregateInputType | true
+    _min?: SupportRequestMinAggregateInputType
+    _max?: SupportRequestMaxAggregateInputType
+  }
+
+  export type SupportRequestGroupByOutputType = {
+    id: string
+    type: string
+    name: string | null
+    email: string
+    subject: string | null
+    message: string
+    pageUrl: string | null
+    severity: string | null
+    status: string
+    source: string
+    createdAt: Date
+    updatedAt: Date
+    _count: SupportRequestCountAggregateOutputType | null
+    _min: SupportRequestMinAggregateOutputType | null
+    _max: SupportRequestMaxAggregateOutputType | null
+  }
+
+  type GetSupportRequestGroupByPayload<T extends SupportRequestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SupportRequestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SupportRequestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SupportRequestGroupByOutputType[P]>
+            : GetScalarType<T[P], SupportRequestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SupportRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    name?: boolean
+    email?: boolean
+    subject?: boolean
+    message?: boolean
+    pageUrl?: boolean
+    severity?: boolean
+    status?: boolean
+    source?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["supportRequest"]>
+
+  export type SupportRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    name?: boolean
+    email?: boolean
+    subject?: boolean
+    message?: boolean
+    pageUrl?: boolean
+    severity?: boolean
+    status?: boolean
+    source?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["supportRequest"]>
+
+  export type SupportRequestSelectScalar = {
+    id?: boolean
+    type?: boolean
+    name?: boolean
+    email?: boolean
+    subject?: boolean
+    message?: boolean
+    pageUrl?: boolean
+    severity?: boolean
+    status?: boolean
+    source?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $SupportRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SupportRequest"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      type: string
+      name: string | null
+      email: string
+      subject: string | null
+      message: string
+      pageUrl: string | null
+      severity: string | null
+      status: string
+      source: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["supportRequest"]>
+    composites: {}
+  }
+
+  type SupportRequestGetPayload<S extends boolean | null | undefined | SupportRequestDefaultArgs> = $Result.GetResult<Prisma.$SupportRequestPayload, S>
+
+  type SupportRequestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<SupportRequestFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: SupportRequestCountAggregateInputType | true
+    }
+
+  export interface SupportRequestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SupportRequest'], meta: { name: 'SupportRequest' } }
+    /**
+     * Find zero or one SupportRequest that matches the filter.
+     * @param {SupportRequestFindUniqueArgs} args - Arguments to find a SupportRequest
+     * @example
+     * // Get one SupportRequest
+     * const supportRequest = await prisma.supportRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SupportRequestFindUniqueArgs>(args: SelectSubset<T, SupportRequestFindUniqueArgs<ExtArgs>>): Prisma__SupportRequestClient<$Result.GetResult<Prisma.$SupportRequestPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one SupportRequest that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {SupportRequestFindUniqueOrThrowArgs} args - Arguments to find a SupportRequest
+     * @example
+     * // Get one SupportRequest
+     * const supportRequest = await prisma.supportRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SupportRequestFindUniqueOrThrowArgs>(args: SelectSubset<T, SupportRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SupportRequestClient<$Result.GetResult<Prisma.$SupportRequestPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first SupportRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportRequestFindFirstArgs} args - Arguments to find a SupportRequest
+     * @example
+     * // Get one SupportRequest
+     * const supportRequest = await prisma.supportRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SupportRequestFindFirstArgs>(args?: SelectSubset<T, SupportRequestFindFirstArgs<ExtArgs>>): Prisma__SupportRequestClient<$Result.GetResult<Prisma.$SupportRequestPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first SupportRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportRequestFindFirstOrThrowArgs} args - Arguments to find a SupportRequest
+     * @example
+     * // Get one SupportRequest
+     * const supportRequest = await prisma.supportRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SupportRequestFindFirstOrThrowArgs>(args?: SelectSubset<T, SupportRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma__SupportRequestClient<$Result.GetResult<Prisma.$SupportRequestPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more SupportRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SupportRequests
+     * const supportRequests = await prisma.supportRequest.findMany()
+     * 
+     * // Get first 10 SupportRequests
+     * const supportRequests = await prisma.supportRequest.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const supportRequestWithIdOnly = await prisma.supportRequest.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SupportRequestFindManyArgs>(args?: SelectSubset<T, SupportRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportRequestPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a SupportRequest.
+     * @param {SupportRequestCreateArgs} args - Arguments to create a SupportRequest.
+     * @example
+     * // Create one SupportRequest
+     * const SupportRequest = await prisma.supportRequest.create({
+     *   data: {
+     *     // ... data to create a SupportRequest
+     *   }
+     * })
+     * 
+     */
+    create<T extends SupportRequestCreateArgs>(args: SelectSubset<T, SupportRequestCreateArgs<ExtArgs>>): Prisma__SupportRequestClient<$Result.GetResult<Prisma.$SupportRequestPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many SupportRequests.
+     * @param {SupportRequestCreateManyArgs} args - Arguments to create many SupportRequests.
+     * @example
+     * // Create many SupportRequests
+     * const supportRequest = await prisma.supportRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SupportRequestCreateManyArgs>(args?: SelectSubset<T, SupportRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SupportRequests and returns the data saved in the database.
+     * @param {SupportRequestCreateManyAndReturnArgs} args - Arguments to create many SupportRequests.
+     * @example
+     * // Create many SupportRequests
+     * const supportRequest = await prisma.supportRequest.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SupportRequests and only return the `id`
+     * const supportRequestWithIdOnly = await prisma.supportRequest.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SupportRequestCreateManyAndReturnArgs>(args?: SelectSubset<T, SupportRequestCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportRequestPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a SupportRequest.
+     * @param {SupportRequestDeleteArgs} args - Arguments to delete one SupportRequest.
+     * @example
+     * // Delete one SupportRequest
+     * const SupportRequest = await prisma.supportRequest.delete({
+     *   where: {
+     *     // ... filter to delete one SupportRequest
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SupportRequestDeleteArgs>(args: SelectSubset<T, SupportRequestDeleteArgs<ExtArgs>>): Prisma__SupportRequestClient<$Result.GetResult<Prisma.$SupportRequestPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one SupportRequest.
+     * @param {SupportRequestUpdateArgs} args - Arguments to update one SupportRequest.
+     * @example
+     * // Update one SupportRequest
+     * const supportRequest = await prisma.supportRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SupportRequestUpdateArgs>(args: SelectSubset<T, SupportRequestUpdateArgs<ExtArgs>>): Prisma__SupportRequestClient<$Result.GetResult<Prisma.$SupportRequestPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more SupportRequests.
+     * @param {SupportRequestDeleteManyArgs} args - Arguments to filter SupportRequests to delete.
+     * @example
+     * // Delete a few SupportRequests
+     * const { count } = await prisma.supportRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SupportRequestDeleteManyArgs>(args?: SelectSubset<T, SupportRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SupportRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SupportRequests
+     * const supportRequest = await prisma.supportRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SupportRequestUpdateManyArgs>(args: SelectSubset<T, SupportRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one SupportRequest.
+     * @param {SupportRequestUpsertArgs} args - Arguments to update or create a SupportRequest.
+     * @example
+     * // Update or create a SupportRequest
+     * const supportRequest = await prisma.supportRequest.upsert({
+     *   create: {
+     *     // ... data to create a SupportRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SupportRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SupportRequestUpsertArgs>(args: SelectSubset<T, SupportRequestUpsertArgs<ExtArgs>>): Prisma__SupportRequestClient<$Result.GetResult<Prisma.$SupportRequestPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of SupportRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportRequestCountArgs} args - Arguments to filter SupportRequests to count.
+     * @example
+     * // Count the number of SupportRequests
+     * const count = await prisma.supportRequest.count({
+     *   where: {
+     *     // ... the filter for the SupportRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends SupportRequestCountArgs>(
+      args?: Subset<T, SupportRequestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SupportRequestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SupportRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SupportRequestAggregateArgs>(args: Subset<T, SupportRequestAggregateArgs>): Prisma.PrismaPromise<GetSupportRequestAggregateType<T>>
+
+    /**
+     * Group by SupportRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SupportRequestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SupportRequestGroupByArgs['orderBy'] }
+        : { orderBy?: SupportRequestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SupportRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSupportRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SupportRequest model
+   */
+  readonly fields: SupportRequestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SupportRequest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SupportRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SupportRequest model
+   */ 
+  interface SupportRequestFieldRefs {
+    readonly id: FieldRef<"SupportRequest", 'String'>
+    readonly type: FieldRef<"SupportRequest", 'String'>
+    readonly name: FieldRef<"SupportRequest", 'String'>
+    readonly email: FieldRef<"SupportRequest", 'String'>
+    readonly subject: FieldRef<"SupportRequest", 'String'>
+    readonly message: FieldRef<"SupportRequest", 'String'>
+    readonly pageUrl: FieldRef<"SupportRequest", 'String'>
+    readonly severity: FieldRef<"SupportRequest", 'String'>
+    readonly status: FieldRef<"SupportRequest", 'String'>
+    readonly source: FieldRef<"SupportRequest", 'String'>
+    readonly createdAt: FieldRef<"SupportRequest", 'DateTime'>
+    readonly updatedAt: FieldRef<"SupportRequest", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SupportRequest findUnique
+   */
+  export type SupportRequestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportRequest
+     */
+    select?: SupportRequestSelect<ExtArgs> | null
+    /**
+     * Filter, which SupportRequest to fetch.
+     */
+    where: SupportRequestWhereUniqueInput
+  }
+
+  /**
+   * SupportRequest findUniqueOrThrow
+   */
+  export type SupportRequestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportRequest
+     */
+    select?: SupportRequestSelect<ExtArgs> | null
+    /**
+     * Filter, which SupportRequest to fetch.
+     */
+    where: SupportRequestWhereUniqueInput
+  }
+
+  /**
+   * SupportRequest findFirst
+   */
+  export type SupportRequestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportRequest
+     */
+    select?: SupportRequestSelect<ExtArgs> | null
+    /**
+     * Filter, which SupportRequest to fetch.
+     */
+    where?: SupportRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupportRequests to fetch.
+     */
+    orderBy?: SupportRequestOrderByWithRelationInput | SupportRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SupportRequests.
+     */
+    cursor?: SupportRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupportRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupportRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SupportRequests.
+     */
+    distinct?: SupportRequestScalarFieldEnum | SupportRequestScalarFieldEnum[]
+  }
+
+  /**
+   * SupportRequest findFirstOrThrow
+   */
+  export type SupportRequestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportRequest
+     */
+    select?: SupportRequestSelect<ExtArgs> | null
+    /**
+     * Filter, which SupportRequest to fetch.
+     */
+    where?: SupportRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupportRequests to fetch.
+     */
+    orderBy?: SupportRequestOrderByWithRelationInput | SupportRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SupportRequests.
+     */
+    cursor?: SupportRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupportRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupportRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SupportRequests.
+     */
+    distinct?: SupportRequestScalarFieldEnum | SupportRequestScalarFieldEnum[]
+  }
+
+  /**
+   * SupportRequest findMany
+   */
+  export type SupportRequestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportRequest
+     */
+    select?: SupportRequestSelect<ExtArgs> | null
+    /**
+     * Filter, which SupportRequests to fetch.
+     */
+    where?: SupportRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupportRequests to fetch.
+     */
+    orderBy?: SupportRequestOrderByWithRelationInput | SupportRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SupportRequests.
+     */
+    cursor?: SupportRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupportRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupportRequests.
+     */
+    skip?: number
+    distinct?: SupportRequestScalarFieldEnum | SupportRequestScalarFieldEnum[]
+  }
+
+  /**
+   * SupportRequest create
+   */
+  export type SupportRequestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportRequest
+     */
+    select?: SupportRequestSelect<ExtArgs> | null
+    /**
+     * The data needed to create a SupportRequest.
+     */
+    data: XOR<SupportRequestCreateInput, SupportRequestUncheckedCreateInput>
+  }
+
+  /**
+   * SupportRequest createMany
+   */
+  export type SupportRequestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SupportRequests.
+     */
+    data: SupportRequestCreateManyInput | SupportRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SupportRequest createManyAndReturn
+   */
+  export type SupportRequestCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportRequest
+     */
+    select?: SupportRequestSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many SupportRequests.
+     */
+    data: SupportRequestCreateManyInput | SupportRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SupportRequest update
+   */
+  export type SupportRequestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportRequest
+     */
+    select?: SupportRequestSelect<ExtArgs> | null
+    /**
+     * The data needed to update a SupportRequest.
+     */
+    data: XOR<SupportRequestUpdateInput, SupportRequestUncheckedUpdateInput>
+    /**
+     * Choose, which SupportRequest to update.
+     */
+    where: SupportRequestWhereUniqueInput
+  }
+
+  /**
+   * SupportRequest updateMany
+   */
+  export type SupportRequestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SupportRequests.
+     */
+    data: XOR<SupportRequestUpdateManyMutationInput, SupportRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which SupportRequests to update
+     */
+    where?: SupportRequestWhereInput
+  }
+
+  /**
+   * SupportRequest upsert
+   */
+  export type SupportRequestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportRequest
+     */
+    select?: SupportRequestSelect<ExtArgs> | null
+    /**
+     * The filter to search for the SupportRequest to update in case it exists.
+     */
+    where: SupportRequestWhereUniqueInput
+    /**
+     * In case the SupportRequest found by the `where` argument doesn't exist, create a new SupportRequest with this data.
+     */
+    create: XOR<SupportRequestCreateInput, SupportRequestUncheckedCreateInput>
+    /**
+     * In case the SupportRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SupportRequestUpdateInput, SupportRequestUncheckedUpdateInput>
+  }
+
+  /**
+   * SupportRequest delete
+   */
+  export type SupportRequestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportRequest
+     */
+    select?: SupportRequestSelect<ExtArgs> | null
+    /**
+     * Filter which SupportRequest to delete.
+     */
+    where: SupportRequestWhereUniqueInput
+  }
+
+  /**
+   * SupportRequest deleteMany
+   */
+  export type SupportRequestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SupportRequests to delete
+     */
+    where?: SupportRequestWhereInput
+  }
+
+  /**
+   * SupportRequest without action
+   */
+  export type SupportRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportRequest
+     */
+    select?: SupportRequestSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Model CrmLead
    */
 
@@ -58844,6 +62074,7 @@ export namespace Prisma {
     isActive: boolean | null
     razorpayPlanId: string | null
     stripePriceId: string | null
+    dodoProductId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -58857,6 +62088,7 @@ export namespace Prisma {
     isActive: boolean | null
     razorpayPlanId: string | null
     stripePriceId: string | null
+    dodoProductId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -58870,6 +62102,7 @@ export namespace Prisma {
     isActive: number
     razorpayPlanId: number
     stripePriceId: number
+    dodoProductId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -58893,6 +62126,7 @@ export namespace Prisma {
     isActive?: true
     razorpayPlanId?: true
     stripePriceId?: true
+    dodoProductId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -58906,6 +62140,7 @@ export namespace Prisma {
     isActive?: true
     razorpayPlanId?: true
     stripePriceId?: true
+    dodoProductId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -58919,6 +62154,7 @@ export namespace Prisma {
     isActive?: true
     razorpayPlanId?: true
     stripePriceId?: true
+    dodoProductId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -59019,6 +62255,7 @@ export namespace Prisma {
     isActive: boolean
     razorpayPlanId: string | null
     stripePriceId: string | null
+    dodoProductId: string | null
     createdAt: Date
     updatedAt: Date
     _count: PlanPricingCountAggregateOutputType | null
@@ -59051,6 +62288,7 @@ export namespace Prisma {
     isActive?: boolean
     razorpayPlanId?: boolean
     stripePriceId?: boolean
+    dodoProductId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     plan?: boolean | PlanDefaultArgs<ExtArgs>
@@ -59065,6 +62303,7 @@ export namespace Prisma {
     isActive?: boolean
     razorpayPlanId?: boolean
     stripePriceId?: boolean
+    dodoProductId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     plan?: boolean | PlanDefaultArgs<ExtArgs>
@@ -59079,6 +62318,7 @@ export namespace Prisma {
     isActive?: boolean
     razorpayPlanId?: boolean
     stripePriceId?: boolean
+    dodoProductId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -59104,6 +62344,7 @@ export namespace Prisma {
       isActive: boolean
       razorpayPlanId: string | null
       stripePriceId: string | null
+      dodoProductId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["planPricing"]>
@@ -59508,6 +62749,7 @@ export namespace Prisma {
     readonly isActive: FieldRef<"PlanPricing", 'Boolean'>
     readonly razorpayPlanId: FieldRef<"PlanPricing", 'String'>
     readonly stripePriceId: FieldRef<"PlanPricing", 'String'>
+    readonly dodoProductId: FieldRef<"PlanPricing", 'String'>
     readonly createdAt: FieldRef<"PlanPricing", 'DateTime'>
     readonly updatedAt: FieldRef<"PlanPricing", 'DateTime'>
   }
@@ -65281,6 +68523,1034 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: SubscriptionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BillingTransaction
+   */
+
+  export type AggregateBillingTransaction = {
+    _count: BillingTransactionCountAggregateOutputType | null
+    _avg: BillingTransactionAvgAggregateOutputType | null
+    _sum: BillingTransactionSumAggregateOutputType | null
+    _min: BillingTransactionMinAggregateOutputType | null
+    _max: BillingTransactionMaxAggregateOutputType | null
+  }
+
+  export type BillingTransactionAvgAggregateOutputType = {
+    amountMinor: number | null
+  }
+
+  export type BillingTransactionSumAggregateOutputType = {
+    amountMinor: number | null
+  }
+
+  export type BillingTransactionMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    userId: string | null
+    subscriptionId: string | null
+    providerPaymentId: string | null
+    type: string | null
+    status: string | null
+    amountMinor: number | null
+    currency: string | null
+    planCode: string | null
+    billingCycle: string | null
+    paidAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BillingTransactionMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    userId: string | null
+    subscriptionId: string | null
+    providerPaymentId: string | null
+    type: string | null
+    status: string | null
+    amountMinor: number | null
+    currency: string | null
+    planCode: string | null
+    billingCycle: string | null
+    paidAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BillingTransactionCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    userId: number
+    subscriptionId: number
+    providerPaymentId: number
+    type: number
+    status: number
+    amountMinor: number
+    currency: number
+    planCode: number
+    billingCycle: number
+    paidAt: number
+    metadata: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BillingTransactionAvgAggregateInputType = {
+    amountMinor?: true
+  }
+
+  export type BillingTransactionSumAggregateInputType = {
+    amountMinor?: true
+  }
+
+  export type BillingTransactionMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    userId?: true
+    subscriptionId?: true
+    providerPaymentId?: true
+    type?: true
+    status?: true
+    amountMinor?: true
+    currency?: true
+    planCode?: true
+    billingCycle?: true
+    paidAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BillingTransactionMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    userId?: true
+    subscriptionId?: true
+    providerPaymentId?: true
+    type?: true
+    status?: true
+    amountMinor?: true
+    currency?: true
+    planCode?: true
+    billingCycle?: true
+    paidAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BillingTransactionCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    userId?: true
+    subscriptionId?: true
+    providerPaymentId?: true
+    type?: true
+    status?: true
+    amountMinor?: true
+    currency?: true
+    planCode?: true
+    billingCycle?: true
+    paidAt?: true
+    metadata?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BillingTransactionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BillingTransaction to aggregate.
+     */
+    where?: BillingTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BillingTransactions to fetch.
+     */
+    orderBy?: BillingTransactionOrderByWithRelationInput | BillingTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BillingTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BillingTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BillingTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BillingTransactions
+    **/
+    _count?: true | BillingTransactionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BillingTransactionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BillingTransactionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BillingTransactionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BillingTransactionMaxAggregateInputType
+  }
+
+  export type GetBillingTransactionAggregateType<T extends BillingTransactionAggregateArgs> = {
+        [P in keyof T & keyof AggregateBillingTransaction]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBillingTransaction[P]>
+      : GetScalarType<T[P], AggregateBillingTransaction[P]>
+  }
+
+
+
+
+  export type BillingTransactionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BillingTransactionWhereInput
+    orderBy?: BillingTransactionOrderByWithAggregationInput | BillingTransactionOrderByWithAggregationInput[]
+    by: BillingTransactionScalarFieldEnum[] | BillingTransactionScalarFieldEnum
+    having?: BillingTransactionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BillingTransactionCountAggregateInputType | true
+    _avg?: BillingTransactionAvgAggregateInputType
+    _sum?: BillingTransactionSumAggregateInputType
+    _min?: BillingTransactionMinAggregateInputType
+    _max?: BillingTransactionMaxAggregateInputType
+  }
+
+  export type BillingTransactionGroupByOutputType = {
+    id: string
+    tenantId: string
+    userId: string | null
+    subscriptionId: string | null
+    providerPaymentId: string
+    type: string
+    status: string
+    amountMinor: number
+    currency: string
+    planCode: string | null
+    billingCycle: string | null
+    paidAt: Date | null
+    metadata: JsonValue | null
+    createdAt: Date
+    updatedAt: Date
+    _count: BillingTransactionCountAggregateOutputType | null
+    _avg: BillingTransactionAvgAggregateOutputType | null
+    _sum: BillingTransactionSumAggregateOutputType | null
+    _min: BillingTransactionMinAggregateOutputType | null
+    _max: BillingTransactionMaxAggregateOutputType | null
+  }
+
+  type GetBillingTransactionGroupByPayload<T extends BillingTransactionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BillingTransactionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BillingTransactionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BillingTransactionGroupByOutputType[P]>
+            : GetScalarType<T[P], BillingTransactionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BillingTransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    subscriptionId?: boolean
+    providerPaymentId?: boolean
+    type?: boolean
+    status?: boolean
+    amountMinor?: boolean
+    currency?: boolean
+    planCode?: boolean
+    billingCycle?: boolean
+    paidAt?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["billingTransaction"]>
+
+  export type BillingTransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    subscriptionId?: boolean
+    providerPaymentId?: boolean
+    type?: boolean
+    status?: boolean
+    amountMinor?: boolean
+    currency?: boolean
+    planCode?: boolean
+    billingCycle?: boolean
+    paidAt?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["billingTransaction"]>
+
+  export type BillingTransactionSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    subscriptionId?: boolean
+    providerPaymentId?: boolean
+    type?: boolean
+    status?: boolean
+    amountMinor?: boolean
+    currency?: boolean
+    planCode?: boolean
+    billingCycle?: boolean
+    paidAt?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $BillingTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BillingTransaction"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      userId: string | null
+      subscriptionId: string | null
+      providerPaymentId: string
+      type: string
+      status: string
+      amountMinor: number
+      currency: string
+      planCode: string | null
+      billingCycle: string | null
+      paidAt: Date | null
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["billingTransaction"]>
+    composites: {}
+  }
+
+  type BillingTransactionGetPayload<S extends boolean | null | undefined | BillingTransactionDefaultArgs> = $Result.GetResult<Prisma.$BillingTransactionPayload, S>
+
+  type BillingTransactionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<BillingTransactionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: BillingTransactionCountAggregateInputType | true
+    }
+
+  export interface BillingTransactionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BillingTransaction'], meta: { name: 'BillingTransaction' } }
+    /**
+     * Find zero or one BillingTransaction that matches the filter.
+     * @param {BillingTransactionFindUniqueArgs} args - Arguments to find a BillingTransaction
+     * @example
+     * // Get one BillingTransaction
+     * const billingTransaction = await prisma.billingTransaction.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BillingTransactionFindUniqueArgs>(args: SelectSubset<T, BillingTransactionFindUniqueArgs<ExtArgs>>): Prisma__BillingTransactionClient<$Result.GetResult<Prisma.$BillingTransactionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one BillingTransaction that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {BillingTransactionFindUniqueOrThrowArgs} args - Arguments to find a BillingTransaction
+     * @example
+     * // Get one BillingTransaction
+     * const billingTransaction = await prisma.billingTransaction.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BillingTransactionFindUniqueOrThrowArgs>(args: SelectSubset<T, BillingTransactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BillingTransactionClient<$Result.GetResult<Prisma.$BillingTransactionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first BillingTransaction that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingTransactionFindFirstArgs} args - Arguments to find a BillingTransaction
+     * @example
+     * // Get one BillingTransaction
+     * const billingTransaction = await prisma.billingTransaction.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BillingTransactionFindFirstArgs>(args?: SelectSubset<T, BillingTransactionFindFirstArgs<ExtArgs>>): Prisma__BillingTransactionClient<$Result.GetResult<Prisma.$BillingTransactionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first BillingTransaction that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingTransactionFindFirstOrThrowArgs} args - Arguments to find a BillingTransaction
+     * @example
+     * // Get one BillingTransaction
+     * const billingTransaction = await prisma.billingTransaction.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BillingTransactionFindFirstOrThrowArgs>(args?: SelectSubset<T, BillingTransactionFindFirstOrThrowArgs<ExtArgs>>): Prisma__BillingTransactionClient<$Result.GetResult<Prisma.$BillingTransactionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more BillingTransactions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingTransactionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BillingTransactions
+     * const billingTransactions = await prisma.billingTransaction.findMany()
+     * 
+     * // Get first 10 BillingTransactions
+     * const billingTransactions = await prisma.billingTransaction.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const billingTransactionWithIdOnly = await prisma.billingTransaction.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BillingTransactionFindManyArgs>(args?: SelectSubset<T, BillingTransactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillingTransactionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a BillingTransaction.
+     * @param {BillingTransactionCreateArgs} args - Arguments to create a BillingTransaction.
+     * @example
+     * // Create one BillingTransaction
+     * const BillingTransaction = await prisma.billingTransaction.create({
+     *   data: {
+     *     // ... data to create a BillingTransaction
+     *   }
+     * })
+     * 
+     */
+    create<T extends BillingTransactionCreateArgs>(args: SelectSubset<T, BillingTransactionCreateArgs<ExtArgs>>): Prisma__BillingTransactionClient<$Result.GetResult<Prisma.$BillingTransactionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many BillingTransactions.
+     * @param {BillingTransactionCreateManyArgs} args - Arguments to create many BillingTransactions.
+     * @example
+     * // Create many BillingTransactions
+     * const billingTransaction = await prisma.billingTransaction.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BillingTransactionCreateManyArgs>(args?: SelectSubset<T, BillingTransactionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BillingTransactions and returns the data saved in the database.
+     * @param {BillingTransactionCreateManyAndReturnArgs} args - Arguments to create many BillingTransactions.
+     * @example
+     * // Create many BillingTransactions
+     * const billingTransaction = await prisma.billingTransaction.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BillingTransactions and only return the `id`
+     * const billingTransactionWithIdOnly = await prisma.billingTransaction.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BillingTransactionCreateManyAndReturnArgs>(args?: SelectSubset<T, BillingTransactionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillingTransactionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a BillingTransaction.
+     * @param {BillingTransactionDeleteArgs} args - Arguments to delete one BillingTransaction.
+     * @example
+     * // Delete one BillingTransaction
+     * const BillingTransaction = await prisma.billingTransaction.delete({
+     *   where: {
+     *     // ... filter to delete one BillingTransaction
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BillingTransactionDeleteArgs>(args: SelectSubset<T, BillingTransactionDeleteArgs<ExtArgs>>): Prisma__BillingTransactionClient<$Result.GetResult<Prisma.$BillingTransactionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one BillingTransaction.
+     * @param {BillingTransactionUpdateArgs} args - Arguments to update one BillingTransaction.
+     * @example
+     * // Update one BillingTransaction
+     * const billingTransaction = await prisma.billingTransaction.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BillingTransactionUpdateArgs>(args: SelectSubset<T, BillingTransactionUpdateArgs<ExtArgs>>): Prisma__BillingTransactionClient<$Result.GetResult<Prisma.$BillingTransactionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more BillingTransactions.
+     * @param {BillingTransactionDeleteManyArgs} args - Arguments to filter BillingTransactions to delete.
+     * @example
+     * // Delete a few BillingTransactions
+     * const { count } = await prisma.billingTransaction.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BillingTransactionDeleteManyArgs>(args?: SelectSubset<T, BillingTransactionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BillingTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingTransactionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BillingTransactions
+     * const billingTransaction = await prisma.billingTransaction.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BillingTransactionUpdateManyArgs>(args: SelectSubset<T, BillingTransactionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one BillingTransaction.
+     * @param {BillingTransactionUpsertArgs} args - Arguments to update or create a BillingTransaction.
+     * @example
+     * // Update or create a BillingTransaction
+     * const billingTransaction = await prisma.billingTransaction.upsert({
+     *   create: {
+     *     // ... data to create a BillingTransaction
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BillingTransaction we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BillingTransactionUpsertArgs>(args: SelectSubset<T, BillingTransactionUpsertArgs<ExtArgs>>): Prisma__BillingTransactionClient<$Result.GetResult<Prisma.$BillingTransactionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of BillingTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingTransactionCountArgs} args - Arguments to filter BillingTransactions to count.
+     * @example
+     * // Count the number of BillingTransactions
+     * const count = await prisma.billingTransaction.count({
+     *   where: {
+     *     // ... the filter for the BillingTransactions we want to count
+     *   }
+     * })
+    **/
+    count<T extends BillingTransactionCountArgs>(
+      args?: Subset<T, BillingTransactionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BillingTransactionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BillingTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingTransactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BillingTransactionAggregateArgs>(args: Subset<T, BillingTransactionAggregateArgs>): Prisma.PrismaPromise<GetBillingTransactionAggregateType<T>>
+
+    /**
+     * Group by BillingTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingTransactionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BillingTransactionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BillingTransactionGroupByArgs['orderBy'] }
+        : { orderBy?: BillingTransactionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BillingTransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBillingTransactionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BillingTransaction model
+   */
+  readonly fields: BillingTransactionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BillingTransaction.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BillingTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BillingTransaction model
+   */ 
+  interface BillingTransactionFieldRefs {
+    readonly id: FieldRef<"BillingTransaction", 'String'>
+    readonly tenantId: FieldRef<"BillingTransaction", 'String'>
+    readonly userId: FieldRef<"BillingTransaction", 'String'>
+    readonly subscriptionId: FieldRef<"BillingTransaction", 'String'>
+    readonly providerPaymentId: FieldRef<"BillingTransaction", 'String'>
+    readonly type: FieldRef<"BillingTransaction", 'String'>
+    readonly status: FieldRef<"BillingTransaction", 'String'>
+    readonly amountMinor: FieldRef<"BillingTransaction", 'Int'>
+    readonly currency: FieldRef<"BillingTransaction", 'String'>
+    readonly planCode: FieldRef<"BillingTransaction", 'String'>
+    readonly billingCycle: FieldRef<"BillingTransaction", 'String'>
+    readonly paidAt: FieldRef<"BillingTransaction", 'DateTime'>
+    readonly metadata: FieldRef<"BillingTransaction", 'Json'>
+    readonly createdAt: FieldRef<"BillingTransaction", 'DateTime'>
+    readonly updatedAt: FieldRef<"BillingTransaction", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BillingTransaction findUnique
+   */
+  export type BillingTransactionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillingTransaction
+     */
+    select?: BillingTransactionSelect<ExtArgs> | null
+    /**
+     * Filter, which BillingTransaction to fetch.
+     */
+    where: BillingTransactionWhereUniqueInput
+  }
+
+  /**
+   * BillingTransaction findUniqueOrThrow
+   */
+  export type BillingTransactionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillingTransaction
+     */
+    select?: BillingTransactionSelect<ExtArgs> | null
+    /**
+     * Filter, which BillingTransaction to fetch.
+     */
+    where: BillingTransactionWhereUniqueInput
+  }
+
+  /**
+   * BillingTransaction findFirst
+   */
+  export type BillingTransactionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillingTransaction
+     */
+    select?: BillingTransactionSelect<ExtArgs> | null
+    /**
+     * Filter, which BillingTransaction to fetch.
+     */
+    where?: BillingTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BillingTransactions to fetch.
+     */
+    orderBy?: BillingTransactionOrderByWithRelationInput | BillingTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BillingTransactions.
+     */
+    cursor?: BillingTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BillingTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BillingTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BillingTransactions.
+     */
+    distinct?: BillingTransactionScalarFieldEnum | BillingTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * BillingTransaction findFirstOrThrow
+   */
+  export type BillingTransactionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillingTransaction
+     */
+    select?: BillingTransactionSelect<ExtArgs> | null
+    /**
+     * Filter, which BillingTransaction to fetch.
+     */
+    where?: BillingTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BillingTransactions to fetch.
+     */
+    orderBy?: BillingTransactionOrderByWithRelationInput | BillingTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BillingTransactions.
+     */
+    cursor?: BillingTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BillingTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BillingTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BillingTransactions.
+     */
+    distinct?: BillingTransactionScalarFieldEnum | BillingTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * BillingTransaction findMany
+   */
+  export type BillingTransactionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillingTransaction
+     */
+    select?: BillingTransactionSelect<ExtArgs> | null
+    /**
+     * Filter, which BillingTransactions to fetch.
+     */
+    where?: BillingTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BillingTransactions to fetch.
+     */
+    orderBy?: BillingTransactionOrderByWithRelationInput | BillingTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BillingTransactions.
+     */
+    cursor?: BillingTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BillingTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BillingTransactions.
+     */
+    skip?: number
+    distinct?: BillingTransactionScalarFieldEnum | BillingTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * BillingTransaction create
+   */
+  export type BillingTransactionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillingTransaction
+     */
+    select?: BillingTransactionSelect<ExtArgs> | null
+    /**
+     * The data needed to create a BillingTransaction.
+     */
+    data: XOR<BillingTransactionCreateInput, BillingTransactionUncheckedCreateInput>
+  }
+
+  /**
+   * BillingTransaction createMany
+   */
+  export type BillingTransactionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BillingTransactions.
+     */
+    data: BillingTransactionCreateManyInput | BillingTransactionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BillingTransaction createManyAndReturn
+   */
+  export type BillingTransactionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillingTransaction
+     */
+    select?: BillingTransactionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many BillingTransactions.
+     */
+    data: BillingTransactionCreateManyInput | BillingTransactionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BillingTransaction update
+   */
+  export type BillingTransactionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillingTransaction
+     */
+    select?: BillingTransactionSelect<ExtArgs> | null
+    /**
+     * The data needed to update a BillingTransaction.
+     */
+    data: XOR<BillingTransactionUpdateInput, BillingTransactionUncheckedUpdateInput>
+    /**
+     * Choose, which BillingTransaction to update.
+     */
+    where: BillingTransactionWhereUniqueInput
+  }
+
+  /**
+   * BillingTransaction updateMany
+   */
+  export type BillingTransactionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BillingTransactions.
+     */
+    data: XOR<BillingTransactionUpdateManyMutationInput, BillingTransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which BillingTransactions to update
+     */
+    where?: BillingTransactionWhereInput
+  }
+
+  /**
+   * BillingTransaction upsert
+   */
+  export type BillingTransactionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillingTransaction
+     */
+    select?: BillingTransactionSelect<ExtArgs> | null
+    /**
+     * The filter to search for the BillingTransaction to update in case it exists.
+     */
+    where: BillingTransactionWhereUniqueInput
+    /**
+     * In case the BillingTransaction found by the `where` argument doesn't exist, create a new BillingTransaction with this data.
+     */
+    create: XOR<BillingTransactionCreateInput, BillingTransactionUncheckedCreateInput>
+    /**
+     * In case the BillingTransaction was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BillingTransactionUpdateInput, BillingTransactionUncheckedUpdateInput>
+  }
+
+  /**
+   * BillingTransaction delete
+   */
+  export type BillingTransactionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillingTransaction
+     */
+    select?: BillingTransactionSelect<ExtArgs> | null
+    /**
+     * Filter which BillingTransaction to delete.
+     */
+    where: BillingTransactionWhereUniqueInput
+  }
+
+  /**
+   * BillingTransaction deleteMany
+   */
+  export type BillingTransactionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BillingTransactions to delete
+     */
+    where?: BillingTransactionWhereInput
+  }
+
+  /**
+   * BillingTransaction without action
+   */
+  export type BillingTransactionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillingTransaction
+     */
+    select?: BillingTransactionSelect<ExtArgs> | null
   }
 
 
@@ -72188,6 +76458,12 @@ export namespace Prisma {
     status: $Enums.DomainStatus | null
     cnameTarget: string | null
     verifiedAt: Date | null
+    verificationToken: string | null
+    dnsVerifiedAt: Date | null
+    lastCheckedAt: Date | null
+    sslStatus: string | null
+    sslActivatedAt: Date | null
+    provider: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -72200,6 +76476,12 @@ export namespace Prisma {
     status: $Enums.DomainStatus | null
     cnameTarget: string | null
     verifiedAt: Date | null
+    verificationToken: string | null
+    dnsVerifiedAt: Date | null
+    lastCheckedAt: Date | null
+    sslStatus: string | null
+    sslActivatedAt: Date | null
+    provider: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -72212,6 +76494,13 @@ export namespace Prisma {
     status: number
     cnameTarget: number
     verifiedAt: number
+    verificationToken: number
+    dnsVerifiedAt: number
+    lastCheckedAt: number
+    lastDnsResult: number
+    sslStatus: number
+    sslActivatedAt: number
+    provider: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -72226,6 +76515,12 @@ export namespace Prisma {
     status?: true
     cnameTarget?: true
     verifiedAt?: true
+    verificationToken?: true
+    dnsVerifiedAt?: true
+    lastCheckedAt?: true
+    sslStatus?: true
+    sslActivatedAt?: true
+    provider?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -72238,6 +76533,12 @@ export namespace Prisma {
     status?: true
     cnameTarget?: true
     verifiedAt?: true
+    verificationToken?: true
+    dnsVerifiedAt?: true
+    lastCheckedAt?: true
+    sslStatus?: true
+    sslActivatedAt?: true
+    provider?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -72250,6 +76551,13 @@ export namespace Prisma {
     status?: true
     cnameTarget?: true
     verifiedAt?: true
+    verificationToken?: true
+    dnsVerifiedAt?: true
+    lastCheckedAt?: true
+    lastDnsResult?: true
+    sslStatus?: true
+    sslActivatedAt?: true
+    provider?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -72335,6 +76643,13 @@ export namespace Prisma {
     status: $Enums.DomainStatus
     cnameTarget: string
     verifiedAt: Date | null
+    verificationToken: string | null
+    dnsVerifiedAt: Date | null
+    lastCheckedAt: Date | null
+    lastDnsResult: JsonValue | null
+    sslStatus: string
+    sslActivatedAt: Date | null
+    provider: string | null
     createdAt: Date
     updatedAt: Date
     _count: SiteDomainCountAggregateOutputType | null
@@ -72364,6 +76679,13 @@ export namespace Prisma {
     status?: boolean
     cnameTarget?: boolean
     verifiedAt?: boolean
+    verificationToken?: boolean
+    dnsVerifiedAt?: boolean
+    lastCheckedAt?: boolean
+    lastDnsResult?: boolean
+    sslStatus?: boolean
+    sslActivatedAt?: boolean
+    provider?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     site?: boolean | SiteDefaultArgs<ExtArgs>
@@ -72378,6 +76700,13 @@ export namespace Prisma {
     status?: boolean
     cnameTarget?: boolean
     verifiedAt?: boolean
+    verificationToken?: boolean
+    dnsVerifiedAt?: boolean
+    lastCheckedAt?: boolean
+    lastDnsResult?: boolean
+    sslStatus?: boolean
+    sslActivatedAt?: boolean
+    provider?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     site?: boolean | SiteDefaultArgs<ExtArgs>
@@ -72392,6 +76721,13 @@ export namespace Prisma {
     status?: boolean
     cnameTarget?: boolean
     verifiedAt?: boolean
+    verificationToken?: boolean
+    dnsVerifiedAt?: boolean
+    lastCheckedAt?: boolean
+    lastDnsResult?: boolean
+    sslStatus?: boolean
+    sslActivatedAt?: boolean
+    provider?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -72419,6 +76755,13 @@ export namespace Prisma {
       status: $Enums.DomainStatus
       cnameTarget: string
       verifiedAt: Date | null
+      verificationToken: string | null
+      dnsVerifiedAt: Date | null
+      lastCheckedAt: Date | null
+      lastDnsResult: Prisma.JsonValue | null
+      sslStatus: string
+      sslActivatedAt: Date | null
+      provider: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["siteDomain"]>
@@ -72823,6 +77166,13 @@ export namespace Prisma {
     readonly status: FieldRef<"SiteDomain", 'DomainStatus'>
     readonly cnameTarget: FieldRef<"SiteDomain", 'String'>
     readonly verifiedAt: FieldRef<"SiteDomain", 'DateTime'>
+    readonly verificationToken: FieldRef<"SiteDomain", 'String'>
+    readonly dnsVerifiedAt: FieldRef<"SiteDomain", 'DateTime'>
+    readonly lastCheckedAt: FieldRef<"SiteDomain", 'DateTime'>
+    readonly lastDnsResult: FieldRef<"SiteDomain", 'Json'>
+    readonly sslStatus: FieldRef<"SiteDomain", 'String'>
+    readonly sslActivatedAt: FieldRef<"SiteDomain", 'DateTime'>
+    readonly provider: FieldRef<"SiteDomain", 'String'>
     readonly createdAt: FieldRef<"SiteDomain", 'DateTime'>
     readonly updatedAt: FieldRef<"SiteDomain", 'DateTime'>
   }
@@ -81975,6 +86325,7 @@ export namespace Prisma {
     id: 'id',
     email: 'email',
     phone: 'phone',
+    purpose: 'purpose',
     codeHash: 'codeHash',
     expiresAt: 'expiresAt',
     attempts: 'attempts',
@@ -82206,6 +86557,18 @@ export namespace Prisma {
   export type SiteScalarFieldEnum = (typeof SiteScalarFieldEnum)[keyof typeof SiteScalarFieldEnum]
 
 
+  export const SiteIntegrationScalarFieldEnum: {
+    id: 'id',
+    siteId: 'siteId',
+    appSlug: 'appSlug',
+    config: 'config',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SiteIntegrationScalarFieldEnum = (typeof SiteIntegrationScalarFieldEnum)[keyof typeof SiteIntegrationScalarFieldEnum]
+
+
   export const V12ProjectScalarFieldEnum: {
     id: 'id',
     siteId: 'siteId',
@@ -82255,6 +86618,23 @@ export namespace Prisma {
   };
 
   export type V12ProjectCheckpointScalarFieldEnum = (typeof V12ProjectCheckpointScalarFieldEnum)[keyof typeof V12ProjectCheckpointScalarFieldEnum]
+
+
+  export const V12GenerationJobScalarFieldEnum: {
+    id: 'id',
+    siteId: 'siteId',
+    tenantId: 'tenantId',
+    stage: 'stage',
+    status: 'status',
+    state: 'state',
+    input: 'input',
+    result: 'result',
+    error: 'error',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type V12GenerationJobScalarFieldEnum = (typeof V12GenerationJobScalarFieldEnum)[keyof typeof V12GenerationJobScalarFieldEnum]
 
 
   export const ShopScalarFieldEnum: {
@@ -82470,6 +86850,24 @@ export namespace Prisma {
   export type ShopPaymentIntegrationScalarFieldEnum = (typeof ShopPaymentIntegrationScalarFieldEnum)[keyof typeof ShopPaymentIntegrationScalarFieldEnum]
 
 
+  export const SupportRequestScalarFieldEnum: {
+    id: 'id',
+    type: 'type',
+    name: 'name',
+    email: 'email',
+    subject: 'subject',
+    message: 'message',
+    pageUrl: 'pageUrl',
+    severity: 'severity',
+    status: 'status',
+    source: 'source',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SupportRequestScalarFieldEnum = (typeof SupportRequestScalarFieldEnum)[keyof typeof SupportRequestScalarFieldEnum]
+
+
   export const CrmLeadScalarFieldEnum: {
     id: 'id',
     siteId: 'siteId',
@@ -82668,6 +87066,7 @@ export namespace Prisma {
     isActive: 'isActive',
     razorpayPlanId: 'razorpayPlanId',
     stripePriceId: 'stripePriceId',
+    dodoProductId: 'dodoProductId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -82772,6 +87171,27 @@ export namespace Prisma {
   export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
 
 
+  export const BillingTransactionScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    userId: 'userId',
+    subscriptionId: 'subscriptionId',
+    providerPaymentId: 'providerPaymentId',
+    type: 'type',
+    status: 'status',
+    amountMinor: 'amountMinor',
+    currency: 'currency',
+    planCode: 'planCode',
+    billingCycle: 'billingCycle',
+    paidAt: 'paidAt',
+    metadata: 'metadata',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BillingTransactionScalarFieldEnum = (typeof BillingTransactionScalarFieldEnum)[keyof typeof BillingTransactionScalarFieldEnum]
+
+
   export const SiteSubscriptionScalarFieldEnum: {
     id: 'id',
     siteId: 'siteId',
@@ -82874,6 +87294,13 @@ export namespace Prisma {
     status: 'status',
     cnameTarget: 'cnameTarget',
     verifiedAt: 'verifiedAt',
+    verificationToken: 'verificationToken',
+    dnsVerifiedAt: 'dnsVerifiedAt',
+    lastCheckedAt: 'lastCheckedAt',
+    lastDnsResult: 'lastDnsResult',
+    sslStatus: 'sslStatus',
+    sslActivatedAt: 'sslActivatedAt',
+    provider: 'provider',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -83879,6 +88306,7 @@ export namespace Prisma {
     id?: StringFilter<"Otp"> | string
     email?: StringNullableFilter<"Otp"> | string | null
     phone?: StringNullableFilter<"Otp"> | string | null
+    purpose?: StringFilter<"Otp"> | string
     codeHash?: StringFilter<"Otp"> | string
     expiresAt?: DateTimeFilter<"Otp"> | Date | string
     attempts?: IntFilter<"Otp"> | number
@@ -83890,6 +88318,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
+    purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
     attempts?: SortOrder
@@ -83904,6 +88333,7 @@ export namespace Prisma {
     NOT?: OtpWhereInput | OtpWhereInput[]
     email?: StringNullableFilter<"Otp"> | string | null
     phone?: StringNullableFilter<"Otp"> | string | null
+    purpose?: StringFilter<"Otp"> | string
     codeHash?: StringFilter<"Otp"> | string
     expiresAt?: DateTimeFilter<"Otp"> | Date | string
     attempts?: IntFilter<"Otp"> | number
@@ -83915,6 +88345,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
+    purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
     attempts?: SortOrder
@@ -83934,6 +88365,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Otp"> | string
     email?: StringNullableWithAggregatesFilter<"Otp"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Otp"> | string | null
+    purpose?: StringWithAggregatesFilter<"Otp"> | string
     codeHash?: StringWithAggregatesFilter<"Otp"> | string
     expiresAt?: DateTimeWithAggregatesFilter<"Otp"> | Date | string
     attempts?: IntWithAggregatesFilter<"Otp"> | number
@@ -85078,6 +89510,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionListRelationFilter
     crmLeads?: CrmLeadListRelationFilter
     crmApiKeys?: CrmApiKeyListRelationFilter
+    integrations?: SiteIntegrationListRelationFilter
     shop?: XOR<ShopNullableRelationFilter, ShopWhereInput> | null
     v12Project?: XOR<V12ProjectNullableRelationFilter, V12ProjectWhereInput> | null
   }
@@ -85109,6 +89542,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionOrderByRelationAggregateInput
     crmLeads?: CrmLeadOrderByRelationAggregateInput
     crmApiKeys?: CrmApiKeyOrderByRelationAggregateInput
+    integrations?: SiteIntegrationOrderByRelationAggregateInput
     shop?: ShopOrderByWithRelationInput
     v12Project?: V12ProjectOrderByWithRelationInput
   }
@@ -85144,6 +89578,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionListRelationFilter
     crmLeads?: CrmLeadListRelationFilter
     crmApiKeys?: CrmApiKeyListRelationFilter
+    integrations?: SiteIntegrationListRelationFilter
     shop?: XOR<ShopNullableRelationFilter, ShopWhereInput> | null
     v12Project?: XOR<V12ProjectNullableRelationFilter, V12ProjectWhereInput> | null
   }, "id" | "tenantId_slug">
@@ -85180,6 +89615,67 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Site"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Site"> | Date | string
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Site"> | Date | string | null
+  }
+
+  export type SiteIntegrationWhereInput = {
+    AND?: SiteIntegrationWhereInput | SiteIntegrationWhereInput[]
+    OR?: SiteIntegrationWhereInput[]
+    NOT?: SiteIntegrationWhereInput | SiteIntegrationWhereInput[]
+    id?: StringFilter<"SiteIntegration"> | string
+    siteId?: StringFilter<"SiteIntegration"> | string
+    appSlug?: StringFilter<"SiteIntegration"> | string
+    config?: JsonNullableFilter<"SiteIntegration">
+    createdAt?: DateTimeFilter<"SiteIntegration"> | Date | string
+    updatedAt?: DateTimeFilter<"SiteIntegration"> | Date | string
+    site?: XOR<SiteRelationFilter, SiteWhereInput>
+  }
+
+  export type SiteIntegrationOrderByWithRelationInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    appSlug?: SortOrder
+    config?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    site?: SiteOrderByWithRelationInput
+  }
+
+  export type SiteIntegrationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    siteId_appSlug?: SiteIntegrationSiteIdAppSlugCompoundUniqueInput
+    AND?: SiteIntegrationWhereInput | SiteIntegrationWhereInput[]
+    OR?: SiteIntegrationWhereInput[]
+    NOT?: SiteIntegrationWhereInput | SiteIntegrationWhereInput[]
+    siteId?: StringFilter<"SiteIntegration"> | string
+    appSlug?: StringFilter<"SiteIntegration"> | string
+    config?: JsonNullableFilter<"SiteIntegration">
+    createdAt?: DateTimeFilter<"SiteIntegration"> | Date | string
+    updatedAt?: DateTimeFilter<"SiteIntegration"> | Date | string
+    site?: XOR<SiteRelationFilter, SiteWhereInput>
+  }, "id" | "siteId_appSlug">
+
+  export type SiteIntegrationOrderByWithAggregationInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    appSlug?: SortOrder
+    config?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SiteIntegrationCountOrderByAggregateInput
+    _max?: SiteIntegrationMaxOrderByAggregateInput
+    _min?: SiteIntegrationMinOrderByAggregateInput
+  }
+
+  export type SiteIntegrationScalarWhereWithAggregatesInput = {
+    AND?: SiteIntegrationScalarWhereWithAggregatesInput | SiteIntegrationScalarWhereWithAggregatesInput[]
+    OR?: SiteIntegrationScalarWhereWithAggregatesInput[]
+    NOT?: SiteIntegrationScalarWhereWithAggregatesInput | SiteIntegrationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SiteIntegration"> | string
+    siteId?: StringWithAggregatesFilter<"SiteIntegration"> | string
+    appSlug?: StringWithAggregatesFilter<"SiteIntegration"> | string
+    config?: JsonNullableWithAggregatesFilter<"SiteIntegration">
+    createdAt?: DateTimeWithAggregatesFilter<"SiteIntegration"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SiteIntegration"> | Date | string
   }
 
   export type V12ProjectWhereInput = {
@@ -85461,6 +89957,88 @@ export namespace Prisma {
     snapshot?: JsonWithAggregatesFilter<"V12ProjectCheckpoint">
     createdBy?: StringNullableWithAggregatesFilter<"V12ProjectCheckpoint"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"V12ProjectCheckpoint"> | Date | string
+  }
+
+  export type V12GenerationJobWhereInput = {
+    AND?: V12GenerationJobWhereInput | V12GenerationJobWhereInput[]
+    OR?: V12GenerationJobWhereInput[]
+    NOT?: V12GenerationJobWhereInput | V12GenerationJobWhereInput[]
+    id?: StringFilter<"V12GenerationJob"> | string
+    siteId?: StringFilter<"V12GenerationJob"> | string
+    tenantId?: StringFilter<"V12GenerationJob"> | string
+    stage?: StringFilter<"V12GenerationJob"> | string
+    status?: StringFilter<"V12GenerationJob"> | string
+    state?: JsonNullableFilter<"V12GenerationJob">
+    input?: JsonFilter<"V12GenerationJob">
+    result?: JsonNullableFilter<"V12GenerationJob">
+    error?: StringNullableFilter<"V12GenerationJob"> | string | null
+    createdAt?: DateTimeFilter<"V12GenerationJob"> | Date | string
+    updatedAt?: DateTimeFilter<"V12GenerationJob"> | Date | string
+  }
+
+  export type V12GenerationJobOrderByWithRelationInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    stage?: SortOrder
+    status?: SortOrder
+    state?: SortOrderInput | SortOrder
+    input?: SortOrder
+    result?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type V12GenerationJobWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: V12GenerationJobWhereInput | V12GenerationJobWhereInput[]
+    OR?: V12GenerationJobWhereInput[]
+    NOT?: V12GenerationJobWhereInput | V12GenerationJobWhereInput[]
+    siteId?: StringFilter<"V12GenerationJob"> | string
+    tenantId?: StringFilter<"V12GenerationJob"> | string
+    stage?: StringFilter<"V12GenerationJob"> | string
+    status?: StringFilter<"V12GenerationJob"> | string
+    state?: JsonNullableFilter<"V12GenerationJob">
+    input?: JsonFilter<"V12GenerationJob">
+    result?: JsonNullableFilter<"V12GenerationJob">
+    error?: StringNullableFilter<"V12GenerationJob"> | string | null
+    createdAt?: DateTimeFilter<"V12GenerationJob"> | Date | string
+    updatedAt?: DateTimeFilter<"V12GenerationJob"> | Date | string
+  }, "id">
+
+  export type V12GenerationJobOrderByWithAggregationInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    stage?: SortOrder
+    status?: SortOrder
+    state?: SortOrderInput | SortOrder
+    input?: SortOrder
+    result?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: V12GenerationJobCountOrderByAggregateInput
+    _max?: V12GenerationJobMaxOrderByAggregateInput
+    _min?: V12GenerationJobMinOrderByAggregateInput
+  }
+
+  export type V12GenerationJobScalarWhereWithAggregatesInput = {
+    AND?: V12GenerationJobScalarWhereWithAggregatesInput | V12GenerationJobScalarWhereWithAggregatesInput[]
+    OR?: V12GenerationJobScalarWhereWithAggregatesInput[]
+    NOT?: V12GenerationJobScalarWhereWithAggregatesInput | V12GenerationJobScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"V12GenerationJob"> | string
+    siteId?: StringWithAggregatesFilter<"V12GenerationJob"> | string
+    tenantId?: StringWithAggregatesFilter<"V12GenerationJob"> | string
+    stage?: StringWithAggregatesFilter<"V12GenerationJob"> | string
+    status?: StringWithAggregatesFilter<"V12GenerationJob"> | string
+    state?: JsonNullableWithAggregatesFilter<"V12GenerationJob">
+    input?: JsonWithAggregatesFilter<"V12GenerationJob">
+    result?: JsonNullableWithAggregatesFilter<"V12GenerationJob">
+    error?: StringNullableWithAggregatesFilter<"V12GenerationJob"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"V12GenerationJob"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"V12GenerationJob"> | Date | string
   }
 
   export type ShopWhereInput = {
@@ -86617,6 +91195,93 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"ShopPaymentIntegration"> | Date | string
   }
 
+  export type SupportRequestWhereInput = {
+    AND?: SupportRequestWhereInput | SupportRequestWhereInput[]
+    OR?: SupportRequestWhereInput[]
+    NOT?: SupportRequestWhereInput | SupportRequestWhereInput[]
+    id?: StringFilter<"SupportRequest"> | string
+    type?: StringFilter<"SupportRequest"> | string
+    name?: StringNullableFilter<"SupportRequest"> | string | null
+    email?: StringFilter<"SupportRequest"> | string
+    subject?: StringNullableFilter<"SupportRequest"> | string | null
+    message?: StringFilter<"SupportRequest"> | string
+    pageUrl?: StringNullableFilter<"SupportRequest"> | string | null
+    severity?: StringNullableFilter<"SupportRequest"> | string | null
+    status?: StringFilter<"SupportRequest"> | string
+    source?: StringFilter<"SupportRequest"> | string
+    createdAt?: DateTimeFilter<"SupportRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"SupportRequest"> | Date | string
+  }
+
+  export type SupportRequestOrderByWithRelationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    name?: SortOrderInput | SortOrder
+    email?: SortOrder
+    subject?: SortOrderInput | SortOrder
+    message?: SortOrder
+    pageUrl?: SortOrderInput | SortOrder
+    severity?: SortOrderInput | SortOrder
+    status?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SupportRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SupportRequestWhereInput | SupportRequestWhereInput[]
+    OR?: SupportRequestWhereInput[]
+    NOT?: SupportRequestWhereInput | SupportRequestWhereInput[]
+    type?: StringFilter<"SupportRequest"> | string
+    name?: StringNullableFilter<"SupportRequest"> | string | null
+    email?: StringFilter<"SupportRequest"> | string
+    subject?: StringNullableFilter<"SupportRequest"> | string | null
+    message?: StringFilter<"SupportRequest"> | string
+    pageUrl?: StringNullableFilter<"SupportRequest"> | string | null
+    severity?: StringNullableFilter<"SupportRequest"> | string | null
+    status?: StringFilter<"SupportRequest"> | string
+    source?: StringFilter<"SupportRequest"> | string
+    createdAt?: DateTimeFilter<"SupportRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"SupportRequest"> | Date | string
+  }, "id">
+
+  export type SupportRequestOrderByWithAggregationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    name?: SortOrderInput | SortOrder
+    email?: SortOrder
+    subject?: SortOrderInput | SortOrder
+    message?: SortOrder
+    pageUrl?: SortOrderInput | SortOrder
+    severity?: SortOrderInput | SortOrder
+    status?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SupportRequestCountOrderByAggregateInput
+    _max?: SupportRequestMaxOrderByAggregateInput
+    _min?: SupportRequestMinOrderByAggregateInput
+  }
+
+  export type SupportRequestScalarWhereWithAggregatesInput = {
+    AND?: SupportRequestScalarWhereWithAggregatesInput | SupportRequestScalarWhereWithAggregatesInput[]
+    OR?: SupportRequestScalarWhereWithAggregatesInput[]
+    NOT?: SupportRequestScalarWhereWithAggregatesInput | SupportRequestScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SupportRequest"> | string
+    type?: StringWithAggregatesFilter<"SupportRequest"> | string
+    name?: StringNullableWithAggregatesFilter<"SupportRequest"> | string | null
+    email?: StringWithAggregatesFilter<"SupportRequest"> | string
+    subject?: StringNullableWithAggregatesFilter<"SupportRequest"> | string | null
+    message?: StringWithAggregatesFilter<"SupportRequest"> | string
+    pageUrl?: StringNullableWithAggregatesFilter<"SupportRequest"> | string | null
+    severity?: StringNullableWithAggregatesFilter<"SupportRequest"> | string | null
+    status?: StringWithAggregatesFilter<"SupportRequest"> | string
+    source?: StringWithAggregatesFilter<"SupportRequest"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"SupportRequest"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SupportRequest"> | Date | string
+  }
+
   export type CrmLeadWhereInput = {
     AND?: CrmLeadWhereInput | CrmLeadWhereInput[]
     OR?: CrmLeadWhereInput[]
@@ -87623,6 +92288,7 @@ export namespace Prisma {
     isActive?: BoolFilter<"PlanPricing"> | boolean
     razorpayPlanId?: StringNullableFilter<"PlanPricing"> | string | null
     stripePriceId?: StringNullableFilter<"PlanPricing"> | string | null
+    dodoProductId?: StringNullableFilter<"PlanPricing"> | string | null
     createdAt?: DateTimeFilter<"PlanPricing"> | Date | string
     updatedAt?: DateTimeFilter<"PlanPricing"> | Date | string
     plan?: XOR<PlanRelationFilter, PlanWhereInput>
@@ -87637,6 +92303,7 @@ export namespace Prisma {
     isActive?: SortOrder
     razorpayPlanId?: SortOrderInput | SortOrder
     stripePriceId?: SortOrderInput | SortOrder
+    dodoProductId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     plan?: PlanOrderByWithRelationInput
@@ -87655,6 +92322,7 @@ export namespace Prisma {
     isActive?: BoolFilter<"PlanPricing"> | boolean
     razorpayPlanId?: StringNullableFilter<"PlanPricing"> | string | null
     stripePriceId?: StringNullableFilter<"PlanPricing"> | string | null
+    dodoProductId?: StringNullableFilter<"PlanPricing"> | string | null
     createdAt?: DateTimeFilter<"PlanPricing"> | Date | string
     updatedAt?: DateTimeFilter<"PlanPricing"> | Date | string
     plan?: XOR<PlanRelationFilter, PlanWhereInput>
@@ -87669,6 +92337,7 @@ export namespace Prisma {
     isActive?: SortOrder
     razorpayPlanId?: SortOrderInput | SortOrder
     stripePriceId?: SortOrderInput | SortOrder
+    dodoProductId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: PlanPricingCountOrderByAggregateInput
@@ -87690,6 +92359,7 @@ export namespace Prisma {
     isActive?: BoolWithAggregatesFilter<"PlanPricing"> | boolean
     razorpayPlanId?: StringNullableWithAggregatesFilter<"PlanPricing"> | string | null
     stripePriceId?: StringNullableWithAggregatesFilter<"PlanPricing"> | string | null
+    dodoProductId?: StringNullableWithAggregatesFilter<"PlanPricing"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"PlanPricing"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"PlanPricing"> | Date | string
   }
@@ -88202,6 +92872,110 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Subscription"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Subscription"> | Date | string
     planId?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
+  }
+
+  export type BillingTransactionWhereInput = {
+    AND?: BillingTransactionWhereInput | BillingTransactionWhereInput[]
+    OR?: BillingTransactionWhereInput[]
+    NOT?: BillingTransactionWhereInput | BillingTransactionWhereInput[]
+    id?: StringFilter<"BillingTransaction"> | string
+    tenantId?: StringFilter<"BillingTransaction"> | string
+    userId?: StringNullableFilter<"BillingTransaction"> | string | null
+    subscriptionId?: StringNullableFilter<"BillingTransaction"> | string | null
+    providerPaymentId?: StringFilter<"BillingTransaction"> | string
+    type?: StringFilter<"BillingTransaction"> | string
+    status?: StringFilter<"BillingTransaction"> | string
+    amountMinor?: IntFilter<"BillingTransaction"> | number
+    currency?: StringFilter<"BillingTransaction"> | string
+    planCode?: StringNullableFilter<"BillingTransaction"> | string | null
+    billingCycle?: StringNullableFilter<"BillingTransaction"> | string | null
+    paidAt?: DateTimeNullableFilter<"BillingTransaction"> | Date | string | null
+    metadata?: JsonNullableFilter<"BillingTransaction">
+    createdAt?: DateTimeFilter<"BillingTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"BillingTransaction"> | Date | string
+  }
+
+  export type BillingTransactionOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    subscriptionId?: SortOrderInput | SortOrder
+    providerPaymentId?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    amountMinor?: SortOrder
+    currency?: SortOrder
+    planCode?: SortOrderInput | SortOrder
+    billingCycle?: SortOrderInput | SortOrder
+    paidAt?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BillingTransactionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    providerPaymentId?: string
+    AND?: BillingTransactionWhereInput | BillingTransactionWhereInput[]
+    OR?: BillingTransactionWhereInput[]
+    NOT?: BillingTransactionWhereInput | BillingTransactionWhereInput[]
+    tenantId?: StringFilter<"BillingTransaction"> | string
+    userId?: StringNullableFilter<"BillingTransaction"> | string | null
+    subscriptionId?: StringNullableFilter<"BillingTransaction"> | string | null
+    type?: StringFilter<"BillingTransaction"> | string
+    status?: StringFilter<"BillingTransaction"> | string
+    amountMinor?: IntFilter<"BillingTransaction"> | number
+    currency?: StringFilter<"BillingTransaction"> | string
+    planCode?: StringNullableFilter<"BillingTransaction"> | string | null
+    billingCycle?: StringNullableFilter<"BillingTransaction"> | string | null
+    paidAt?: DateTimeNullableFilter<"BillingTransaction"> | Date | string | null
+    metadata?: JsonNullableFilter<"BillingTransaction">
+    createdAt?: DateTimeFilter<"BillingTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"BillingTransaction"> | Date | string
+  }, "id" | "providerPaymentId">
+
+  export type BillingTransactionOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    subscriptionId?: SortOrderInput | SortOrder
+    providerPaymentId?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    amountMinor?: SortOrder
+    currency?: SortOrder
+    planCode?: SortOrderInput | SortOrder
+    billingCycle?: SortOrderInput | SortOrder
+    paidAt?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BillingTransactionCountOrderByAggregateInput
+    _avg?: BillingTransactionAvgOrderByAggregateInput
+    _max?: BillingTransactionMaxOrderByAggregateInput
+    _min?: BillingTransactionMinOrderByAggregateInput
+    _sum?: BillingTransactionSumOrderByAggregateInput
+  }
+
+  export type BillingTransactionScalarWhereWithAggregatesInput = {
+    AND?: BillingTransactionScalarWhereWithAggregatesInput | BillingTransactionScalarWhereWithAggregatesInput[]
+    OR?: BillingTransactionScalarWhereWithAggregatesInput[]
+    NOT?: BillingTransactionScalarWhereWithAggregatesInput | BillingTransactionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BillingTransaction"> | string
+    tenantId?: StringWithAggregatesFilter<"BillingTransaction"> | string
+    userId?: StringNullableWithAggregatesFilter<"BillingTransaction"> | string | null
+    subscriptionId?: StringNullableWithAggregatesFilter<"BillingTransaction"> | string | null
+    providerPaymentId?: StringWithAggregatesFilter<"BillingTransaction"> | string
+    type?: StringWithAggregatesFilter<"BillingTransaction"> | string
+    status?: StringWithAggregatesFilter<"BillingTransaction"> | string
+    amountMinor?: IntWithAggregatesFilter<"BillingTransaction"> | number
+    currency?: StringWithAggregatesFilter<"BillingTransaction"> | string
+    planCode?: StringNullableWithAggregatesFilter<"BillingTransaction"> | string | null
+    billingCycle?: StringNullableWithAggregatesFilter<"BillingTransaction"> | string | null
+    paidAt?: DateTimeNullableWithAggregatesFilter<"BillingTransaction"> | Date | string | null
+    metadata?: JsonNullableWithAggregatesFilter<"BillingTransaction">
+    createdAt?: DateTimeWithAggregatesFilter<"BillingTransaction"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"BillingTransaction"> | Date | string
   }
 
   export type SiteSubscriptionWhereInput = {
@@ -88717,6 +93491,13 @@ export namespace Prisma {
     status?: EnumDomainStatusFilter<"SiteDomain"> | $Enums.DomainStatus
     cnameTarget?: StringFilter<"SiteDomain"> | string
     verifiedAt?: DateTimeNullableFilter<"SiteDomain"> | Date | string | null
+    verificationToken?: StringNullableFilter<"SiteDomain"> | string | null
+    dnsVerifiedAt?: DateTimeNullableFilter<"SiteDomain"> | Date | string | null
+    lastCheckedAt?: DateTimeNullableFilter<"SiteDomain"> | Date | string | null
+    lastDnsResult?: JsonNullableFilter<"SiteDomain">
+    sslStatus?: StringFilter<"SiteDomain"> | string
+    sslActivatedAt?: DateTimeNullableFilter<"SiteDomain"> | Date | string | null
+    provider?: StringNullableFilter<"SiteDomain"> | string | null
     createdAt?: DateTimeFilter<"SiteDomain"> | Date | string
     updatedAt?: DateTimeFilter<"SiteDomain"> | Date | string
     site?: XOR<SiteRelationFilter, SiteWhereInput>
@@ -88731,6 +93512,13 @@ export namespace Prisma {
     status?: SortOrder
     cnameTarget?: SortOrder
     verifiedAt?: SortOrderInput | SortOrder
+    verificationToken?: SortOrderInput | SortOrder
+    dnsVerifiedAt?: SortOrderInput | SortOrder
+    lastCheckedAt?: SortOrderInput | SortOrder
+    lastDnsResult?: SortOrderInput | SortOrder
+    sslStatus?: SortOrder
+    sslActivatedAt?: SortOrderInput | SortOrder
+    provider?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     site?: SiteOrderByWithRelationInput
@@ -88740,6 +93528,7 @@ export namespace Prisma {
   export type SiteDomainWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     domain?: string
+    verificationToken?: string
     AND?: SiteDomainWhereInput | SiteDomainWhereInput[]
     OR?: SiteDomainWhereInput[]
     NOT?: SiteDomainWhereInput | SiteDomainWhereInput[]
@@ -88748,11 +93537,17 @@ export namespace Prisma {
     status?: EnumDomainStatusFilter<"SiteDomain"> | $Enums.DomainStatus
     cnameTarget?: StringFilter<"SiteDomain"> | string
     verifiedAt?: DateTimeNullableFilter<"SiteDomain"> | Date | string | null
+    dnsVerifiedAt?: DateTimeNullableFilter<"SiteDomain"> | Date | string | null
+    lastCheckedAt?: DateTimeNullableFilter<"SiteDomain"> | Date | string | null
+    lastDnsResult?: JsonNullableFilter<"SiteDomain">
+    sslStatus?: StringFilter<"SiteDomain"> | string
+    sslActivatedAt?: DateTimeNullableFilter<"SiteDomain"> | Date | string | null
+    provider?: StringNullableFilter<"SiteDomain"> | string | null
     createdAt?: DateTimeFilter<"SiteDomain"> | Date | string
     updatedAt?: DateTimeFilter<"SiteDomain"> | Date | string
     site?: XOR<SiteRelationFilter, SiteWhereInput>
     tenant?: XOR<TenantRelationFilter, TenantWhereInput>
-  }, "id" | "domain">
+  }, "id" | "domain" | "verificationToken">
 
   export type SiteDomainOrderByWithAggregationInput = {
     id?: SortOrder
@@ -88762,6 +93557,13 @@ export namespace Prisma {
     status?: SortOrder
     cnameTarget?: SortOrder
     verifiedAt?: SortOrderInput | SortOrder
+    verificationToken?: SortOrderInput | SortOrder
+    dnsVerifiedAt?: SortOrderInput | SortOrder
+    lastCheckedAt?: SortOrderInput | SortOrder
+    lastDnsResult?: SortOrderInput | SortOrder
+    sslStatus?: SortOrder
+    sslActivatedAt?: SortOrderInput | SortOrder
+    provider?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: SiteDomainCountOrderByAggregateInput
@@ -88780,6 +93582,13 @@ export namespace Prisma {
     status?: EnumDomainStatusWithAggregatesFilter<"SiteDomain"> | $Enums.DomainStatus
     cnameTarget?: StringWithAggregatesFilter<"SiteDomain"> | string
     verifiedAt?: DateTimeNullableWithAggregatesFilter<"SiteDomain"> | Date | string | null
+    verificationToken?: StringNullableWithAggregatesFilter<"SiteDomain"> | string | null
+    dnsVerifiedAt?: DateTimeNullableWithAggregatesFilter<"SiteDomain"> | Date | string | null
+    lastCheckedAt?: DateTimeNullableWithAggregatesFilter<"SiteDomain"> | Date | string | null
+    lastDnsResult?: JsonNullableWithAggregatesFilter<"SiteDomain">
+    sslStatus?: StringWithAggregatesFilter<"SiteDomain"> | string
+    sslActivatedAt?: DateTimeNullableWithAggregatesFilter<"SiteDomain"> | Date | string | null
+    provider?: StringNullableWithAggregatesFilter<"SiteDomain"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"SiteDomain"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SiteDomain"> | Date | string
   }
@@ -89915,6 +94724,7 @@ export namespace Prisma {
     id?: string
     email?: string | null
     phone?: string | null
+    purpose?: string
     codeHash: string
     expiresAt: Date | string
     attempts?: number
@@ -89926,6 +94736,7 @@ export namespace Prisma {
     id?: string
     email?: string | null
     phone?: string | null
+    purpose?: string
     codeHash: string
     expiresAt: Date | string
     attempts?: number
@@ -89937,6 +94748,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    purpose?: StringFieldUpdateOperationsInput | string
     codeHash?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attempts?: IntFieldUpdateOperationsInput | number
@@ -89948,6 +94760,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    purpose?: StringFieldUpdateOperationsInput | string
     codeHash?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attempts?: IntFieldUpdateOperationsInput | number
@@ -89959,6 +94772,7 @@ export namespace Prisma {
     id?: string
     email?: string | null
     phone?: string | null
+    purpose?: string
     codeHash: string
     expiresAt: Date | string
     attempts?: number
@@ -89970,6 +94784,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    purpose?: StringFieldUpdateOperationsInput | string
     codeHash?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attempts?: IntFieldUpdateOperationsInput | number
@@ -89981,6 +94796,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    purpose?: StringFieldUpdateOperationsInput | string
     codeHash?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attempts?: IntFieldUpdateOperationsInput | number
@@ -91249,6 +96065,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -91279,6 +96096,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -91309,6 +96127,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -91339,6 +96158,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -91382,6 +96202,68 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SiteIntegrationCreateInput = {
+    id?: string
+    appSlug: string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    site: SiteCreateNestedOneWithoutIntegrationsInput
+  }
+
+  export type SiteIntegrationUncheckedCreateInput = {
+    id?: string
+    siteId: string
+    appSlug: string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SiteIntegrationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    appSlug?: StringFieldUpdateOperationsInput | string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    site?: SiteUpdateOneRequiredWithoutIntegrationsNestedInput
+  }
+
+  export type SiteIntegrationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    appSlug?: StringFieldUpdateOperationsInput | string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SiteIntegrationCreateManyInput = {
+    id?: string
+    siteId: string
+    appSlug: string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SiteIntegrationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    appSlug?: StringFieldUpdateOperationsInput | string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SiteIntegrationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    appSlug?: StringFieldUpdateOperationsInput | string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type V12ProjectCreateInput = {
@@ -91665,6 +96547,104 @@ export namespace Prisma {
     snapshot?: JsonNullValueInput | InputJsonValue
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12GenerationJobCreateInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    stage: string
+    status: string
+    state?: NullableJsonNullValueInput | InputJsonValue
+    input: JsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type V12GenerationJobUncheckedCreateInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    stage: string
+    status: string
+    state?: NullableJsonNullValueInput | InputJsonValue
+    input: JsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type V12GenerationJobUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    state?: NullableJsonNullValueInput | InputJsonValue
+    input?: JsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12GenerationJobUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    state?: NullableJsonNullValueInput | InputJsonValue
+    input?: JsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12GenerationJobCreateManyInput = {
+    id?: string
+    siteId: string
+    tenantId: string
+    stage: string
+    status: string
+    state?: NullableJsonNullValueInput | InputJsonValue
+    input: JsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type V12GenerationJobUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    state?: NullableJsonNullValueInput | InputJsonValue
+    input?: JsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V12GenerationJobUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    siteId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    state?: NullableJsonNullValueInput | InputJsonValue
+    input?: JsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShopCreateInput = {
@@ -92935,6 +97915,111 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SupportRequestCreateInput = {
+    id?: string
+    type?: string
+    name?: string | null
+    email: string
+    subject?: string | null
+    message: string
+    pageUrl?: string | null
+    severity?: string | null
+    status?: string
+    source?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SupportRequestUncheckedCreateInput = {
+    id?: string
+    type?: string
+    name?: string | null
+    email: string
+    subject?: string | null
+    message: string
+    pageUrl?: string | null
+    severity?: string | null
+    status?: string
+    source?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SupportRequestUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: StringFieldUpdateOperationsInput | string
+    pageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    severity?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupportRequestUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: StringFieldUpdateOperationsInput | string
+    pageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    severity?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupportRequestCreateManyInput = {
+    id?: string
+    type?: string
+    name?: string | null
+    email: string
+    subject?: string | null
+    message: string
+    pageUrl?: string | null
+    severity?: string | null
+    status?: string
+    source?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SupportRequestUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: StringFieldUpdateOperationsInput | string
+    pageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    severity?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupportRequestUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: StringFieldUpdateOperationsInput | string
+    pageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    severity?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type CrmLeadCreateInput = {
     id?: string
     name: string
@@ -94017,6 +99102,7 @@ export namespace Prisma {
     isActive?: boolean
     razorpayPlanId?: string | null
     stripePriceId?: string | null
+    dodoProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     plan: PlanCreateNestedOneWithoutPricingInput
@@ -94031,6 +99117,7 @@ export namespace Prisma {
     isActive?: boolean
     razorpayPlanId?: string | null
     stripePriceId?: string | null
+    dodoProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -94043,6 +99130,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     razorpayPlanId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     plan?: PlanUpdateOneRequiredWithoutPricingNestedInput
@@ -94057,6 +99145,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     razorpayPlanId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -94070,6 +99159,7 @@ export namespace Prisma {
     isActive?: boolean
     razorpayPlanId?: string | null
     stripePriceId?: string | null
+    dodoProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -94082,6 +99172,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     razorpayPlanId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -94095,6 +99186,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     razorpayPlanId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -94668,6 +99760,132 @@ export namespace Prisma {
     planId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type BillingTransactionCreateInput = {
+    id?: string
+    tenantId: string
+    userId?: string | null
+    subscriptionId?: string | null
+    providerPaymentId: string
+    type?: string
+    status: string
+    amountMinor: number
+    currency: string
+    planCode?: string | null
+    billingCycle?: string | null
+    paidAt?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillingTransactionUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    userId?: string | null
+    subscriptionId?: string | null
+    providerPaymentId: string
+    type?: string
+    status: string
+    amountMinor: number
+    currency: string
+    planCode?: string | null
+    billingCycle?: string | null
+    paidAt?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillingTransactionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerPaymentId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    amountMinor?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCycle?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillingTransactionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerPaymentId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    amountMinor?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCycle?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillingTransactionCreateManyInput = {
+    id?: string
+    tenantId: string
+    userId?: string | null
+    subscriptionId?: string | null
+    providerPaymentId: string
+    type?: string
+    status: string
+    amountMinor: number
+    currency: string
+    planCode?: string | null
+    billingCycle?: string | null
+    paidAt?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillingTransactionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerPaymentId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    amountMinor?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCycle?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillingTransactionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerPaymentId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    amountMinor?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    planCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCycle?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SiteSubscriptionCreateInput = {
     id?: string
     status: string
@@ -95185,6 +100403,13 @@ export namespace Prisma {
     status?: $Enums.DomainStatus
     cnameTarget: string
     verifiedAt?: Date | string | null
+    verificationToken?: string | null
+    dnsVerifiedAt?: Date | string | null
+    lastCheckedAt?: Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: string
+    sslActivatedAt?: Date | string | null
+    provider?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     site: SiteCreateNestedOneWithoutDomainsInput
@@ -95199,6 +100424,13 @@ export namespace Prisma {
     status?: $Enums.DomainStatus
     cnameTarget: string
     verifiedAt?: Date | string | null
+    verificationToken?: string | null
+    dnsVerifiedAt?: Date | string | null
+    lastCheckedAt?: Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: string
+    sslActivatedAt?: Date | string | null
+    provider?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -95209,6 +100441,13 @@ export namespace Prisma {
     status?: EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
     cnameTarget?: StringFieldUpdateOperationsInput | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    dnsVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: StringFieldUpdateOperationsInput | string
+    sslActivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     site?: SiteUpdateOneRequiredWithoutDomainsNestedInput
@@ -95223,6 +100462,13 @@ export namespace Prisma {
     status?: EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
     cnameTarget?: StringFieldUpdateOperationsInput | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    dnsVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: StringFieldUpdateOperationsInput | string
+    sslActivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -95235,6 +100481,13 @@ export namespace Prisma {
     status?: $Enums.DomainStatus
     cnameTarget: string
     verifiedAt?: Date | string | null
+    verificationToken?: string | null
+    dnsVerifiedAt?: Date | string | null
+    lastCheckedAt?: Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: string
+    sslActivatedAt?: Date | string | null
+    provider?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -95245,6 +100498,13 @@ export namespace Prisma {
     status?: EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
     cnameTarget?: StringFieldUpdateOperationsInput | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    dnsVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: StringFieldUpdateOperationsInput | string
+    sslActivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -95257,6 +100517,13 @@ export namespace Prisma {
     status?: EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
     cnameTarget?: StringFieldUpdateOperationsInput | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    dnsVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: StringFieldUpdateOperationsInput | string
+    sslActivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -96521,6 +101788,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     phone?: SortOrder
+    purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
     attempts?: SortOrder
@@ -96536,6 +101804,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     phone?: SortOrder
+    purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
     attempts?: SortOrder
@@ -96547,6 +101816,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     phone?: SortOrder
+    purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
     attempts?: SortOrder
@@ -97537,6 +102807,12 @@ export namespace Prisma {
     none?: CrmApiKeyWhereInput
   }
 
+  export type SiteIntegrationListRelationFilter = {
+    every?: SiteIntegrationWhereInput
+    some?: SiteIntegrationWhereInput
+    none?: SiteIntegrationWhereInput
+  }
+
   export type ShopNullableRelationFilter = {
     is?: ShopWhereInput | null
     isNot?: ShopWhereInput | null
@@ -97564,6 +102840,10 @@ export namespace Prisma {
   }
 
   export type CrmApiKeyOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SiteIntegrationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -97618,6 +102898,36 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumSiteStatusFilter<$PrismaModel>
     _max?: NestedEnumSiteStatusFilter<$PrismaModel>
+  }
+
+  export type SiteIntegrationSiteIdAppSlugCompoundUniqueInput = {
+    siteId: string
+    appSlug: string
+  }
+
+  export type SiteIntegrationCountOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    appSlug?: SortOrder
+    config?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SiteIntegrationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    appSlug?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SiteIntegrationMinOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    appSlug?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type V12ProjectFileListRelationFilter = {
@@ -97852,6 +103162,42 @@ export namespace Prisma {
     label?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type V12GenerationJobCountOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    stage?: SortOrder
+    status?: SortOrder
+    state?: SortOrder
+    input?: SortOrder
+    result?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type V12GenerationJobMaxOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    stage?: SortOrder
+    status?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type V12GenerationJobMinOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+    tenantId?: SortOrder
+    stage?: SortOrder
+    status?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type DecimalFilter<$PrismaModel = never> = {
@@ -98831,6 +104177,51 @@ export namespace Prisma {
     _max?: NestedEnumShopPaymentProviderFilter<$PrismaModel>
   }
 
+  export type SupportRequestCountOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    subject?: SortOrder
+    message?: SortOrder
+    pageUrl?: SortOrder
+    severity?: SortOrder
+    status?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SupportRequestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    subject?: SortOrder
+    message?: SortOrder
+    pageUrl?: SortOrder
+    severity?: SortOrder
+    status?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SupportRequestMinOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    subject?: SortOrder
+    message?: SortOrder
+    pageUrl?: SortOrder
+    severity?: SortOrder
+    status?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type CrmCommunicationListRelationFilter = {
     every?: CrmCommunicationWhereInput
     some?: CrmCommunicationWhereInput
@@ -99447,6 +104838,7 @@ export namespace Prisma {
     isActive?: SortOrder
     razorpayPlanId?: SortOrder
     stripePriceId?: SortOrder
+    dodoProductId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -99464,6 +104856,7 @@ export namespace Prisma {
     isActive?: SortOrder
     razorpayPlanId?: SortOrder
     stripePriceId?: SortOrder
+    dodoProductId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -99477,6 +104870,7 @@ export namespace Prisma {
     isActive?: SortOrder
     razorpayPlanId?: SortOrder
     stripePriceId?: SortOrder
+    dodoProductId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -99788,6 +105182,66 @@ export namespace Prisma {
 
   export type SubscriptionSumOrderByAggregateInput = {
     amountPaid?: SortOrder
+  }
+
+  export type BillingTransactionCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    subscriptionId?: SortOrder
+    providerPaymentId?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    amountMinor?: SortOrder
+    currency?: SortOrder
+    planCode?: SortOrder
+    billingCycle?: SortOrder
+    paidAt?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BillingTransactionAvgOrderByAggregateInput = {
+    amountMinor?: SortOrder
+  }
+
+  export type BillingTransactionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    subscriptionId?: SortOrder
+    providerPaymentId?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    amountMinor?: SortOrder
+    currency?: SortOrder
+    planCode?: SortOrder
+    billingCycle?: SortOrder
+    paidAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BillingTransactionMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    subscriptionId?: SortOrder
+    providerPaymentId?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    amountMinor?: SortOrder
+    currency?: SortOrder
+    planCode?: SortOrder
+    billingCycle?: SortOrder
+    paidAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BillingTransactionSumOrderByAggregateInput = {
+    amountMinor?: SortOrder
   }
 
   export type SiteSubscriptionCountOrderByAggregateInput = {
@@ -100118,6 +105572,13 @@ export namespace Prisma {
     status?: SortOrder
     cnameTarget?: SortOrder
     verifiedAt?: SortOrder
+    verificationToken?: SortOrder
+    dnsVerifiedAt?: SortOrder
+    lastCheckedAt?: SortOrder
+    lastDnsResult?: SortOrder
+    sslStatus?: SortOrder
+    sslActivatedAt?: SortOrder
+    provider?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -100130,6 +105591,12 @@ export namespace Prisma {
     status?: SortOrder
     cnameTarget?: SortOrder
     verifiedAt?: SortOrder
+    verificationToken?: SortOrder
+    dnsVerifiedAt?: SortOrder
+    lastCheckedAt?: SortOrder
+    sslStatus?: SortOrder
+    sslActivatedAt?: SortOrder
+    provider?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -100142,6 +105609,12 @@ export namespace Prisma {
     status?: SortOrder
     cnameTarget?: SortOrder
     verifiedAt?: SortOrder
+    verificationToken?: SortOrder
+    dnsVerifiedAt?: SortOrder
+    lastCheckedAt?: SortOrder
+    sslStatus?: SortOrder
+    sslActivatedAt?: SortOrder
+    provider?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -102538,6 +108011,13 @@ export namespace Prisma {
     connect?: CrmApiKeyWhereUniqueInput | CrmApiKeyWhereUniqueInput[]
   }
 
+  export type SiteIntegrationCreateNestedManyWithoutSiteInput = {
+    create?: XOR<SiteIntegrationCreateWithoutSiteInput, SiteIntegrationUncheckedCreateWithoutSiteInput> | SiteIntegrationCreateWithoutSiteInput[] | SiteIntegrationUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: SiteIntegrationCreateOrConnectWithoutSiteInput | SiteIntegrationCreateOrConnectWithoutSiteInput[]
+    createMany?: SiteIntegrationCreateManySiteInputEnvelope
+    connect?: SiteIntegrationWhereUniqueInput | SiteIntegrationWhereUniqueInput[]
+  }
+
   export type ShopCreateNestedOneWithoutSiteInput = {
     create?: XOR<ShopCreateWithoutSiteInput, ShopUncheckedCreateWithoutSiteInput>
     connectOrCreate?: ShopCreateOrConnectWithoutSiteInput
@@ -102645,6 +108125,13 @@ export namespace Prisma {
     connectOrCreate?: CrmApiKeyCreateOrConnectWithoutSiteInput | CrmApiKeyCreateOrConnectWithoutSiteInput[]
     createMany?: CrmApiKeyCreateManySiteInputEnvelope
     connect?: CrmApiKeyWhereUniqueInput | CrmApiKeyWhereUniqueInput[]
+  }
+
+  export type SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput = {
+    create?: XOR<SiteIntegrationCreateWithoutSiteInput, SiteIntegrationUncheckedCreateWithoutSiteInput> | SiteIntegrationCreateWithoutSiteInput[] | SiteIntegrationUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: SiteIntegrationCreateOrConnectWithoutSiteInput | SiteIntegrationCreateOrConnectWithoutSiteInput[]
+    createMany?: SiteIntegrationCreateManySiteInputEnvelope
+    connect?: SiteIntegrationWhereUniqueInput | SiteIntegrationWhereUniqueInput[]
   }
 
   export type ShopUncheckedCreateNestedOneWithoutSiteInput = {
@@ -102863,6 +108350,20 @@ export namespace Prisma {
     deleteMany?: CrmApiKeyScalarWhereInput | CrmApiKeyScalarWhereInput[]
   }
 
+  export type SiteIntegrationUpdateManyWithoutSiteNestedInput = {
+    create?: XOR<SiteIntegrationCreateWithoutSiteInput, SiteIntegrationUncheckedCreateWithoutSiteInput> | SiteIntegrationCreateWithoutSiteInput[] | SiteIntegrationUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: SiteIntegrationCreateOrConnectWithoutSiteInput | SiteIntegrationCreateOrConnectWithoutSiteInput[]
+    upsert?: SiteIntegrationUpsertWithWhereUniqueWithoutSiteInput | SiteIntegrationUpsertWithWhereUniqueWithoutSiteInput[]
+    createMany?: SiteIntegrationCreateManySiteInputEnvelope
+    set?: SiteIntegrationWhereUniqueInput | SiteIntegrationWhereUniqueInput[]
+    disconnect?: SiteIntegrationWhereUniqueInput | SiteIntegrationWhereUniqueInput[]
+    delete?: SiteIntegrationWhereUniqueInput | SiteIntegrationWhereUniqueInput[]
+    connect?: SiteIntegrationWhereUniqueInput | SiteIntegrationWhereUniqueInput[]
+    update?: SiteIntegrationUpdateWithWhereUniqueWithoutSiteInput | SiteIntegrationUpdateWithWhereUniqueWithoutSiteInput[]
+    updateMany?: SiteIntegrationUpdateManyWithWhereWithoutSiteInput | SiteIntegrationUpdateManyWithWhereWithoutSiteInput[]
+    deleteMany?: SiteIntegrationScalarWhereInput | SiteIntegrationScalarWhereInput[]
+  }
+
   export type ShopUpdateOneWithoutSiteNestedInput = {
     create?: XOR<ShopCreateWithoutSiteInput, ShopUncheckedCreateWithoutSiteInput>
     connectOrCreate?: ShopCreateOrConnectWithoutSiteInput
@@ -103075,6 +108576,20 @@ export namespace Prisma {
     deleteMany?: CrmApiKeyScalarWhereInput | CrmApiKeyScalarWhereInput[]
   }
 
+  export type SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput = {
+    create?: XOR<SiteIntegrationCreateWithoutSiteInput, SiteIntegrationUncheckedCreateWithoutSiteInput> | SiteIntegrationCreateWithoutSiteInput[] | SiteIntegrationUncheckedCreateWithoutSiteInput[]
+    connectOrCreate?: SiteIntegrationCreateOrConnectWithoutSiteInput | SiteIntegrationCreateOrConnectWithoutSiteInput[]
+    upsert?: SiteIntegrationUpsertWithWhereUniqueWithoutSiteInput | SiteIntegrationUpsertWithWhereUniqueWithoutSiteInput[]
+    createMany?: SiteIntegrationCreateManySiteInputEnvelope
+    set?: SiteIntegrationWhereUniqueInput | SiteIntegrationWhereUniqueInput[]
+    disconnect?: SiteIntegrationWhereUniqueInput | SiteIntegrationWhereUniqueInput[]
+    delete?: SiteIntegrationWhereUniqueInput | SiteIntegrationWhereUniqueInput[]
+    connect?: SiteIntegrationWhereUniqueInput | SiteIntegrationWhereUniqueInput[]
+    update?: SiteIntegrationUpdateWithWhereUniqueWithoutSiteInput | SiteIntegrationUpdateWithWhereUniqueWithoutSiteInput[]
+    updateMany?: SiteIntegrationUpdateManyWithWhereWithoutSiteInput | SiteIntegrationUpdateManyWithWhereWithoutSiteInput[]
+    deleteMany?: SiteIntegrationScalarWhereInput | SiteIntegrationScalarWhereInput[]
+  }
+
   export type ShopUncheckedUpdateOneWithoutSiteNestedInput = {
     create?: XOR<ShopCreateWithoutSiteInput, ShopUncheckedCreateWithoutSiteInput>
     connectOrCreate?: ShopCreateOrConnectWithoutSiteInput
@@ -103093,6 +108608,20 @@ export namespace Prisma {
     delete?: V12ProjectWhereInput | boolean
     connect?: V12ProjectWhereUniqueInput
     update?: XOR<XOR<V12ProjectUpdateToOneWithWhereWithoutSiteInput, V12ProjectUpdateWithoutSiteInput>, V12ProjectUncheckedUpdateWithoutSiteInput>
+  }
+
+  export type SiteCreateNestedOneWithoutIntegrationsInput = {
+    create?: XOR<SiteCreateWithoutIntegrationsInput, SiteUncheckedCreateWithoutIntegrationsInput>
+    connectOrCreate?: SiteCreateOrConnectWithoutIntegrationsInput
+    connect?: SiteWhereUniqueInput
+  }
+
+  export type SiteUpdateOneRequiredWithoutIntegrationsNestedInput = {
+    create?: XOR<SiteCreateWithoutIntegrationsInput, SiteUncheckedCreateWithoutIntegrationsInput>
+    connectOrCreate?: SiteCreateOrConnectWithoutIntegrationsInput
+    upsert?: SiteUpsertWithoutIntegrationsInput
+    connect?: SiteWhereUniqueInput
+    update?: XOR<XOR<SiteUpdateToOneWithWhereWithoutIntegrationsInput, SiteUpdateWithoutIntegrationsInput>, SiteUncheckedUpdateWithoutIntegrationsInput>
   }
 
   export type SiteCreateNestedOneWithoutV12ProjectInput = {
@@ -108876,6 +114405,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -108905,6 +114435,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -109039,6 +114570,13 @@ export namespace Prisma {
     status?: $Enums.DomainStatus
     cnameTarget: string
     verifiedAt?: Date | string | null
+    verificationToken?: string | null
+    dnsVerifiedAt?: Date | string | null
+    lastCheckedAt?: Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: string
+    sslActivatedAt?: Date | string | null
+    provider?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     site: SiteCreateNestedOneWithoutDomainsInput
@@ -109051,6 +114589,13 @@ export namespace Prisma {
     status?: $Enums.DomainStatus
     cnameTarget: string
     verifiedAt?: Date | string | null
+    verificationToken?: string | null
+    dnsVerifiedAt?: Date | string | null
+    lastCheckedAt?: Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: string
+    sslActivatedAt?: Date | string | null
+    provider?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -109793,6 +115338,13 @@ export namespace Prisma {
     status?: EnumDomainStatusFilter<"SiteDomain"> | $Enums.DomainStatus
     cnameTarget?: StringFilter<"SiteDomain"> | string
     verifiedAt?: DateTimeNullableFilter<"SiteDomain"> | Date | string | null
+    verificationToken?: StringNullableFilter<"SiteDomain"> | string | null
+    dnsVerifiedAt?: DateTimeNullableFilter<"SiteDomain"> | Date | string | null
+    lastCheckedAt?: DateTimeNullableFilter<"SiteDomain"> | Date | string | null
+    lastDnsResult?: JsonNullableFilter<"SiteDomain">
+    sslStatus?: StringFilter<"SiteDomain"> | string
+    sslActivatedAt?: DateTimeNullableFilter<"SiteDomain"> | Date | string | null
+    provider?: StringNullableFilter<"SiteDomain"> | string | null
     createdAt?: DateTimeFilter<"SiteDomain"> | Date | string
     updatedAt?: DateTimeFilter<"SiteDomain"> | Date | string
   }
@@ -111242,6 +116794,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -111271,6 +116824,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -111401,6 +116955,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -111430,6 +116985,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -111762,6 +117318,13 @@ export namespace Prisma {
     status?: $Enums.DomainStatus
     cnameTarget: string
     verifiedAt?: Date | string | null
+    verificationToken?: string | null
+    dnsVerifiedAt?: Date | string | null
+    lastCheckedAt?: Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: string
+    sslActivatedAt?: Date | string | null
+    provider?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutSiteDomainsInput
@@ -111774,6 +117337,13 @@ export namespace Prisma {
     status?: $Enums.DomainStatus
     cnameTarget: string
     verifiedAt?: Date | string | null
+    verificationToken?: string | null
+    dnsVerifiedAt?: Date | string | null
+    lastCheckedAt?: Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: string
+    sslActivatedAt?: Date | string | null
+    provider?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -112084,6 +117654,32 @@ export namespace Prisma {
 
   export type CrmApiKeyCreateManySiteInputEnvelope = {
     data: CrmApiKeyCreateManySiteInput | CrmApiKeyCreateManySiteInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SiteIntegrationCreateWithoutSiteInput = {
+    id?: string
+    appSlug: string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SiteIntegrationUncheckedCreateWithoutSiteInput = {
+    id?: string
+    appSlug: string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SiteIntegrationCreateOrConnectWithoutSiteInput = {
+    where: SiteIntegrationWhereUniqueInput
+    create: XOR<SiteIntegrationCreateWithoutSiteInput, SiteIntegrationUncheckedCreateWithoutSiteInput>
+  }
+
+  export type SiteIntegrationCreateManySiteInputEnvelope = {
+    data: SiteIntegrationCreateManySiteInput | SiteIntegrationCreateManySiteInput[]
     skipDuplicates?: boolean
   }
 
@@ -112556,6 +118152,34 @@ export namespace Prisma {
     revokedAt?: DateTimeNullableFilter<"CrmApiKey"> | Date | string | null
   }
 
+  export type SiteIntegrationUpsertWithWhereUniqueWithoutSiteInput = {
+    where: SiteIntegrationWhereUniqueInput
+    update: XOR<SiteIntegrationUpdateWithoutSiteInput, SiteIntegrationUncheckedUpdateWithoutSiteInput>
+    create: XOR<SiteIntegrationCreateWithoutSiteInput, SiteIntegrationUncheckedCreateWithoutSiteInput>
+  }
+
+  export type SiteIntegrationUpdateWithWhereUniqueWithoutSiteInput = {
+    where: SiteIntegrationWhereUniqueInput
+    data: XOR<SiteIntegrationUpdateWithoutSiteInput, SiteIntegrationUncheckedUpdateWithoutSiteInput>
+  }
+
+  export type SiteIntegrationUpdateManyWithWhereWithoutSiteInput = {
+    where: SiteIntegrationScalarWhereInput
+    data: XOR<SiteIntegrationUpdateManyMutationInput, SiteIntegrationUncheckedUpdateManyWithoutSiteInput>
+  }
+
+  export type SiteIntegrationScalarWhereInput = {
+    AND?: SiteIntegrationScalarWhereInput | SiteIntegrationScalarWhereInput[]
+    OR?: SiteIntegrationScalarWhereInput[]
+    NOT?: SiteIntegrationScalarWhereInput | SiteIntegrationScalarWhereInput[]
+    id?: StringFilter<"SiteIntegration"> | string
+    siteId?: StringFilter<"SiteIntegration"> | string
+    appSlug?: StringFilter<"SiteIntegration"> | string
+    config?: JsonNullableFilter<"SiteIntegration">
+    createdAt?: DateTimeFilter<"SiteIntegration"> | Date | string
+    updatedAt?: DateTimeFilter<"SiteIntegration"> | Date | string
+  }
+
   export type ShopUpsertWithoutSiteInput = {
     update: XOR<ShopUpdateWithoutSiteInput, ShopUncheckedUpdateWithoutSiteInput>
     create: XOR<ShopCreateWithoutSiteInput, ShopUncheckedCreateWithoutSiteInput>
@@ -112646,6 +118270,142 @@ export namespace Prisma {
     checkpoints?: V12ProjectCheckpointUncheckedUpdateManyWithoutProjectNestedInput
   }
 
+  export type SiteCreateWithoutIntegrationsInput = {
+    id?: string
+    logoUrl?: string | null
+    name: string
+    slug: string
+    status?: $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutSitesInput
+    subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
+    pages?: PageCreateNestedManyWithoutSiteInput
+    complianceAudits?: ComplianceAuditCreateNestedManyWithoutSiteInput
+    snapshots?: SiteSnapshotCreateNestedManyWithoutSiteInput
+    renders?: SiteRenderCreateNestedManyWithoutSiteInput
+    domains?: SiteDomainCreateNestedManyWithoutSiteInput
+    blueprints?: BlueprintCreateNestedManyWithoutSiteInput
+    legacyDomains?: DomainCreateNestedManyWithoutSiteInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutSiteInput
+    layout?: SiteLayoutCreateNestedOneWithoutSiteInput
+    aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
+    crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
+    crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    shop?: ShopCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
+  }
+
+  export type SiteUncheckedCreateWithoutIntegrationsInput = {
+    id?: string
+    tenantId: string
+    logoUrl?: string | null
+    name: string
+    slug: string
+    status?: $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
+    pages?: PageUncheckedCreateNestedManyWithoutSiteInput
+    complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
+    snapshots?: SiteSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    renders?: SiteRenderUncheckedCreateNestedManyWithoutSiteInput
+    domains?: SiteDomainUncheckedCreateNestedManyWithoutSiteInput
+    blueprints?: BlueprintUncheckedCreateNestedManyWithoutSiteInput
+    legacyDomains?: DomainUncheckedCreateNestedManyWithoutSiteInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutSiteInput
+    layout?: SiteLayoutUncheckedCreateNestedOneWithoutSiteInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
+    cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
+    crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
+    crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
+    v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
+  }
+
+  export type SiteCreateOrConnectWithoutIntegrationsInput = {
+    where: SiteWhereUniqueInput
+    create: XOR<SiteCreateWithoutIntegrationsInput, SiteUncheckedCreateWithoutIntegrationsInput>
+  }
+
+  export type SiteUpsertWithoutIntegrationsInput = {
+    update: XOR<SiteUpdateWithoutIntegrationsInput, SiteUncheckedUpdateWithoutIntegrationsInput>
+    create: XOR<SiteCreateWithoutIntegrationsInput, SiteUncheckedCreateWithoutIntegrationsInput>
+    where?: SiteWhereInput
+  }
+
+  export type SiteUpdateToOneWithWhereWithoutIntegrationsInput = {
+    where?: SiteWhereInput
+    data: XOR<SiteUpdateWithoutIntegrationsInput, SiteUncheckedUpdateWithoutIntegrationsInput>
+  }
+
+  export type SiteUpdateWithoutIntegrationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
+    subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
+    pages?: PageUpdateManyWithoutSiteNestedInput
+    complianceAudits?: ComplianceAuditUpdateManyWithoutSiteNestedInput
+    snapshots?: SiteSnapshotUpdateManyWithoutSiteNestedInput
+    renders?: SiteRenderUpdateManyWithoutSiteNestedInput
+    domains?: SiteDomainUpdateManyWithoutSiteNestedInput
+    blueprints?: BlueprintUpdateManyWithoutSiteNestedInput
+    legacyDomains?: DomainUpdateManyWithoutSiteNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutSiteNestedInput
+    layout?: SiteLayoutUpdateOneWithoutSiteNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
+    crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
+    crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    shop?: ShopUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
+  }
+
+  export type SiteUncheckedUpdateWithoutIntegrationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | $Enums.SiteStatus
+    designTokens?: NullableJsonNullValueInput | InputJsonValue
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
+    pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
+    complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
+    snapshots?: SiteSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    renders?: SiteRenderUncheckedUpdateManyWithoutSiteNestedInput
+    domains?: SiteDomainUncheckedUpdateManyWithoutSiteNestedInput
+    blueprints?: BlueprintUncheckedUpdateManyWithoutSiteNestedInput
+    legacyDomains?: DomainUncheckedUpdateManyWithoutSiteNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutSiteNestedInput
+    layout?: SiteLayoutUncheckedUpdateOneWithoutSiteNestedInput
+    aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
+    cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
+    crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
+    crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
+    v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
+  }
+
   export type SiteCreateWithoutV12ProjectInput = {
     id?: string
     logoUrl?: string | null
@@ -112672,6 +118432,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
   }
 
@@ -112701,6 +118462,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
   }
 
@@ -112897,6 +118659,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
   }
 
@@ -112926,6 +118689,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
   }
 
@@ -113389,6 +119153,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
 
@@ -113418,6 +119183,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
 
@@ -113727,6 +119493,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
 
@@ -113756,6 +119523,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
 
@@ -116302,6 +122070,7 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -116331,6 +122100,7 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -116406,6 +122176,7 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -116435,6 +122206,7 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -116606,6 +122378,7 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -116635,6 +122408,7 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -116680,6 +122454,7 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -116709,6 +122484,7 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -116738,6 +122514,7 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -116767,6 +122544,7 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -116838,6 +122616,7 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -116867,6 +122646,7 @@ export namespace Prisma {
     aiSnapshots?: AIBlueprintSnapshotUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -116988,6 +122768,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -117017,6 +122798,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -117062,6 +122844,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -117091,6 +122874,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -117120,6 +122904,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -117149,6 +122934,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -117194,6 +122980,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -117223,6 +123010,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -117252,6 +123040,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -117281,6 +123070,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -117401,6 +123191,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -117430,6 +123221,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -117670,6 +123462,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -117699,6 +123492,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -117858,6 +123652,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -117887,6 +123682,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -118030,6 +123826,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -118059,6 +123856,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -118250,6 +124048,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -118279,6 +124078,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -118457,6 +124257,7 @@ export namespace Prisma {
     isActive?: boolean
     razorpayPlanId?: string | null
     stripePriceId?: string | null
+    dodoProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -118469,6 +124270,7 @@ export namespace Prisma {
     isActive?: boolean
     razorpayPlanId?: string | null
     stripePriceId?: string | null
+    dodoProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -118625,6 +124427,7 @@ export namespace Prisma {
     isActive?: BoolFilter<"PlanPricing"> | boolean
     razorpayPlanId?: StringNullableFilter<"PlanPricing"> | string | null
     stripePriceId?: StringNullableFilter<"PlanPricing"> | string | null
+    dodoProductId?: StringNullableFilter<"PlanPricing"> | string | null
     createdAt?: DateTimeFilter<"PlanPricing"> | Date | string
     updatedAt?: DateTimeFilter<"PlanPricing"> | Date | string
   }
@@ -119949,6 +125752,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -119978,6 +125782,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -120123,6 +125928,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -120152,6 +125958,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -120293,6 +126100,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -120322,6 +126130,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -120432,6 +126241,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -120461,6 +126271,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -120561,6 +126372,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -120590,6 +126402,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -120758,6 +126571,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -120787,6 +126601,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -120992,6 +126807,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -121021,6 +126837,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -121190,6 +127007,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -121219,6 +127037,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -121439,6 +127258,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationCreateNestedManyWithoutSiteInput
     shop?: ShopCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectCreateNestedOneWithoutSiteInput
   }
@@ -121468,6 +127288,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedCreateNestedManyWithoutSiteInput
     crmLeads?: CrmLeadUncheckedCreateNestedManyWithoutSiteInput
     crmApiKeys?: CrmApiKeyUncheckedCreateNestedManyWithoutSiteInput
+    integrations?: SiteIntegrationUncheckedCreateNestedManyWithoutSiteInput
     shop?: ShopUncheckedCreateNestedOneWithoutSiteInput
     v12Project?: V12ProjectUncheckedCreateNestedOneWithoutSiteInput
   }
@@ -121578,6 +127399,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -121607,6 +127429,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -123183,6 +129006,13 @@ export namespace Prisma {
     status?: $Enums.DomainStatus
     cnameTarget: string
     verifiedAt?: Date | string | null
+    verificationToken?: string | null
+    dnsVerifiedAt?: Date | string | null
+    lastCheckedAt?: Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: string
+    sslActivatedAt?: Date | string | null
+    provider?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -123553,6 +129383,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUpdateManyWithoutSiteNestedInput
     shop?: ShopUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUpdateOneWithoutSiteNestedInput
   }
@@ -123582,6 +129413,7 @@ export namespace Prisma {
     cmsCollections?: CmsCollectionUncheckedUpdateManyWithoutSiteNestedInput
     crmLeads?: CrmLeadUncheckedUpdateManyWithoutSiteNestedInput
     crmApiKeys?: CrmApiKeyUncheckedUpdateManyWithoutSiteNestedInput
+    integrations?: SiteIntegrationUncheckedUpdateManyWithoutSiteNestedInput
     shop?: ShopUncheckedUpdateOneWithoutSiteNestedInput
     v12Project?: V12ProjectUncheckedUpdateOneWithoutSiteNestedInput
   }
@@ -123713,6 +129545,13 @@ export namespace Prisma {
     status?: EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
     cnameTarget?: StringFieldUpdateOperationsInput | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    dnsVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: StringFieldUpdateOperationsInput | string
+    sslActivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     site?: SiteUpdateOneRequiredWithoutDomainsNestedInput
@@ -123725,6 +129564,13 @@ export namespace Prisma {
     status?: EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
     cnameTarget?: StringFieldUpdateOperationsInput | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    dnsVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: StringFieldUpdateOperationsInput | string
+    sslActivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -123736,6 +129582,13 @@ export namespace Prisma {
     status?: EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
     cnameTarget?: StringFieldUpdateOperationsInput | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    dnsVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: StringFieldUpdateOperationsInput | string
+    sslActivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -124311,6 +130164,13 @@ export namespace Prisma {
     status?: $Enums.DomainStatus
     cnameTarget: string
     verifiedAt?: Date | string | null
+    verificationToken?: string | null
+    dnsVerifiedAt?: Date | string | null
+    lastCheckedAt?: Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: string
+    sslActivatedAt?: Date | string | null
+    provider?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -124414,6 +130274,14 @@ export namespace Prisma {
     lastUsedAt?: Date | string | null
     createdAt?: Date | string
     revokedAt?: Date | string | null
+  }
+
+  export type SiteIntegrationCreateManySiteInput = {
+    id?: string
+    appSlug: string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type SiteSubscriptionUpdateWithoutSiteInput = {
@@ -124590,6 +130458,13 @@ export namespace Prisma {
     status?: EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
     cnameTarget?: StringFieldUpdateOperationsInput | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    dnsVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: StringFieldUpdateOperationsInput | string
+    sslActivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutSiteDomainsNestedInput
@@ -124602,6 +130477,13 @@ export namespace Prisma {
     status?: EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
     cnameTarget?: StringFieldUpdateOperationsInput | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    dnsVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: StringFieldUpdateOperationsInput | string
+    sslActivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -124613,6 +130495,13 @@ export namespace Prisma {
     status?: EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
     cnameTarget?: StringFieldUpdateOperationsInput | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    dnsVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastDnsResult?: NullableJsonNullValueInput | InputJsonValue
+    sslStatus?: StringFieldUpdateOperationsInput | string
+    sslActivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -124924,6 +130813,30 @@ export namespace Prisma {
     lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SiteIntegrationUpdateWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    appSlug?: StringFieldUpdateOperationsInput | string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SiteIntegrationUncheckedUpdateWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    appSlug?: StringFieldUpdateOperationsInput | string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SiteIntegrationUncheckedUpdateManyWithoutSiteInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    appSlug?: StringFieldUpdateOperationsInput | string
+    config?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type V12ProjectFileCreateManyProjectInput = {
@@ -126174,6 +132087,7 @@ export namespace Prisma {
     isActive?: boolean
     razorpayPlanId?: string | null
     stripePriceId?: string | null
+    dodoProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -126228,6 +132142,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     razorpayPlanId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -126240,6 +132155,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     razorpayPlanId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -126252,6 +132168,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     razorpayPlanId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
+    dodoProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -126794,6 +132711,10 @@ export namespace Prisma {
      */
     export type SiteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SiteDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use SiteIntegrationDefaultArgs instead
+     */
+    export type SiteIntegrationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SiteIntegrationDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use V12ProjectDefaultArgs instead
      */
     export type V12ProjectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = V12ProjectDefaultArgs<ExtArgs>
@@ -126809,6 +132730,10 @@ export namespace Prisma {
      * @deprecated Use V12ProjectCheckpointDefaultArgs instead
      */
     export type V12ProjectCheckpointArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = V12ProjectCheckpointDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use V12GenerationJobDefaultArgs instead
+     */
+    export type V12GenerationJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = V12GenerationJobDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ShopDefaultArgs instead
      */
@@ -126861,6 +132786,10 @@ export namespace Prisma {
      * @deprecated Use ShopPaymentIntegrationDefaultArgs instead
      */
     export type ShopPaymentIntegrationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ShopPaymentIntegrationDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use SupportRequestDefaultArgs instead
+     */
+    export type SupportRequestArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SupportRequestDefaultArgs<ExtArgs>
     /**
      * @deprecated Use CrmLeadDefaultArgs instead
      */
@@ -126937,6 +132866,10 @@ export namespace Prisma {
      * @deprecated Use SubscriptionDefaultArgs instead
      */
     export type SubscriptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SubscriptionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BillingTransactionDefaultArgs instead
+     */
+    export type BillingTransactionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BillingTransactionDefaultArgs<ExtArgs>
     /**
      * @deprecated Use SiteSubscriptionDefaultArgs instead
      */

@@ -29,6 +29,9 @@ import CreateSiteModal, {
   type CreateSiteIntent,
 } from "../components/CreateSiteModal";
 import { WebsiteThumbnail } from "../components/WebsiteThumbnail";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
+
+const PLATFORM_DOMAIN = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || "getbuildezy.com";
 
 type WorkspaceAnalytics = {
   totals: {
@@ -493,7 +496,7 @@ export default function GlobalDashboardPage() {
                                 {site.name}
                               </span>
                               <span className="block truncate text-xs dashboard-muted">
-                                {site.slug}.buildez.site
+                                {PLATFORM_DOMAIN}{publishedSitePath(site.slug)}
                               </span>
                             </span>
 
@@ -704,7 +707,7 @@ function WebsiteCard({
           <div className="min-w-0">
             <h3 className="truncate font-semibold">{site.name}</h3>
             <p className="mt-1 truncate text-xs dashboard-muted">
-              {site.slug}.buildez.site
+              {PLATFORM_DOMAIN}{publishedSitePath(site.slug)}
             </p>
           </div>
 
