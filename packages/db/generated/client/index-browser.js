@@ -371,7 +371,8 @@ exports.Prisma.SiteScalarFieldEnum = {
   settings: 'settings',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  archivedAt: 'archivedAt'
 };
 
 exports.Prisma.SiteIntegrationScalarFieldEnum = {
@@ -388,6 +389,7 @@ exports.Prisma.V12ProjectScalarFieldEnum = {
   siteId: 'siteId',
   tenantId: 'tenantId',
   currentRevision: 'currentRevision',
+  publishedRevision: 'publishedRevision',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -625,6 +627,21 @@ exports.Prisma.SupportRequestScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.BlogPostScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  title: 'title',
+  excerpt: 'excerpt',
+  content: 'content',
+  coverImageUrl: 'coverImageUrl',
+  authorName: 'authorName',
+  status: 'status',
+  tags: 'tags',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.CrmLeadScalarFieldEnum = {
   id: 'id',
   siteId: 'siteId',
@@ -810,6 +827,8 @@ exports.Prisma.PlanScalarFieldEnum = {
   aiAgentRunLimitPerHour: 'aiAgentRunLimitPerHour',
   aiAgentFollowupLimitPerHour: 'aiAgentFollowupLimitPerHour',
   builderAgentLimitPerHour: 'builderAgentLimitPerHour',
+  uploadRateLimitPerHour: 'uploadRateLimitPerHour',
+  maxDailyUploads: 'maxDailyUploads',
   isPublic: 'isPublic',
   createdAt: 'createdAt'
 };
@@ -901,6 +920,7 @@ exports.Prisma.SubscriptionScalarFieldEnum = {
   dodoSubscriptionId: 'dodoSubscriptionId',
   dodoCheckoutSessionId: 'dodoCheckoutSessionId',
   currentPeriodEnd: 'currentPeriodEnd',
+  cancelAtPeriodEnd: 'cancelAtPeriodEnd',
   amountPaid: 'amountPaid',
   currency: 'currency',
   startedAt: 'startedAt',
@@ -1272,6 +1292,8 @@ exports.ShopFulfillmentStatus = exports.$Enums.ShopFulfillmentStatus = {
 exports.ShopPaymentProvider = exports.$Enums.ShopPaymentProvider = {
   RAZORPAY: 'RAZORPAY',
   PAYPAL: 'PAYPAL',
+  STRIPE: 'STRIPE',
+  DODO: 'DODO',
   COD: 'COD'
 };
 
@@ -1349,6 +1371,7 @@ exports.Prisma.ModelName = {
   ShopOrderItem: 'ShopOrderItem',
   ShopPaymentIntegration: 'ShopPaymentIntegration',
   SupportRequest: 'SupportRequest',
+  BlogPost: 'BlogPost',
   CrmLead: 'CrmLead',
   CrmCommunication: 'CrmCommunication',
   AgentRun: 'AgentRun',

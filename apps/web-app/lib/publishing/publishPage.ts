@@ -1,18 +1,34 @@
+import { revalidatePath } from "next/cache";
 import { Prisma, prisma } from "@buildez/db";
 import { resolveBlueprintTree, type BlueprintData } from "@/modules/builder/runtime/resolveBlueprintTree";
 import { isBuilderV2Blueprint } from "@/modules/builder-v2/runtime/isBuilderV2Blueprint";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { invalidateRouteCache } from "@/lib/runtime/routeCache";
 
 /*
- * Shared with the manual publish route's transaction (app/api/pages/[pageId]/publish/route.ts)
- * conceptually, but self-contained (looks up siteId/tenantId from the page itself) so it can
- * run outside an HTTP request context — from the scheduled-publish scanner below.
+ * The single publish implementation — used by the manual publish route
+ * (app/api/pages/[pageId]/publish/route.ts, after it resolves and authorizes
+ * the tenant-scoped execution context) and by the scheduled-publish scanner
+ * below, which runs outside an HTTP request context. Self-contained: looks up
+ * siteId/tenantId from the page itself rather than requiring a caller-supplied
+ * auth context.
+ *
+ * Deliberately does not import modules/runtime/v12PublishedBundle.ts, even
+ * dynamically — this file (via runDuePublishScans) is reached by
+ * instrumentation.ts's `await import(...)`, which Next.js also compiles for
+ * an edge-like target. v12PublishedBundle.ts uses node:child_process/node:fs
+ * directly, which that edge compilation can't bundle at all (confirmed: even
+ * a nested dynamic import inside this function still broke the build).
+ * Callers that need the eager republish-bundle build (see
+ * lib/publishing/buildAfterPublish.ts) trigger it themselves, from route
+ * handlers that are never part of that bundle graph.
  */
 export async function publishPageNow(pageId: string) {
   const page = await prisma.page.findFirst({
     where: { id: pageId, deletedAt: null, deleted: false, site: { deletedAt: null } },
     include: {
       blueprint: true,
-      site: { select: { id: true, tenantId: true } },
+      site: { select: { id: true, tenantId: true, slug: true } },
     },
   });
 
@@ -82,7 +98,24 @@ export async function publishPageNow(pageId: string) {
     if (updatedPage.count !== 1 || updatedSite.count !== 1) {
       throw new Error("Publish target no longer belongs to this workspace");
     }
+
+    // Pin what "published" means for this project's file revision — the
+    // runtime bundle build below is gated on this, not on live editing HEAD
+    // (project.currentRevision), so further edits after this point don't
+    // leak onto the live site until the next publish.
+    if (project) {
+      await tx.v12Project.update({
+        where: { id: project.id },
+        data: { publishedRevision: project.currentRevision },
+      });
+    }
   });
+
+  revalidatePath(publishedSitePath(page.site.slug, page.slug));
+  revalidatePath(publishedSitePath(page.site.slug));
+  invalidateRouteCache(page.site.slug);
+
+  return { siteSlug: page.site.slug, pageSlug: page.slug, siteId, tenantId, isV12: Boolean(project) };
 }
 
 /*
@@ -104,11 +137,13 @@ export async function runDuePublishScans() {
 
   let published = 0;
   let failed = 0;
+  const v12Sites = new Map<string, { siteId: string; tenantId: string }>();
 
   for (const { id } of duePages) {
     try {
-      await publishPageNow(id);
+      const result = await publishPageNow(id);
       published += 1;
+      if (result.isV12) v12Sites.set(result.siteId, { siteId: result.siteId, tenantId: result.tenantId });
     } catch (error) {
       failed += 1;
       console.error(`[scheduled publish] failed for page ${id}:`, error);
@@ -118,5 +153,5 @@ export async function runDuePublishScans() {
     }
   }
 
-  return { scanned: duePages.length, published, failed };
+  return { scanned: duePages.length, published, failed, v12Sites: Array.from(v12Sites.values()) };
 }

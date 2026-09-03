@@ -17,6 +17,8 @@ import { runWebsiteGenerationOrchestrator } from "@/modules/builder/ai-v8/orches
 import { parseReactToBlueprint } from "@/modules/builder/ai-v8/lib/reactToBlueprint";
 import type { AIV8BrandContext } from "@/modules/builder/ai-v8/types";
 import { getUser } from "@/lib/auth/getUser";
+import { ApiError } from "@/lib/api/errors";
+import { assertPromptAllowed } from "@/lib/ai/moderation";
 
 /* ============================================================
    AI CONFIGURATION
@@ -817,6 +819,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
+    await assertPromptAllowed(userPrompt);
+
     const authorizedSite = await prisma.site.findFirst({
       where: { id: siteId, tenantId: auth.tenant.id, deletedAt: null },
       select: { id: true },
@@ -954,9 +958,11 @@ ${publicResearch}`;
   } catch (err: unknown) {
     const message =
       err instanceof Error ? err.message : "Generation failed";
+    const status = err instanceof ApiError ? err.status : 500;
+    const code = err instanceof ApiError ? err.code : undefined;
     return NextResponse.json(
-      { error: message },
-      { status: 500 }
+      { error: message, code },
+      { status }
     );
   }
 }

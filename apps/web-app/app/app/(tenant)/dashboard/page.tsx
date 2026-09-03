@@ -14,7 +14,6 @@ import {
   Globe2,
   LayoutGrid,
   Loader2,
-  MoreHorizontal,
   Plus,
   Search,
   Sparkles,
@@ -29,7 +28,9 @@ import CreateSiteModal, {
   type CreateSiteIntent,
 } from "../components/CreateSiteModal";
 import { WebsiteThumbnail } from "../components/WebsiteThumbnail";
+import WebsiteActionsMenu from "../components/WebsiteActionsMenu";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { stashPendingAttachments } from "@/modules/ai-v12/pendingAttachments";
 
 const PLATFORM_DOMAIN = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || "getbuildezy.com";
 
@@ -46,6 +47,7 @@ type WorkspaceAnalytics = {
     name: string;
     slug: string;
     status: string;
+    archived: boolean;
     pageViews: number;
     visitors: number;
   }>;
@@ -65,7 +67,7 @@ export default function GlobalDashboardPage() {
   const [pendingAiPrompt, setPendingAiPrompt] = useState("");
   const [aiDestinationOpen, setAiDestinationOpen] = useState(false);
 
-  const visibleSites = useMemo(() => {
+  const matchingSites = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     if (!query) return data?.sites ?? [];
@@ -77,6 +79,36 @@ export default function GlobalDashboardPage() {
         site.status.toLowerCase().includes(query),
     );
   }, [data?.sites, search]);
+
+  const visibleSites = useMemo(
+    () => matchingSites.filter((site) => !site.archived),
+    [matchingSites],
+  );
+  const archivedSites = useMemo(
+    () => matchingSites.filter((site) => site.archived),
+    [matchingSites],
+  );
+
+  function handleSiteChanged(patch: { id: string; status: string; archived: boolean }) {
+    setData((current) => {
+      if (!current) return current;
+
+      const sites = current.sites.map((site) =>
+        site.id === patch.id ? { ...site, status: patch.status, archived: patch.archived } : site,
+      );
+      const activeSites = sites.filter((site) => !site.archived);
+
+      return {
+        ...current,
+        sites,
+        totals: {
+          ...current.totals,
+          sites: activeSites.length,
+          publishedSites: activeSites.filter((site) => site.status === "PUBLISHED").length,
+        },
+      };
+    });
+  }
 
   function openCreateSite(
     intent: CreateSiteIntent,
@@ -96,14 +128,16 @@ export default function GlobalDashboardPage() {
     setCreateSiteOpen(true);
   }
 
-  function openAiDestination(prompt = "") {
+  function openAiDestination(prompt = "", attachments?: File[]) {
     setPendingAiPrompt(prompt.trim());
+    stashPendingAttachments(attachments ?? []);
     setAiDestinationOpen(true);
   }
 
   function closeAiDestination() {
     setAiDestinationOpen(false);
     setPendingAiPrompt("");
+    stashPendingAttachments([]);
   }
 
   function openExistingWebsite(siteId: string) {
@@ -269,7 +303,9 @@ export default function GlobalDashboardPage() {
 
             <section className="mt-6 grid gap-5 xl:grid-cols-[1.18fr_.82fr]">
               <CopilotPromptCard
-                onSubmit={(prompt) => openAiDestination(prompt)}
+                onSubmit={(prompt, attachments) =>
+                  openAiDestination(prompt, attachments)
+                }
               />
 
               <div className="dashboard-card rounded-3xl p-5 sm:p-6">
@@ -378,7 +414,7 @@ export default function GlobalDashboardPage() {
                     </button>
                   </div>
                 </div>
-              ) : visibleSites.length === 0 ? (
+              ) : visibleSites.length === 0 && archivedSites.length === 0 ? (
                 <div className="dashboard-card mt-5 rounded-3xl p-10 text-center">
                   <Search className="mx-auto dashboard-faint" />
                   <h3 className="mt-3 font-semibold">No matching websites</h3>
@@ -387,14 +423,36 @@ export default function GlobalDashboardPage() {
                   </p>
                 </div>
               ) : (
-                <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                  {visibleSites.map((site) => (
-                    <WebsiteCard
-                      key={site.id}
-                      site={site}
-                    />
-                  ))}
-                </div>
+                <>
+                  {visibleSites.length > 0 && (
+                    <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                      {visibleSites.map((site) => (
+                        <WebsiteCard
+                          key={site.id}
+                          site={site}
+                          onChanged={handleSiteChanged}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {archivedSites.length > 0 && (
+                    <details className="mt-8 group/archived">
+                      <summary className="cursor-pointer list-none text-sm font-medium dashboard-muted hover:dashboard-hover">
+                        Archived websites ({archivedSites.length})
+                      </summary>
+                      <div className="mt-4 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                        {archivedSites.map((site) => (
+                          <WebsiteCard
+                            key={site.id}
+                            site={site}
+                            onChanged={handleSiteChanged}
+                          />
+                        ))}
+                      </div>
+                    </details>
+                  )}
+                </>
               )}
             </section>
           </>
@@ -470,7 +528,7 @@ export default function GlobalDashboardPage() {
                     </div>
 
                     <div className="mt-5 space-y-2">
-                      {!data?.sites.length ? (
+                      {!data?.sites.filter((site) => !site.archived).length ? (
                         <div className="rounded-xl border border-dashed dashboard-border p-5 text-center">
                           <p className="text-sm font-medium">
                             No existing websites
@@ -480,7 +538,7 @@ export default function GlobalDashboardPage() {
                           </p>
                         </div>
                       ) : (
-                        data.sites.map((site) => (
+                        data.sites.filter((site) => !site.archived).map((site) => (
                           <button
                             key={site.id}
                             type="button"
@@ -546,6 +604,7 @@ export default function GlobalDashboardPage() {
         onClose={() => {
           setCreateSiteOpen(false);
           setPendingAiPrompt("");
+          if (createIntent === "ai") stashPendingAttachments([]);
         }}
         onCreated={handleSiteCreated}
       />
@@ -686,11 +745,13 @@ function ActionCard({
 
 function WebsiteCard({
   site,
+  onChanged,
 }: {
   site: WorkspaceAnalytics["sites"][number];
+  onChanged: (patch: { id: string; status: string; archived: boolean }) => void;
 }) {
   return (
-    <article className="dashboard-card group overflow-hidden rounded-3xl">
+    <article className={`dashboard-card group overflow-hidden rounded-3xl ${site.archived ? "opacity-70" : ""}`}>
       <Link
         href={`/app/${site.slug}/dashboard`}
         className="relative block h-52 overflow-hidden bg-slate-900"
@@ -698,7 +759,7 @@ function WebsiteCard({
         <WebsiteThumbnail siteId={site.id} siteName={site.name} siteStatus={site.status} className="h-full w-full transition duration-300 group-hover:scale-[1.015]" />
 
         <span className="absolute right-3 top-3 rounded-full border border-white/15 bg-black/25 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur-md">
-          {site.status}
+          {site.archived ? "ARCHIVED" : site.status}
         </span>
       </Link>
 
@@ -711,13 +772,9 @@ function WebsiteCard({
             </p>
           </div>
 
-          <button
-            type="button"
-            aria-label={`More options for ${site.name}`}
-            className="ml-auto rounded-lg p-2 dashboard-hover"
-          >
-            <MoreHorizontal size={17} className="dashboard-muted" />
-          </button>
+          <div className="ml-auto">
+            <WebsiteActionsMenu site={site} onChanged={onChanged} />
+          </div>
         </div>
 
         <div className="mt-4 flex items-center gap-5 border-t dashboard-border pt-4 text-xs dashboard-muted">

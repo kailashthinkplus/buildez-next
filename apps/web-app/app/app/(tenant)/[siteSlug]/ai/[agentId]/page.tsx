@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowRight,
+  CheckCircle2,
   History,
   Loader2,
   MoreVertical,
@@ -30,6 +32,32 @@ import {
 import { AgentFunctionality } from "./functionality";
 import { AGENT_CAPABILITIES } from "./capabilities";
 import { AgentIcon, agentGradientCss } from "./thumbnail";
+
+function apiErrorMessage(payload: unknown, fallback: string) {
+  if (!payload || typeof payload !== "object") return fallback;
+  const error = (payload as { error?: unknown }).error;
+  if (typeof error === "string") return error;
+  if (error && typeof error === "object") {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === "string") return message;
+  }
+  const message = (payload as { message?: unknown }).message;
+  return typeof message === "string" ? message : fallback;
+}
+
+function isCreditsExceeded(payload: unknown) {
+  if (!payload || typeof payload !== "object") return false;
+  const record = payload as { code?: unknown; error?: unknown };
+  if (record.code === "AI_CREDITS_EXCEEDED") return true;
+  const error = record.error;
+  if (error && typeof error === "object" && (error as { code?: unknown }).code === "AI_CREDITS_EXCEEDED") return true;
+  return false;
+}
+
+type FixRunState = {
+  status: "applying" | "done" | "needs-input" | "error";
+  message?: string;
+};
 
 const VALID_AGENT_IDS = [
   "seo-agent",
@@ -64,6 +92,7 @@ export default function AgentDetailPage() {
   const [history, setHistory] = useState<RunHistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [creditsExceeded, setCreditsExceeded] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
 
   const [running, setRunning] = useState(false);
@@ -71,6 +100,7 @@ export default function AgentDetailPage() {
   const [activeRun, setActiveRun] = useState<AgentRun>();
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
+  const [fixRuns, setFixRuns] = useState<Record<string, FixRunState>>({});
   const autoOpened = useRef(false);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
 
@@ -84,6 +114,7 @@ export default function AgentDetailPage() {
     }
     setLoading(true);
     setError("");
+    setCreditsExceeded(false);
     try {
       const response = await fetch(
         `/api/sites/${encodeURIComponent(website.id)}/ai-agents`,
@@ -112,6 +143,7 @@ export default function AgentDetailPage() {
       if (!website?.id || running) return;
       setRunning(true);
       setError("");
+      setCreditsExceeded(false);
       try {
         const response = await fetch(
           `/api/sites/${encodeURIComponent(website.id)}/ai-agents`,
@@ -122,7 +154,10 @@ export default function AgentDetailPage() {
           },
         );
         const payload = await response.json();
-        if (!response.ok) throw new Error(payload?.error || "The agent could not finish");
+        if (!response.ok) {
+          if (isCreditsExceeded(payload)) setCreditsExceeded(true);
+          throw new Error(payload?.error || "The agent could not finish");
+        }
         setActiveRun({ ...payload.run, prompt: request || undefined });
         setChatMessages([]);
         setHistory((current) => [
@@ -190,6 +225,8 @@ export default function AgentDetailPage() {
   async function sendFollowUp(question: string) {
     if (!question || !activeRun || !website?.id || chatLoading) return;
     setChatLoading(true);
+    setError("");
+    setCreditsExceeded(false);
     setChatMessages((current) => [
       ...current,
       { id: `pending-${Date.now()}`, role: "user", content: question, createdAt: new Date().toISOString() },
@@ -204,7 +241,10 @@ export default function AgentDetailPage() {
         },
       );
       const payload = await response.json();
-      if (!response.ok) throw new Error(payload?.error || "The agent could not reply");
+      if (!response.ok) {
+        if (isCreditsExceeded(payload)) setCreditsExceeded(true);
+        throw new Error(payload?.error || "The agent could not reply");
+      }
       setChatMessages((current) => [
         ...current.filter((message) => !message.id.startsWith("pending-")),
         ...(payload.messages || []),
@@ -216,6 +256,94 @@ export default function AgentDetailPage() {
       setChatLoading(false);
     }
   }
+
+  const anyFixApplying = Object.values(fixRuns).some((run) => run.status === "applying");
+
+  const applyFinding = useCallback(
+    async (page: { id: string; pageId?: string; fixPrompt: string }) => {
+      if (!website?.id || anyFixApplying) return;
+      setFixRuns((current) => ({ ...current, [page.id]: { status: "applying" } }));
+
+      try {
+        let finalMessage = "";
+        let finalStatus: "completed" | "needs_input" | "failed" = "completed";
+        let nextForm: FormData | null = new FormData();
+        nextForm.set("siteId", website.id);
+        if (page.pageId) nextForm.set("pageId", page.pageId);
+        nextForm.set("prompt", page.fixPrompt);
+        nextForm.set("mode", "auto");
+        nextForm.set("context", page.pageId ? "Page" : "Website");
+
+        while (nextForm) {
+          const requestForm = nextForm;
+          nextForm = null;
+          const response = await fetch("/api/builder-v3/agent/run", {
+            method: "POST",
+            body: requestForm,
+          });
+          if (!response.ok || !response.body) {
+            const payload = await response.json().catch(() => ({}));
+            throw new Error(apiErrorMessage(payload, "The fix could not be applied."));
+          }
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffered = "";
+          while (true) {
+            const chunk = await reader.read();
+            if (chunk.done) break;
+            buffered += decoder.decode(chunk.value, { stream: true });
+            const lines = buffered.split("\n");
+            buffered = lines.pop() ?? "";
+            for (const rawLine of lines) {
+              if (!rawLine.trim()) continue;
+              const event = JSON.parse(rawLine) as {
+                type: string;
+                title?: string;
+                status?: "needs_input" | "completed" | "failed";
+                jobId?: string;
+              };
+              if (event.type === "stage.complete" && event.jobId) {
+                const resumeForm = new FormData();
+                resumeForm.set("siteId", website.id);
+                resumeForm.set("jobId", event.jobId);
+                nextForm = resumeForm;
+                continue;
+              }
+              if (event.type === "message" && event.title) {
+                finalMessage = event.title;
+              }
+              if (event.type === "done") {
+                finalStatus = event.status || "completed";
+              }
+            }
+          }
+        }
+
+        setFixRuns((current) => ({
+          ...current,
+          [page.id]: {
+            status:
+              finalStatus === "completed"
+                ? "done"
+                : finalStatus === "needs_input"
+                  ? "needs-input"
+                  : "error",
+            message: finalMessage || undefined,
+          },
+        }));
+        if (finalStatus === "completed") void load();
+      } catch (reason) {
+        setFixRuns((current) => ({
+          ...current,
+          [page.id]: {
+            status: "error",
+            message: reason instanceof Error ? reason.message : "The fix could not be applied.",
+          },
+        }));
+      }
+    },
+    [website?.id, anyFixApplying, load],
+  );
 
   async function handleSend(overrideText?: string) {
     const text = (overrideText ?? composerText).trim();
@@ -330,7 +458,15 @@ export default function AgentDetailPage() {
 
         {error && (
           <div className="mt-3 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-600 dark:text-rose-300">
-            {error}
+            <p>{error}</p>
+            {creditsExceeded && (
+              <Link
+                href="/app/workspace/billing#ai-credits"
+                className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-[11px] font-medium text-amber-700 transition hover:bg-amber-500/20 dark:text-amber-300"
+              >
+                <Sparkles size={11} /> Upgrade plan
+              </Link>
+            )}
           </div>
         )}
       </div>
@@ -433,28 +569,71 @@ export default function AgentDetailPage() {
                   </div>
                   <h3 className="mt-3 text-sm font-semibold">{group.title}</h3>
                   <p className="mt-1 text-xs leading-5 dashboard-muted">{group.description}</p>
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    {group.pages.map((page) => (
-                      <Link
-                        key={page.id}
-                        href={fixHref(website?.id || "", {
-                          id: page.id,
-                          pageId: page.pageId,
-                          pageTitle: page.pageTitle,
-                          fixPrompt: page.fixPrompt,
-                          title: group.title,
-                          description: group.description,
-                          impact: group.impact,
-                          priority: group.priority,
-                          category: group.category,
-                          actionLabel: group.actionLabel,
-                        })}
-                        className="flex items-center gap-1 rounded-lg border dashboard-border px-2.5 py-1.5 text-xs font-semibold text-blue-600 dark:text-blue-300"
-                      >
-                        {group.pages.length > 1 ? page.pageTitle || "Page" : "Review in builder"}
-                        <ArrowRight size={12} />
-                      </Link>
-                    ))}
+                  <div className="mt-4 flex flex-col gap-2">
+                    {group.pages.map((page) => {
+                      const fixState = fixRuns[page.id];
+                      return (
+                        <div
+                          key={page.id}
+                          className="flex flex-wrap items-center gap-3 rounded-lg border dashboard-border px-2.5 py-1.5"
+                        >
+                          {group.pages.length > 1 && (
+                            <span className="text-[10px] font-semibold dashboard-faint">
+                              {page.pageTitle || "Page"}
+                            </span>
+                          )}
+                          <button
+                            onClick={() => void applyFinding(page)}
+                            disabled={fixState?.status === "applying" || fixState?.status === "done" || anyFixApplying}
+                            className="flex items-center gap-1 text-xs font-semibold text-blue-600 disabled:opacity-50 dark:text-blue-300"
+                          >
+                            {fixState?.status === "applying" ? (
+                              <>
+                                <Loader2 size={12} className="animate-spin" /> Applying…
+                              </>
+                            ) : fixState?.status === "done" ? (
+                              <>
+                                <CheckCircle2 size={12} className="text-emerald-500" /> Applied
+                              </>
+                            ) : (
+                              <>
+                                <Wand2 size={12} /> Apply fix
+                              </>
+                            )}
+                          </button>
+                          <Link
+                            href={fixHref(website?.id || "", {
+                              id: page.id,
+                              pageId: page.pageId,
+                              pageTitle: page.pageTitle,
+                              fixPrompt: page.fixPrompt,
+                              title: group.title,
+                              description: group.description,
+                              impact: group.impact,
+                              priority: group.priority,
+                              category: group.category,
+                              actionLabel: group.actionLabel,
+                            })}
+                            className="flex items-center gap-1 text-[11px] font-semibold dashboard-muted hover:text-blue-600 dark:hover:text-blue-300"
+                          >
+                            Open in builder <ArrowRight size={11} />
+                          </Link>
+                          {fixState?.status === "error" && (
+                            <p className="flex w-full items-center gap-1 text-[11px] text-rose-600 dark:text-rose-300">
+                              <AlertTriangle size={11} /> {fixState.message}
+                            </p>
+                          )}
+                          {fixState?.status === "needs-input" && (
+                            <p className="flex w-full items-center gap-1 text-[11px] text-amber-600 dark:text-amber-300">
+                              <AlertTriangle size={11} /> The agent needs more detail — open in builder to continue.
+                            </p>
+                          )}
+                          {fixState?.status === "done" && fixState.message && (
+                            <p className="w-full text-[11px] leading-5 dashboard-muted">{fixState.message}</p>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               ))}
@@ -520,7 +699,7 @@ export default function AgentDetailPage() {
                       </span>
                     )}
                     <span className="text-[10px] dashboard-faint">
-                      {new Date(entry.createdAt).toLocaleString()}
+                      {new Date(entry.createdAt).toLocaleString(undefined, { hour12: true })}
                     </span>
                   </div>
                   <p className="mt-1 line-clamp-2 text-xs leading-5 dashboard-muted">{entry.summary}</p>

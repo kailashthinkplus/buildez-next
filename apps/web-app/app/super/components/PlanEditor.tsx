@@ -50,6 +50,8 @@ type Plan = {
   aiAgentRunLimitPerHour: number;
   aiAgentFollowupLimitPerHour: number;
   builderAgentLimitPerHour: number;
+  uploadRateLimitPerHour: number;
+  maxDailyUploads: number;
   features?: PlanFeature[];
   pricing?: PlanPrice[];
   _count?: {
@@ -105,6 +107,8 @@ type FormState = {
   aiAgentRunLimitPerHour: number;
   aiAgentFollowupLimitPerHour: number;
   builderAgentLimitPerHour: number;
+  uploadRateLimitPerHour: number;
+  maxDailyUploads: number;
 
   maxAutomaticRepairs: number;
   maxConcurrency: number;
@@ -135,6 +139,8 @@ const DEFAULT_FORM: FormState = {
   aiAgentRunLimitPerHour: 20,
   aiAgentFollowupLimitPerHour: 40,
   builderAgentLimitPerHour: 30,
+  uploadRateLimitPerHour: 30,
+  maxDailyUploads: 50,
 
   maxAutomaticRepairs: 0,
   maxConcurrency: 1,
@@ -224,6 +230,8 @@ function planToForm(plan: Plan): FormState {
     aiAgentRunLimitPerHour: plan.aiAgentRunLimitPerHour,
     aiAgentFollowupLimitPerHour: plan.aiAgentFollowupLimitPerHour,
     builderAgentLimitPerHour: plan.builderAgentLimitPerHour,
+    uploadRateLimitPerHour: plan.uploadRateLimitPerHour,
+    maxDailyUploads: plan.maxDailyUploads,
 
     maxAutomaticRepairs:
       featureInteger(
@@ -453,6 +461,8 @@ export default function PlanEditor({
             aiAgentRunLimitPerHour: form.aiAgentRunLimitPerHour,
             aiAgentFollowupLimitPerHour: form.aiAgentFollowupLimitPerHour,
             builderAgentLimitPerHour: form.builderAgentLimitPerHour,
+            uploadRateLimitPerHour: form.uploadRateLimitPerHour,
+            maxDailyUploads: form.maxDailyUploads,
             priceMonthly:
               plan.pricing?.some((price) => price.billingCycle === "monthly") || form.priceMonthly > 0
                 ? form.priceMonthly
@@ -966,6 +976,41 @@ export default function PlanEditor({
                   setForm((current) => ({
                     ...current,
                     builderAgentLimitPerHour: value,
+                  }))
+                }
+              />
+            </div>
+          </Section>
+
+          <Section
+            icon={<Timer size={18} />}
+            eyebrow="Guardrails"
+            title="Upload limits"
+            description="Maximum media/image uploads per hour and per rolling 24 hours, per user, on this plan."
+          >
+            <div className="grid gap-4 sm:grid-cols-2">
+              <NumberField
+                label="Uploads / hour"
+                icon={<Timer size={15} />}
+                value={form.uploadRateLimitPerHour}
+                minimum={0}
+                onChange={(value) =>
+                  setForm((current) => ({
+                    ...current,
+                    uploadRateLimitPerHour: value,
+                  }))
+                }
+              />
+
+              <NumberField
+                label="Uploads / day"
+                icon={<Timer size={15} />}
+                value={form.maxDailyUploads}
+                minimum={0}
+                onChange={(value) =>
+                  setForm((current) => ({
+                    ...current,
+                    maxDailyUploads: value,
                   }))
                 }
               />

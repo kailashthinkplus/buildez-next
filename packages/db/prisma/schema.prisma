@@ -139,6 +139,8 @@ enum ShopDiscountType {
 enum ShopPaymentProvider {
   RAZORPAY
   PAYPAL
+  STRIPE
+  DODO
   COD
 }
 
@@ -643,9 +645,10 @@ model Site {
   designTokens Json? // ✅ Stores brand colors extracted from logo
   settings     Json? // Site-wide general, SEO, analytics, privacy and social settings
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+  archivedAt DateTime?
 
   tenant           Tenant                @relation(fields: [tenantId], references: [id])
   subscriptions    SiteSubscription[]
@@ -697,12 +700,13 @@ model SiteIntegration {
 // =======================================
 
 model V12Project {
-  id              String   @id @default(cuid())
-  siteId          String   @unique
-  tenantId        String
-  currentRevision Int      @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                String   @id @default(cuid())
+  siteId            String   @unique
+  tenantId          String
+  currentRevision   Int      @default(0)
+  publishedRevision Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   site        Site                   @relation(fields: [siteId], references: [id], onDelete: Cascade)
   tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -1044,6 +1048,23 @@ model SupportRequest {
   @@index([status])
 }
 
+model BlogPost {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  title         String
+  excerpt       String?
+  content       String    @db.Text
+  coverImageUrl String?
+  authorName    String?
+  status        String    @default("DRAFT")
+  tags          String[]  @default([])
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status, publishedAt])
+}
+
 model CrmLead {
   id              String    @id @default(cuid())
   siteId          String
@@ -1340,6 +1361,9 @@ model Plan {
   aiAgentFollowupLimitPerHour  Int @default(40)
   builderAgentLimitPerHour     Int @default(30)
 
+  uploadRateLimitPerHour Int @default(30)
+  maxDailyUploads        Int @default(50)
+
   isPublic Boolean @default(true)
 
   createdAt DateTime @default(now())
@@ -1512,6 +1536,7 @@ model Subscription {
   dodoSubscriptionId    String?   @unique
   dodoCheckoutSessionId String?
   currentPeriodEnd      DateTime?
+  cancelAtPeriodEnd     Boolean   @default(false)
 
   amountPaid Int?
   currency   String?

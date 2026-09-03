@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Plan" ADD COLUMN     "uploadRateLimitPerHour" INTEGER NOT NULL DEFAULT 30,
+ADD COLUMN     "maxDailyUploads" INTEGER NOT NULL DEFAULT 50;

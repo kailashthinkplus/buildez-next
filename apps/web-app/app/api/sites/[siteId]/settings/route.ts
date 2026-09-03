@@ -94,6 +94,22 @@ export async function PATCH(
   }
 
   if (
+    Object.keys(body).every((key) => key === "archived") &&
+    typeof body.archived === "boolean"
+  ) {
+    const updated = await prisma.site.update({
+      where: { id: site.id },
+      data: {
+        archivedAt: body.archived ? new Date() : null,
+        // Archiving a live site takes it offline; unarchiving never
+        // auto-publishes it back — the owner decides that separately.
+        status: body.archived && site.status === "PUBLISHED" ? "DRAFT" : site.status,
+      },
+    });
+    return NextResponse.json({ site: updated });
+  }
+
+  if (
     Object.keys(body).every((key) => key === "status") &&
     (body.status === "DRAFT" || body.status === "PUBLISHED")
   ) {

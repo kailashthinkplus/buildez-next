@@ -5,6 +5,8 @@ import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 import { uploadToR2 } from "@/lib/storage/uploadToR2";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createHash } from "node:crypto";
+import { ApiError } from "@/lib/api/errors";
+import { enforceUploadLimit } from "@/lib/uploads/uploadLimit";
 
 const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
 const ALLOWED_TYPES = new Set([
@@ -58,6 +60,14 @@ export async function POST(
     select: { id: true, settings: true },
   });
   if (!site) return NextResponse.json({ error: "Website not found" }, { status: 404 });
+
+  try {
+    await enforceUploadLimit(tenant.id);
+  } catch (error) {
+    const status = error instanceof ApiError ? error.status : 429;
+    const message = error instanceof Error ? error.message : "Too many uploads. Try again later.";
+    return NextResponse.json({ error: message }, { status });
+  }
 
   const form = await req.formData();
   const file = form.get("file");

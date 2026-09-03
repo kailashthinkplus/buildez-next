@@ -2,11 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Check, ChevronDown, ChevronLeft, ChevronRight, FileText, Loader2, Paperclip, RotateCcw, Send, Sparkles, Square, Star, Wand2, X } from "lucide-react";
+import Link from "next/link";
+import { Check, ChevronDown, ChevronLeft, ChevronRight, FileText, ImagePlus, Loader2, Paperclip, RotateCcw, Send, Sparkles, Square, Star, Upload, Wand2, X } from "lucide-react";
 
 import {
   AI_ATTACHMENT_ACCEPT,
+  AI_ATTACHMENT_MAX_BYTES,
   getAgentAttachmentError,
+  getAgentAttachmentKind,
 } from "@/modules/ai-v12/attachments";
 import { PromptGeneratorModal } from "./PromptGeneratorModal";
 import {
@@ -42,6 +45,7 @@ export type V12AgentEvent = Readonly<{
   role?: "user" | "assistant";
   status?: "needs_input" | "completed" | "failed";
   actions?: readonly V12AgentAction[];
+  showUpgrade?: boolean;
 }>;
 
 const COMPOSER_MAX_HEIGHT = 200;
@@ -49,7 +53,7 @@ const COMPOSER_MAX_HEIGHT = 200;
 function formatMessageTimestamp(timestamp: string) {
   const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", hour12: true });
 }
 
 export default function V12AgentPanel({
@@ -64,6 +68,7 @@ export default function V12AgentPanel({
   onClose,
   initialPrompt = "",
   initialContext = "Website",
+  initialAttachments,
   selectedElementLabel,
   autoFocus = false,
   autoSubmit = false,
@@ -75,6 +80,7 @@ export default function V12AgentPanel({
   running: boolean;
   initialPrompt?: string;
   initialContext?: V12AgentContext;
+  initialAttachments?: readonly File[];
   selectedElementLabel?: string;
   autoFocus?: boolean;
   autoSubmit?: boolean;
@@ -108,6 +114,16 @@ export default function V12AgentPanel({
   const [showPromptGenerator, setShowPromptGenerator] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
+  const [showLogoStage, setShowLogoStage] = useState(false);
+  const [logoDropzoneOpen, setLogoDropzoneOpen] = useState(false);
+  const [logoChoice, setLogoChoice] = useState<"upload" | "generate" | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoError, setLogoError] = useState("");
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (appliedInitialPromptRef.current) return;
 
@@ -120,6 +136,15 @@ export default function V12AgentPanel({
 
     setContext(initialContext);
 
+    if (initialAttachments?.length) {
+      const attachmentIssue = getAgentAttachmentError(initialAttachments);
+      if (attachmentIssue) {
+        setAttachmentError(attachmentIssue);
+      } else {
+        setAttachments([...initialAttachments]);
+      }
+    }
+
     if (autoFocus || value) {
       window.requestAnimationFrame(() => {
         composerRef.current?.focus();
@@ -130,6 +155,7 @@ export default function V12AgentPanel({
         }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoFocus, initialContext, initialPrompt]);
 
   useEffect(() => {
@@ -147,6 +173,13 @@ export default function V12AgentPanel({
   }, [running]);
 
   const elapsedLabel = `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`;
+
+  useEffect(() => {
+    if (!logoFile) { setLogoPreviewUrl(""); return; }
+    const url = URL.createObjectURL(logoFile);
+    setLogoPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [logoFile]);
 
   useEffect(() => {
     /*
@@ -175,6 +208,7 @@ export default function V12AgentPanel({
     if (
       running ||
       showCreativeDirection ||
+      showLogoStage ||
       (!value && submittedAttachments.length === 0) ||
       !connected
     ) {
@@ -193,7 +227,12 @@ export default function V12AgentPanel({
       setCreativeDirection(DEFAULT_CREATIVE_DIRECTION);
       setDirectionReady(false);
       setDirectionVersion(version => version + 1);
-      setShowCreativeDirection(true);
+      setLogoChoice(null);
+      setLogoFile(null);
+      setLogoUrl("");
+      setLogoError("");
+      setLogoDropzoneOpen(false);
+      setShowLogoStage(true);
       return;
     }
 
@@ -212,6 +251,7 @@ export default function V12AgentPanel({
     if (
       running ||
       showCreativeDirection ||
+      showLogoStage ||
       (!value && attachments.length === 0) ||
       !connected
     ) {
@@ -246,7 +286,14 @@ export default function V12AgentPanel({
 
     completingCreativeDirectionRef.current = true;
 
-    const value = pendingFullPagePrompt;
+    const logoInstruction =
+      logoChoice === "upload" && logoUrl
+        ? `\n\nA brand logo has already been uploaded and saved for this site at ${logoUrl}. Use this exact image as the website's logo in the header (and footer if appropriate) — reference the project's branding logo asset rather than generating or fabricating a different logo.`
+        : logoChoice === "generate"
+          ? `\n\nThis brand does not have a logo yet. Design and generate an original, simple, brand-appropriate logotype or mark as part of this website and feature it in the header.`
+          : "";
+
+    const value = `${pendingFullPagePrompt}${logoInstruction}`;
     const submittedAttachments = pendingFullPageAttachments;
     const submittedMode = pendingFullPageMode;
     const submittedContext = pendingFullPageContext;
@@ -267,6 +314,64 @@ export default function V12AgentPanel({
     } finally {
       completingCreativeDirectionRef.current = false;
     }
+  }
+
+  function openLogoUpload() {
+    setLogoError("");
+    setLogoDropzoneOpen(true);
+  }
+
+  function chooseGenerateLogo() {
+    if (logoUploading) return;
+    setLogoChoice("generate");
+    setShowLogoStage(false);
+    setShowCreativeDirection(true);
+  }
+
+  async function handleLogoFileSelected(file: File) {
+    const kind = getAgentAttachmentKind(file);
+    if (kind !== "image") {
+      setLogoError("Upload a PNG, JPG, or WEBP image.");
+      return;
+    }
+    if (file.size > AI_ATTACHMENT_MAX_BYTES) {
+      setLogoError("Logo must be smaller than 50 MB.");
+      return;
+    }
+
+    setLogoError("");
+    setLogoFile(file);
+    setLogoUploading(true);
+
+    try {
+      const form = new FormData();
+      form.set("file", file);
+      const response = await fetch(
+        `/api/sites/${encodeURIComponent(siteId)}/branding/logo?overwrite=true`,
+        { method: "POST", body: form },
+      );
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload?.error || "Logo upload failed.");
+      setLogoUrl(payload.logoUrl || "");
+    } catch (reason) {
+      setLogoError(reason instanceof Error ? reason.message : "Logo upload failed.");
+      setLogoFile(null);
+    } finally {
+      setLogoUploading(false);
+    }
+  }
+
+  function removeLogo() {
+    setLogoFile(null);
+    setLogoUrl("");
+    setLogoError("");
+  }
+
+  function continueAfterLogoUpload() {
+    if (!logoUrl || logoUploading) return;
+    setLogoChoice("upload");
+    setShowLogoStage(false);
+    setShowCreativeDirection(true);
   }
 
   function selectAttachments(selected: File[]) {
@@ -298,6 +403,13 @@ export default function V12AgentPanel({
     setPendingFullPageMode("auto");
     setPendingFullPageContext("Page");
     setShowCreativeDirection(false);
+    setShowLogoStage(false);
+    setLogoDropzoneOpen(false);
+    setLogoChoice(null);
+    setLogoFile(null);
+    setLogoUrl("");
+    setLogoError("");
+    setLogoUploading(false);
     setShowProTips(true);
     try {
       await onReset();
@@ -551,6 +663,7 @@ export default function V12AgentPanel({
     groupedProgress.length,
     currentProgressTitle,
     showCreativeDirection,
+    showLogoStage,
   ]);
 
   return <aside className="flex h-full w-[360px] shrink-0 flex-col bg-[#15171c]">
@@ -577,7 +690,7 @@ export default function V12AgentPanel({
           onClose={() => setShowProTips(false)}
         />
       )}
-      {!events.length && !pendingFullPagePrompt && !showCreativeDirection && (
+      {!events.length && !pendingFullPagePrompt && !showCreativeDirection && !showLogoStage && (
         <div className="rounded-xl border border-dashed border-white/10 p-4 text-sm leading-6 text-white/45">
           Describe the website, page, or focused change you want. Agent activity will appear here only after a real operation occurs.
         </div>
@@ -591,6 +704,109 @@ export default function V12AgentPanel({
             {pendingFullPageAttachments.length > 0 && (
               <div className="mt-1 text-[11px] text-blue-100/70">
                 {pendingFullPageAttachments.map(file => file.name).join(", ")}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {showLogoStage && (
+        <div className="mr-2 flex justify-start">
+          <div className="w-full rounded-2xl rounded-bl-md border border-white/10 bg-[#242833] p-3.5 text-white/90 shadow-md shadow-black/20">
+            <div className="mb-2.5 flex items-center gap-2 text-sm font-medium">
+              <ImagePlus size={15} className="text-blue-300" />
+              Brand logo
+            </div>
+            <p className="mb-3 text-[11px] leading-4 text-white/45">
+              Add your logo so BuildEZ can use it in the header, or let AI design one for you.
+            </p>
+
+            {!logoDropzoneOpen ? (
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  onClick={openLogoUpload}
+                  className="rounded-full border border-blue-400/30 bg-blue-500/10 px-3 py-1.5 text-[11px] font-medium text-blue-100 transition hover:border-blue-300/50 hover:bg-blue-500/20"
+                >
+                  Upload logo
+                </button>
+                <button
+                  type="button"
+                  onClick={chooseGenerateLogo}
+                  className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-white/70 transition hover:border-white/25 hover:bg-white/10 hover:text-white"
+                >
+                  Generate AI logo
+                </button>
+              </div>
+            ) : (
+              <div>
+                {!logoFile ? (
+                  <label className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-white/15 bg-white/[0.02] px-3 py-3 text-center transition hover:border-blue-400/40 hover:bg-white/[0.04]">
+                    <input
+                      ref={logoInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      className="hidden"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) void handleLogoFileSelected(file);
+                        event.target.value = "";
+                      }}
+                    />
+                    <Upload size={14} className="text-white/40" />
+                    <span className="text-[10px] text-white/40">PNG, JPG, or WEBP · click to browse</span>
+                  </label>
+                ) : (
+                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-2">
+                    <div className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-md bg-black/25">
+                      {logoUploading ? (
+                        <Loader2 size={14} className="animate-spin text-white/50" />
+                      ) : logoPreviewUrl ? (
+                        <img src={logoPreviewUrl} alt="Logo preview" className="h-full w-full object-contain" />
+                      ) : null}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[11px] font-medium text-white/80">{logoFile.name}</div>
+                      <div className="text-[10px] text-white/35">{logoUploading ? "Uploading…" : logoUrl ? "Uploaded" : ""}</div>
+                    </div>
+                    {!logoUploading && (
+                      <button
+                        type="button"
+                        onClick={removeLogo}
+                        aria-label="Remove logo"
+                        className="rounded-md p-1 text-white/40 hover:bg-white/10 hover:text-white"
+                      >
+                        <X size={13} />
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {logoError && <p role="alert" className="mt-1.5 text-[11px] text-red-300">{logoError}</p>}
+
+                <div className="mt-2.5 flex flex-wrap gap-1.5">
+                  <button
+                    type="button"
+                    onClick={continueAfterLogoUpload}
+                    disabled={!logoUrl || logoUploading}
+                    className="rounded-full border border-blue-400/30 bg-blue-500/10 px-3 py-1.5 text-[11px] font-medium text-blue-100 transition hover:border-blue-300/50 hover:bg-blue-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Continue
+                  </button>
+                  <button
+                    type="button"
+                    disabled={logoUploading}
+                    onClick={() => {
+                      setLogoDropzoneOpen(false);
+                      setLogoFile(null);
+                      setLogoUrl("");
+                      setLogoError("");
+                    }}
+                    className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-white/60 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Back
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -640,6 +856,17 @@ export default function V12AgentPanel({
             {event.detail && (
               <div className="mt-1 text-[11px] text-blue-100/70">
                 {event.detail}
+              </div>
+            )}
+
+            {event.role === "assistant" && event.showUpgrade && (
+              <div className="mt-3">
+                <Link
+                  href="/app/workspace/billing#ai-credits"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1.5 text-[11px] font-medium text-amber-200 transition hover:border-amber-300/50 hover:bg-amber-500/20"
+                >
+                  <Sparkles size={11} /> Upgrade plan
+                </Link>
               </div>
             )}
 
@@ -816,30 +1043,34 @@ export default function V12AgentPanel({
 
     <div className="border-t border-white/10 p-3">
       {attachments.length > 0 && <div className="mb-2 grid grid-cols-2 gap-2">{attachments.map((file, index) => <AttachmentPreview key={`${file.name}-${file.lastModified}`} file={file} onRemove={() => { setAttachments(files => files.filter((_, itemIndex) => itemIndex !== index)); setAttachmentError(""); }}/>)}</div>}
-      <textarea
-        ref={composerRef}
-        value={prompt}
-        disabled={showCreativeDirection}
-        onChange={(event) => setPrompt(event.target.value)}
-        onKeyDown={(event) => {
-          if (
-            event.key === "Enter" &&
-            !event.shiftKey &&
-            !event.nativeEvent.isComposing
-          ) {
-            event.preventDefault();
-            void submit();
+      <div className="ai-glow-border rounded-xl">
+        <textarea
+          ref={composerRef}
+          value={prompt}
+          disabled={showCreativeDirection || showLogoStage}
+          onChange={(event) => setPrompt(event.target.value)}
+          onKeyDown={(event) => {
+            if (
+              event.key === "Enter" &&
+              !event.shiftKey &&
+              !event.nativeEvent.isComposing
+            ) {
+              event.preventDefault();
+              void submit();
+            }
+          }}
+          placeholder={
+            showLogoStage
+              ? "Add a logo above to continue…"
+              : showCreativeDirection
+                ? "Complete the creative direction above…"
+                : "What would you like to build or change?"
           }
-        }}
-        placeholder={
-          showCreativeDirection
-            ? "Complete the creative direction above…"
-            : "What would you like to build or change?"
-        }
-        aria-describedby="ai-composer-hint"
-        rows={1}
-        className="max-h-[200px] min-h-[48px] w-full resize-none overflow-y-auto rounded-xl border border-white/10 bg-black/20 p-3 text-sm outline-none transition-[height] duration-150 ease-out focus:border-blue-400 disabled:cursor-not-allowed disabled:opacity-40"
-      />
+          aria-describedby="ai-composer-hint"
+          rows={1}
+          className="block max-h-[200px] min-h-[48px] w-full resize-none overflow-y-auto rounded-xl border border-white/10 bg-black/20 p-3 text-sm outline-none transition-[height] duration-150 ease-out focus:border-blue-400 disabled:cursor-not-allowed disabled:opacity-40"
+        />
+      </div>
       <p id="ai-composer-hint" className="mt-1 px-1 text-[10px] text-white/30">Enter to send · images/files 50 MB · ZIP projects up to 1 GB</p>
       {attachmentError && <p role="alert" className="mt-1 px-1 text-[11px] text-red-300">{attachmentError}</p>}
       <div className="mt-2 flex items-center gap-2">
@@ -870,13 +1101,16 @@ export default function V12AgentPanel({
             disabled={
               !connected ||
               showCreativeDirection ||
+              showLogoStage ||
               (!prompt.trim() && attachments.length === 0)
             }
             aria-label="Send message"
             title={
-              showCreativeDirection
-                ? "Complete the creative direction above"
-                : "Send message"
+              showLogoStage
+                ? "Add a logo above to continue"
+                : showCreativeDirection
+                  ? "Complete the creative direction above"
+                  : "Send message"
             }
             className="rounded-lg bg-blue-600 px-3 py-2 text-white hover:bg-blue-500 disabled:opacity-30"
           >

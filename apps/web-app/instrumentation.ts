@@ -8,6 +8,16 @@
  *
  * `register()` is Next.js's documented once-per-server-start hook (stable since
  * Next 13.4, no experimental flag needed here on Next 15).
+ *
+ * This path calls runDuePublishScans() but deliberately does NOT trigger the
+ * eager V12 republish-bundle build the /api/cron/publish-scheduled route
+ * does after the same call — this file is compiled for an edge-like target
+ * in addition to nodejs, and the build helper's dependency on node:fs/
+ * node:child_process can't be bundled for that target (breaks the dev
+ * server entirely if pulled in here, even via a nested dynamic import). A
+ * scheduled publish through this path still lands correctly in the DB; the
+ * runtime's own lazy build-on-request path just serves as the (slightly
+ * later) trigger for the bundle rebuild instead of it happening eagerly.
  */
 export async function register() {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;

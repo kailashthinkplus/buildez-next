@@ -72,6 +72,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/favicon") ||
     pathname.startsWith("/robots.txt") ||
     pathname.startsWith("/sitemap.xml") ||
+    pathname.startsWith("/llms.txt") ||
     pathname.startsWith("/.well-known")
   ) {
     console.log("⛔ ABSOLUTE EXCLUDE → ALLOW");

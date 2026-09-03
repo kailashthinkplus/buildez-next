@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runDuePublishScans } from "@/lib/publishing/publishPage";
+import { buildAfterPublish } from "@/lib/publishing/buildAfterPublish";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
   }
 
   const result = await runDuePublishScans();
+  await Promise.all(result.v12Sites.map(({ siteId, tenantId }) => buildAfterPublish(siteId, tenantId)));
   return NextResponse.json(result);
 }
 

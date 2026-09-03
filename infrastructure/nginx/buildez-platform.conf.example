@@ -1,3 +1,16 @@
+# NOT YET DEPLOYED — a recommended follow-up, not applied by this change.
+# The app now has a single-process in-memory cache with stale-on-error
+# fallback (lib/runtime/routeCache.ts) that keeps published sites serving
+# through a brief Postgres outage. It cannot help if the Node process
+# itself is down, since nginx then has no upstream to ask at all. This
+# proxy_cache directive is the infra-level complement: it lets nginx keep
+# serving the last successful response for anonymous (no session cookie)
+# GET requests even when buildez_app is completely unreachable. Requires
+# this proxy_cache_path line to be moved into the main nginx.conf http{}
+# block (it cannot live inside server{}), then apply the `location /`
+# changes below and reload nginx.
+# proxy_cache_path /var/cache/nginx/buildez levels=1:2 keys_zone=buildez_pages:10m max_size=1g inactive=7d use_temp_path=off;
+
 upstream buildez_app {
     server 127.0.0.1:3000;
     keepalive 32;
@@ -28,5 +41,18 @@ server {
         proxy_set_header X-Forwarded-Proto https;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
+
+        # See the proxy_cache_path note above — uncomment once that line has
+        # been moved into http{} and this file reloaded. /app, /api, and any
+        # request carrying a session cookie (the dashboard) must never be
+        # cached; only anonymous GETs to published tenant sites should be.
+        # proxy_cache buildez_pages;
+        # proxy_cache_methods GET HEAD;
+        # proxy_cache_key "$scheme$host$request_uri";
+        # proxy_cache_valid 200 30s;
+        # proxy_no_cache $cookie_session $cookie___Secure_session;
+        # proxy_cache_bypass $cookie_session $cookie___Secure_session;
+        # proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+        # add_header X-Cache-Status $upstream_cache_status always;
     }
 }

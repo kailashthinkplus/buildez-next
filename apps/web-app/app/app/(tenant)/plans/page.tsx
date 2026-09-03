@@ -5,6 +5,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, CreditCard, Loader2 } from "lucide-react";
 
 import EnterpriseContactModal from "@/components/billing/EnterpriseContactModal";
+import CurrencySwitcher from "@/components/billing/CurrencySwitcher";
+import { useDisplayCurrency } from "@/lib/useDisplayCurrency";
 
 type BillingCycle = "monthly" | "yearly";
 
@@ -31,20 +33,8 @@ type CurrentSubscription = {
   currentPeriodEnd?: string;
 };
 
-function formatMoney(amount: number, currency: string) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
-
-function withGst(amount: number) {
-  return Math.round(amount * 118) / 100;
-}
-
 export default function PlansPage() {
+  const { currency: displayCurrency, setCurrency, availableCurrencies, priceFor } = useDisplayCurrency();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [billing, setBilling] = useState<BillingCycle>("monthly");
   const [loading, setLoading] = useState(true);
@@ -138,7 +128,7 @@ export default function PlansPage() {
       const response = await fetch("/api/billing/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planCode: plan.code, billingCycle: billing, returnPath: "/app/plans" }),
+        body: JSON.stringify({ planCode: plan.code, billingCycle: billing, returnPath: "/app/plans", currency: displayCurrency }),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok || !payload.checkoutUrl) throw new Error(payload.error || "Checkout could not be started.");
@@ -174,17 +164,20 @@ export default function PlansPage() {
           <button onClick={() => moveCarousel(-1)} aria-label="Previous plans" className="dashboard-card grid h-10 w-10 place-items-center rounded-xl"><ChevronLeft size={18} /></button>
           <button onClick={() => moveCarousel(1)} aria-label="Next plans" className="dashboard-card grid h-10 w-10 place-items-center rounded-xl"><ChevronRight size={18} /></button>
         </div>
-        <div className="dashboard-card inline-flex rounded-xl p-1">
-          {(["monthly", "yearly"] as BillingCycle[]).map((cycle) => (
-            <button
-              key={cycle}
-              disabled={cycle === "yearly" && !hasYearly}
-              onClick={() => setBilling(cycle)}
-              className={`rounded-lg px-5 py-2 text-sm font-semibold capitalize transition disabled:opacity-35 ${billing === cycle ? "bg-blue-600 text-white" : "dashboard-muted"}`}
-            >
-              {cycle}
-            </button>
-          ))}
+        <div className="flex items-center gap-3">
+          <CurrencySwitcher currency={displayCurrency} currencies={availableCurrencies} onChange={setCurrency} />
+          <div className="dashboard-card inline-flex rounded-xl p-1">
+            {(["monthly", "yearly"] as BillingCycle[]).map((cycle) => (
+              <button
+                key={cycle}
+                disabled={cycle === "yearly" && !hasYearly}
+                onClick={() => setBilling(cycle)}
+                className={`rounded-lg px-5 py-2 text-sm font-semibold capitalize transition disabled:opacity-35 ${billing === cycle ? "bg-blue-600 text-white" : "dashboard-muted"}`}
+              >
+                {cycle}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -213,14 +206,9 @@ export default function PlansPage() {
                   <h2 className="mt-2 text-2xl font-semibold">{plan.name}</h2>
                   <p className="mt-2 min-h-10 text-sm dashboard-muted">{plan.description}</p>
                   <div className="mt-5 text-3xl font-semibold">
-                    {plan.isCustom ? "Custom" : amount === null ? "Not offered" : formatMoney(withGst(amount), plan.currency)}
+                    {plan.isCustom ? "Custom" : amount === null ? "Not offered" : priceFor(amount, plan.currency)}
                     {!plan.isCustom && amount !== null && <span className="ml-1 text-sm font-normal dashboard-muted">/{billing === "monthly" ? "month" : "year"}</span>}
                   </div>
-                  {!plan.isCustom && amount !== null && amount > 0 ? (
-                    <p className="mt-1 text-xs dashboard-muted">
-                      {formatMoney(amount, plan.currency)} + 18% GST
-                    </p>
-                  ) : null}
                   <ul className="mt-6 space-y-2 text-sm dashboard-muted">
                     {(plan.isCustom
                       ? ["Custom website limits", "Custom page limits", "Flexible AI credits", "Dedicated support", ...plan.features]

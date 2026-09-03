@@ -8,7 +8,6 @@ import {
   BadgeIndianRupee,
   BarChart3,
   Box,
-  CheckCircle2,
   CreditCard,
   ExternalLink,
   Globe2,
@@ -637,25 +636,57 @@ function Discounts({ site }: { site: Site }) {
     </section>
   );
 }
+const PAYMENT_WEBHOOK_ORIGIN =
+  process.env.NEXT_PUBLIC_APP_URL || "https://buildez.app";
+
 function Payments({ site }: { site: Site }) {
   return (
     <SettingsLoader site={site}>
-      {({ payments, load }: any) => (
+      {({ shop, payments, load }: any) => (
         <div className="grid gap-4 lg:grid-cols-2">
           <PaymentCard
             provider="RAZORPAY"
             title="Razorpay"
             hint="UPI, cards, wallets, and netbanking"
+            keyLabel="Key ID"
+            secretLabel="Key Secret"
             existing={payments.find((x: any) => x.provider === "RAZORPAY")}
             site={site}
+            shopId={shop.id}
             done={load}
           />
           <PaymentCard
             provider="PAYPAL"
             title="PayPal"
             hint="PayPal balance and international cards"
+            keyLabel="Client ID"
+            secretLabel="Client Secret"
             existing={payments.find((x: any) => x.provider === "PAYPAL")}
             site={site}
+            shopId={shop.id}
+            done={load}
+          />
+          <PaymentCard
+            provider="STRIPE"
+            title="Stripe"
+            hint="Cards and wallets via Stripe Checkout"
+            secretLabel="Secret key"
+            showWebhook
+            existing={payments.find((x: any) => x.provider === "STRIPE")}
+            site={site}
+            shopId={shop.id}
+            done={load}
+          />
+          <PaymentCard
+            provider="DODO"
+            title="Dodo Payments"
+            hint="Merchant-of-record checkout via Dodo"
+            secretLabel="API key"
+            showWebhook
+            showTaxCategory
+            existing={payments.find((x: any) => x.provider === "DODO")}
+            site={site}
+            shopId={shop.id}
             done={load}
           />
           <PaymentCard
@@ -664,6 +695,7 @@ function Payments({ site }: { site: Site }) {
             hint="Accept payment when the order arrives"
             existing={payments.find((x: any) => x.provider === "COD")}
             site={site}
+            shopId={shop.id}
             done={load}
           />
         </div>
@@ -675,37 +707,57 @@ function PaymentCard({
   provider,
   title,
   hint,
+  keyLabel,
+  secretLabel,
+  showWebhook,
+  showTaxCategory,
   existing,
   site,
+  shopId,
   done,
 }: {
   provider: string;
   title: string;
   hint: string;
+  keyLabel?: string;
+  secretLabel?: string;
+  showWebhook?: boolean;
+  showTaxCategory?: boolean;
   existing: any;
   site: Site;
+  shopId: string;
   done: () => void;
 }) {
+  const isCod = provider === "COD";
   const [open, setOpen] = useState(false),
+    [enabled, setEnabled] = useState(Boolean(existing?.enabled)),
     [publicKey, setPublic] = useState(existing?.publicKey || ""),
     [secret, setSecret] = useState(""),
-    [mode, setMode] = useState(existing?.mode || "test");
-  async function save() {
+    [webhookSecret, setWebhookSecret] = useState(""),
+    [mode, setMode] = useState(existing?.mode || "test"),
+    [taxCategory, setTaxCategory] = useState(
+      existing?.metadata?.taxCategory || "saas",
+    );
+  async function save(nextEnabled = enabled) {
     await fetch("/api/shopez/settings", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         siteId: site.id,
         provider,
-        enabled: true,
+        enabled: nextEnabled,
         publicKey,
         secret,
+        webhookSecret,
         mode,
+        metadata: showTaxCategory ? { taxCategory } : undefined,
       }),
     });
+    setEnabled(nextEnabled);
     setOpen(false);
     done();
   }
+  const webhookUrl = `${PAYMENT_WEBHOOK_ORIGIN}/api/public/shopez/webhooks/${provider.toLowerCase()}/${shopId}`;
   return (
     <article className="dashboard-card rounded-2xl p-5">
       <div className="flex items-start">
@@ -716,27 +768,69 @@ function PaymentCard({
           <h3 className="font-semibold">{title}</h3>
           <p className="text-xs dashboard-muted">{hint}</p>
         </div>
-        {existing?.enabled && (
-          <CheckCircle2 className="ml-auto text-emerald-500" />
-        )}
-      </div>
-      {open && provider !== "COD" && (
-        <div className="mt-4 space-y-3">
+        <label className="relative ml-auto flex shrink-0 cursor-pointer items-center">
           <input
-            value={publicKey}
-            onChange={(e) => setPublic(e.target.value)}
-            placeholder={provider === "PAYPAL" ? "Client ID" : "Key ID"}
-            className="dashboard-input w-full rounded-xl p-3"
+            type="checkbox"
+            className="peer sr-only"
+            checked={enabled}
+            onChange={(e) => {
+              if (e.target.checked && !isCod && !existing) {
+                setOpen(true);
+                return;
+              }
+              void save(e.target.checked);
+            }}
           />
+          <span className="relative h-6 w-11 shrink-0 rounded-full bg-slate-300 transition-colors duration-200 after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-sm after:transition-transform after:duration-200 peer-checked:bg-orange-500 peer-checked:after:translate-x-5 peer-focus-visible:ring-2 peer-focus-visible:ring-orange-400 peer-focus-visible:ring-offset-2 dark:bg-white/20" />
+        </label>
+      </div>
+      {open && !isCod && (
+        <div className="mt-4 space-y-3">
+          {keyLabel && (
+            <input
+              value={publicKey}
+              onChange={(e) => setPublic(e.target.value)}
+              placeholder={keyLabel}
+              className="dashboard-input w-full rounded-xl p-3"
+            />
+          )}
           <input
             type="password"
             value={secret}
             onChange={(e) => setSecret(e.target.value)}
             placeholder={
-              existing ? "New secret (leave empty to keep)" : "Secret"
+              existing
+                ? `New ${secretLabel?.toLowerCase() || "secret"} (leave empty to keep)`
+                : secretLabel || "Secret"
             }
             className="dashboard-input w-full rounded-xl p-3"
           />
+          {showWebhook && (
+            <input
+              type="password"
+              value={webhookSecret}
+              onChange={(e) => setWebhookSecret(e.target.value)}
+              placeholder={
+                existing?.hasWebhookSecret
+                  ? "New webhook signing secret (leave empty to keep)"
+                  : "Webhook signing secret"
+              }
+              className="dashboard-input w-full rounded-xl p-3"
+            />
+          )}
+          {showTaxCategory && (
+            <select
+              value={taxCategory}
+              onChange={(e) => setTaxCategory(e.target.value)}
+              className="dashboard-input w-full rounded-xl p-3"
+            >
+              <option value="saas">SaaS</option>
+              <option value="digital_products">Digital products</option>
+              <option value="e_book">E-book</option>
+              <option value="edtech">EdTech</option>
+              <option value="live_tutoring">Live tutoring</option>
+            </select>
+          )}
           <select
             value={mode}
             onChange={(e) => setMode(e.target.value)}
@@ -745,20 +839,32 @@ function PaymentCard({
             <option value="test">Test / Sandbox</option>
             <option value="live">Live</option>
           </select>
+          {showWebhook && (
+            <div className="rounded-xl border dashboard-border p-3 text-xs dashboard-muted">
+              <p className="font-semibold">Webhook URL</p>
+              <p className="mt-1 break-all font-mono">{webhookUrl}</p>
+              <p className="mt-1">
+                Paste this into your {title} dashboard so orders confirm even
+                if the shopper closes the tab before returning.
+              </p>
+            </div>
+          )}
         </div>
       )}
-      <button
-        onClick={() =>
-          open || provider === "COD" ? void save() : setOpen(true)
-        }
-        className="mt-5 w-full rounded-xl border dashboard-border px-3 py-2 text-sm font-semibold"
-      >
-        {open || provider === "COD"
-          ? "Save connection"
-          : existing?.enabled
-            ? "Update credentials"
-            : "Connect app"}
-      </button>
+      {!isCod && (
+        <button
+          onClick={() =>
+            open ? void save(existing ? enabled : true) : setOpen(true)
+          }
+          className="mt-5 w-full rounded-xl border dashboard-border px-3 py-2 text-sm font-semibold"
+        >
+          {open
+            ? "Save connection"
+            : existing?.enabled
+              ? "Update credentials"
+              : "Connect app"}
+        </button>
+      )}
     </article>
   );
 }

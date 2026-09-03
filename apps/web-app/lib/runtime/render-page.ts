@@ -3,6 +3,9 @@ import { generateRuntimeHTML } from "@/modules/builder/runtime/generateRuntimeHT
 import { generateRuntimeCSS } from "@/modules/builder/runtime/generateRuntimeCSS";
 import { resolveBlueprintTree } from "@/modules/builder/runtime/resolveBlueprintTree";
 import { isBuilderV2Blueprint } from "@/modules/builder-v2/runtime/isBuilderV2Blueprint";
+import { cachedOrStale } from "@/lib/runtime/routeCache";
+
+const ROUTE_CACHE_TTL_MS = 30_000;
 
 export async function renderPage({
   siteSlug,
@@ -21,7 +24,7 @@ export async function renderPage({
   /* ----------------------------------------------------------
      1️⃣ RESOLVE SITE CANDIDATES (BY SLUG ONLY)
   ---------------------------------------------------------- */
-  const siteCandidates = await prisma.site.findMany({
+  const siteCandidates = await cachedOrStale(`pagesite:${siteSlug}:${siteId ?? ""}`, ROUTE_CACHE_TTL_MS, () => prisma.site.findMany({
     where: {
       slug: siteSlug,
       ...(siteId ? { id: siteId } : {}),
@@ -33,7 +36,7 @@ export async function renderPage({
     },
     include: { layout: true },
     take: siteId ? 1 : 2,
-  });
+  }));
   // A slug is tenant-scoped in the database. Never guess when the shared
   // runtime host has more than one published site with that slug.
   const site = siteCandidates.length === 1 ? siteCandidates[0] : null;
@@ -51,7 +54,7 @@ export async function renderPage({
   /* ----------------------------------------------------------
      2️⃣ RESOLVE PAGE WITHIN THOSE SITES
   ---------------------------------------------------------- */
-  const page = await prisma.page.findFirst({
+  const page = await cachedOrStale(`page:${site.id}:${pageSlug}`, ROUTE_CACHE_TTL_MS, () => prisma.page.findFirst({
     where: {
       slug: pageSlug,
       status: "PUBLISHED",
@@ -68,7 +71,7 @@ export async function renderPage({
         },
       },
     },
-  });
+  }));
 
   console.log("📦 PAGE FOUND?", Boolean(page));
 

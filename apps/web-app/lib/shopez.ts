@@ -41,3 +41,25 @@ export function money(value: unknown) {
   const number = Number(value);
   return Number.isFinite(number) ? Math.max(0, Math.round(number * 100) / 100) : 0;
 }
+
+/** Marks a Shopez order as paid and decrements the inventory it reserved.
+ * Shared by the client-driven verify endpoint (Razorpay/PayPal/Stripe/Dodo
+ * return-flow confirmation) and provider webhooks (Stripe/Dodo), so both
+ * paths agree on exactly what "paid" means for an order. */
+export async function markShopOrderPaid(orderId: string, providerPaymentId?: string | null) {
+  const order = await prisma.shopOrder.findUnique({ where: { id: orderId }, include: { items: true } });
+  if (!order || order.paymentStatus === "PAID") return order;
+  await prisma.$transaction([
+    prisma.shopOrder.update({
+      where: { id: orderId },
+      data: { paymentStatus: "PAID", status: "CONFIRMED", providerPaymentId: providerPaymentId || undefined },
+    }),
+    ...order.items
+      .filter((item) => item.variantId)
+      .map((item) => prisma.shopProductVariant.update({
+        where: { id: item.variantId! },
+        data: { inventory: { decrement: item.quantity } },
+      })),
+  ]);
+  return order;
+}

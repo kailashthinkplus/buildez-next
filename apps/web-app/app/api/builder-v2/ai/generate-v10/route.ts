@@ -2,6 +2,8 @@ import { Prisma, prisma } from "@buildez/db";
 import { NextRequest, NextResponse } from "next/server";
 
 import { getUser } from "@/lib/auth/getUser";
+import { ApiError } from "@/lib/api/errors";
+import { assertPromptAllowed } from "@/lib/ai/moderation";
 import { runV10WebsiteGeneration } from "@/modules/builder-v2/ai-v10";
 import { publishV10Progress } from "@/modules/builder-v2/ai-v10/progress/v10GenerationProgress";
 import { persistAfterSemanticHydration } from "@/modules/builder-v2/ai-v10/persistence/semanticHydrationPersistenceGate";
@@ -35,6 +37,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    await assertPromptAllowed(prompt);
 
     const page = await prisma.page.findFirst({
       where: {
@@ -120,6 +124,8 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "AI v10 generation failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status = error instanceof ApiError ? error.status : 500;
+    const code = error instanceof ApiError ? error.code : undefined;
+    return NextResponse.json({ error: message, code }, { status });
   }
 }

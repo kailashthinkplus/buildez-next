@@ -11,6 +11,7 @@ import { Prisma, prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
 import { archiveDesignTokens } from "@/modules/pages/designTokenRegistration";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { invalidateRouteCache } from "@/lib/runtime/routeCache";
 
 function slugify(value: string) {
   return value
@@ -171,15 +172,18 @@ export async function PATCH(
     if (
       typeof body.seoTitle === "string" ||
       typeof body.seoDescription === "string" ||
-      typeof body.faviconUrl === "string"
+      typeof body.faviconUrl === "string" ||
+      typeof body.socialImageUrl === "string"
     ) {
-      updates.metadata = {
-        ...asRecord(existing.metadata),
-        seoTitle: typeof body.seoTitle === "string" ? body.seoTitle : undefined,
-        seoDescription:
-          typeof body.seoDescription === "string" ? body.seoDescription : undefined,
-        faviconUrl: typeof body.faviconUrl === "string" ? body.faviconUrl : undefined,
-      };
+      // Only overwrite keys actually present in the request — a metadata
+      // field omitted from `body` must keep its existing saved value, not
+      // be wiped to `undefined` (which JSON-serializes away entirely).
+      const nextMetadata = { ...asRecord(existing.metadata) };
+      if (typeof body.seoTitle === "string") nextMetadata.seoTitle = body.seoTitle;
+      if (typeof body.seoDescription === "string") nextMetadata.seoDescription = body.seoDescription;
+      if (typeof body.faviconUrl === "string") nextMetadata.faviconUrl = body.faviconUrl;
+      if (typeof body.socialImageUrl === "string") nextMetadata.socialImageUrl = body.socialImageUrl;
+      updates.metadata = nextMetadata as Prisma.InputJsonValue;
     }
 
     await prisma.page.update({
@@ -211,6 +215,7 @@ export async function PATCH(
       seoTitle: String(metadata.seoTitle ?? ""),
       seoDescription: String(metadata.seoDescription ?? ""),
       faviconUrl: String(metadata.faviconUrl ?? ""),
+      socialImageUrl: String(metadata.socialImageUrl ?? ""),
       blueprint:
         updated.blueprint?.data ?? {
           page: { props: {}, children: [] },
@@ -309,6 +314,7 @@ export async function DELETE(
     revalidatePath(`/preview/${result.siteSlug}/${result.pageSlug}`);
     revalidatePath(publishedSitePath(result.siteSlug, result.pageSlug));
     revalidatePath(publishedSitePath(result.siteSlug));
+    invalidateRouteCache(result.siteSlug);
 
     return {
       success: true,

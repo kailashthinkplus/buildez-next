@@ -204,6 +204,11 @@ export type ShopPaymentIntegration = $Result.DefaultSelection<Prisma.$ShopPaymen
  */
 export type SupportRequest = $Result.DefaultSelection<Prisma.$SupportRequestPayload>
 /**
+ * Model BlogPost
+ * 
+ */
+export type BlogPost = $Result.DefaultSelection<Prisma.$BlogPostPayload>
+/**
  * Model CrmLead
  * 
  */
@@ -580,6 +585,8 @@ export type ShopFulfillmentStatus = (typeof ShopFulfillmentStatus)[keyof typeof 
 export const ShopPaymentProvider: {
   RAZORPAY: 'RAZORPAY',
   PAYPAL: 'PAYPAL',
+  STRIPE: 'STRIPE',
+  DODO: 'DODO',
   COD: 'COD'
 };
 
@@ -1238,6 +1245,16 @@ export class PrismaClient<
     * ```
     */
   get supportRequest(): Prisma.SupportRequestDelegate<ExtArgs>;
+
+  /**
+   * `prisma.blogPost`: Exposes CRUD operations for the **BlogPost** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BlogPosts
+    * const blogPosts = await prisma.blogPost.findMany()
+    * ```
+    */
+  get blogPost(): Prisma.BlogPostDelegate<ExtArgs>;
 
   /**
    * `prisma.crmLead`: Exposes CRUD operations for the **CrmLead** model.
@@ -2117,6 +2134,7 @@ export namespace Prisma {
     ShopOrderItem: 'ShopOrderItem',
     ShopPaymentIntegration: 'ShopPaymentIntegration',
     SupportRequest: 'SupportRequest',
+    BlogPost: 'BlogPost',
     CrmLead: 'CrmLead',
     CrmCommunication: 'CrmCommunication',
     AgentRun: 'AgentRun',
@@ -2172,7 +2190,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "userOnboarding" | "session" | "otp" | "authLog" | "verificationToken" | "refreshToken" | "loginAttempt" | "tenant" | "tenantEvent" | "team" | "teamMember" | "teamInvite" | "theme" | "themeVersion" | "themeAsset" | "mediaAsset" | "site" | "siteIntegration" | "v12Project" | "v12ProjectFile" | "v12ProjectRevision" | "v12ProjectCheckpoint" | "v12GenerationJob" | "shop" | "shopProduct" | "shopProductImage" | "shopProductOption" | "shopProductVariant" | "shopCollection" | "shopCollectionProduct" | "shopCustomer" | "shopCustomerSession" | "shopDiscount" | "shopOrder" | "shopOrderItem" | "shopPaymentIntegration" | "supportRequest" | "crmLead" | "crmCommunication" | "agentRun" | "agentMessage" | "websiteFeedback" | "crmApiKey" | "cmsCollection" | "cmsEntry" | "siteLayout" | "domain" | "page" | "previewToken" | "aIBlueprintSnapshot" | "blueprint" | "blueprintHistory" | "plan" | "planPricing" | "planFeature" | "planUsage" | "aiCreditReservation" | "aiCreditLedgerEntry" | "subscription" | "billingTransaction" | "siteSubscription" | "complianceAudit" | "systemNotification" | "siteSnapshot" | "pageSnapshot" | "siteRender" | "renderedPage" | "siteDomain" | "sslCertificate" | "trafficEvent" | "trafficRollupHourly" | "aiEvent" | "rateLimit" | "workspace" | "workspaceMember" | "aIMessage" | "aIConversation"
+      modelProps: "user" | "userOnboarding" | "session" | "otp" | "authLog" | "verificationToken" | "refreshToken" | "loginAttempt" | "tenant" | "tenantEvent" | "team" | "teamMember" | "teamInvite" | "theme" | "themeVersion" | "themeAsset" | "mediaAsset" | "site" | "siteIntegration" | "v12Project" | "v12ProjectFile" | "v12ProjectRevision" | "v12ProjectCheckpoint" | "v12GenerationJob" | "shop" | "shopProduct" | "shopProductImage" | "shopProductOption" | "shopProductVariant" | "shopCollection" | "shopCollectionProduct" | "shopCustomer" | "shopCustomerSession" | "shopDiscount" | "shopOrder" | "shopOrderItem" | "shopPaymentIntegration" | "supportRequest" | "blogPost" | "crmLead" | "crmCommunication" | "agentRun" | "agentMessage" | "websiteFeedback" | "crmApiKey" | "cmsCollection" | "cmsEntry" | "siteLayout" | "domain" | "page" | "previewToken" | "aIBlueprintSnapshot" | "blueprint" | "blueprintHistory" | "plan" | "planPricing" | "planFeature" | "planUsage" | "aiCreditReservation" | "aiCreditLedgerEntry" | "subscription" | "billingTransaction" | "siteSubscription" | "complianceAudit" | "systemNotification" | "siteSnapshot" | "pageSnapshot" | "siteRender" | "renderedPage" | "siteDomain" | "sslCertificate" | "trafficEvent" | "trafficRollupHourly" | "aiEvent" | "rateLimit" | "workspace" | "workspaceMember" | "aIMessage" | "aIConversation"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4833,6 +4851,76 @@ export namespace Prisma {
           count: {
             args: Prisma.SupportRequestCountArgs<ExtArgs>
             result: $Utils.Optional<SupportRequestCountAggregateOutputType> | number
+          }
+        }
+      }
+      BlogPost: {
+        payload: Prisma.$BlogPostPayload<ExtArgs>
+        fields: Prisma.BlogPostFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BlogPostFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlogPostPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BlogPostFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlogPostPayload>
+          }
+          findFirst: {
+            args: Prisma.BlogPostFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlogPostPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BlogPostFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlogPostPayload>
+          }
+          findMany: {
+            args: Prisma.BlogPostFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlogPostPayload>[]
+          }
+          create: {
+            args: Prisma.BlogPostCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlogPostPayload>
+          }
+          createMany: {
+            args: Prisma.BlogPostCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BlogPostCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlogPostPayload>[]
+          }
+          delete: {
+            args: Prisma.BlogPostDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlogPostPayload>
+          }
+          update: {
+            args: Prisma.BlogPostUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlogPostPayload>
+          }
+          deleteMany: {
+            args: Prisma.BlogPostDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BlogPostUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BlogPostUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlogPostPayload>
+          }
+          aggregate: {
+            args: Prisma.BlogPostAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBlogPost>
+          }
+          groupBy: {
+            args: Prisma.BlogPostGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BlogPostGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BlogPostCountArgs<ExtArgs>
+            result: $Utils.Optional<BlogPostCountAggregateOutputType> | number
           }
         }
       }
@@ -27281,6 +27369,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     deletedAt: Date | null
+    archivedAt: Date | null
   }
 
   export type SiteMaxAggregateOutputType = {
@@ -27293,6 +27382,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     deletedAt: Date | null
+    archivedAt: Date | null
   }
 
   export type SiteCountAggregateOutputType = {
@@ -27307,6 +27397,7 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     deletedAt: number
+    archivedAt: number
     _all: number
   }
 
@@ -27321,6 +27412,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
+    archivedAt?: true
   }
 
   export type SiteMaxAggregateInputType = {
@@ -27333,6 +27425,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
+    archivedAt?: true
   }
 
   export type SiteCountAggregateInputType = {
@@ -27347,6 +27440,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
+    archivedAt?: true
     _all?: true
   }
 
@@ -27434,6 +27528,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
+    archivedAt: Date | null
     _count: SiteCountAggregateOutputType | null
     _min: SiteMinAggregateOutputType | null
     _max: SiteMaxAggregateOutputType | null
@@ -27465,6 +27560,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
+    archivedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     subscriptions?: boolean | Site$subscriptionsArgs<ExtArgs>
     pages?: boolean | Site$pagesArgs<ExtArgs>
@@ -27500,6 +27596,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
+    archivedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["site"]>
 
@@ -27515,6 +27612,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
+    archivedAt?: boolean
   }
 
   export type SiteInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -27580,6 +27678,7 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       deletedAt: Date | null
+      archivedAt: Date | null
     }, ExtArgs["result"]["site"]>
     composites: {}
   }
@@ -28004,6 +28103,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Site", 'DateTime'>
     readonly updatedAt: FieldRef<"Site", 'DateTime'>
     readonly deletedAt: FieldRef<"Site", 'DateTime'>
+    readonly archivedAt: FieldRef<"Site", 'DateTime'>
   }
     
 
@@ -29656,10 +29756,12 @@ export namespace Prisma {
 
   export type V12ProjectAvgAggregateOutputType = {
     currentRevision: number | null
+    publishedRevision: number | null
   }
 
   export type V12ProjectSumAggregateOutputType = {
     currentRevision: number | null
+    publishedRevision: number | null
   }
 
   export type V12ProjectMinAggregateOutputType = {
@@ -29667,6 +29769,7 @@ export namespace Prisma {
     siteId: string | null
     tenantId: string | null
     currentRevision: number | null
+    publishedRevision: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -29676,6 +29779,7 @@ export namespace Prisma {
     siteId: string | null
     tenantId: string | null
     currentRevision: number | null
+    publishedRevision: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -29685,6 +29789,7 @@ export namespace Prisma {
     siteId: number
     tenantId: number
     currentRevision: number
+    publishedRevision: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -29693,10 +29798,12 @@ export namespace Prisma {
 
   export type V12ProjectAvgAggregateInputType = {
     currentRevision?: true
+    publishedRevision?: true
   }
 
   export type V12ProjectSumAggregateInputType = {
     currentRevision?: true
+    publishedRevision?: true
   }
 
   export type V12ProjectMinAggregateInputType = {
@@ -29704,6 +29811,7 @@ export namespace Prisma {
     siteId?: true
     tenantId?: true
     currentRevision?: true
+    publishedRevision?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -29713,6 +29821,7 @@ export namespace Prisma {
     siteId?: true
     tenantId?: true
     currentRevision?: true
+    publishedRevision?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -29722,6 +29831,7 @@ export namespace Prisma {
     siteId?: true
     tenantId?: true
     currentRevision?: true
+    publishedRevision?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -29818,6 +29928,7 @@ export namespace Prisma {
     siteId: string
     tenantId: string
     currentRevision: number
+    publishedRevision: number | null
     createdAt: Date
     updatedAt: Date
     _count: V12ProjectCountAggregateOutputType | null
@@ -29846,6 +29957,7 @@ export namespace Prisma {
     siteId?: boolean
     tenantId?: boolean
     currentRevision?: boolean
+    publishedRevision?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     site?: boolean | SiteDefaultArgs<ExtArgs>
@@ -29861,6 +29973,7 @@ export namespace Prisma {
     siteId?: boolean
     tenantId?: boolean
     currentRevision?: boolean
+    publishedRevision?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     site?: boolean | SiteDefaultArgs<ExtArgs>
@@ -29872,6 +29985,7 @@ export namespace Prisma {
     siteId?: boolean
     tenantId?: boolean
     currentRevision?: boolean
+    publishedRevision?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -29903,6 +30017,7 @@ export namespace Prisma {
       siteId: string
       tenantId: string
       currentRevision: number
+      publishedRevision: number | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["v12Project"]>
@@ -30307,6 +30422,7 @@ export namespace Prisma {
     readonly siteId: FieldRef<"V12Project", 'String'>
     readonly tenantId: FieldRef<"V12Project", 'String'>
     readonly currentRevision: FieldRef<"V12Project", 'Int'>
+    readonly publishedRevision: FieldRef<"V12Project", 'Int'>
     readonly createdAt: FieldRef<"V12Project", 'DateTime'>
     readonly updatedAt: FieldRef<"V12Project", 'DateTime'>
   }
@@ -49354,6 +49470,964 @@ export namespace Prisma {
 
 
   /**
+   * Model BlogPost
+   */
+
+  export type AggregateBlogPost = {
+    _count: BlogPostCountAggregateOutputType | null
+    _min: BlogPostMinAggregateOutputType | null
+    _max: BlogPostMaxAggregateOutputType | null
+  }
+
+  export type BlogPostMinAggregateOutputType = {
+    id: string | null
+    slug: string | null
+    title: string | null
+    excerpt: string | null
+    content: string | null
+    coverImageUrl: string | null
+    authorName: string | null
+    status: string | null
+    publishedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BlogPostMaxAggregateOutputType = {
+    id: string | null
+    slug: string | null
+    title: string | null
+    excerpt: string | null
+    content: string | null
+    coverImageUrl: string | null
+    authorName: string | null
+    status: string | null
+    publishedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BlogPostCountAggregateOutputType = {
+    id: number
+    slug: number
+    title: number
+    excerpt: number
+    content: number
+    coverImageUrl: number
+    authorName: number
+    status: number
+    tags: number
+    publishedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BlogPostMinAggregateInputType = {
+    id?: true
+    slug?: true
+    title?: true
+    excerpt?: true
+    content?: true
+    coverImageUrl?: true
+    authorName?: true
+    status?: true
+    publishedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BlogPostMaxAggregateInputType = {
+    id?: true
+    slug?: true
+    title?: true
+    excerpt?: true
+    content?: true
+    coverImageUrl?: true
+    authorName?: true
+    status?: true
+    publishedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BlogPostCountAggregateInputType = {
+    id?: true
+    slug?: true
+    title?: true
+    excerpt?: true
+    content?: true
+    coverImageUrl?: true
+    authorName?: true
+    status?: true
+    tags?: true
+    publishedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BlogPostAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BlogPost to aggregate.
+     */
+    where?: BlogPostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BlogPosts to fetch.
+     */
+    orderBy?: BlogPostOrderByWithRelationInput | BlogPostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BlogPostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BlogPosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BlogPosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BlogPosts
+    **/
+    _count?: true | BlogPostCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BlogPostMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BlogPostMaxAggregateInputType
+  }
+
+  export type GetBlogPostAggregateType<T extends BlogPostAggregateArgs> = {
+        [P in keyof T & keyof AggregateBlogPost]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBlogPost[P]>
+      : GetScalarType<T[P], AggregateBlogPost[P]>
+  }
+
+
+
+
+  export type BlogPostGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BlogPostWhereInput
+    orderBy?: BlogPostOrderByWithAggregationInput | BlogPostOrderByWithAggregationInput[]
+    by: BlogPostScalarFieldEnum[] | BlogPostScalarFieldEnum
+    having?: BlogPostScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BlogPostCountAggregateInputType | true
+    _min?: BlogPostMinAggregateInputType
+    _max?: BlogPostMaxAggregateInputType
+  }
+
+  export type BlogPostGroupByOutputType = {
+    id: string
+    slug: string
+    title: string
+    excerpt: string | null
+    content: string
+    coverImageUrl: string | null
+    authorName: string | null
+    status: string
+    tags: string[]
+    publishedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: BlogPostCountAggregateOutputType | null
+    _min: BlogPostMinAggregateOutputType | null
+    _max: BlogPostMaxAggregateOutputType | null
+  }
+
+  type GetBlogPostGroupByPayload<T extends BlogPostGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BlogPostGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BlogPostGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BlogPostGroupByOutputType[P]>
+            : GetScalarType<T[P], BlogPostGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BlogPostSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slug?: boolean
+    title?: boolean
+    excerpt?: boolean
+    content?: boolean
+    coverImageUrl?: boolean
+    authorName?: boolean
+    status?: boolean
+    tags?: boolean
+    publishedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["blogPost"]>
+
+  export type BlogPostSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slug?: boolean
+    title?: boolean
+    excerpt?: boolean
+    content?: boolean
+    coverImageUrl?: boolean
+    authorName?: boolean
+    status?: boolean
+    tags?: boolean
+    publishedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["blogPost"]>
+
+  export type BlogPostSelectScalar = {
+    id?: boolean
+    slug?: boolean
+    title?: boolean
+    excerpt?: boolean
+    content?: boolean
+    coverImageUrl?: boolean
+    authorName?: boolean
+    status?: boolean
+    tags?: boolean
+    publishedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $BlogPostPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BlogPost"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      slug: string
+      title: string
+      excerpt: string | null
+      content: string
+      coverImageUrl: string | null
+      authorName: string | null
+      status: string
+      tags: string[]
+      publishedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["blogPost"]>
+    composites: {}
+  }
+
+  type BlogPostGetPayload<S extends boolean | null | undefined | BlogPostDefaultArgs> = $Result.GetResult<Prisma.$BlogPostPayload, S>
+
+  type BlogPostCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<BlogPostFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: BlogPostCountAggregateInputType | true
+    }
+
+  export interface BlogPostDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BlogPost'], meta: { name: 'BlogPost' } }
+    /**
+     * Find zero or one BlogPost that matches the filter.
+     * @param {BlogPostFindUniqueArgs} args - Arguments to find a BlogPost
+     * @example
+     * // Get one BlogPost
+     * const blogPost = await prisma.blogPost.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BlogPostFindUniqueArgs>(args: SelectSubset<T, BlogPostFindUniqueArgs<ExtArgs>>): Prisma__BlogPostClient<$Result.GetResult<Prisma.$BlogPostPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one BlogPost that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {BlogPostFindUniqueOrThrowArgs} args - Arguments to find a BlogPost
+     * @example
+     * // Get one BlogPost
+     * const blogPost = await prisma.blogPost.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BlogPostFindUniqueOrThrowArgs>(args: SelectSubset<T, BlogPostFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BlogPostClient<$Result.GetResult<Prisma.$BlogPostPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first BlogPost that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlogPostFindFirstArgs} args - Arguments to find a BlogPost
+     * @example
+     * // Get one BlogPost
+     * const blogPost = await prisma.blogPost.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BlogPostFindFirstArgs>(args?: SelectSubset<T, BlogPostFindFirstArgs<ExtArgs>>): Prisma__BlogPostClient<$Result.GetResult<Prisma.$BlogPostPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first BlogPost that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlogPostFindFirstOrThrowArgs} args - Arguments to find a BlogPost
+     * @example
+     * // Get one BlogPost
+     * const blogPost = await prisma.blogPost.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BlogPostFindFirstOrThrowArgs>(args?: SelectSubset<T, BlogPostFindFirstOrThrowArgs<ExtArgs>>): Prisma__BlogPostClient<$Result.GetResult<Prisma.$BlogPostPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more BlogPosts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlogPostFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BlogPosts
+     * const blogPosts = await prisma.blogPost.findMany()
+     * 
+     * // Get first 10 BlogPosts
+     * const blogPosts = await prisma.blogPost.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const blogPostWithIdOnly = await prisma.blogPost.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BlogPostFindManyArgs>(args?: SelectSubset<T, BlogPostFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlogPostPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a BlogPost.
+     * @param {BlogPostCreateArgs} args - Arguments to create a BlogPost.
+     * @example
+     * // Create one BlogPost
+     * const BlogPost = await prisma.blogPost.create({
+     *   data: {
+     *     // ... data to create a BlogPost
+     *   }
+     * })
+     * 
+     */
+    create<T extends BlogPostCreateArgs>(args: SelectSubset<T, BlogPostCreateArgs<ExtArgs>>): Prisma__BlogPostClient<$Result.GetResult<Prisma.$BlogPostPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many BlogPosts.
+     * @param {BlogPostCreateManyArgs} args - Arguments to create many BlogPosts.
+     * @example
+     * // Create many BlogPosts
+     * const blogPost = await prisma.blogPost.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BlogPostCreateManyArgs>(args?: SelectSubset<T, BlogPostCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BlogPosts and returns the data saved in the database.
+     * @param {BlogPostCreateManyAndReturnArgs} args - Arguments to create many BlogPosts.
+     * @example
+     * // Create many BlogPosts
+     * const blogPost = await prisma.blogPost.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BlogPosts and only return the `id`
+     * const blogPostWithIdOnly = await prisma.blogPost.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BlogPostCreateManyAndReturnArgs>(args?: SelectSubset<T, BlogPostCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlogPostPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a BlogPost.
+     * @param {BlogPostDeleteArgs} args - Arguments to delete one BlogPost.
+     * @example
+     * // Delete one BlogPost
+     * const BlogPost = await prisma.blogPost.delete({
+     *   where: {
+     *     // ... filter to delete one BlogPost
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BlogPostDeleteArgs>(args: SelectSubset<T, BlogPostDeleteArgs<ExtArgs>>): Prisma__BlogPostClient<$Result.GetResult<Prisma.$BlogPostPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one BlogPost.
+     * @param {BlogPostUpdateArgs} args - Arguments to update one BlogPost.
+     * @example
+     * // Update one BlogPost
+     * const blogPost = await prisma.blogPost.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BlogPostUpdateArgs>(args: SelectSubset<T, BlogPostUpdateArgs<ExtArgs>>): Prisma__BlogPostClient<$Result.GetResult<Prisma.$BlogPostPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more BlogPosts.
+     * @param {BlogPostDeleteManyArgs} args - Arguments to filter BlogPosts to delete.
+     * @example
+     * // Delete a few BlogPosts
+     * const { count } = await prisma.blogPost.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BlogPostDeleteManyArgs>(args?: SelectSubset<T, BlogPostDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BlogPosts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlogPostUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BlogPosts
+     * const blogPost = await prisma.blogPost.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BlogPostUpdateManyArgs>(args: SelectSubset<T, BlogPostUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one BlogPost.
+     * @param {BlogPostUpsertArgs} args - Arguments to update or create a BlogPost.
+     * @example
+     * // Update or create a BlogPost
+     * const blogPost = await prisma.blogPost.upsert({
+     *   create: {
+     *     // ... data to create a BlogPost
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BlogPost we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BlogPostUpsertArgs>(args: SelectSubset<T, BlogPostUpsertArgs<ExtArgs>>): Prisma__BlogPostClient<$Result.GetResult<Prisma.$BlogPostPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of BlogPosts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlogPostCountArgs} args - Arguments to filter BlogPosts to count.
+     * @example
+     * // Count the number of BlogPosts
+     * const count = await prisma.blogPost.count({
+     *   where: {
+     *     // ... the filter for the BlogPosts we want to count
+     *   }
+     * })
+    **/
+    count<T extends BlogPostCountArgs>(
+      args?: Subset<T, BlogPostCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BlogPostCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BlogPost.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlogPostAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BlogPostAggregateArgs>(args: Subset<T, BlogPostAggregateArgs>): Prisma.PrismaPromise<GetBlogPostAggregateType<T>>
+
+    /**
+     * Group by BlogPost.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlogPostGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BlogPostGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BlogPostGroupByArgs['orderBy'] }
+        : { orderBy?: BlogPostGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BlogPostGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBlogPostGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BlogPost model
+   */
+  readonly fields: BlogPostFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BlogPost.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BlogPostClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BlogPost model
+   */ 
+  interface BlogPostFieldRefs {
+    readonly id: FieldRef<"BlogPost", 'String'>
+    readonly slug: FieldRef<"BlogPost", 'String'>
+    readonly title: FieldRef<"BlogPost", 'String'>
+    readonly excerpt: FieldRef<"BlogPost", 'String'>
+    readonly content: FieldRef<"BlogPost", 'String'>
+    readonly coverImageUrl: FieldRef<"BlogPost", 'String'>
+    readonly authorName: FieldRef<"BlogPost", 'String'>
+    readonly status: FieldRef<"BlogPost", 'String'>
+    readonly tags: FieldRef<"BlogPost", 'String[]'>
+    readonly publishedAt: FieldRef<"BlogPost", 'DateTime'>
+    readonly createdAt: FieldRef<"BlogPost", 'DateTime'>
+    readonly updatedAt: FieldRef<"BlogPost", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BlogPost findUnique
+   */
+  export type BlogPostFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogPost
+     */
+    select?: BlogPostSelect<ExtArgs> | null
+    /**
+     * Filter, which BlogPost to fetch.
+     */
+    where: BlogPostWhereUniqueInput
+  }
+
+  /**
+   * BlogPost findUniqueOrThrow
+   */
+  export type BlogPostFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogPost
+     */
+    select?: BlogPostSelect<ExtArgs> | null
+    /**
+     * Filter, which BlogPost to fetch.
+     */
+    where: BlogPostWhereUniqueInput
+  }
+
+  /**
+   * BlogPost findFirst
+   */
+  export type BlogPostFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogPost
+     */
+    select?: BlogPostSelect<ExtArgs> | null
+    /**
+     * Filter, which BlogPost to fetch.
+     */
+    where?: BlogPostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BlogPosts to fetch.
+     */
+    orderBy?: BlogPostOrderByWithRelationInput | BlogPostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BlogPosts.
+     */
+    cursor?: BlogPostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BlogPosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BlogPosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BlogPosts.
+     */
+    distinct?: BlogPostScalarFieldEnum | BlogPostScalarFieldEnum[]
+  }
+
+  /**
+   * BlogPost findFirstOrThrow
+   */
+  export type BlogPostFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogPost
+     */
+    select?: BlogPostSelect<ExtArgs> | null
+    /**
+     * Filter, which BlogPost to fetch.
+     */
+    where?: BlogPostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BlogPosts to fetch.
+     */
+    orderBy?: BlogPostOrderByWithRelationInput | BlogPostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BlogPosts.
+     */
+    cursor?: BlogPostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BlogPosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BlogPosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BlogPosts.
+     */
+    distinct?: BlogPostScalarFieldEnum | BlogPostScalarFieldEnum[]
+  }
+
+  /**
+   * BlogPost findMany
+   */
+  export type BlogPostFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogPost
+     */
+    select?: BlogPostSelect<ExtArgs> | null
+    /**
+     * Filter, which BlogPosts to fetch.
+     */
+    where?: BlogPostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BlogPosts to fetch.
+     */
+    orderBy?: BlogPostOrderByWithRelationInput | BlogPostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BlogPosts.
+     */
+    cursor?: BlogPostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BlogPosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BlogPosts.
+     */
+    skip?: number
+    distinct?: BlogPostScalarFieldEnum | BlogPostScalarFieldEnum[]
+  }
+
+  /**
+   * BlogPost create
+   */
+  export type BlogPostCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogPost
+     */
+    select?: BlogPostSelect<ExtArgs> | null
+    /**
+     * The data needed to create a BlogPost.
+     */
+    data: XOR<BlogPostCreateInput, BlogPostUncheckedCreateInput>
+  }
+
+  /**
+   * BlogPost createMany
+   */
+  export type BlogPostCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BlogPosts.
+     */
+    data: BlogPostCreateManyInput | BlogPostCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BlogPost createManyAndReturn
+   */
+  export type BlogPostCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogPost
+     */
+    select?: BlogPostSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many BlogPosts.
+     */
+    data: BlogPostCreateManyInput | BlogPostCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BlogPost update
+   */
+  export type BlogPostUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogPost
+     */
+    select?: BlogPostSelect<ExtArgs> | null
+    /**
+     * The data needed to update a BlogPost.
+     */
+    data: XOR<BlogPostUpdateInput, BlogPostUncheckedUpdateInput>
+    /**
+     * Choose, which BlogPost to update.
+     */
+    where: BlogPostWhereUniqueInput
+  }
+
+  /**
+   * BlogPost updateMany
+   */
+  export type BlogPostUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BlogPosts.
+     */
+    data: XOR<BlogPostUpdateManyMutationInput, BlogPostUncheckedUpdateManyInput>
+    /**
+     * Filter which BlogPosts to update
+     */
+    where?: BlogPostWhereInput
+  }
+
+  /**
+   * BlogPost upsert
+   */
+  export type BlogPostUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogPost
+     */
+    select?: BlogPostSelect<ExtArgs> | null
+    /**
+     * The filter to search for the BlogPost to update in case it exists.
+     */
+    where: BlogPostWhereUniqueInput
+    /**
+     * In case the BlogPost found by the `where` argument doesn't exist, create a new BlogPost with this data.
+     */
+    create: XOR<BlogPostCreateInput, BlogPostUncheckedCreateInput>
+    /**
+     * In case the BlogPost was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BlogPostUpdateInput, BlogPostUncheckedUpdateInput>
+  }
+
+  /**
+   * BlogPost delete
+   */
+  export type BlogPostDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogPost
+     */
+    select?: BlogPostSelect<ExtArgs> | null
+    /**
+     * Filter which BlogPost to delete.
+     */
+    where: BlogPostWhereUniqueInput
+  }
+
+  /**
+   * BlogPost deleteMany
+   */
+  export type BlogPostDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BlogPosts to delete
+     */
+    where?: BlogPostWhereInput
+  }
+
+  /**
+   * BlogPost without action
+   */
+  export type BlogPostDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogPost
+     */
+    select?: BlogPostSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Model CrmLead
    */
 
@@ -64305,6 +65379,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour: number | null
     aiAgentFollowupLimitPerHour: number | null
     builderAgentLimitPerHour: number | null
+    uploadRateLimitPerHour: number | null
+    maxDailyUploads: number | null
   }
 
   export type PlanSumAggregateOutputType = {
@@ -64315,6 +65391,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour: number | null
     aiAgentFollowupLimitPerHour: number | null
     builderAgentLimitPerHour: number | null
+    uploadRateLimitPerHour: number | null
+    maxDailyUploads: number | null
   }
 
   export type PlanMinAggregateOutputType = {
@@ -64328,6 +65406,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour: number | null
     aiAgentFollowupLimitPerHour: number | null
     builderAgentLimitPerHour: number | null
+    uploadRateLimitPerHour: number | null
+    maxDailyUploads: number | null
     isPublic: boolean | null
     createdAt: Date | null
   }
@@ -64343,6 +65423,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour: number | null
     aiAgentFollowupLimitPerHour: number | null
     builderAgentLimitPerHour: number | null
+    uploadRateLimitPerHour: number | null
+    maxDailyUploads: number | null
     isPublic: boolean | null
     createdAt: Date | null
   }
@@ -64358,6 +65440,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour: number
     aiAgentFollowupLimitPerHour: number
     builderAgentLimitPerHour: number
+    uploadRateLimitPerHour: number
+    maxDailyUploads: number
     isPublic: number
     createdAt: number
     _all: number
@@ -64372,6 +65456,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: true
     aiAgentFollowupLimitPerHour?: true
     builderAgentLimitPerHour?: true
+    uploadRateLimitPerHour?: true
+    maxDailyUploads?: true
   }
 
   export type PlanSumAggregateInputType = {
@@ -64382,6 +65468,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: true
     aiAgentFollowupLimitPerHour?: true
     builderAgentLimitPerHour?: true
+    uploadRateLimitPerHour?: true
+    maxDailyUploads?: true
   }
 
   export type PlanMinAggregateInputType = {
@@ -64395,6 +65483,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: true
     aiAgentFollowupLimitPerHour?: true
     builderAgentLimitPerHour?: true
+    uploadRateLimitPerHour?: true
+    maxDailyUploads?: true
     isPublic?: true
     createdAt?: true
   }
@@ -64410,6 +65500,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: true
     aiAgentFollowupLimitPerHour?: true
     builderAgentLimitPerHour?: true
+    uploadRateLimitPerHour?: true
+    maxDailyUploads?: true
     isPublic?: true
     createdAt?: true
   }
@@ -64425,6 +65517,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: true
     aiAgentFollowupLimitPerHour?: true
     builderAgentLimitPerHour?: true
+    uploadRateLimitPerHour?: true
+    maxDailyUploads?: true
     isPublic?: true
     createdAt?: true
     _all?: true
@@ -64527,6 +65621,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour: number
     aiAgentFollowupLimitPerHour: number
     builderAgentLimitPerHour: number
+    uploadRateLimitPerHour: number
+    maxDailyUploads: number
     isPublic: boolean
     createdAt: Date
     _count: PlanCountAggregateOutputType | null
@@ -64561,6 +65657,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: boolean
     aiAgentFollowupLimitPerHour?: boolean
     builderAgentLimitPerHour?: boolean
+    uploadRateLimitPerHour?: boolean
+    maxDailyUploads?: boolean
     isPublic?: boolean
     createdAt?: boolean
     pricing?: boolean | Plan$pricingArgs<ExtArgs>
@@ -64581,6 +65679,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: boolean
     aiAgentFollowupLimitPerHour?: boolean
     builderAgentLimitPerHour?: boolean
+    uploadRateLimitPerHour?: boolean
+    maxDailyUploads?: boolean
     isPublic?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["plan"]>
@@ -64596,6 +65696,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: boolean
     aiAgentFollowupLimitPerHour?: boolean
     builderAgentLimitPerHour?: boolean
+    uploadRateLimitPerHour?: boolean
+    maxDailyUploads?: boolean
     isPublic?: boolean
     createdAt?: boolean
   }
@@ -64628,6 +65730,8 @@ export namespace Prisma {
       aiAgentRunLimitPerHour: number
       aiAgentFollowupLimitPerHour: number
       builderAgentLimitPerHour: number
+      uploadRateLimitPerHour: number
+      maxDailyUploads: number
       isPublic: boolean
       createdAt: Date
     }, ExtArgs["result"]["plan"]>
@@ -65037,6 +66141,8 @@ export namespace Prisma {
     readonly aiAgentRunLimitPerHour: FieldRef<"Plan", 'Int'>
     readonly aiAgentFollowupLimitPerHour: FieldRef<"Plan", 'Int'>
     readonly builderAgentLimitPerHour: FieldRef<"Plan", 'Int'>
+    readonly uploadRateLimitPerHour: FieldRef<"Plan", 'Int'>
+    readonly maxDailyUploads: FieldRef<"Plan", 'Int'>
     readonly isPublic: FieldRef<"Plan", 'Boolean'>
     readonly createdAt: FieldRef<"Plan", 'DateTime'>
   }
@@ -70715,6 +71821,7 @@ export namespace Prisma {
     dodoSubscriptionId: string | null
     dodoCheckoutSessionId: string | null
     currentPeriodEnd: Date | null
+    cancelAtPeriodEnd: boolean | null
     amountPaid: number | null
     currency: string | null
     startedAt: Date | null
@@ -70740,6 +71847,7 @@ export namespace Prisma {
     dodoSubscriptionId: string | null
     dodoCheckoutSessionId: string | null
     currentPeriodEnd: Date | null
+    cancelAtPeriodEnd: boolean | null
     amountPaid: number | null
     currency: string | null
     startedAt: Date | null
@@ -70765,6 +71873,7 @@ export namespace Prisma {
     dodoSubscriptionId: number
     dodoCheckoutSessionId: number
     currentPeriodEnd: number
+    cancelAtPeriodEnd: number
     amountPaid: number
     currency: number
     startedAt: number
@@ -70800,6 +71909,7 @@ export namespace Prisma {
     dodoSubscriptionId?: true
     dodoCheckoutSessionId?: true
     currentPeriodEnd?: true
+    cancelAtPeriodEnd?: true
     amountPaid?: true
     currency?: true
     startedAt?: true
@@ -70825,6 +71935,7 @@ export namespace Prisma {
     dodoSubscriptionId?: true
     dodoCheckoutSessionId?: true
     currentPeriodEnd?: true
+    cancelAtPeriodEnd?: true
     amountPaid?: true
     currency?: true
     startedAt?: true
@@ -70850,6 +71961,7 @@ export namespace Prisma {
     dodoSubscriptionId?: true
     dodoCheckoutSessionId?: true
     currentPeriodEnd?: true
+    cancelAtPeriodEnd?: true
     amountPaid?: true
     currency?: true
     startedAt?: true
@@ -70962,6 +72074,7 @@ export namespace Prisma {
     dodoSubscriptionId: string | null
     dodoCheckoutSessionId: string | null
     currentPeriodEnd: Date | null
+    cancelAtPeriodEnd: boolean
     amountPaid: number | null
     currency: string | null
     startedAt: Date | null
@@ -71006,6 +72119,7 @@ export namespace Prisma {
     dodoSubscriptionId?: boolean
     dodoCheckoutSessionId?: boolean
     currentPeriodEnd?: boolean
+    cancelAtPeriodEnd?: boolean
     amountPaid?: boolean
     currency?: boolean
     startedAt?: boolean
@@ -71035,6 +72149,7 @@ export namespace Prisma {
     dodoSubscriptionId?: boolean
     dodoCheckoutSessionId?: boolean
     currentPeriodEnd?: boolean
+    cancelAtPeriodEnd?: boolean
     amountPaid?: boolean
     currency?: boolean
     startedAt?: boolean
@@ -71064,6 +72179,7 @@ export namespace Prisma {
     dodoSubscriptionId?: boolean
     dodoCheckoutSessionId?: boolean
     currentPeriodEnd?: boolean
+    cancelAtPeriodEnd?: boolean
     amountPaid?: boolean
     currency?: boolean
     startedAt?: boolean
@@ -71110,6 +72226,7 @@ export namespace Prisma {
       dodoSubscriptionId: string | null
       dodoCheckoutSessionId: string | null
       currentPeriodEnd: Date | null
+      cancelAtPeriodEnd: boolean
       amountPaid: number | null
       currency: string | null
       startedAt: Date | null
@@ -71529,6 +72646,7 @@ export namespace Prisma {
     readonly dodoSubscriptionId: FieldRef<"Subscription", 'String'>
     readonly dodoCheckoutSessionId: FieldRef<"Subscription", 'String'>
     readonly currentPeriodEnd: FieldRef<"Subscription", 'DateTime'>
+    readonly cancelAtPeriodEnd: FieldRef<"Subscription", 'Boolean'>
     readonly amountPaid: FieldRef<"Subscription", 'Int'>
     readonly currency: FieldRef<"Subscription", 'String'>
     readonly startedAt: FieldRef<"Subscription", 'DateTime'>
@@ -89953,7 +91071,8 @@ export namespace Prisma {
     settings: 'settings',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    deletedAt: 'deletedAt'
+    deletedAt: 'deletedAt',
+    archivedAt: 'archivedAt'
   };
 
   export type SiteScalarFieldEnum = (typeof SiteScalarFieldEnum)[keyof typeof SiteScalarFieldEnum]
@@ -89976,6 +91095,7 @@ export namespace Prisma {
     siteId: 'siteId',
     tenantId: 'tenantId',
     currentRevision: 'currentRevision',
+    publishedRevision: 'publishedRevision',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -90270,6 +91390,24 @@ export namespace Prisma {
   export type SupportRequestScalarFieldEnum = (typeof SupportRequestScalarFieldEnum)[keyof typeof SupportRequestScalarFieldEnum]
 
 
+  export const BlogPostScalarFieldEnum: {
+    id: 'id',
+    slug: 'slug',
+    title: 'title',
+    excerpt: 'excerpt',
+    content: 'content',
+    coverImageUrl: 'coverImageUrl',
+    authorName: 'authorName',
+    status: 'status',
+    tags: 'tags',
+    publishedAt: 'publishedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BlogPostScalarFieldEnum = (typeof BlogPostScalarFieldEnum)[keyof typeof BlogPostScalarFieldEnum]
+
+
   export const CrmLeadScalarFieldEnum: {
     id: 'id',
     siteId: 'siteId',
@@ -90500,6 +91638,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour: 'aiAgentRunLimitPerHour',
     aiAgentFollowupLimitPerHour: 'aiAgentFollowupLimitPerHour',
     builderAgentLimitPerHour: 'builderAgentLimitPerHour',
+    uploadRateLimitPerHour: 'uploadRateLimitPerHour',
+    maxDailyUploads: 'maxDailyUploads',
     isPublic: 'isPublic',
     createdAt: 'createdAt'
   };
@@ -90609,6 +91749,7 @@ export namespace Prisma {
     dodoSubscriptionId: 'dodoSubscriptionId',
     dodoCheckoutSessionId: 'dodoCheckoutSessionId',
     currentPeriodEnd: 'currentPeriodEnd',
+    cancelAtPeriodEnd: 'cancelAtPeriodEnd',
     amountPaid: 'amountPaid',
     currency: 'currency',
     startedAt: 'startedAt',
@@ -92945,6 +94086,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Site"> | Date | string
     updatedAt?: DateTimeFilter<"Site"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Site"> | Date | string | null
+    archivedAt?: DateTimeNullableFilter<"Site"> | Date | string | null
     tenant?: XOR<TenantRelationFilter, TenantWhereInput>
     subscriptions?: SiteSubscriptionListRelationFilter
     pages?: PageListRelationFilter
@@ -92979,6 +94121,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    archivedAt?: SortOrderInput | SortOrder
     tenant?: TenantOrderByWithRelationInput
     subscriptions?: SiteSubscriptionOrderByRelationAggregateInput
     pages?: PageOrderByRelationAggregateInput
@@ -93017,6 +94160,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Site"> | Date | string
     updatedAt?: DateTimeFilter<"Site"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Site"> | Date | string | null
+    archivedAt?: DateTimeNullableFilter<"Site"> | Date | string | null
     tenant?: XOR<TenantRelationFilter, TenantWhereInput>
     subscriptions?: SiteSubscriptionListRelationFilter
     pages?: PageListRelationFilter
@@ -93051,6 +94195,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    archivedAt?: SortOrderInput | SortOrder
     _count?: SiteCountOrderByAggregateInput
     _max?: SiteMaxOrderByAggregateInput
     _min?: SiteMinOrderByAggregateInput
@@ -93071,6 +94216,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Site"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Site"> | Date | string
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Site"> | Date | string | null
+    archivedAt?: DateTimeNullableWithAggregatesFilter<"Site"> | Date | string | null
   }
 
   export type SiteIntegrationWhereInput = {
@@ -93142,6 +94288,7 @@ export namespace Prisma {
     siteId?: StringFilter<"V12Project"> | string
     tenantId?: StringFilter<"V12Project"> | string
     currentRevision?: IntFilter<"V12Project"> | number
+    publishedRevision?: IntNullableFilter<"V12Project"> | number | null
     createdAt?: DateTimeFilter<"V12Project"> | Date | string
     updatedAt?: DateTimeFilter<"V12Project"> | Date | string
     site?: XOR<SiteRelationFilter, SiteWhereInput>
@@ -93156,6 +94303,7 @@ export namespace Prisma {
     siteId?: SortOrder
     tenantId?: SortOrder
     currentRevision?: SortOrder
+    publishedRevision?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     site?: SiteOrderByWithRelationInput
@@ -93173,6 +94321,7 @@ export namespace Prisma {
     NOT?: V12ProjectWhereInput | V12ProjectWhereInput[]
     tenantId?: StringFilter<"V12Project"> | string
     currentRevision?: IntFilter<"V12Project"> | number
+    publishedRevision?: IntNullableFilter<"V12Project"> | number | null
     createdAt?: DateTimeFilter<"V12Project"> | Date | string
     updatedAt?: DateTimeFilter<"V12Project"> | Date | string
     site?: XOR<SiteRelationFilter, SiteWhereInput>
@@ -93187,6 +94336,7 @@ export namespace Prisma {
     siteId?: SortOrder
     tenantId?: SortOrder
     currentRevision?: SortOrder
+    publishedRevision?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: V12ProjectCountOrderByAggregateInput
@@ -93204,6 +94354,7 @@ export namespace Prisma {
     siteId?: StringWithAggregatesFilter<"V12Project"> | string
     tenantId?: StringWithAggregatesFilter<"V12Project"> | string
     currentRevision?: IntWithAggregatesFilter<"V12Project"> | number
+    publishedRevision?: IntNullableWithAggregatesFilter<"V12Project"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"V12Project"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"V12Project"> | Date | string
   }
@@ -94738,6 +95889,93 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"SupportRequest"> | Date | string
   }
 
+  export type BlogPostWhereInput = {
+    AND?: BlogPostWhereInput | BlogPostWhereInput[]
+    OR?: BlogPostWhereInput[]
+    NOT?: BlogPostWhereInput | BlogPostWhereInput[]
+    id?: StringFilter<"BlogPost"> | string
+    slug?: StringFilter<"BlogPost"> | string
+    title?: StringFilter<"BlogPost"> | string
+    excerpt?: StringNullableFilter<"BlogPost"> | string | null
+    content?: StringFilter<"BlogPost"> | string
+    coverImageUrl?: StringNullableFilter<"BlogPost"> | string | null
+    authorName?: StringNullableFilter<"BlogPost"> | string | null
+    status?: StringFilter<"BlogPost"> | string
+    tags?: StringNullableListFilter<"BlogPost">
+    publishedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
+    createdAt?: DateTimeFilter<"BlogPost"> | Date | string
+    updatedAt?: DateTimeFilter<"BlogPost"> | Date | string
+  }
+
+  export type BlogPostOrderByWithRelationInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    excerpt?: SortOrderInput | SortOrder
+    content?: SortOrder
+    coverImageUrl?: SortOrderInput | SortOrder
+    authorName?: SortOrderInput | SortOrder
+    status?: SortOrder
+    tags?: SortOrder
+    publishedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BlogPostWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    slug?: string
+    AND?: BlogPostWhereInput | BlogPostWhereInput[]
+    OR?: BlogPostWhereInput[]
+    NOT?: BlogPostWhereInput | BlogPostWhereInput[]
+    title?: StringFilter<"BlogPost"> | string
+    excerpt?: StringNullableFilter<"BlogPost"> | string | null
+    content?: StringFilter<"BlogPost"> | string
+    coverImageUrl?: StringNullableFilter<"BlogPost"> | string | null
+    authorName?: StringNullableFilter<"BlogPost"> | string | null
+    status?: StringFilter<"BlogPost"> | string
+    tags?: StringNullableListFilter<"BlogPost">
+    publishedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
+    createdAt?: DateTimeFilter<"BlogPost"> | Date | string
+    updatedAt?: DateTimeFilter<"BlogPost"> | Date | string
+  }, "id" | "slug">
+
+  export type BlogPostOrderByWithAggregationInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    excerpt?: SortOrderInput | SortOrder
+    content?: SortOrder
+    coverImageUrl?: SortOrderInput | SortOrder
+    authorName?: SortOrderInput | SortOrder
+    status?: SortOrder
+    tags?: SortOrder
+    publishedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BlogPostCountOrderByAggregateInput
+    _max?: BlogPostMaxOrderByAggregateInput
+    _min?: BlogPostMinOrderByAggregateInput
+  }
+
+  export type BlogPostScalarWhereWithAggregatesInput = {
+    AND?: BlogPostScalarWhereWithAggregatesInput | BlogPostScalarWhereWithAggregatesInput[]
+    OR?: BlogPostScalarWhereWithAggregatesInput[]
+    NOT?: BlogPostScalarWhereWithAggregatesInput | BlogPostScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BlogPost"> | string
+    slug?: StringWithAggregatesFilter<"BlogPost"> | string
+    title?: StringWithAggregatesFilter<"BlogPost"> | string
+    excerpt?: StringNullableWithAggregatesFilter<"BlogPost"> | string | null
+    content?: StringWithAggregatesFilter<"BlogPost"> | string
+    coverImageUrl?: StringNullableWithAggregatesFilter<"BlogPost"> | string | null
+    authorName?: StringNullableWithAggregatesFilter<"BlogPost"> | string | null
+    status?: StringWithAggregatesFilter<"BlogPost"> | string
+    tags?: StringNullableListFilter<"BlogPost">
+    publishedAt?: DateTimeNullableWithAggregatesFilter<"BlogPost"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
+  }
+
   export type CrmLeadWhereInput = {
     AND?: CrmLeadWhereInput | CrmLeadWhereInput[]
     OR?: CrmLeadWhereInput[]
@@ -95890,6 +97128,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFilter<"Plan"> | number
     aiAgentFollowupLimitPerHour?: IntFilter<"Plan"> | number
     builderAgentLimitPerHour?: IntFilter<"Plan"> | number
+    uploadRateLimitPerHour?: IntFilter<"Plan"> | number
+    maxDailyUploads?: IntFilter<"Plan"> | number
     isPublic?: BoolFilter<"Plan"> | boolean
     createdAt?: DateTimeFilter<"Plan"> | Date | string
     pricing?: PlanPricingListRelationFilter
@@ -95909,6 +97149,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: SortOrder
     aiAgentFollowupLimitPerHour?: SortOrder
     builderAgentLimitPerHour?: SortOrder
+    uploadRateLimitPerHour?: SortOrder
+    maxDailyUploads?: SortOrder
     isPublic?: SortOrder
     createdAt?: SortOrder
     pricing?: PlanPricingOrderByRelationAggregateInput
@@ -95931,6 +97173,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFilter<"Plan"> | number
     aiAgentFollowupLimitPerHour?: IntFilter<"Plan"> | number
     builderAgentLimitPerHour?: IntFilter<"Plan"> | number
+    uploadRateLimitPerHour?: IntFilter<"Plan"> | number
+    maxDailyUploads?: IntFilter<"Plan"> | number
     isPublic?: BoolFilter<"Plan"> | boolean
     createdAt?: DateTimeFilter<"Plan"> | Date | string
     pricing?: PlanPricingListRelationFilter
@@ -95950,6 +97194,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: SortOrder
     aiAgentFollowupLimitPerHour?: SortOrder
     builderAgentLimitPerHour?: SortOrder
+    uploadRateLimitPerHour?: SortOrder
+    maxDailyUploads?: SortOrder
     isPublic?: SortOrder
     createdAt?: SortOrder
     _count?: PlanCountOrderByAggregateInput
@@ -95973,6 +97219,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntWithAggregatesFilter<"Plan"> | number
     aiAgentFollowupLimitPerHour?: IntWithAggregatesFilter<"Plan"> | number
     builderAgentLimitPerHour?: IntWithAggregatesFilter<"Plan"> | number
+    uploadRateLimitPerHour?: IntWithAggregatesFilter<"Plan"> | number
+    maxDailyUploads?: IntWithAggregatesFilter<"Plan"> | number
     isPublic?: BoolWithAggregatesFilter<"Plan"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Plan"> | Date | string
   }
@@ -96443,6 +97691,7 @@ export namespace Prisma {
     dodoSubscriptionId?: StringNullableFilter<"Subscription"> | string | null
     dodoCheckoutSessionId?: StringNullableFilter<"Subscription"> | string | null
     currentPeriodEnd?: DateTimeNullableFilter<"Subscription"> | Date | string | null
+    cancelAtPeriodEnd?: BoolFilter<"Subscription"> | boolean
     amountPaid?: IntNullableFilter<"Subscription"> | number | null
     currency?: StringNullableFilter<"Subscription"> | string | null
     startedAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
@@ -96472,6 +97721,7 @@ export namespace Prisma {
     dodoSubscriptionId?: SortOrderInput | SortOrder
     dodoCheckoutSessionId?: SortOrderInput | SortOrder
     currentPeriodEnd?: SortOrderInput | SortOrder
+    cancelAtPeriodEnd?: SortOrder
     amountPaid?: SortOrderInput | SortOrder
     currency?: SortOrderInput | SortOrder
     startedAt?: SortOrderInput | SortOrder
@@ -96504,6 +97754,7 @@ export namespace Prisma {
     dodoCustomerId?: StringNullableFilter<"Subscription"> | string | null
     dodoCheckoutSessionId?: StringNullableFilter<"Subscription"> | string | null
     currentPeriodEnd?: DateTimeNullableFilter<"Subscription"> | Date | string | null
+    cancelAtPeriodEnd?: BoolFilter<"Subscription"> | boolean
     amountPaid?: IntNullableFilter<"Subscription"> | number | null
     currency?: StringNullableFilter<"Subscription"> | string | null
     startedAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
@@ -96533,6 +97784,7 @@ export namespace Prisma {
     dodoSubscriptionId?: SortOrderInput | SortOrder
     dodoCheckoutSessionId?: SortOrderInput | SortOrder
     currentPeriodEnd?: SortOrderInput | SortOrder
+    cancelAtPeriodEnd?: SortOrder
     amountPaid?: SortOrderInput | SortOrder
     currency?: SortOrderInput | SortOrder
     startedAt?: SortOrderInput | SortOrder
@@ -96566,6 +97818,7 @@ export namespace Prisma {
     dodoSubscriptionId?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
     dodoCheckoutSessionId?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
     currentPeriodEnd?: DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
+    cancelAtPeriodEnd?: BoolWithAggregatesFilter<"Subscription"> | boolean
     amountPaid?: IntNullableWithAggregatesFilter<"Subscription"> | number | null
     currency?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
     startedAt?: DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
@@ -99751,6 +101004,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -99785,6 +101039,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -99817,6 +101072,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -99851,6 +101107,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -99884,6 +101141,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
   }
 
   export type SiteUpdateManyMutationInput = {
@@ -99897,6 +101155,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SiteUncheckedUpdateManyInput = {
@@ -99911,6 +101170,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SiteIntegrationCreateInput = {
@@ -99978,6 +101238,7 @@ export namespace Prisma {
   export type V12ProjectCreateInput = {
     id?: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     site: SiteCreateNestedOneWithoutV12ProjectInput
@@ -99992,6 +101253,7 @@ export namespace Prisma {
     siteId: string
     tenantId: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     files?: V12ProjectFileUncheckedCreateNestedManyWithoutProjectInput
@@ -100002,6 +101264,7 @@ export namespace Prisma {
   export type V12ProjectUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     site?: SiteUpdateOneRequiredWithoutV12ProjectNestedInput
@@ -100016,6 +101279,7 @@ export namespace Prisma {
     siteId?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     files?: V12ProjectFileUncheckedUpdateManyWithoutProjectNestedInput
@@ -100028,6 +101292,7 @@ export namespace Prisma {
     siteId: string
     tenantId: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -100035,6 +101300,7 @@ export namespace Prisma {
   export type V12ProjectUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -100044,6 +101310,7 @@ export namespace Prisma {
     siteId?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -101729,6 +102996,111 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BlogPostCreateInput = {
+    id?: string
+    slug: string
+    title: string
+    excerpt?: string | null
+    content: string
+    coverImageUrl?: string | null
+    authorName?: string | null
+    status?: string
+    tags?: BlogPostCreatetagsInput | string[]
+    publishedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BlogPostUncheckedCreateInput = {
+    id?: string
+    slug: string
+    title: string
+    excerpt?: string | null
+    content: string
+    coverImageUrl?: string | null
+    authorName?: string | null
+    status?: string
+    tags?: BlogPostCreatetagsInput | string[]
+    publishedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BlogPostUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    authorName?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    tags?: BlogPostUpdatetagsInput | string[]
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlogPostUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    authorName?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    tags?: BlogPostUpdatetagsInput | string[]
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlogPostCreateManyInput = {
+    id?: string
+    slug: string
+    title: string
+    excerpt?: string | null
+    content: string
+    coverImageUrl?: string | null
+    authorName?: string | null
+    status?: string
+    tags?: BlogPostCreatetagsInput | string[]
+    publishedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BlogPostUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    authorName?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    tags?: BlogPostUpdatetagsInput | string[]
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlogPostUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    authorName?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    tags?: BlogPostUpdatetagsInput | string[]
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type CrmLeadCreateInput = {
     id?: string
     name: string
@@ -102967,6 +104339,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: number
     aiAgentFollowupLimitPerHour?: number
     builderAgentLimitPerHour?: number
+    uploadRateLimitPerHour?: number
+    maxDailyUploads?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingCreateNestedManyWithoutPlanInput
@@ -102986,6 +104360,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: number
     aiAgentFollowupLimitPerHour?: number
     builderAgentLimitPerHour?: number
+    uploadRateLimitPerHour?: number
+    maxDailyUploads?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingUncheckedCreateNestedManyWithoutPlanInput
@@ -103005,6 +104381,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
     aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
     builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
+    uploadRateLimitPerHour?: IntFieldUpdateOperationsInput | number
+    maxDailyUploads?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUpdateManyWithoutPlanNestedInput
@@ -103024,6 +104402,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
     aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
     builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
+    uploadRateLimitPerHour?: IntFieldUpdateOperationsInput | number
+    maxDailyUploads?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUncheckedUpdateManyWithoutPlanNestedInput
@@ -103043,6 +104423,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: number
     aiAgentFollowupLimitPerHour?: number
     builderAgentLimitPerHour?: number
+    uploadRateLimitPerHour?: number
+    maxDailyUploads?: number
     isPublic?: boolean
     createdAt?: Date | string
   }
@@ -103058,6 +104440,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
     aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
     builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
+    uploadRateLimitPerHour?: IntFieldUpdateOperationsInput | number
+    maxDailyUploads?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -103073,6 +104457,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
     aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
     builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
+    uploadRateLimitPerHour?: IntFieldUpdateOperationsInput | number
+    maxDailyUploads?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -103585,6 +104971,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -103613,6 +105000,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -103635,6 +105023,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -103663,6 +105052,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -103688,6 +105078,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -103710,6 +105101,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -103734,6 +105126,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -106867,6 +108260,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
+    archivedAt?: SortOrder
   }
 
   export type SiteMaxOrderByAggregateInput = {
@@ -106879,6 +108273,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
+    archivedAt?: SortOrder
   }
 
   export type SiteMinOrderByAggregateInput = {
@@ -106891,6 +108286,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
+    archivedAt?: SortOrder
   }
 
   export type EnumSiteStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -106968,12 +108364,14 @@ export namespace Prisma {
     siteId?: SortOrder
     tenantId?: SortOrder
     currentRevision?: SortOrder
+    publishedRevision?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type V12ProjectAvgOrderByAggregateInput = {
     currentRevision?: SortOrder
+    publishedRevision?: SortOrder
   }
 
   export type V12ProjectMaxOrderByAggregateInput = {
@@ -106981,6 +108379,7 @@ export namespace Prisma {
     siteId?: SortOrder
     tenantId?: SortOrder
     currentRevision?: SortOrder
+    publishedRevision?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -106990,12 +108389,14 @@ export namespace Prisma {
     siteId?: SortOrder
     tenantId?: SortOrder
     currentRevision?: SortOrder
+    publishedRevision?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type V12ProjectSumOrderByAggregateInput = {
     currentRevision?: SortOrder
+    publishedRevision?: SortOrder
   }
 
   export type V12ProjectRelationFilter = {
@@ -108225,6 +109626,49 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type BlogPostCountOrderByAggregateInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    excerpt?: SortOrder
+    content?: SortOrder
+    coverImageUrl?: SortOrder
+    authorName?: SortOrder
+    status?: SortOrder
+    tags?: SortOrder
+    publishedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BlogPostMaxOrderByAggregateInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    excerpt?: SortOrder
+    content?: SortOrder
+    coverImageUrl?: SortOrder
+    authorName?: SortOrder
+    status?: SortOrder
+    publishedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BlogPostMinOrderByAggregateInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    excerpt?: SortOrder
+    content?: SortOrder
+    coverImageUrl?: SortOrder
+    authorName?: SortOrder
+    status?: SortOrder
+    publishedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type CrmCommunicationListRelationFilter = {
     every?: CrmCommunicationWhereInput
     some?: CrmCommunicationWhereInput
@@ -108912,6 +110356,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: SortOrder
     aiAgentFollowupLimitPerHour?: SortOrder
     builderAgentLimitPerHour?: SortOrder
+    uploadRateLimitPerHour?: SortOrder
+    maxDailyUploads?: SortOrder
     isPublic?: SortOrder
     createdAt?: SortOrder
   }
@@ -108924,6 +110370,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: SortOrder
     aiAgentFollowupLimitPerHour?: SortOrder
     builderAgentLimitPerHour?: SortOrder
+    uploadRateLimitPerHour?: SortOrder
+    maxDailyUploads?: SortOrder
   }
 
   export type PlanMaxOrderByAggregateInput = {
@@ -108937,6 +110385,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: SortOrder
     aiAgentFollowupLimitPerHour?: SortOrder
     builderAgentLimitPerHour?: SortOrder
+    uploadRateLimitPerHour?: SortOrder
+    maxDailyUploads?: SortOrder
     isPublic?: SortOrder
     createdAt?: SortOrder
   }
@@ -108952,6 +110402,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: SortOrder
     aiAgentFollowupLimitPerHour?: SortOrder
     builderAgentLimitPerHour?: SortOrder
+    uploadRateLimitPerHour?: SortOrder
+    maxDailyUploads?: SortOrder
     isPublic?: SortOrder
     createdAt?: SortOrder
   }
@@ -108964,6 +110416,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: SortOrder
     aiAgentFollowupLimitPerHour?: SortOrder
     builderAgentLimitPerHour?: SortOrder
+    uploadRateLimitPerHour?: SortOrder
+    maxDailyUploads?: SortOrder
   }
 
   export type PlanRelationFilter = {
@@ -109264,6 +110718,7 @@ export namespace Prisma {
     dodoSubscriptionId?: SortOrder
     dodoCheckoutSessionId?: SortOrder
     currentPeriodEnd?: SortOrder
+    cancelAtPeriodEnd?: SortOrder
     amountPaid?: SortOrder
     currency?: SortOrder
     startedAt?: SortOrder
@@ -109293,6 +110748,7 @@ export namespace Prisma {
     dodoSubscriptionId?: SortOrder
     dodoCheckoutSessionId?: SortOrder
     currentPeriodEnd?: SortOrder
+    cancelAtPeriodEnd?: SortOrder
     amountPaid?: SortOrder
     currency?: SortOrder
     startedAt?: SortOrder
@@ -109318,6 +110774,7 @@ export namespace Prisma {
     dodoSubscriptionId?: SortOrder
     dodoCheckoutSessionId?: SortOrder
     currentPeriodEnd?: SortOrder
+    cancelAtPeriodEnd?: SortOrder
     amountPaid?: SortOrder
     currency?: SortOrder
     startedAt?: SortOrder
@@ -114143,6 +115600,15 @@ export namespace Prisma {
     update?: XOR<XOR<ShopUpdateToOneWithWhereWithoutPaymentsInput, ShopUpdateWithoutPaymentsInput>, ShopUncheckedUpdateWithoutPaymentsInput>
   }
 
+  export type BlogPostCreatetagsInput = {
+    set: string[]
+  }
+
+  export type BlogPostUpdatetagsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
   export type CrmLeadCreatetagsInput = {
     set: string[]
   }
@@ -116810,6 +118276,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -116836,6 +118303,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -117283,6 +118751,7 @@ export namespace Prisma {
     dodoSubscriptionId?: StringNullableFilter<"Subscription"> | string | null
     dodoCheckoutSessionId?: StringNullableFilter<"Subscription"> | string | null
     currentPeriodEnd?: DateTimeNullableFilter<"Subscription"> | Date | string | null
+    cancelAtPeriodEnd?: BoolFilter<"Subscription"> | boolean
     amountPaid?: IntNullableFilter<"Subscription"> | number | null
     currency?: StringNullableFilter<"Subscription"> | string | null
     startedAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
@@ -118531,6 +120000,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -118557,6 +120027,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -118584,6 +120055,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -118610,6 +120082,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -118706,6 +120179,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditCreateNestedManyWithoutSiteInput
@@ -118738,6 +120212,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -119182,6 +120657,7 @@ export namespace Prisma {
   export type V12ProjectCreateWithoutTenantInput = {
     id?: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     site: SiteCreateNestedOneWithoutV12ProjectInput
@@ -119194,6 +120670,7 @@ export namespace Prisma {
     id?: string
     siteId: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     files?: V12ProjectFileUncheckedCreateNestedManyWithoutProjectInput
@@ -119373,6 +120850,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -119399,6 +120877,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -119514,6 +120993,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Site"> | Date | string
     updatedAt?: DateTimeFilter<"Site"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Site"> | Date | string | null
+    archivedAt?: DateTimeNullableFilter<"Site"> | Date | string | null
   }
 
   export type TenantEventUpsertWithWhereUniqueWithoutTenantInput = {
@@ -119900,6 +121380,7 @@ export namespace Prisma {
     siteId?: StringFilter<"V12Project"> | string
     tenantId?: StringFilter<"V12Project"> | string
     currentRevision?: IntFilter<"V12Project"> | number
+    publishedRevision?: IntNullableFilter<"V12Project"> | number | null
     createdAt?: DateTimeFilter<"V12Project"> | Date | string
     updatedAt?: DateTimeFilter<"V12Project"> | Date | string
   }
@@ -121099,6 +122580,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -121132,6 +122614,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -121264,6 +122747,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -121297,6 +122781,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -122106,6 +123591,7 @@ export namespace Prisma {
   export type V12ProjectCreateWithoutSiteInput = {
     id?: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutV12ProjectsInput
@@ -122118,6 +123604,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     files?: V12ProjectFileUncheckedCreateNestedManyWithoutProjectInput
@@ -122687,6 +124174,7 @@ export namespace Prisma {
   export type V12ProjectUpdateWithoutSiteInput = {
     id?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutV12ProjectsNestedInput
@@ -122699,6 +124187,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     files?: V12ProjectFileUncheckedUpdateManyWithoutProjectNestedInput
@@ -122748,6 +124237,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -122781,6 +124271,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -122828,6 +124319,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -122861,6 +124353,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -122892,6 +124385,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -122925,6 +124419,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -123123,6 +124618,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -123156,6 +124652,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -123337,6 +124834,7 @@ export namespace Prisma {
   export type V12ProjectCreateWithoutFilesInput = {
     id?: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     site: SiteCreateNestedOneWithoutV12ProjectInput
@@ -123350,6 +124848,7 @@ export namespace Prisma {
     siteId: string
     tenantId: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     revisions?: V12ProjectRevisionUncheckedCreateNestedManyWithoutProjectInput
@@ -123375,6 +124874,7 @@ export namespace Prisma {
   export type V12ProjectUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     site?: SiteUpdateOneRequiredWithoutV12ProjectNestedInput
@@ -123388,6 +124888,7 @@ export namespace Prisma {
     siteId?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     revisions?: V12ProjectRevisionUncheckedUpdateManyWithoutProjectNestedInput
@@ -123397,6 +124898,7 @@ export namespace Prisma {
   export type V12ProjectCreateWithoutRevisionsInput = {
     id?: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     site: SiteCreateNestedOneWithoutV12ProjectInput
@@ -123410,6 +124912,7 @@ export namespace Prisma {
     siteId: string
     tenantId: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     files?: V12ProjectFileUncheckedCreateNestedManyWithoutProjectInput
@@ -123463,6 +124966,7 @@ export namespace Prisma {
   export type V12ProjectUpdateWithoutRevisionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     site?: SiteUpdateOneRequiredWithoutV12ProjectNestedInput
@@ -123476,6 +124980,7 @@ export namespace Prisma {
     siteId?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     files?: V12ProjectFileUncheckedUpdateManyWithoutProjectNestedInput
@@ -123501,6 +125006,7 @@ export namespace Prisma {
   export type V12ProjectCreateWithoutCheckpointsInput = {
     id?: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     site: SiteCreateNestedOneWithoutV12ProjectInput
@@ -123514,6 +125020,7 @@ export namespace Prisma {
     siteId: string
     tenantId: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     files?: V12ProjectFileUncheckedCreateNestedManyWithoutProjectInput
@@ -123562,6 +125069,7 @@ export namespace Prisma {
   export type V12ProjectUpdateWithoutCheckpointsInput = {
     id?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     site?: SiteUpdateOneRequiredWithoutV12ProjectNestedInput
@@ -123575,6 +125083,7 @@ export namespace Prisma {
     siteId?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     files?: V12ProjectFileUncheckedUpdateManyWithoutProjectNestedInput
@@ -123621,6 +125130,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -123654,6 +125164,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -123965,6 +125476,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -123998,6 +125510,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -126547,6 +128060,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -126580,6 +128094,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -126657,6 +128172,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -126690,6 +128206,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -126863,6 +128380,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -126896,6 +128414,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -126967,6 +128486,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -127000,6 +128520,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -127126,6 +128647,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -127159,6 +128681,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -127206,6 +128729,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -127239,6 +128763,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -127270,6 +128795,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -127303,6 +128829,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -127350,6 +128877,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -127383,6 +128911,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -127414,6 +128943,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -127447,6 +128977,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -127520,6 +129051,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -127553,6 +129085,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -127676,6 +129209,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -127709,6 +129243,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -127756,6 +129291,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -127789,6 +129325,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -127820,6 +129357,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -127853,6 +129391,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -127900,6 +129439,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -127933,6 +129473,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -127964,6 +129505,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditCreateNestedManyWithoutSiteInput
@@ -127997,6 +129539,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
     snapshots?: SiteSnapshotUncheckedCreateNestedManyWithoutSiteInput
@@ -128119,6 +129662,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUpdateManyWithoutSiteNestedInput
@@ -128152,6 +129696,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
     snapshots?: SiteSnapshotUncheckedUpdateManyWithoutSiteNestedInput
@@ -128412,6 +129957,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -128445,6 +129991,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -128612,6 +130159,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -128645,6 +130193,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -128796,6 +130345,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -128829,6 +130379,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -129028,6 +130579,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -129061,6 +130613,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -129296,6 +130849,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -129323,6 +130877,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -129502,6 +131057,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: number
     aiAgentFollowupLimitPerHour?: number
     builderAgentLimitPerHour?: number
+    uploadRateLimitPerHour?: number
+    maxDailyUploads?: number
     isPublic?: boolean
     createdAt?: Date | string
     subscriptions?: SubscriptionCreateNestedManyWithoutPlanInput
@@ -129520,6 +131077,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: number
     aiAgentFollowupLimitPerHour?: number
     builderAgentLimitPerHour?: number
+    uploadRateLimitPerHour?: number
+    maxDailyUploads?: number
     isPublic?: boolean
     createdAt?: Date | string
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutPlanInput
@@ -129554,6 +131113,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
     aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
     builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
+    uploadRateLimitPerHour?: IntFieldUpdateOperationsInput | number
+    maxDailyUploads?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: SubscriptionUpdateManyWithoutPlanNestedInput
@@ -129572,6 +131133,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
     aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
     builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
+    uploadRateLimitPerHour?: IntFieldUpdateOperationsInput | number
+    maxDailyUploads?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutPlanNestedInput
@@ -129590,6 +131153,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: number
     aiAgentFollowupLimitPerHour?: number
     builderAgentLimitPerHour?: number
+    uploadRateLimitPerHour?: number
+    maxDailyUploads?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingCreateNestedManyWithoutPlanInput
@@ -129608,6 +131173,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: number
     aiAgentFollowupLimitPerHour?: number
     builderAgentLimitPerHour?: number
+    uploadRateLimitPerHour?: number
+    maxDailyUploads?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingUncheckedCreateNestedManyWithoutPlanInput
@@ -129642,6 +131209,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
     aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
     builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
+    uploadRateLimitPerHour?: IntFieldUpdateOperationsInput | number
+    maxDailyUploads?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUpdateManyWithoutPlanNestedInput
@@ -129660,6 +131229,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
     aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
     builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
+    uploadRateLimitPerHour?: IntFieldUpdateOperationsInput | number
+    maxDailyUploads?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUncheckedUpdateManyWithoutPlanNestedInput
@@ -130451,6 +132022,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: number
     aiAgentFollowupLimitPerHour?: number
     builderAgentLimitPerHour?: number
+    uploadRateLimitPerHour?: number
+    maxDailyUploads?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingCreateNestedManyWithoutPlanInput
@@ -130469,6 +132042,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: number
     aiAgentFollowupLimitPerHour?: number
     builderAgentLimitPerHour?: number
+    uploadRateLimitPerHour?: number
+    maxDailyUploads?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingUncheckedCreateNestedManyWithoutPlanInput
@@ -130736,6 +132311,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
     aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
     builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
+    uploadRateLimitPerHour?: IntFieldUpdateOperationsInput | number
+    maxDailyUploads?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUpdateManyWithoutPlanNestedInput
@@ -130754,6 +132331,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
     aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
     builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
+    uploadRateLimitPerHour?: IntFieldUpdateOperationsInput | number
+    maxDailyUploads?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUncheckedUpdateManyWithoutPlanNestedInput
@@ -130772,6 +132351,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     pages?: PageCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditCreateNestedManyWithoutSiteInput
@@ -130805,6 +132385,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
     snapshots?: SiteSnapshotUncheckedCreateNestedManyWithoutSiteInput
@@ -130906,6 +132487,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: number
     aiAgentFollowupLimitPerHour?: number
     builderAgentLimitPerHour?: number
+    uploadRateLimitPerHour?: number
+    maxDailyUploads?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingCreateNestedManyWithoutPlanInput
@@ -130924,6 +132507,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: number
     aiAgentFollowupLimitPerHour?: number
     builderAgentLimitPerHour?: number
+    uploadRateLimitPerHour?: number
+    maxDailyUploads?: number
     isPublic?: boolean
     createdAt?: Date | string
     pricing?: PlanPricingUncheckedCreateNestedManyWithoutPlanInput
@@ -130958,6 +132543,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUpdateManyWithoutSiteNestedInput
@@ -130991,6 +132577,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
     snapshots?: SiteSnapshotUncheckedUpdateManyWithoutSiteNestedInput
@@ -131104,6 +132691,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
     aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
     builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
+    uploadRateLimitPerHour?: IntFieldUpdateOperationsInput | number
+    maxDailyUploads?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUpdateManyWithoutPlanNestedInput
@@ -131122,6 +132711,8 @@ export namespace Prisma {
     aiAgentRunLimitPerHour?: IntFieldUpdateOperationsInput | number
     aiAgentFollowupLimitPerHour?: IntFieldUpdateOperationsInput | number
     builderAgentLimitPerHour?: IntFieldUpdateOperationsInput | number
+    uploadRateLimitPerHour?: IntFieldUpdateOperationsInput | number
+    maxDailyUploads?: IntFieldUpdateOperationsInput | number
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pricing?: PlanPricingUncheckedUpdateManyWithoutPlanNestedInput
@@ -131140,6 +132731,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -131173,6 +132765,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     snapshots?: SiteSnapshotUncheckedCreateNestedManyWithoutSiteInput
@@ -131285,6 +132878,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -131318,6 +132912,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     snapshots?: SiteSnapshotUncheckedUpdateManyWithoutSiteNestedInput
@@ -131420,6 +133015,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -131453,6 +133049,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -131623,6 +133220,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -131656,6 +133254,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -131863,6 +133462,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -131896,6 +133496,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -132067,6 +133668,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -132100,6 +133702,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -132322,6 +133925,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutSitesInput
     subscriptions?: SiteSubscriptionCreateNestedManyWithoutSiteInput
     pages?: PageCreateNestedManyWithoutSiteInput
@@ -132355,6 +133959,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
     subscriptions?: SiteSubscriptionUncheckedCreateNestedManyWithoutSiteInput
     pages?: PageUncheckedCreateNestedManyWithoutSiteInput
     complianceAudits?: ComplianceAuditUncheckedCreateNestedManyWithoutSiteInput
@@ -132467,6 +134072,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutSitesNestedInput
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
@@ -132500,6 +134106,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -133426,6 +135033,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -133936,6 +135544,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -133962,6 +135571,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -133986,6 +135596,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -134010,6 +135621,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -134049,6 +135661,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    archivedAt?: Date | string | null
   }
 
   export type TenantEventCreateManyTenantInput = {
@@ -134195,6 +135808,7 @@ export namespace Prisma {
     id?: string
     siteId: string
     currentRevision?: number
+    publishedRevision?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -134320,6 +135934,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -134346,6 +135961,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -134370,6 +135986,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -134455,6 +136072,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUpdateManyWithoutSiteNestedInput
     pages?: PageUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUpdateManyWithoutSiteNestedInput
@@ -134487,6 +136105,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     subscriptions?: SiteSubscriptionUncheckedUpdateManyWithoutSiteNestedInput
     pages?: PageUncheckedUpdateManyWithoutSiteNestedInput
     complianceAudits?: ComplianceAuditUncheckedUpdateManyWithoutSiteNestedInput
@@ -134519,6 +136138,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type TenantEventUpdateWithoutTenantInput = {
@@ -134954,6 +136574,7 @@ export namespace Prisma {
   export type V12ProjectUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     site?: SiteUpdateOneRequiredWithoutV12ProjectNestedInput
@@ -134966,6 +136587,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     siteId?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     files?: V12ProjectFileUncheckedUpdateManyWithoutProjectNestedInput
@@ -134977,6 +136599,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     siteId?: StringFieldUpdateOperationsInput | string
     currentRevision?: IntFieldUpdateOperationsInput | number
+    publishedRevision?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -137332,6 +138955,7 @@ export namespace Prisma {
     dodoSubscriptionId?: string | null
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
+    cancelAtPeriodEnd?: boolean
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -137410,6 +139034,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -137437,6 +139062,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -137461,6 +139087,7 @@ export namespace Prisma {
     dodoSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -138018,6 +139645,10 @@ export namespace Prisma {
      * @deprecated Use SupportRequestDefaultArgs instead
      */
     export type SupportRequestArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SupportRequestDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BlogPostDefaultArgs instead
+     */
+    export type BlogPostArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BlogPostDefaultArgs<ExtArgs>
     /**
      * @deprecated Use CrmLeadDefaultArgs instead
      */

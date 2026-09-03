@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Gauge, Lightbulb, Loader2, TrendingUp } from "lucide-react";
 
 import type { InsightAgentId, InsightReport, WebVitalMetric } from "@/modules/insights/types";
+import { getAgentFindings } from "@/modules/insights/insightEngine";
 import { AIChannels } from "../AIChannels";
 
 type CrmInsight = { title: string; insight: string; action: string };
@@ -96,16 +97,23 @@ function BusinessIntelligencePanel({ siteId }: { siteId: string }) {
 }
 
 function MarketingIdeasPanel({ report }: { report?: InsightReport }) {
-  const quickWins = report?.quickWins || [];
-  if (!quickWins.length) return null;
+  // report.quickWins spans every audit category (including performance,
+  // accessibility and best-practices, which marketing has no declared
+  // context for). Scope to marketing's own source categories so this
+  // panel never surfaces findings from a category marketing isn't
+  // supposed to speak for.
+  const marketingWins = report
+    ? getAgentFindings(report, "marketing-agent").filter((finding) => finding.priority !== "low")
+    : [];
+  if (!marketingWins.length) return null;
   return (
     <section className="dashboard-card mt-6 rounded-2xl p-5 sm:p-6">
       <h2 className="flex items-center gap-2 font-semibold">
         <Lightbulb size={17} className="text-pink-500" /> Quick campaign wins
       </h2>
-      <p className="mt-1 text-xs dashboard-muted">The fastest wins across the whole site, useful as this week's marketing to-dos.</p>
+      <p className="mt-1 text-xs dashboard-muted">The fastest wins across SEO, discovery and conversion, useful as this week's marketing to-dos.</p>
       <ul className="mt-4 flex flex-col gap-2">
-        {quickWins.slice(0, 5).map((item) => (
+        {marketingWins.slice(0, 5).map((item) => (
           <li key={item.id} className="rounded-xl border dashboard-border px-4 py-3 text-xs leading-5 dashboard-muted">
             <span className="font-semibold text-[var(--dashboard-text,inherit)]">{item.title}</span> — {item.impact}
           </li>

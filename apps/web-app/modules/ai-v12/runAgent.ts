@@ -13,6 +13,7 @@ import {
   type ElementPatch,
 } from "../builder-v3/visual-editor";
 import { validatePreviewProjectPaths } from "../builder-v3/preview";
+import { fetchWithRetry } from "@/lib/net/fetchWithRetry";
 import { IMAGE_CLARIFICATION_MESSAGE, imageRequestNeedsClarification } from "./imageIntent";
 import { buildShopezPrompt } from "./shopezPrompt";
 import type { CreativeDirection } from "./creativeDirection";
@@ -712,16 +713,19 @@ async function requestOpenAiResponse({
   signal: AbortSignal;
   timeoutMs: number;
 }) {
-  const response = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${apiKey}`,
+  const response = await fetchWithRetry(
+    "https://api.openai.com/v1/responses",
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(body),
+      cache: "no-store",
     },
-    body: JSON.stringify(body),
-    cache: "no-store",
-    signal: AbortSignal.any([signal, AbortSignal.timeout(timeoutMs)]),
-  });
+    { timeoutMs, signal },
+  );
   const raw = await response.text();
   let payload: unknown;
   try {

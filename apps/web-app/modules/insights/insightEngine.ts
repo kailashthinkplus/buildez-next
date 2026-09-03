@@ -117,6 +117,26 @@ function rating(value: number, good: number, poor: number): InsightRating {
   return "needs-improvement";
 }
 
+function visibleTextLength(source: string) {
+  return source
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\b(?:import|export|from|function|return|default|type|interface|const|let|var)\b/g, " ")
+    .replace(/[^a-zA-Z0-9À-ɏ\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim().length;
+}
+
+// A page with almost no real content auto-passes most element-level checks
+// (no images to caption, no buttons to label) and can look deceptively
+// "healthy". This multiplier keeps the headline score honest for thin or
+// empty pages without touching content-rich pages, which clear the bar
+// easily and get a multiplier of 1.
+function contentDepthMultiplier(charLength: number) {
+  const healthyBaseline = 260;
+  const ratio = clamp(charLength / healthyBaseline, 0, 1);
+  return 0.2 + ratio * 0.8;
+}
+
 function pageSource(files: SourceFileInput[], page?: PageInput) {
   if (!page) return files.map((file) => file.content).join("\n");
   const pageNeedles = [page.slug, page.title]
@@ -168,13 +188,28 @@ function pageChecks(
   const lazyImages = countMatches(source, /\bloading\s*=\s*["']lazy["']/gi);
   const ctaCount = countMatches(
     source,
-    /\b(get started|book|buy|shop|contact|start|try|request|subscribe|join|order|learn more)\b/gi,
+    /\b(get started|book|buy|shop|contact|start|try|request|subscribe|join|order|learn more|explore|discover|experience|enter|begin|view|watch|reserve|enroll|apply|connect|schedule|register|sign up|download|claim|unlock|see more|get in touch|reach out)\b/gi,
   );
   const analyticsConnected = Boolean(
     stringValue(siteSettings.googleAnalyticsId) ||
       stringValue(siteSettings.googleTagManagerId) ||
       /gtag\(|analytics|trackEvent|dataLayer/gi.test(source),
   );
+
+  const contentLength = visibleTextLength(source);
+  check(checks, "seo", contentLength >= 80, {
+    page,
+    title: contentLength === 0 ? "Add real page content" : "Expand thin page content",
+    description:
+      contentLength === 0
+        ? "This page has no real text content yet, so there is nothing for search engines or visitors to evaluate."
+        : `Only about ${contentLength} characters of real content were detected; add more substantive copy.`,
+    impact:
+      "Search engines and AI answer engines need genuine, substantive content to index, rank and cite a page.",
+    priority: "high",
+    actionLabel: "Add page content",
+    fixPrompt: `Write and add real, substantive, on-brand content to the “${page.title}” page — headings, body copy and supporting sections that clearly describe the offer. Do not fabricate facts.`,
+  });
 
   check(checks, "seo", seoTitle.length >= 30 && seoTitle.length <= 60, {
     page,
@@ -278,7 +313,7 @@ function pageChecks(
   check(
     checks,
     "geo",
-    /\b(about|founded|experience|expert|team|author|contact|address|verified|certified)\b/i.test(
+    /\b(about|founded|experience|expert|team|author|contact|address|verified|certified|studio|founder|story|since \d{4}|award|portfolio)\b/i.test(
       source,
     ),
     {
@@ -420,7 +455,9 @@ function pageChecks(
   check(
     checks,
     "conversion",
-    /\b(testimonial|review|trusted|customer|client|rating|case stud)/gi.test(source),
+    /\b(testimonial|review|trusted|customer|client|rating|case stud|loved by|featured in|as seen in|portfolio|award|recognized|verified|5-star|five-star|star rating)/gi.test(
+      source,
+    ),
     {
       page,
       title: "Add credible proof",
@@ -658,21 +695,26 @@ export function buildInsightReport(input: InsightEngineInput): InsightReport {
       (a, b) =>
         priorityPenalty[b.priority] - priorityPenalty[a.priority],
     );
+  const auditedContentLength =
+    auditedPages.reduce(
+      (sum, page) => sum + visibleTextLength(pageSource(input.files, page)),
+      0,
+    ) / Math.max(auditedPages.length, 1);
   const score = Math.round(
-    categories.reduce((sum, category) => sum + category.score, 0) /
-      Math.max(categories.length, 1),
+    (categories.reduce((sum, category) => sum + category.score, 0) /
+      Math.max(categories.length, 1)) *
+      contentDepthMultiplier(auditedContentLength),
   );
   const pageSummaries: InsightPageSummary[] = input.pages.map((page) => {
-    const perPageChecks = pageChecks(
-      page,
-      pageSource(input.files, page),
-      settings,
-    );
+    const pageSourceText = pageSource(input.files, page);
+    const perPageChecks = pageChecks(page, pageSourceText, settings);
     const pageScore = Math.round(
-      (Object.keys(CATEGORY_META) as InsightCategoryId[]).reduce(
+      ((Object.keys(CATEGORY_META) as InsightCategoryId[]).reduce(
         (sum, category) => sum + categoryScore(perPageChecks, category),
         0,
-      ) / Object.keys(CATEGORY_META).length,
+      ) /
+        Object.keys(CATEGORY_META).length) *
+        contentDepthMultiplier(visibleTextLength(pageSourceText)),
     );
     return {
       id: page.id,

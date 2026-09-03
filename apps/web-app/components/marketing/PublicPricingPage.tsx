@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import { MarketingFooter } from "./MarketingFooter";
 import { MarketingHeader } from "./MarketingHeader";
+import { useDisplayCurrency } from "@/lib/useDisplayCurrency";
+import CurrencySwitcher from "@/components/billing/CurrencySwitcher";
 
 type BillingCycle = "monthly" | "yearly";
 
@@ -23,28 +25,12 @@ type PublicPlan = {
   features: string[];
 };
 
-function formatPrice(amount: number, currency: string) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
-function guessCountryFromLocale() {
-  if (typeof navigator === "undefined") return null;
-  const locale = navigator.languages?.[0] || navigator.language || "";
-  const region = locale.split("-")[1];
-  return region ? region.toUpperCase() : null;
-}
-
 export function PublicPricingPage() {
   const [plans, setPlans] = useState<PublicPlan[]>([]);
   const [billing, setBilling] = useState<BillingCycle>("monthly");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [display, setDisplay] = useState<{ currency: string; rate: number }>({ currency: "INR", rate: 1 });
-  const [useLocalCurrency, setUseLocalCurrency] = useState(true);
+  const { currency: displayCurrency, setCurrency, availableCurrencies, priceFor } = useDisplayCurrency();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -63,25 +49,6 @@ export function PublicPricingPage() {
     return () => controller.abort();
   }, []);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const country = guessCountryFromLocale();
-    fetch(`/api/public/currency${country ? `?country=${encodeURIComponent(country)}` : ""}`, { signal: controller.signal })
-      .then((response) => response.json())
-      .then((payload) => {
-        if (payload?.currency && payload.currency !== "INR" && payload.rate) {
-          setDisplay({ currency: payload.currency, rate: payload.rate });
-        }
-      })
-      .catch(() => {});
-    return () => controller.abort();
-  }, []);
-
-  function priceFor(amount: number, planCurrency: string) {
-    if (!useLocalCurrency || display.currency === planCurrency) return formatPrice(amount, planCurrency);
-    return formatPrice(Math.round(amount * display.rate), display.currency);
-  }
-
   const hasYearly = useMemo(() => plans.some((plan) => plan.priceYearly !== null), [plans]);
 
   return (
@@ -99,13 +66,11 @@ export function PublicPricingPage() {
               <button className={billing === "monthly" ? "active" : ""} onClick={() => setBilling("monthly")}>Monthly</button>
               <button disabled={!hasYearly} className={billing === "yearly" ? "active" : ""} onClick={() => setBilling("yearly")}>Yearly</button>
             </div>
-            {display.currency !== "INR" ? (
+            <CurrencySwitcher currency={displayCurrency} currencies={availableCurrencies} onChange={setCurrency} />
+            {displayCurrency !== "INR" ? (
               <p className="pricing-currency-note">
-                Showing estimated prices in {display.currency}, converted from INR at today's rate.
-                Your exact price and billing currency are confirmed at checkout.{" "}
-                <button type="button" onClick={() => setUseLocalCurrency((value) => !value)}>
-                  {useLocalCurrency ? "Show INR instead" : `Show ${display.currency} instead`}
-                </button>
+                Showing estimated prices in {displayCurrency}, converted from INR at today's rate.
+                Your exact price and billing currency are confirmed at checkout.
               </p>
             ) : null}
           </div>
@@ -131,7 +96,7 @@ export function PublicPricingPage() {
                 <div className="plan-price">
                   {plan.isCustom ? <strong>Let&apos;s talk</strong> : unavailable ? <strong>Unavailable</strong> : <><strong>{priceFor(amount ?? 0, plan.currency)}</strong><span>/{billing === "monthly" ? "month" : "year"}</span></>}
                 </div>
-                {!plan.isCustom && (amount ?? 0) > 0 ? <small>Plus applicable GST. Final total is shown before checkout.</small> : <small>{plan.isCustom ? "Commercial terms are tailored to your organisation." : "No subscription charge."}</small>}
+                {!plan.isCustom && (amount ?? 0) > 0 ? <small>Final total is shown before checkout.</small> : <small>{plan.isCustom ? "Commercial terms are tailored to your organisation." : "No subscription charge."}</small>}
                 <ul>
                   <li>{plan.maxSites.toLocaleString()} website{plan.maxSites === 1 ? "" : "s"}</li>
                   <li>{plan.maxPages.toLocaleString()} pages</li>
@@ -150,7 +115,7 @@ export function PublicPricingPage() {
 
         <section className="pricing-assurance">
           <div><span>01</span><h3>Live catalogue</h3><p>Plans, limits, prices and feature lists come directly from the same catalogue used in the authenticated workspace.</p></div>
-          <div><span>02</span><h3>Clear checkout</h3><p>Applicable GST and the final payable amount are presented before payment. Checkout availability can vary by plan and cycle.</p></div>
+          <div><span>02</span><h3>Clear checkout</h3><p>The final payable amount is presented before payment. Checkout availability can vary by plan and cycle.</p></div>
           <div><span>03</span><h3>Room to change</h3><p>Manage upgrades, renewals, invoices, subscription status and eligible cancellations from Billing after signing in.</p></div>
         </section>
       </main>

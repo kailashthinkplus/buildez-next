@@ -98,7 +98,7 @@ function dateLabel(value?: string | null) {
     return "—";
   }
 
-  return date.toLocaleString();
+  return date.toLocaleString(undefined, { hour12: true });
 }
 
 function ledgerSign(

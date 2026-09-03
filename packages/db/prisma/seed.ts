@@ -13,6 +13,8 @@ async function seedPlans() {
       maxPages: 5,
       aiCredits: 100,
       teamMembers: 1,
+      uploadRateLimitPerHour: 10,
+      maxDailyUploads: 20,
       isPublic: true,
       pricing: [
         {
@@ -36,6 +38,8 @@ async function seedPlans() {
       maxPages: 30,
       aiCredits: 1000,
       teamMembers: 3,
+      uploadRateLimitPerHour: 20,
+      maxDailyUploads: 50,
       isPublic: true,
       pricing: [
         {
@@ -65,6 +69,8 @@ async function seedPlans() {
       maxPages: 300,
       aiCredits: 5000,
       teamMembers: 10,
+      uploadRateLimitPerHour: 40,
+      maxDailyUploads: 150,
       isPublic: true,
       pricing: [
         {
@@ -97,6 +103,8 @@ async function seedPlans() {
       maxPages: 9999,
       aiCredits: 20000,
       teamMembers: 50,
+      uploadRateLimitPerHour: 80,
+      maxDailyUploads: 400,
       isPublic: true,
       pricing: [
         {
@@ -132,6 +140,8 @@ async function seedPlans() {
       maxPages: 20000,
       aiCredits: 100000,
       teamMembers: 100,
+      uploadRateLimitPerHour: 150,
+      maxDailyUploads: 1000,
       isPublic: true,
       pricing: [
         {
@@ -161,6 +171,8 @@ async function seedPlans() {
       maxPages: 50000,
       aiCredits: 250000,
       teamMembers: 250,
+      uploadRateLimitPerHour: 300,
+      maxDailyUploads: 5000,
       isPublic: true,
       pricing: [
         {
@@ -190,6 +202,8 @@ async function seedPlans() {
             maxPages: plan.maxPages,
             aiCredits: plan.aiCredits,
             teamMembers: plan.teamMembers,
+            uploadRateLimitPerHour: plan.uploadRateLimitPerHour,
+            maxDailyUploads: plan.maxDailyUploads,
             isPublic: plan.isPublic,
           },
       create: {
@@ -199,6 +213,8 @@ async function seedPlans() {
         maxPages: plan.maxPages,
         aiCredits: plan.aiCredits,
         teamMembers: plan.teamMembers,
+        uploadRateLimitPerHour: plan.uploadRateLimitPerHour,
+        maxDailyUploads: plan.maxDailyUploads,
         isPublic: plan.isPublic,
       },
     });

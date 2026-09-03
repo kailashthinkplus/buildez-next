@@ -4,6 +4,7 @@ import { ConflictError } from "dodopayments";
 import { prisma } from "@buildez/db";
 import { getUser } from "@/lib/auth/getUser";
 import { dodoClient, resolveDodoProductId, type BillingCycle } from "@/lib/billing/dodo";
+import { isSupportedCurrency } from "@/lib/currency";
 
 const RESUMABLE_PAYMENT_STATUSES = new Set([
   "processing",
@@ -46,6 +47,8 @@ export async function POST(req: NextRequest) {
   const returnPath = ["/app/onboarding", "/app/plans", "/app/workspace/billing"].includes(requestedReturnPath)
     ? requestedReturnPath
     : "/app/workspace/billing";
+  const requestedCurrency = typeof body.currency === "string" ? body.currency.toUpperCase() : "";
+  const billingCurrency = isSupportedCurrency(requestedCurrency) ? requestedCurrency : undefined;
   if (!planCode || !billingCycle) {
     return Response.json({ error: "Choose a plan and billing cycle." }, { status: 400 });
   }
@@ -115,7 +118,8 @@ export async function POST(req: NextRequest) {
       },
       return_url: `${returnBase}${returnBase.includes("?") ? "&" : "?"}checkout=success`,
       cancel_url: `${req.nextUrl.origin}${returnPath}?checkout=cancelled`,
-      feature_flags: { redirect_immediately: true },
+      ...(billingCurrency ? { billing_currency: billingCurrency as never } : {}),
+      feature_flags: { redirect_immediately: true, allow_currency_selection: true },
     });
     if (!session.checkout_url) throw new Error("Dodo Payments returned no checkout URL.");
     await prisma.subscription.create({

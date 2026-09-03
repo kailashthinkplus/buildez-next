@@ -82,6 +82,7 @@ function formatFullDate(date: Date | null) {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
+    hour12: true,
   });
 }
 
@@ -370,7 +371,8 @@ const saveBlueprint = useCallback(async (showToast: boolean) => {
 
         if (!response.ok) throw new Error(`Failed to save (HTTP ${response.status})`);
 
-        const payload = await response.json().catch(() => null);
+        const rawPayload = await response.json().catch(() => null);
+        const payload = rawPayload?.data && typeof rawPayload.data === "object" ? rawPayload.data : rawPayload;
         const savedAt = payload?.updatedAt ? new Date(payload.updatedAt) : new Date();
         if (payload?.pageStatus === "PUBLISHED") {
           setCurrentPageStatus("PUBLISHED");

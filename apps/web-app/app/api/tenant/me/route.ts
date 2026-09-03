@@ -97,13 +97,29 @@ export async function GET(req: NextRequest) {
       where: { tenantId: tenant.id },
     });
 
+    // PlanUsage only ever tracks metered AI credits — published pages have
+    // no corresponding row there. Count them directly across every site
+    // owned by this tenant so the "pages" usage key that the billing page
+    // and header dropdown both already read is actually populated.
+    const publishedPageCount = await prisma.page.count({
+      where: {
+        site: { tenantId: tenant.id, deletedAt: null },
+        status: "PUBLISHED",
+        deletedAt: null,
+      },
+    });
+    const usageWithPages = [
+      ...usage,
+      { id: "pages", tenantId: tenant.id, key: "pages", used: publishedPageCount, billingCycle: null, periodStart: new Date(), periodEnd: null, updatedAt: new Date(), createdAt: new Date() },
+    ];
+
     return NextResponse.json({
       data: {
         tenant,
         sites,
         teams,
         plan: subscription,
-        usage,
+        usage: usageWithPages,
         user,
       },
     }, { headers: PRIVATE_HEADERS });

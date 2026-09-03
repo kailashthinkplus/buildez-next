@@ -6,10 +6,31 @@ import type { InsightReport } from "./types";
 
 const INSIGHT_CACHE_KEY = "__buildezInsightCache";
 
+// The only site.settings fields insightEngine.ts actually reads (see its
+// pageChecks). Any other key — aiChannels (Chatbot/WhatsApp config),
+// billing, theme, etc. — must never affect this fingerprint: doing so
+// would force the Score/SEO audit to invalidate and recompute every time
+// an unrelated agent (e.g. Chatbot) saves its own settings.
+const AUDIT_RELEVANT_SETTINGS_KEYS = [
+  "seoTitle",
+  "seoDescription",
+  "googleAnalyticsId",
+  "googleTagManagerId",
+  "privacyPolicyUrl",
+] as const;
+
 function record(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {};
+}
+
+export function auditRelevantSettings(settings: Record<string, unknown>): Record<string, unknown> {
+  const scoped: Record<string, unknown> = {};
+  for (const key of AUDIT_RELEVANT_SETTINGS_KEYS) {
+    if (key in settings) scoped[key] = settings[key];
+  }
+  return scoped;
 }
 
 export async function createInsightReport(input: {
@@ -29,7 +50,6 @@ export async function createInsightReport(input: {
       name: true,
       slug: true,
       status: true,
-      designTokens: true,
       settings: true,
       pages: {
         where: { deletedAt: null },
@@ -62,7 +82,7 @@ export async function createInsightReport(input: {
   const settings = record(site.settings);
   const { [INSIGHT_CACHE_KEY]: cachedValue, ...settingsForFingerprint } = settings;
   const fingerprint = createHash("sha256").update(JSON.stringify({
-    site: { name: site.name, slug: site.slug, status: site.status, designTokens: site.designTokens, settings: settingsForFingerprint },
+    site: { name: site.name, slug: site.slug, status: site.status, settings: auditRelevantSettings(settingsForFingerprint) },
     pages: site.pages.map((page) => ({ id: page.id, slug: page.slug, status: page.status, metadata: page.metadata, updatedAt: page.updatedAt.toISOString() })),
     projectRevision: site.v12Project?.currentRevision ?? null,
     files: site.v12Project?.files.map((file) => ({ path: file.path, content: file.content })) ?? [],

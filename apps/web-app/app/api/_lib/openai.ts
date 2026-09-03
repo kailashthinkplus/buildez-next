@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { fetchWithRetry } from "@/lib/net/fetchWithRetry";
+
 export type ChatRole = "system" | "user" | "assistant";
 
 export interface ChatMessage {
@@ -67,22 +69,21 @@ export async function callOpenAIChatCompletion(
     requestBody.response_format = { type: input.responseFormat };
   }
 
-  let res: Response | undefined;
-  let networkError: unknown;
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
-    try {
-      console.log("[OPENAI REQUEST]", {
-        debugLabel,
-        attempt,
-        model: requestBody.model,
-        messageCount: input.messages.length,
-        maxCompletionTokens: requestBody.max_completion_tokens,
-        reasoningEffort: requestBody.reasoning_effort,
-        responseFormat: requestBody.response_format,
-        bodyBytes: Buffer.byteLength(JSON.stringify(requestBody)),
-      });
+  console.log("[OPENAI REQUEST]", {
+    debugLabel,
+    model: requestBody.model,
+    messageCount: input.messages.length,
+    maxCompletionTokens: requestBody.max_completion_tokens,
+    reasoningEffort: requestBody.reasoning_effort,
+    responseFormat: requestBody.response_format,
+    bodyBytes: Buffer.byteLength(JSON.stringify(requestBody)),
+  });
 
-      res = await fetch("https://api.openai.com/v1/chat/completions", {
+  let res: Response;
+  try {
+    res = await fetchWithRetry(
+      "https://api.openai.com/v1/chat/completions",
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,33 +91,34 @@ export async function callOpenAIChatCompletion(
         },
         body: JSON.stringify(requestBody),
         cache: "no-store",
-        signal: input.timeoutMs ? AbortSignal.timeout(input.timeoutMs) : undefined,
-      });
+      },
+      {
+        // Long generation calls default to 3 minutes when the caller doesn't
+        // specify one; a request that never times out is worse than one that
+        // fails fast and lets the caller's own fallback handling kick in.
+        timeoutMs: input.timeoutMs ?? 180_000,
+        maxAttempts: 3,
+        onRetry: (attempt, reason) => {
+          console.warn("[OPENAI REQUEST RETRY]", { debugLabel, attempt, reason, model: input.model });
+        },
+      },
+    );
 
-      console.log("[OPENAI RESPONSE]", {
-        debugLabel,
-        status: res.status,
-        model: requestBody.model,
-        durationMs: Date.now() - startedAt,
-      });
-
-      break;
-    } catch (error) {
-      networkError = error;
-      console.error("[OPENAI REQUEST ERROR]", {
-        debugLabel,
-        attempt,
-        model: input.model,
-        durationMs: Date.now() - startedAt,
-        error: error instanceof Error ? `${error.name}: ${error.message}` : "unknown network error",
-      });
-      if (error instanceof Error && /timeout|abort/i.test(`${error.name} ${error.message}`)) break;
-      if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, attempt * 750));
-    }
-  }
-  if (!res) {
-    const cause = networkError instanceof Error ? networkError.message : "unknown network failure";
-    throw new Error(`OpenAI network request failed after 3 attempts: ${cause}`);
+    console.log("[OPENAI RESPONSE]", {
+      debugLabel,
+      status: res.status,
+      model: requestBody.model,
+      durationMs: Date.now() - startedAt,
+    });
+  } catch (error) {
+    console.error("[OPENAI REQUEST ERROR]", {
+      debugLabel,
+      model: input.model,
+      durationMs: Date.now() - startedAt,
+      error: error instanceof Error ? `${error.name}: ${error.message}` : "unknown network error",
+    });
+    const cause = error instanceof Error ? error.message : "unknown network failure";
+    throw new Error(`OpenAI network request failed: ${cause}`);
   }
 
   if (!res.ok) {

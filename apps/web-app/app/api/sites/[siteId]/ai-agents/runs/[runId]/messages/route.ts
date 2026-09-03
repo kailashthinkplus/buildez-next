@@ -60,7 +60,7 @@ export async function POST(
   const tenantPlan = await getTenantPlan(auth.tenant.id);
   try {
     await enforceAiRateLimit("agent-followup", auth.user.id, tenantPlan?.plan?.aiAgentFollowupLimitPerHour ?? 40);
-    assertPromptAllowed(question);
+    await assertPromptAllowed(question);
   } catch (error) {
     const status = error instanceof ApiError ? error.status : 500;
     const code = error instanceof ApiError ? error.code : undefined;
@@ -104,7 +104,7 @@ export async function POST(
       return NextResponse.json({ error: message, code }, { status, headers: PRIVATE_HEADERS });
     }
     try {
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 30_000, maxRetries: 2 });
       const history = [...run.messages, userMessage].map((message) => ({
         role: message.role === "user" ? ("user" as const) : ("assistant" as const),
         content: message.content,

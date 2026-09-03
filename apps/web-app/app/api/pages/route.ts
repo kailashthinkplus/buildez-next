@@ -31,6 +31,13 @@ function countRecommendations(value: unknown): number {
   return asNumber(value) ?? 0;
 }
 
+// AI ecommerce generation builds a custom on-brand storefront at these
+// reserved slugs (see modules/ai-v12/shopezPrompt.ts) that pulls live data
+// from ShopEZ — they're the site's real cart/checkout/account/shop pages,
+// not editable content, so they're excluded from the pages list wherever
+// ShopEZ is actually set up for the site.
+const RESERVED_COMMERCE_SLUGS = ["shop", "cart", "checkout", "account", "product-detail", "products", "product"];
+
 /* ============================================================
    GET — LIST PAGES
 ============================================================ */
@@ -65,6 +72,7 @@ export const GET = async (request: NextRequest) => {
     ------------------------------------------ */
     let siteIds: string[] = [];
     const frontPageBySite = new Map<string, string>();
+    const shopSiteIds: string[] = [];
 
     if (siteSlug) {
       console.log("🟢 [PAGES][GET] Resolving site by slug:", siteSlug);
@@ -74,7 +82,7 @@ export const GET = async (request: NextRequest) => {
           slug: siteSlug,
           tenantId: tenant.id,
         },
-        select: { id: true, settings: true },
+        select: { id: true, settings: true, shop: { select: { id: true } } },
       });
 
       console.log("🟢 [PAGES][GET] Site resolved:", site);
@@ -86,12 +94,13 @@ export const GET = async (request: NextRequest) => {
 
       siteIds = [site.id];
       frontPageBySite.set(site.id, asString(asRecord(site.settings).frontPageId));
+      if (site.shop) shopSiteIds.push(site.id);
     } else {
       console.log("🟢 [PAGES][GET] Resolving ALL sites for tenant");
 
       const sites = await prisma.site.findMany({
         where: { tenantId: tenant.id },
-        select: { id: true, settings: true },
+        select: { id: true, settings: true, shop: { select: { id: true } } },
       });
 
       siteIds = sites.map((s) => s.id);
@@ -100,6 +109,7 @@ export const GET = async (request: NextRequest) => {
           resolvedSite.id,
           asString(asRecord(resolvedSite.settings).frontPageId),
         );
+        if (resolvedSite.shop) shopSiteIds.push(resolvedSite.id);
       });
       console.log("🟢 [PAGES][GET] Site IDs:", siteIds);
     }
@@ -121,6 +131,14 @@ export const GET = async (request: NextRequest) => {
               { title: { contains: search, mode: "insensitive" } },
               { slug: { contains: search, mode: "insensitive" } },
             ],
+          }
+        : {}),
+      ...(shopSiteIds.length > 0
+        ? {
+            NOT: {
+              siteId: { in: shopSiteIds },
+              slug: { in: RESERVED_COMMERCE_SLUGS },
+            },
           }
         : {}),
     };
@@ -169,6 +187,7 @@ export const GET = async (request: NextRequest) => {
       const seoTitle = asString(metadata.seoTitle);
       const seoDescription = asString(metadata.seoDescription);
       const faviconUrl = asString(metadata.faviconUrl);
+      const socialImageUrl = asString(metadata.socialImageUrl);
       const requiredFields = [
         page.title,
         page.slug,
@@ -184,6 +203,7 @@ export const GET = async (request: NextRequest) => {
         seoTitle,
         seoDescription,
         faviconUrl,
+        socialImageUrl,
         screenshotUrl:
           asString(metadata.screenshotUrl) ||
           asString(metadata.thumbnailUrl) ||

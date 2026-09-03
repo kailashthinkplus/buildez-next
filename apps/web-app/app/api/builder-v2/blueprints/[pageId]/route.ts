@@ -131,7 +131,7 @@ export const POST = apiHandler(
             id: page.id,
           },
           data: {
-            reactCode: body.reactCode ?? undefined,
+            reactCode: body.reactCode,
           },
         });
       }

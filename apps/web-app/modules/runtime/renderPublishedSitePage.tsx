@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import { prisma } from "@buildez/db";
 
 import { renderPage } from "@/lib/runtime/render-page";
+import { cachedOrStale } from "@/lib/runtime/routeCache";
+
+const ROUTE_CACHE_TTL_MS = 30_000;
 import { AnalyticsTracker } from "@/modules/analytics/AnalyticsTracker";
 import { SiteIntegrationsScripts } from "@/modules/integrations/SiteIntegrationsScripts";
 import { SiteChatWidgets } from "@/modules/ai-channels/SiteChatWidgets";
@@ -23,7 +26,7 @@ export async function renderPublishedSitePage(siteSlug: string, pageSlug?: strin
   if (route.renderMode === "REACT" && route.hasV12Project) {
     const iframePath = `/api/runtime/v12/${encodeURIComponent(route.siteId)}/${route.pageSlug === "home" ? "" : route.pageSlug.split("/").map(encodeURIComponent).join("/")}`;
     const showBranding = await shouldShowBuildezBranding({ siteId: route.siteId, tenantId: route.tenantId });
-    return <main className="relative h-screen w-full overflow-hidden bg-white"><AnalyticsTracker siteId={route.siteId}/><SiteIntegrationsScripts siteId={route.siteId}/><iframe title={`${route.siteName} website`} src={iframePath} className="h-full w-full border-0"/>{showBranding ? <PoweredByBuildez/> : null}</main>;
+    return <main className="relative h-screen w-full overflow-hidden bg-white">{options?.preview ? null : <StructuredData siteName={route.siteName} settings={route.settings}/>}<AnalyticsTracker siteId={route.siteId}/><SiteIntegrationsScripts siteId={route.siteId}/><iframe title={`${route.siteName} website`} src={iframePath} className="h-full w-full border-0"/>{showBranding ? <PoweredByBuildez/> : null}</main>;
   }
   const result = await renderPage({ siteSlug, siteId: options?.siteId, pageSlug: route.pageSlug });
   if (!result) notFound();
@@ -39,7 +42,7 @@ export async function renderPublishedSitePage(siteSlug: string, pageSlug?: strin
     logBuilderDebug("runtime:builder-v2-layout-decision", { siteSlug, pageSlug, siteName: result.page.site.name, hasExplicitSiteLayout: hasExplicitSiteThemeLayout(result.siteLayout), rawSiteLayout: result.siteLayout, fallbackLayout: summarizeSiteLayout(fallbackLayout) });
     const hasExplicitLayout = hasExplicitSiteThemeLayout(result.siteLayout);
     const siteLayout = normalizeSiteThemeLayout(hasExplicitLayout ? result.siteLayout : null, hasExplicitLayout ? fallbackLayout : disableSiteThemeChrome(fallbackLayout));
-    return <>{options?.preview ? null : <><AnalyticsTracker siteId={result.page.site.id}/><SiteIntegrationsScripts siteId={result.page.site.id}/></>}<PublishedPageRenderer blueprint={result.blueprint} siteLayout={siteLayout}/>{options?.preview ? null : <SiteChatWidgets siteId={result.page.site.id}/>} {showBranding ? <PoweredByBuildez/> : null}</>;
+    return <>{options?.preview ? null : <><StructuredData siteName={route.siteName} settings={route.settings}/><AnalyticsTracker siteId={result.page.site.id}/><SiteIntegrationsScripts siteId={result.page.site.id}/></>}<PublishedPageRenderer blueprint={result.blueprint} siteLayout={siteLayout}/><PageCustomCode css={result.page.customCss} js={result.page.customJs}/>{options?.preview ? null : <SiteChatWidgets siteId={result.page.site.id}/>} {showBranding ? <PoweredByBuildez/> : null}</>;
   }
 
   const legacyDesignTokens = result.designTokens && typeof result.designTokens === "object" && !Array.isArray(result.designTokens)
@@ -54,11 +57,57 @@ export async function renderPublishedSitePage(siteSlug: string, pageSlug?: strin
   logBuilderDebug("runtime:legacy-layout-decision", { siteSlug, pageSlug, siteName: result.page.site.name, hasExplicitSiteLayout: hasExplicitSiteThemeLayout(result.siteLayout), rawSiteLayout: result.siteLayout, fallbackLayout: summarizeSiteLayout(legacyFallbackLayout) });
   const hasExplicitLegacyLayout = hasExplicitSiteThemeLayout(result.siteLayout);
   const legacySiteLayout = normalizeSiteThemeLayout(hasExplicitLegacyLayout ? result.siteLayout : null, hasExplicitLegacyLayout ? legacyFallbackLayout : disableSiteThemeChrome(legacyFallbackLayout));
-  return <>{options?.preview ? null : <><AnalyticsTracker siteId={result.page.site.id}/><SiteIntegrationsScripts siteId={result.page.site.id}/></>}<SiteThemeFrame layout={legacySiteLayout} tokens={legacyTokens}><style dangerouslySetInnerHTML={{ __html: result.css }} /><div id="buildez-preview-root" dangerouslySetInnerHTML={{ __html: result.html }} /></SiteThemeFrame>{options?.preview ? null : <SiteChatWidgets siteId={result.page.site.id}/>} {showBranding ? <PoweredByBuildez/> : null}</>;
+  return <>{options?.preview ? null : <><StructuredData siteName={route.siteName} settings={route.settings}/><AnalyticsTracker siteId={result.page.site.id}/><SiteIntegrationsScripts siteId={result.page.site.id}/></>}<SiteThemeFrame layout={legacySiteLayout} tokens={legacyTokens}><style dangerouslySetInnerHTML={{ __html: result.css }} /><div id="buildez-preview-root" dangerouslySetInnerHTML={{ __html: result.html }} /></SiteThemeFrame><PageCustomCode css={result.page.customCss} js={result.page.customJs}/>{options?.preview ? null : <SiteChatWidgets siteId={result.page.site.id}/>} {showBranding ? <PoweredByBuildez/> : null}</>;
+}
+
+/**
+ * Organization/WebSite JSON-LD for the published site — feeds the site name,
+ * canonical URL, social share image, and social profile links (settings the
+ * Social/SEO tabs already save but that otherwise go unused) to search and
+ * AI answer engines as machine-readable facts about the site.
+ */
+function StructuredData({ siteName, settings }: { siteName: string; settings: Record<string, unknown> }) {
+  const url = typeof settings.canonicalUrl === "string" ? settings.canonicalUrl : "";
+  const description = typeof settings.seoDescription === "string" ? settings.seoDescription : "";
+  const logo = typeof settings.socialImageUrl === "string" ? settings.socialImageUrl : "";
+  const sameAs = [settings.facebookUrl, settings.instagramUrl, settings.linkedinUrl]
+    .filter((value): value is string => typeof value === "string" && value.trim().length > 0);
+
+  const json = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        name: siteName,
+        ...(url ? { url } : {}),
+        ...(logo ? { logo } : {}),
+        ...(sameAs.length ? { sameAs } : {}),
+      },
+      {
+        "@type": "WebSite",
+        name: siteName,
+        ...(url ? { url } : {}),
+        ...(description ? { description } : {}),
+      },
+    ],
+  };
+
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(json) }} />;
+}
+
+/**
+ * Renders a page's saved custom CSS/JS (Builder3Canvas's Custom Code modal,
+ * persisted via PATCH /api/pages/[pageId]/custom-code). Only the V12/REACT
+ * render path had its own injection mechanism before this; BLUEPRINT-mode
+ * pages saved custom code that was never actually applied on the live site.
+ */
+function PageCustomCode({ css, js }: { css: string | null; js: string | null }) {
+  if (!css && !js) return null;
+  return <>{css ? <style dangerouslySetInnerHTML={{ __html: css }} /> : null}{js ? <script dangerouslySetInnerHTML={{ __html: js }} /> : null}</>;
 }
 
 export async function resolvePublishedSiteRoute(siteSlug: string, requestedPageSlug?: string, siteId?: string) {
-  const candidates = await prisma.site.findMany({
+  const candidates = await cachedOrStale(`route:${siteSlug}:${siteId ?? ""}`, ROUTE_CACHE_TTL_MS, () => prisma.site.findMany({
     where: { slug: siteSlug, ...(siteId ? { id: siteId } : {}), status: "PUBLISHED", deletedAt: null },
     select: {
       id: true,
@@ -69,7 +118,7 @@ export async function resolvePublishedSiteRoute(siteSlug: string, requestedPageS
       pages: { where: { deletedAt: null, deleted: false, status: "PUBLISHED" }, orderBy: { createdAt: "asc" }, select: { id: true, slug: true, status: true, renderMode: true } },
     },
     take: siteId ? 1 : 2,
-  });
+  }));
   const site = candidates.length === 1 ? candidates[0] : null;
   if (!site) return null;
   const settings = site.settings && typeof site.settings === "object" && !Array.isArray(site.settings) ? site.settings as Record<string, unknown> : {};
@@ -97,5 +146,6 @@ export async function resolvePublishedSiteRoute(siteSlug: string, requestedPageS
     renderMode: (requestedPageSlug ? site.pages.find((page) => page.slug === requestedPageSlug) : frontPage)!.renderMode,
     hasV12Project: Boolean(site.v12Project),
     maintenanceMode: settings.maintenanceMode === true,
+    settings,
   };
 }

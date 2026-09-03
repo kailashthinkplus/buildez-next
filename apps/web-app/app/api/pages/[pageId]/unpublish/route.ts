@@ -3,8 +3,11 @@
 // ============================================================================
 
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { invalidateRouteCache } from "@/lib/runtime/routeCache";
 
 /* 🔒 EXECUTION CONTEXT */
 import {
@@ -51,6 +54,9 @@ export async function POST(
         deleted: false,
         site: { tenantId: execCtx.tenantId, deletedAt: null },
       },
+      include: {
+        site: { select: { slug: true } },
+      },
     });
 
     if (!page) {
@@ -75,6 +81,11 @@ export async function POST(
     if (updated.count !== 1) {
       return NextResponse.json({ error: "Page no longer belongs to this workspace" }, { status: 409 });
     }
+
+    revalidatePath(publishedSitePath(page.site.slug, page.slug));
+    revalidatePath(publishedSitePath(page.site.slug));
+    invalidateRouteCache(page.site.slug);
+
     return { success: true };
   }, { requireTenant: true })(req);
 }

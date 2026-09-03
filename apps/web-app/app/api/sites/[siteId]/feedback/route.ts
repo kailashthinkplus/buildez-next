@@ -33,7 +33,7 @@ export async function POST(
       limit: RATE_LIMIT_PER_HOUR,
       windowSeconds: 3600,
     });
-    if (comment) assertPromptAllowed(comment);
+    if (comment) await assertPromptAllowed(comment);
   } catch (error) {
     const status = error instanceof ApiError ? error.status : 500;
     const code = error instanceof ApiError ? error.code : undefined;

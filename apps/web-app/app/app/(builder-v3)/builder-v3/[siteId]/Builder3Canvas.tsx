@@ -25,6 +25,7 @@ import {
   resolvePageCanvasState,
 } from "@/modules/builder-v3/pageCanvasState";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { takePendingAttachments } from "@/modules/ai-v12/pendingAttachments";
 import MediaLibrary from "@/modules/builder-v2/media/components/MediaLibrary";
 
 type Device = "desktop" | "tablet" | "mobile";
@@ -197,6 +198,7 @@ export default function Builder3Canvas({
   const [previewSessionId, setPreviewSessionId] = useState<string>();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [selection, setSelection] = useState<BuilderSelection>();
+  const [initialAttachments] = useState<File[]>(() => takePendingAttachments());
   const [elementTree, setElementTree] = useState<BuilderTreeNode[] | null>(null);
   const [error, setError] = useState<string>();
   const [workspace, setWorkspace] = useState<{
@@ -476,7 +478,7 @@ export default function Builder3Canvas({
       if (!response.ok) throw new Error(apiErrorMessage(payload, "Could not schedule publish"));
       setScheduledPublishAt(scheduledIso);
       setShowScheduleModal(false);
-      showToast(`Publish scheduled for ${new Date(scheduledIso).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}`);
+      showToast(`Publish scheduled for ${new Date(scheduledIso).toLocaleString([], { dateStyle: "medium", timeStyle: "short", hour12: true })}`);
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Could not schedule publish";
       setAgentEvents(events => [...events, { id: crypto.randomUUID(), type: "tool.failed", title: "Schedule not saved", detail: message, timestamp: new Date().toISOString() }]);
@@ -872,12 +874,12 @@ export default function Builder3Canvas({
               <div className="absolute right-0 top-full z-[20000] mt-2 w-64 overflow-hidden rounded-xl border border-white/10 bg-[#0b0d12] shadow-2xl" onMouseLeave={() => setKebabMenuOpen(false)}>
                 {publishedAt && (
                   <div className="border-b border-white/10 px-3.5 py-2.5 text-[11px] text-white/40">
-                    Published {new Date(publishedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
+                    Published {new Date(publishedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short", hour12: true })}
                   </div>
                 )}
                 {scheduledPublishAt && (
                   <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-blue-500/10 px-3.5 py-2.5 text-[11px] text-blue-200">
-                    <span>Scheduled for {new Date(scheduledPublishAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}</span>
+                    <span>Scheduled for {new Date(scheduledPublishAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short", hour12: true })}</span>
                     <button onClick={() => void cancelSchedule()} disabled={savingSchedule} className="shrink-0 font-semibold text-blue-300 hover:text-blue-100 disabled:opacity-40">Cancel</button>
                   </div>
                 )}
@@ -923,6 +925,7 @@ export default function Builder3Canvas({
           events={agentEvents}
           running={agentRunning}
           initialPrompt={insightPrompt || initialPrompt}
+          initialAttachments={initialAttachments}
           initialContext={
             selection
               ? "Selected element"
@@ -935,7 +938,7 @@ export default function Builder3Canvas({
               ? describeBuilderSelection(selection).title
               : undefined
           }
-          autoFocus={initialPanel === "ai" || Boolean(initialPrompt) || Boolean(insightPrompt)}
+          autoFocus={initialPanel === "ai" || Boolean(initialPrompt) || Boolean(insightPrompt) || initialAttachments.length > 0}
           autoSubmit={initialAutoSubmit && !insightPrompt}
           onCancel={() => agentAbortRef.current?.abort()}
           onReset={async () => {
@@ -1354,19 +1357,27 @@ An uploaded codebase has already been imported into the current project. Read sr
 
               setAgentEvents(events => [
                 ...events,
-                {
-                  id: crypto.randomUUID(),
-                  type: "tool.failed",
-                  title: controller.signal.aborted
-                    ? "Stopped by you"
-                    : creditExceeded
-                      ? "More AI credits needed"
-                      : "Agent request failed",
-                  detail: reason instanceof Error
-                    ? reason.message
-                    : "Unknown error",
-                  timestamp: new Date().toISOString(),
-                },
+                creditExceeded
+                  ? {
+                      id: crypto.randomUUID(),
+                      type: "message" as const,
+                      role: "assistant" as const,
+                      title: "You're out of AI credits for this billing cycle.",
+                      detail: reason instanceof Error ? reason.message : undefined,
+                      showUpgrade: true,
+                      timestamp: new Date().toISOString(),
+                    }
+                  : {
+                      id: crypto.randomUUID(),
+                      type: "tool.failed" as const,
+                      title: controller.signal.aborted
+                        ? "Stopped by you"
+                        : "Agent request failed",
+                      detail: reason instanceof Error
+                        ? reason.message
+                        : "Unknown error",
+                      timestamp: new Date().toISOString(),
+                    },
               ]);
             } finally {
               if (agentAbortRef.current === controller) agentAbortRef.current = null;

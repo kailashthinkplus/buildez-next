@@ -17,6 +17,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
     page?.seoDescription || ""
   );
   const [faviconUrl, setFaviconUrl] = useState(page?.faviconUrl || "");
+  const [socialImageUrl, setSocialImageUrl] = useState(page?.socialImageUrl || "");
 
   useEffect(() => {
     if (page) {
@@ -25,6 +26,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
       setSeoTitle(page.seoTitle || "");
       setSeoDescription(page.seoDescription || "");
       setFaviconUrl(page.faviconUrl || "");
+      setSocialImageUrl(page.socialImageUrl || "");
     }
   }, [page]);
 
@@ -38,6 +40,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
       seoTitle,
       seoDescription,
       faviconUrl,
+      socialImageUrl,
     });
 
     if (!result.success) {
@@ -143,6 +146,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
             />
           </div>
           {page?.site?.id && <R2ImageUpload siteId={page.site.id} label="Page favicon" value={faviconUrl} onChange={setFaviconUrl} purpose="page-favicon" accept="image/png,image/svg+xml,image/x-icon,image/vnd.microsoft.icon" help="Use a square PNG, SVG, or ICO file." />}
+          {page?.site?.id && <R2ImageUpload siteId={page.site.id} label="Social share image" value={socialImageUrl} onChange={setSocialImageUrl} purpose="page-social-image" accept="image/png,image/jpeg,image/webp" help="Shown when this page is shared on social media. Falls back to the site-wide image if left blank." />}
         </div>
 
         <div className="mt-6 flex justify-end gap-3">

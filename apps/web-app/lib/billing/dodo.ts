@@ -289,6 +289,7 @@ export async function syncDodoSubscription(payload: unknown) {
       dodoCustomerId: customerId,
       dodoSubscriptionId: externalId,
       currentPeriodEnd: date(data.next_billing_date),
+      cancelAtPeriodEnd: Boolean(data.cancel_at_next_billing_date),
       startedAt: date(data.previous_billing_date) || date(data.created_at),
       paidAt,
       userId,
@@ -422,6 +423,26 @@ export async function recordDodoSubscriptionPayment(payload: unknown) {
   let localSubscription = await prisma.subscription.findUnique({
     where: { dodoSubscriptionId: subscriptionId },
   });
+  if (!localSubscription) {
+    // `payments.retrieve()` doesn't echo back `product_cart` for
+    // subscription-linked payments, so `productId` above is often empty and
+    // the plan can't be resolved from the payment alone. Fall back to the
+    // PENDING row created at checkout time (matched by checkout session, or
+    // by tenant+user as a last resort) so its planCode can stand in below.
+    const metadataTenantId = typeof metadata.tenantId === "string" ? metadata.tenantId : "";
+    const metadataUserId = typeof metadata.userId === "string" ? metadata.userId : "";
+    const checkoutSessionId = typeof data.checkout_session_id === "string" ? data.checkout_session_id : "";
+    if (metadataTenantId || checkoutSessionId) {
+      localSubscription = await prisma.subscription.findFirst({
+        where: {
+          ...(checkoutSessionId ? { dodoCheckoutSessionId: checkoutSessionId } : { tenantHistoryId: metadataTenantId }),
+          ...(metadataUserId ? { userId: metadataUserId } : {}),
+          status: "PENDING",
+        },
+        orderBy: { createdAt: "desc" },
+      });
+    }
+  }
   const localBillingCycle = localSubscription?.billingCycle;
   const configuredPlan =
     (await resolveDodoPlanForProduct(productId)) ||
@@ -437,23 +458,6 @@ export async function recordDodoSubscriptionPayment(payload: unknown) {
 
   if (!configuredPlan || amountMinor < 0 || !currency) {
     throw new Error("Subscription payment ownership or amount could not be verified.");
-  }
-
-  if (!localSubscription) {
-    const metadataTenantId = typeof metadata.tenantId === "string" ? metadata.tenantId : "";
-    const metadataUserId = typeof metadata.userId === "string" ? metadata.userId : "";
-    const checkoutSessionId = typeof data.checkout_session_id === "string" ? data.checkout_session_id : "";
-    if (metadataTenantId || checkoutSessionId) {
-      localSubscription = await prisma.subscription.findFirst({
-        where: {
-          ...(checkoutSessionId ? { dodoCheckoutSessionId: checkoutSessionId } : { tenantHistoryId: metadataTenantId }),
-          ...(metadataUserId ? { userId: metadataUserId } : {}),
-          planCode: configuredPlan.planCode,
-          status: "PENDING",
-        },
-        orderBy: { createdAt: "desc" },
-      });
-    }
   }
   const tenantId = localSubscription?.tenantHistoryId || (typeof metadata.tenantId === "string" ? metadata.tenantId : "");
   const userId = localSubscription?.userId || (typeof metadata.userId === "string" ? metadata.userId : "");

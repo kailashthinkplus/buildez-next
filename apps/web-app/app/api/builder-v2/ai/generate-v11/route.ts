@@ -3,6 +3,8 @@ import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 import { getUser } from "@/lib/auth/getUser";
+import { ApiError } from "@/lib/api/errors";
+import { assertPromptAllowed } from "@/lib/ai/moderation";
 import { generateV11Website } from "@/modules/builder-v2/ai-v11/production/generateV11Website";
 import type { V11SourceArtifact } from "@/modules/builder-v2/ai-v11/production/sourceArtifact";
 
@@ -21,6 +23,7 @@ export async function POST(req: NextRequest) {
     const pageId = body.pageId?.trim();
     const prompt = body.prompt?.trim();
     if (!pageId || !prompt) return NextResponse.json({ error: "Missing pageId or prompt" }, { status: 400 });
+    await assertPromptAllowed(prompt);
     const page = await prisma.page.findFirst({
       where: { id: pageId, site: { tenantId: auth.tenant.id } },
       include: { site: { select: { id: true, tenantId: true, name: true } } },
@@ -180,6 +183,8 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "AI v11 generation failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status = error instanceof ApiError ? error.status : 500;
+    const code = error instanceof ApiError ? error.code : undefined;
+    return NextResponse.json({ error: message, code }, { status });
   }
 }

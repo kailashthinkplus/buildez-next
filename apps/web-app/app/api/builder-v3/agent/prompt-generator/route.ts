@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       limit: RATE_LIMIT_PER_HOUR,
       windowSeconds: 3600,
     });
-    assertPromptAllowed(idea);
+    await assertPromptAllowed(idea);
   } catch (error) {
     const status = error instanceof ApiError ? error.status : 500;
     const code = error instanceof ApiError ? error.code : undefined;
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
     .join("\n");
 
   try {
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 30_000, maxRetries: 2 });
     const completion = await openai.chat.completions.create(
       {
         model: process.env.OPENAI_V12_PROMPT_GENERATOR_MODEL || process.env.OPENAI_AGENTS_MODEL || "gpt-4.1-mini",

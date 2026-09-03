@@ -30,7 +30,7 @@ export default function AuthLogsPage() {
             {logs.map((l) => (
               <tr key={l.id} className="border-t">
                 <td className="p-3">
-                  {new Date(l.createdAt).toLocaleString()}
+                  {new Date(l.createdAt).toLocaleString(undefined, { hour12: true })}
                 </td>
                 <td>{l.user?.email || "—"}</td>
                 <td>{l.provider}</td>

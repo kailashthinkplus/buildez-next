@@ -3,8 +3,11 @@ import path from "node:path";
 
 import { prisma } from "@buildez/db";
 import { ensureV12PublishedBundle, publishedAssetPath } from "@/modules/runtime/v12PublishedBundle";
+import { cachedOrStale } from "@/lib/runtime/routeCache";
 
 export const dynamic = "force-dynamic";
+
+const ROUTE_CACHE_TTL_MS = 30_000;
 
 const MIME: Record<string, string> = {
   ".css": "text/css; charset=utf-8", ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
@@ -14,10 +17,10 @@ const MIME: Record<string, string> = {
 
 export async function GET(_request: Request, context: { params: Promise<{ siteId: string; asset?: string[] }> }) {
   const { siteId, asset = [] } = await context.params;
-  const site = await prisma.site.findFirst({
+  const site = await cachedOrStale(`v12site:${siteId}`, ROUTE_CACHE_TTL_MS, () => prisma.site.findFirst({
     where: { id: siteId, status: "PUBLISHED", deletedAt: null },
     select: { tenantId: true },
-  });
+  }));
   if (!site) return new Response("Website not found", { status: 404 });
   try {
     const outputRoot = await ensureV12PublishedBundle(siteId, site.tenantId);

@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 // Modals
 import PayNowModal from "./PayNowModal";
 import EnterpriseContactModal from "@/components/billing/EnterpriseContactModal";
+import CurrencySwitcher from "@/components/billing/CurrencySwitcher";
+import { useDisplayCurrency } from "@/lib/useDisplayCurrency";
 
 type Plan = {
   code: string;
@@ -21,19 +23,6 @@ type Plan = {
   features: string[];
 };
 
-function formatMoney(amount: number, currency: string) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
-
-function withGst(amount: number) {
-  return Math.round(amount * 118) / 100;
-}
-
 export default function StepChoosePlan({
   onNext,
   onBack,
@@ -45,6 +34,7 @@ export default function StepChoosePlan({
   const [selected, setSelected] = useState<string | null>(null);
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [loading, setLoading] = useState(false);
+  const { currency: displayCurrency, setCurrency, availableCurrencies, priceFor } = useDisplayCurrency();
 
   const [showPayNow, setShowPayNow] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
@@ -155,6 +145,7 @@ export default function StepChoosePlan({
         plan={selected ?? ""}
         billing={billing}
         price={modalPrice}
+        currency={selectedPlan?.currency || "INR"}
         features={modalFeatures}
         onPayNow={async () => {
           if (!selected) throw new Error("Choose a plan first.");
@@ -167,7 +158,7 @@ export default function StepChoosePlan({
           const response = await fetch("/api/billing/checkout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ planCode: selected, billingCycle: billing, returnPath: "/app/onboarding" }),
+            body: JSON.stringify({ planCode: selected, billingCycle: billing, returnPath: "/app/onboarding", currency: displayCurrency }),
           });
           const payload = await response.json().catch(() => ({}));
           if (!response.ok || !payload.checkoutUrl) throw new Error(payload.error || "Secure checkout could not be started.");
@@ -239,6 +230,10 @@ export default function StepChoosePlan({
         )}
       </div>
 
+      <div className="mb-4 flex justify-center">
+        <CurrencySwitcher currency={displayCurrency} currencies={availableCurrencies} onChange={setCurrency} />
+      </div>
+
       {/* PLAN CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         {plans.map((plan) => {
@@ -270,16 +265,11 @@ export default function StepChoosePlan({
               <p className="text-sm text-white/60 mb-3">{plan.description}</p>
 
               <div className="text-2xl font-semibold mb-4">
-                {plan.isCustom ? "Custom" : price === null || price === undefined ? "Not offered" : formatMoney(withGst(price), plan.currency)}
+                {plan.isCustom ? "Custom" : price === null || price === undefined ? "Not offered" : priceFor(price, plan.currency)}
                 {!plan.isCustom && price !== null && price !== undefined && <span className="text-sm text-white/60 ml-1">
                   / {billing === "monthly" ? "month" : "year"}
                 </span>}
               </div>
-              {!plan.isCustom && typeof price === "number" && price > 0 ? (
-                <p className="-mt-3 mb-4 text-xs text-white/60">
-                  {formatMoney(price, plan.currency)} + 18% GST
-                </p>
-              ) : null}
 
               <ul className="space-y-1.5 text-sm text-white/70 mb-5">
                 {plan.features.map((f) => (

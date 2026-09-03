@@ -75,7 +75,7 @@ export default function Home() {
           <h1>Your idea.<br/><em>Built alive.</em></h1>
           <p>Design, launch, sell, and grow from one beautifully connected workspace. Build Ezy turns ambitious ideas into high-performing digital experiences—without the usual complexity.</p>
           <div className="hero-actions"><a href="/app/signup" className="primary-cta">Build your first site <Arrow /></a><a href="#platform" className="text-cta">Explore the platform <span>↓</span></a></div>
-          <div className="trust-line"><span className="avatar-stack"><i>AR</i><i>MK</i><i>SL</i></span><span><b>Everything you need.</b><br/>Nothing you don’t.</span></div>
+          <div className="trust-line"><span className="avatar-stack"><img src="https://randomuser.me/api/portraits/women/51.jpg" alt="" /><img src="https://randomuser.me/api/portraits/men/69.jpg" alt="" /><img src="https://randomuser.me/api/portraits/women/85.jpg" alt="" /></span><span><b>Loved by designers,</b><br/>agencies &amp; business owners.</span></div>
         </div>
         <div className="world" aria-label="Interactive preview of the Build Ezy workspace">
           <div className="world-shadow" />

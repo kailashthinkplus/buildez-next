@@ -3,6 +3,8 @@ import OpenAI from "openai";
 
 import { getUser } from "@/lib/auth/getUser";
 import { searchSupportArticles } from "@/modules/support/knowledge";
+import { ApiError } from "@/lib/api/errors";
+import { assertPromptAllowed } from "@/lib/ai/moderation";
 
 export async function POST(req: NextRequest) {
   const auth = await getUser();
@@ -10,13 +12,23 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const message = typeof body.message === "string" ? body.message.trim().slice(0, 2000) : "";
   if (!message) return NextResponse.json({ error: "Enter a support question" }, { status: 400 });
+
+  try {
+    await assertPromptAllowed(message);
+  } catch (error) {
+    const status = error instanceof ApiError ? error.status : 500;
+    const code = error instanceof ApiError ? error.code : undefined;
+    const errorMessage = error instanceof Error ? error.message : "Request could not be processed.";
+    return NextResponse.json({ error: errorMessage, code }, { status });
+  }
+
   const articles = searchSupportArticles(message, 4);
   let answer = articles.length
     ? `${articles[0].body}${articles[1] ? ` You may also find “${articles[1].title}” useful.` : ""}`
     : "I could not find a precise answer in the support documentation. I can help you raise a ticket with the relevant website and details.";
   if (process.env.OPENAI_API_KEY && articles.length) {
     try {
-      const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 20_000, maxRetries: 2 });
       const result = await client.chat.completions.create({
         model: process.env.OPENAI_SUPPORT_MODEL || "gpt-4.1-mini",
         temperature: 0.1,

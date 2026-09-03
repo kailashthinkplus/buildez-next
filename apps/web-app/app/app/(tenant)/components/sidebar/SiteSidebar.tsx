@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   FileText,
   Image as ImageIcon,
-  Brush,
   Puzzle,
   BarChart3,
   Bot,
@@ -25,8 +24,9 @@ import {
   UsersRound,
   ListTree,
   CircleGauge,
+  Newspaper,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useWorkspace } from "../WorkspaceContext";
 
 export function SiteSidebar({
@@ -37,6 +37,8 @@ export function SiteSidebar({
   compact?: boolean;
 }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentView = searchParams.get("view");
   const { currentWebsite } = useWorkspace();
 
   if (!currentWebsite) return null;
@@ -54,7 +56,9 @@ export function SiteSidebar({
           { name: "Collections", href: `${base}/cms?view=collections`, icon: ListTree },
           { name: "Content entries", href: `${base}/cms?view=entries`, icon: FileText },
         ] },
-        { name: "Themes", href: `${base}/themes`, icon: Brush },
+        { name: "Blog", href: `${base}/blog`, icon: Newspaper },
+        // Themes marketplace is hidden for the production launch; the
+        // route and UI still exist at `${base}/themes` for a later re-enable.
         { name: "Apps", href: `${base}/apps`, icon: Puzzle },
         { name: "Shopez", href: `${base}/shopez`, icon: ShoppingBag, children: [
           { name: "Overview", href: `${base}/shopez?view=overview`, icon: LayoutDashboard },
@@ -113,7 +117,11 @@ export function SiteSidebar({
               return (
                 <div key={href}>
                   <Link href={href} title={compact ? name : undefined} aria-label={compact ? name : undefined} className={`flex items-center rounded-xl text-sm font-medium transition ${compact ? "h-10 justify-center px-2" : "gap-3 px-3 py-2.5"} ${active ? "dashboard-nav-active" : "dashboard-muted dashboard-hover"}`}><Icon size={18}/>{compact ? null : name}</Link>
-                  {!compact && active && children?.length ? <div className="ml-5 mt-1 space-y-0.5 border-l dashboard-border pl-2">{children.map(child => <Link key={child.href} href={child.href} className="flex items-center gap-2 rounded-lg px-2 py-2 text-xs dashboard-muted dashboard-hover"><child.icon size={14}/>{child.name}</Link>)}</div> : null}
+                  {!compact && active && children?.length ? <div className="ml-5 mt-1 space-y-0.5 border-l dashboard-border pl-2">{children.map((child, childIndex) => {
+                    const childView = child.href.split("?view=")[1];
+                    const childActive = currentView ? currentView === childView : childIndex === 0;
+                    return <Link key={child.href} href={child.href} className={`flex items-center gap-2 rounded-lg px-2 py-2 text-xs transition ${childActive ? "dashboard-nav-active" : "dashboard-muted dashboard-hover"}`}><child.icon size={14}/>{child.name}</Link>;
+                  })}</div> : null}
                 </div>
               );
             })}

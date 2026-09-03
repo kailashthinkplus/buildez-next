@@ -38,6 +38,7 @@ import {
   AppWindow,
   ClipboardCheck,
   Star,
+  Newspaper,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -144,6 +145,7 @@ export default function SuperSidebar({
             <NavLink href="/super/tenants" icon={Users} label="Tenants" active={pathname.startsWith("/super/tenants")} collapsed={collapsed} />
             <NavLink href="/super/domains" icon={Globe} label="Domains" active={pathname.startsWith("/super/domains")} collapsed={collapsed} />
             <NavLink href="/super/websites" icon={Boxes} label="Websites" active={pathname.startsWith("/super/websites")} collapsed={collapsed} />
+            <NavLink href="/super/blog" icon={Newspaper} label="Blog" active={pathname.startsWith("/super/blog")} collapsed={collapsed} />
           </Section>
 
           <Section title="SAAS & BILLING" open={sections.saas || collapsed} collapsed={collapsed} onToggle={() => toggleSection("saas")}>

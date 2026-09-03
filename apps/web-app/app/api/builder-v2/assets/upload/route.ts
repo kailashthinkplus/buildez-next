@@ -7,6 +7,8 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 import { uploadToR2 } from "@/lib/storage/uploadToR2";
 import { slugify } from "@/lib/utils/slugify";
+import { ApiError } from "@/lib/api/errors";
+import { enforceUploadLimit } from "@/lib/uploads/uploadLimit";
 
 const ALLOWED_IMAGE_TYPES = new Set([
   "image/jpeg",
@@ -95,6 +97,8 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       );
     }
+
+    await enforceUploadLimit(tenant.id);
 
     if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
       console.error("[builder-v2/assets/upload] unsupported-type", {
@@ -225,6 +229,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, asset });
   } catch (err: any) {
+    const status = err instanceof ApiError ? err.status : 500;
     console.error("[builder-v2/assets/upload] error", {
       uploadRequestId,
       message: err?.message,
@@ -232,8 +237,8 @@ export async function POST(req: NextRequest) {
       err,
     });
     return NextResponse.json(
-      { ok: false, error: err?.message || "Upload failed" },
-      { status: 500 }
+      { ok: false, error: err?.message || "Upload failed", code: err instanceof ApiError ? err.code : undefined },
+      { status }
     );
   }
 }

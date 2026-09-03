@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   const leads=await prisma.crmLead.findMany({where:{siteId},orderBy:{createdAt:"desc"},take:500,select:{status:true,score:true,source:true,createdAt:true,company:true,message:true}});
   const fallback=computed(leads); if(!process.env.OPENAI_API_KEY || leads.length<3) return NextResponse.json({insights:fallback,generatedBy:"analytics"});
   try {
-    const openai=new OpenAI({apiKey:process.env.OPENAI_API_KEY});
+    const openai=new OpenAI({apiKey:process.env.OPENAI_API_KEY,timeout:30_000,maxRetries:2});
     const summary={total:leads.length,statuses:leads.reduce<Record<string,number>>((a,l)=>(a[l.status]=(a[l.status]||0)+1,a),{}),sources:leads.reduce<Record<string,number>>((a,l)=>(a[l.source]=(a[l.source]||0)+1,a),{}),averageScore:Math.round(leads.reduce((a,l)=>a+l.score,0)/leads.length)};
     const result=await openai.chat.completions.create({model:process.env.OPENAI_CRM_MODEL||"gpt-4.1-mini",temperature:.2,response_format:{type:"json_object"},messages:[{role:"system",content:"You are a CRM analyst. Return JSON {insights:[{title,insight,action}]} with exactly 3 concise, specific, privacy-safe recommendations. Never invent data."},{role:"user",content:JSON.stringify(summary)}]});
     const parsed=JSON.parse(result.choices[0]?.message?.content||"{}");

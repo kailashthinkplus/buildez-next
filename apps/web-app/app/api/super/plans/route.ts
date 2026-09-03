@@ -392,6 +392,22 @@ export async function PATCH(req: Request) {
       );
     }
 
+    if (body.uploadRateLimitPerHour !== undefined) {
+      data.uploadRateLimitPerHour = integer(
+        body.uploadRateLimitPerHour,
+        existing.uploadRateLimitPerHour,
+        0,
+      );
+    }
+
+    if (body.maxDailyUploads !== undefined) {
+      data.maxDailyUploads = integer(
+        body.maxDailyUploads,
+        existing.maxDailyUploads,
+        0,
+      );
+    }
+
     const pricingRecords = await prisma.$transaction(async (tx) => {
       if (Object.keys(data).length) {
         await tx.plan.update({

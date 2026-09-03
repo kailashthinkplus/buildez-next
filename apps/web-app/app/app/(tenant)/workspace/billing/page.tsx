@@ -19,6 +19,8 @@ import {
   Users,
 } from "lucide-react";
 import UpgradePlanModal from "./components/UpgradePlanModal";
+import { useDisplayCurrency } from "@/lib/useDisplayCurrency";
+import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
 
 type Plan = {
   code: string;
@@ -42,6 +44,7 @@ type Subscription = {
   subscriptionReference?: string;
   checkoutReference?: string;
   currentPeriodEnd?: string;
+  cancelAtPeriodEnd?: boolean;
   paidAt?: string;
   Plan?: Plan;
 };
@@ -90,7 +93,9 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(true),
     [showUpgrade, setShowUpgrade] = useState(false),
     [portalLoading, setPortalLoading] = useState(false),
-    [buyingCredits, setBuyingCredits] = useState<string | null>(null);
+    [buyingCredits, setBuyingCredits] = useState<string | null>(null),
+    [showCancelConfirm, setShowCancelConfirm] = useState(false),
+    [cancelling, setCancelling] = useState(false);
   const [tenantData, setTenantData] = useState<TenantData | null>(null),
     [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null),
     [plans, setPlans] = useState<Plan[]>([]),
@@ -99,6 +104,7 @@ export default function BillingPage() {
     [latestPayment, setLatestPayment] = useState<LatestPayment | null>(null),
     [error, setError] = useState(""),
     [billingActionError, setBillingActionError] = useState("");
+  const { priceFor } = useDisplayCurrency();
   useEffect(() => {
     async function loadBilling() {
       try {
@@ -150,19 +156,59 @@ export default function BillingPage() {
           setCurrentSubscription(
             currentResponse.ok ? currentPayload.subscription || null : null,
           );
+          return currentPayload.subscription || null;
       } catch (reason) {
         setError(
           reason instanceof Error
             ? reason.message
             : "Billing could not be loaded.",
         );
+        return null;
       } finally {
         setLoading(false);
       }
     }
-    void loadBilling();
-    if (new URLSearchParams(window.location.search).get("upgrade") === "1")
-      setShowUpgrade(true);
+
+    let cancelled = false;
+
+    async function initialize() {
+      await loadBilling();
+      if (new URLSearchParams(window.location.search).get("upgrade") === "1")
+        setShowUpgrade(true);
+
+      const params = new URLSearchParams(window.location.search);
+      const result = params.get("checkout");
+      const planChange = params.get("planChange");
+      if (result === "cancelled") {
+        sessionStorage.removeItem("pending-plan-code");
+        history.replaceState(null, "", "/app/workspace/billing");
+        return;
+      }
+      if (result !== "success" && planChange !== "processing") return;
+      const expectedPlan = sessionStorage.getItem("pending-plan-code");
+      if (!expectedPlan) return;
+
+      for (let attempt = 0; attempt < 15 && !cancelled; attempt += 1) {
+        const confirmation = await fetch("/api/billing/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ planCode: expectedPlan }),
+        });
+        const confirmationPayload = await confirmation.json().catch(() => ({}));
+        if (confirmation.ok && confirmationPayload.activated) {
+          const subscription = await loadBilling();
+          if (!cancelled && subscription?.planCode?.toUpperCase() === expectedPlan.toUpperCase()) {
+            sessionStorage.removeItem("pending-plan-code");
+            history.replaceState(null, "", "/app/workspace/billing");
+            return;
+          }
+        }
+        await new Promise((resolve) => window.setTimeout(resolve, 1500));
+      }
+    }
+
+    void initialize();
+    return () => { cancelled = true; };
   }, []);
   const subscription = currentSubscription || tenantData?.plan,
     currentCode = (
@@ -205,6 +251,21 @@ export default function BillingPage() {
           : "Billing portal could not be opened.",
       );
       setPortalLoading(false);
+    }
+  }
+  async function cancelPlan() {
+    setCancelling(true);
+    setBillingActionError("");
+    try {
+      const response = await fetch("/api/billing/cancel", { method: "POST" }),
+        payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || "Your plan could not be cancelled.");
+      setCurrentSubscription((current) => current ? { ...current, cancelAtPeriodEnd: true, currentPeriodEnd: payload.currentPeriodEnd || current.currentPeriodEnd } : current);
+      setShowCancelConfirm(false);
+    } catch (reason) {
+      setBillingActionError(reason instanceof Error ? reason.message : "Your plan could not be cancelled.");
+    } finally {
+      setCancelling(false);
     }
   }
   async function buyCredits(packKey: string) {
@@ -259,6 +320,37 @@ export default function BillingPage() {
         }}
         currentPlan={currentCode}
       />
+      {showCancelConfirm ? (
+        <DashboardModalPortal onClose={() => !cancelling && setShowCancelConfirm(false)}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-xl" onClick={() => !cancelling && setShowCancelConfirm(false)} />
+            <div className="dashboard-modal-surface border dashboard-border relative w-full max-w-md rounded-2xl p-6 shadow-xl">
+              <h2 className="text-lg font-semibold">Cancel your plan?</h2>
+              <p className="mt-3 text-sm dashboard-muted">
+                You&apos;ll keep full access until{" "}
+                {subscription?.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString() : "the end of your current billing period"}
+                . You won&apos;t be charged again after that, and this can&apos;t be undone from here — contact support if you change your mind.
+              </p>
+              <div className="mt-6 flex justify-end gap-2">
+                <button
+                  disabled={cancelling}
+                  onClick={() => setShowCancelConfirm(false)}
+                  className="rounded-xl border dashboard-border px-4 py-2.5 text-sm font-semibold dashboard-hover disabled:opacity-60"
+                >
+                  Keep plan
+                </button>
+                <button
+                  disabled={cancelling}
+                  onClick={() => void cancelPlan()}
+                  className="rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-rose-500 disabled:opacity-60"
+                >
+                  {cancelling ? "Cancelling…" : "Cancel plan"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </DashboardModalPortal>
+      ) : null}
       <div className="mx-auto max-w-6xl pb-12">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -282,6 +374,14 @@ export default function BillingPage() {
                 {portalLoading ? "Opening…" : "Manage subscription"}
               </button>
             ) : null}
+            {subscription?.subscriptionReference && subscription.status === "ACTIVE" && !subscription.cancelAtPeriodEnd ? (
+              <button
+                onClick={() => setShowCancelConfirm(true)}
+                className="rounded-xl border border-rose-500/20 px-4 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-500/10 dark:text-rose-400"
+              >
+                Cancel plan
+              </button>
+            ) : null}
             {canUpgrade ? (
               <button
                 onClick={() => setShowUpgrade(true)}
@@ -299,6 +399,11 @@ export default function BillingPage() {
         {billingActionError ? (
           <p className="mt-5 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-500">
             {billingActionError}
+          </p>
+        ) : null}
+        {subscription?.cancelAtPeriodEnd ? (
+          <p className="mt-5 rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
+            Your plan will end{subscription.currentPeriodEnd ? ` on ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}` : ""}. You&apos;ll keep access until then and won&apos;t be charged again.
           </p>
         ) : null}
         <section className="relative mt-6 overflow-hidden rounded-3xl border dashboard-border bg-[#07182c] p-6 text-white shadow-xl sm:p-8">
@@ -402,10 +507,7 @@ export default function BillingPage() {
                 >
                   <p className="font-semibold">{pack.name}</p>
                   <p className="mt-1 text-sm dashboard-muted">
-                    {formatMoney(withGst(pack.price), pack.currency)} one-time
-                  </p>
-                  <p className="mt-0.5 text-xs dashboard-faint">
-                    {formatMoney(pack.price, pack.currency)} + 18% GST
+                    {priceFor(pack.price, pack.currency)} one-time
                   </p>
                   <button
                     disabled={!creditData.canPurchase || Boolean(buyingCredits)}
@@ -623,17 +725,6 @@ function Detail({
 }
 function capitalize(value: string) {
   return value ? value[0].toUpperCase() + value.slice(1) : value;
-}
-function formatMoney(amount: number, currency: string) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
-function withGst(amount: number) {
-  return Math.round(amount * 118) / 100;
 }
 function formatMoneyMinor(amountMinor: number, currency: string) {
   const zeroDecimal = [

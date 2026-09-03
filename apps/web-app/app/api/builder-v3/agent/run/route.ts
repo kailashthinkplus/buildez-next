@@ -271,7 +271,7 @@ export async function POST(req: NextRequest) {
 
   try {
     await enforceAiRateLimit("builder-agent", auth.user.id, tenantPlan?.plan?.builderAgentLimitPerHour ?? 30);
-    assertPromptAllowed(prompt);
+    await assertPromptAllowed(prompt);
   } catch (error) {
     const status = error instanceof ApiError ? error.status : 500;
     const code = error instanceof ApiError ? error.code : undefined;

@@ -3,12 +3,22 @@
 import { useEffect, useState } from "react";
 import { X, CheckCircle2, AlertTriangle, RotateCcw } from "lucide-react";
 
+function formatMoney(amount: number, currency: string) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
 export default function PayNowModal({
   open = false,
   onClose = () => {},
   plan = "",
   billing = "monthly",
   price = 0,
+  currency = "INR",
   features = [],
   onPayNow = async () => {},
 }: {
@@ -17,6 +27,7 @@ export default function PayNowModal({
   plan?: string;
   billing?: string;
   price?: number;
+  currency?: string;
   features?: string[];
   onPayNow?: () => Promise<unknown>;
 }) {
@@ -190,19 +201,10 @@ export default function PayNowModal({
               </p>
 
               <p className="text-4xl font-bold mt-2 drop-shadow-sm">
-                ₹{(Math.round((price ?? 0) * 118) / 100).toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+                {formatMoney(price ?? 0, currency)}
                 <span className="text-white/60 text-sm ml-1">
                   / {billing === "monthly" ? "month" : "year"}
                 </span>
-              </p>
-              <p className="mt-2 text-xs text-white/60">
-                ₹{(price ?? 0).toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })} + 18% GST
               </p>
             </div>
 

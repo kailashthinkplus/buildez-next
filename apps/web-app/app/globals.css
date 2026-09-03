@@ -881,3 +881,10 @@ html:not(.dark) .crm-engine .dashboard-card{background:linear-gradient(145deg,rg
 .ai-task-card{background:var(--dashboard-surface);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}.ai-task-card:hover{transform:translateY(-2px);border-color:rgba(55,136,255,.28);box-shadow:0 12px 28px rgba(30,85,180,.08)}
 .ai-brief{border:1px solid transparent;background:var(--dashboard-surface-soft,rgba(0,0,0,.025));transition:border-color .18s ease}.ai-brief:hover{border-color:rgba(55,136,255,.16)}
 @media(prefers-reduced-motion:reduce){.ai-task-card:hover{transform:none}}
+
+/* AI chat box highlight — animated rotating-gradient border, matches the marketing homepage AI prompt box */
+@property --ai-glow-angle{syntax:"<angle>";initial-value:0deg;inherits:false}
+@keyframes ai-glow-spin{to{--ai-glow-angle:360deg}}
+.ai-glow-border{position:relative;isolation:isolate}
+.ai-glow-border:before{content:"";position:absolute;inset:-2px;padding:2px;border-radius:inherit;background:conic-gradient(from var(--ai-glow-angle),transparent 0 39%,rgba(19,73,163,.04) 41%,rgba(19,73,163,.28) 45%,#1349A3 49%,#226bd5 53%,#2d7ff0 56%,#22d3ee 58.3%,#c5fbff 59.2%,transparent 60.3% 100%);animation:ai-glow-spin 4.8s linear infinite;pointer-events:none;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;filter:drop-shadow(0 0 8px rgba(190,250,255,.9)) drop-shadow(0 0 16px rgba(34,211,238,.65)) drop-shadow(0 0 30px rgba(36,112,224,.45))}
+@media(prefers-reduced-motion:reduce){.ai-glow-border:before{animation:none}}

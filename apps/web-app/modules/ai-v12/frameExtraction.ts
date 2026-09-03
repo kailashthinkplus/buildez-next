@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { fetchWithRetry } from "@/lib/net/fetchWithRetry";
 
 /*
  * Extracts evenly-spaced still frames from a generated video, entirely
@@ -56,13 +57,21 @@ export async function extractVideoFrames(input: {
       signature,
     });
 
-    const uploadResponse = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/video/upload`, {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
-      cache: "no-store",
-      signal: AbortSignal.any([input.signal, AbortSignal.timeout(120_000)]),
-    });
+    const uploadResponse = await fetchWithRetry(
+      `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
+        cache: "no-store",
+      },
+      {
+        timeoutMs: 120_000,
+        signal: input.signal,
+        maxAttempts: 2,
+        onRetry: (attempt, reason) => console.warn("[Cloudinary] retrying video upload", { attempt, reason }),
+      },
+    );
 
     if (!uploadResponse.ok) {
       console.warn("[Cloudinary] video upload failed", uploadResponse.status, await uploadResponse.text().catch(() => ""));

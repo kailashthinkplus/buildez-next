@@ -57,7 +57,7 @@ async function generateSummary(input: {
     return { summary: fallback, generatedBy: "analytics" };
   }
   try {
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 30_000, maxRetries: 2 });
     const result = await openai.chat.completions.create({
       model: process.env.OPENAI_AGENTS_MODEL || "gpt-4.1-mini",
       temperature: 0.4,
@@ -144,7 +144,7 @@ export async function POST(
 
     try {
       await enforceAiRateLimit("agent-run", auth.user.id, tenantPlan?.plan?.aiAgentRunLimitPerHour ?? 20);
-      assertPromptAllowed(prompt);
+      await assertPromptAllowed(prompt);
     } catch (error) {
       const status = error instanceof ApiError ? error.status : 500;
       const code = error instanceof ApiError ? error.code : undefined;

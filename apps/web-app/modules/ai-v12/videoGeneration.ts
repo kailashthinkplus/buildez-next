@@ -13,6 +13,8 @@
  * key: `Authorization: Key {api_key_id}:{api_key_secret}`.
  */
 
+import { fetchWithRetry } from "@/lib/net/fetchWithRetry";
+
 const HIGGSFIELD_BASE_URL = process.env.HIGGSFIELD_API_BASE_URL || "https://api.higgsfield.ai";
 // Different model families take different request bodies. Kling v2.1
 // standard is the default because it's confirmed reachable/enabled on
@@ -86,16 +88,25 @@ export async function generateHeroVideo(input: {
   if (!hasHiggsfieldVideo()) return null;
 
   try {
-    const submitResponse = await fetch(`${HIGGSFIELD_BASE_URL}${HIGGSFIELD_VIDEO_ENDPOINT}`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: authHeader(),
+    const submitResponse = await fetchWithRetry(
+      `${HIGGSFIELD_BASE_URL}${HIGGSFIELD_VIDEO_ENDPOINT}`,
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: authHeader(),
+        },
+        body: JSON.stringify(videoRequestBody(input.imageUrl, input.prompt)),
+        cache: "no-store",
       },
-      body: JSON.stringify(videoRequestBody(input.imageUrl, input.prompt)),
-      cache: "no-store",
-      signal: AbortSignal.any([input.signal, AbortSignal.timeout(30_000)]),
-    });
+      {
+        timeoutMs: 30_000,
+        signal: input.signal,
+        maxAttempts: 3,
+        retryOnTimeout: true,
+        onRetry: (attempt, reason) => console.warn("[Higgsfield] retrying video submission", { attempt, reason }),
+      },
+    );
 
     if (!submitResponse.ok) {
       console.warn("[Higgsfield] video submission failed", submitResponse.status, await submitResponse.text().catch(() => ""));

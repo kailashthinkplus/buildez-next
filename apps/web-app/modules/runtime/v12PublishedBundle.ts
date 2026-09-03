@@ -90,19 +90,24 @@ if(document.readyState==="complete")apply();
 }
 
 async function buildPublishedProject(siteId: string, tenantId: string) {
-  const project = await prisma.v12Project.findFirst({ where: { siteId, tenantId }, select: { currentRevision: true } });
+  const project = await prisma.v12Project.findFirst({ where: { siteId, tenantId }, select: { publishedRevision: true } });
   if (!project) throw new Error("Published project not found");
+  if (project.publishedRevision == null) throw new Error("Project has not been published yet");
   const root = path.join(process.cwd(), "tmp", "v12-published", siteId);
   const sourceRoot = path.join(root, "source");
   const outputRoot = path.join(root, "dist");
   const markerPath = path.join(root, "revision.txt");
   try {
     const [marker] = await Promise.all([readFile(markerPath, "utf8"), stat(path.join(outputRoot, "index.html"))]);
-    if (marker.trim() === String(project.currentRevision)) return outputRoot;
+    if (marker.trim() === String(project.publishedRevision)) return outputRoot;
   } catch {
     // Missing or stale output is rebuilt below.
   }
 
+  // Reads live file content — safe here because this only rebuilds when the
+  // marker doesn't yet match publishedRevision, which is true only right
+  // after a fresh publish (called eagerly from publishPageNow, before any
+  // further edit could land) or on first-ever request for a given revision.
   const files = await listProjectFiles(siteId, tenantId);
   if (!files.length) throw new Error("Published project has no files");
   await rm(sourceRoot, { recursive: true, force: true });
@@ -133,7 +138,7 @@ async function buildPublishedProject(siteId: string, tenantId: string) {
   });
   await injectCustomCodeBootstrap(outputRoot, siteId);
   await mkdir(root, { recursive: true });
-  await writeFile(markerPath, String(project.currentRevision), "utf8");
+  await writeFile(markerPath, String(project.publishedRevision), "utf8");
   return outputRoot;
 }
 

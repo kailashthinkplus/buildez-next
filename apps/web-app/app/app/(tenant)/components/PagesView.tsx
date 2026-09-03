@@ -470,7 +470,7 @@ export default function PagesView({ siteSlug }: Props) {
                       </td>
 
                       <td className="p-3 dashboard-muted">
-                        {new Date(pageRow.updatedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
+                        {new Date(pageRow.updatedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short", hour12: true })}
                       </td>
 
                       <td className="p-2 text-right">

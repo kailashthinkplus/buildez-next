@@ -239,7 +239,7 @@ export default function AIAgentsPage() {
                         </span>
                       )}
                       <span className="text-[10px] dashboard-faint">
-                        {new Date(entry.createdAt).toLocaleString()}
+                        {new Date(entry.createdAt).toLocaleString(undefined, { hour12: true })}
                       </span>
                     </div>
                     <p className="mt-1 line-clamp-2 text-xs leading-5 dashboard-muted">{entry.summary}</p>
