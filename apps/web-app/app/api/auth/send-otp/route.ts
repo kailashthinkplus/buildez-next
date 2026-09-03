@@ -5,6 +5,8 @@ import { AuthProvider, prisma } from "@buildez/db";
 import { generateOtp, hashOtp } from "@/lib/auth/otp";
 import { checkLockout } from "@/lib/auth/lockout";
 import { writeAuthLog } from "@/lib/auth/authLog";
+import { sendMail } from "@/lib/email/sendMail";
+import { otpEmailContent } from "@/lib/email/otpTemplate";
 
 export const POST = authHandler(async ({ req }) => {
   const { email } = await req.json();
@@ -67,9 +69,10 @@ export const POST = authHandler(async ({ req }) => {
   });
 
   /* ---------------------------------------------------------------
-     5️⃣ Send OTP (PRODUCTION: email/SMS)
+     5️⃣ Send OTP
   --------------------------------------------------------------- */
-  console.log("🔐 SUPER-ADMIN OTP:", otp);
+  const { subject, text, html } = otpEmailContent({ code: otp, purpose: "sign in to your account", expiresInMinutes: 5 });
+  await sendMail({ to: email, subject, text, html });
 
   /* ---------------------------------------------------------------
      6️⃣ Audit Log

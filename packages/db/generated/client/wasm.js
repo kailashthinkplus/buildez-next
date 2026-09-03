@@ -921,6 +921,7 @@ exports.Prisma.SubscriptionScalarFieldEnum = {
   dodoCheckoutSessionId: 'dodoCheckoutSessionId',
   currentPeriodEnd: 'currentPeriodEnd',
   cancelAtPeriodEnd: 'cancelAtPeriodEnd',
+  expiryAlertSentAt: 'expiryAlertSentAt',
   amountPaid: 'amountPaid',
   currency: 'currency',
   startedAt: 'startedAt',

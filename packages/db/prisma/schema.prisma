@@ -1537,6 +1537,7 @@ model Subscription {
   dodoCheckoutSessionId String?
   currentPeriodEnd      DateTime?
   cancelAtPeriodEnd     Boolean   @default(false)
+  expiryAlertSentAt     DateTime?
 
   amountPaid Int?
   currency   String?

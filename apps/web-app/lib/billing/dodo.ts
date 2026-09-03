@@ -1,8 +1,14 @@
 import DodoPayments from "dodopayments";
 
 import { prisma } from "@buildez/db";
+import { sendMail } from "@/lib/email/sendMail";
+import { planActivatedEmailContent } from "@/lib/email/planActivatedTemplate";
 
 export type BillingCycle = "monthly" | "yearly";
+
+function appUrl() {
+  return (process.env.NEXT_PUBLIC_APP_URL || `https://${process.env.PLATFORM_DOMAIN || "getbuildezy.com"}`).replace(/\/$/, "");
+}
 
 export type DodoCreditPack = Readonly<{
   key: string;
@@ -264,7 +270,7 @@ export async function syncDodoSubscription(payload: unknown) {
     ? date(root.timestamp) || new Date()
     : undefined;
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     let subscription = await tx.subscription.findUnique({ where: { dodoSubscriptionId: externalId } });
     if (!subscription) {
       subscription = await tx.subscription.findFirst({
@@ -322,6 +328,29 @@ export async function syncDodoSubscription(payload: unknown) {
     }
     return { ignored: false, subscriptionId: subscription.id, status: subscription.status };
   });
+
+  // Notify on a genuinely new activation (first activation, reactivation,
+  // or an upgrade/downgrade while active) — not on every renewal webhook
+  // redelivery, which would just re-confirm a plan the user already knows
+  // is active.
+  const isNewActivation = active && (!existing || existing.status !== "ACTIVE" || existing.planCode !== planCode);
+  if (isNewActivation) {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+    if (user?.email) {
+      const { subject, text, html } = planActivatedEmailContent({
+        planName: plan.name,
+        billingCycle,
+        amount: pricing.amount,
+        currency: pricing.currency,
+        manageUrl: `${appUrl()}/app/workspace/billing`,
+      });
+      await sendMail({ to: user.email, subject, text, html }).catch((error) => {
+        console.error("[dodo] plan-activation email failed:", error);
+      });
+    }
+  }
+
+  return result;
 }
 
 export async function fulfillDodoCreditPayment(payload: unknown) {

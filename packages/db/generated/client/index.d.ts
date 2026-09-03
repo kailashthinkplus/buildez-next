@@ -71822,6 +71822,7 @@ export namespace Prisma {
     dodoCheckoutSessionId: string | null
     currentPeriodEnd: Date | null
     cancelAtPeriodEnd: boolean | null
+    expiryAlertSentAt: Date | null
     amountPaid: number | null
     currency: string | null
     startedAt: Date | null
@@ -71848,6 +71849,7 @@ export namespace Prisma {
     dodoCheckoutSessionId: string | null
     currentPeriodEnd: Date | null
     cancelAtPeriodEnd: boolean | null
+    expiryAlertSentAt: Date | null
     amountPaid: number | null
     currency: string | null
     startedAt: Date | null
@@ -71874,6 +71876,7 @@ export namespace Prisma {
     dodoCheckoutSessionId: number
     currentPeriodEnd: number
     cancelAtPeriodEnd: number
+    expiryAlertSentAt: number
     amountPaid: number
     currency: number
     startedAt: number
@@ -71910,6 +71913,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: true
     currentPeriodEnd?: true
     cancelAtPeriodEnd?: true
+    expiryAlertSentAt?: true
     amountPaid?: true
     currency?: true
     startedAt?: true
@@ -71936,6 +71940,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: true
     currentPeriodEnd?: true
     cancelAtPeriodEnd?: true
+    expiryAlertSentAt?: true
     amountPaid?: true
     currency?: true
     startedAt?: true
@@ -71962,6 +71967,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: true
     currentPeriodEnd?: true
     cancelAtPeriodEnd?: true
+    expiryAlertSentAt?: true
     amountPaid?: true
     currency?: true
     startedAt?: true
@@ -72075,6 +72081,7 @@ export namespace Prisma {
     dodoCheckoutSessionId: string | null
     currentPeriodEnd: Date | null
     cancelAtPeriodEnd: boolean
+    expiryAlertSentAt: Date | null
     amountPaid: number | null
     currency: string | null
     startedAt: Date | null
@@ -72120,6 +72127,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: boolean
     currentPeriodEnd?: boolean
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: boolean
     amountPaid?: boolean
     currency?: boolean
     startedAt?: boolean
@@ -72150,6 +72158,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: boolean
     currentPeriodEnd?: boolean
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: boolean
     amountPaid?: boolean
     currency?: boolean
     startedAt?: boolean
@@ -72180,6 +72189,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: boolean
     currentPeriodEnd?: boolean
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: boolean
     amountPaid?: boolean
     currency?: boolean
     startedAt?: boolean
@@ -72227,6 +72237,7 @@ export namespace Prisma {
       dodoCheckoutSessionId: string | null
       currentPeriodEnd: Date | null
       cancelAtPeriodEnd: boolean
+      expiryAlertSentAt: Date | null
       amountPaid: number | null
       currency: string | null
       startedAt: Date | null
@@ -72647,6 +72658,7 @@ export namespace Prisma {
     readonly dodoCheckoutSessionId: FieldRef<"Subscription", 'String'>
     readonly currentPeriodEnd: FieldRef<"Subscription", 'DateTime'>
     readonly cancelAtPeriodEnd: FieldRef<"Subscription", 'Boolean'>
+    readonly expiryAlertSentAt: FieldRef<"Subscription", 'DateTime'>
     readonly amountPaid: FieldRef<"Subscription", 'Int'>
     readonly currency: FieldRef<"Subscription", 'String'>
     readonly startedAt: FieldRef<"Subscription", 'DateTime'>
@@ -91750,6 +91762,7 @@ export namespace Prisma {
     dodoCheckoutSessionId: 'dodoCheckoutSessionId',
     currentPeriodEnd: 'currentPeriodEnd',
     cancelAtPeriodEnd: 'cancelAtPeriodEnd',
+    expiryAlertSentAt: 'expiryAlertSentAt',
     amountPaid: 'amountPaid',
     currency: 'currency',
     startedAt: 'startedAt',
@@ -97692,6 +97705,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: StringNullableFilter<"Subscription"> | string | null
     currentPeriodEnd?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     cancelAtPeriodEnd?: BoolFilter<"Subscription"> | boolean
+    expiryAlertSentAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     amountPaid?: IntNullableFilter<"Subscription"> | number | null
     currency?: StringNullableFilter<"Subscription"> | string | null
     startedAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
@@ -97722,6 +97736,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: SortOrderInput | SortOrder
     currentPeriodEnd?: SortOrderInput | SortOrder
     cancelAtPeriodEnd?: SortOrder
+    expiryAlertSentAt?: SortOrderInput | SortOrder
     amountPaid?: SortOrderInput | SortOrder
     currency?: SortOrderInput | SortOrder
     startedAt?: SortOrderInput | SortOrder
@@ -97755,6 +97770,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: StringNullableFilter<"Subscription"> | string | null
     currentPeriodEnd?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     cancelAtPeriodEnd?: BoolFilter<"Subscription"> | boolean
+    expiryAlertSentAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     amountPaid?: IntNullableFilter<"Subscription"> | number | null
     currency?: StringNullableFilter<"Subscription"> | string | null
     startedAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
@@ -97785,6 +97801,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: SortOrderInput | SortOrder
     currentPeriodEnd?: SortOrderInput | SortOrder
     cancelAtPeriodEnd?: SortOrder
+    expiryAlertSentAt?: SortOrderInput | SortOrder
     amountPaid?: SortOrderInput | SortOrder
     currency?: SortOrderInput | SortOrder
     startedAt?: SortOrderInput | SortOrder
@@ -97819,6 +97836,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
     currentPeriodEnd?: DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
     cancelAtPeriodEnd?: BoolWithAggregatesFilter<"Subscription"> | boolean
+    expiryAlertSentAt?: DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
     amountPaid?: IntNullableWithAggregatesFilter<"Subscription"> | number | null
     currency?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
     startedAt?: DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
@@ -104972,6 +104990,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -105001,6 +105020,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -105024,6 +105044,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -105053,6 +105074,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -105079,6 +105101,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -105102,6 +105125,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -105127,6 +105151,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -110719,6 +110744,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: SortOrder
     currentPeriodEnd?: SortOrder
     cancelAtPeriodEnd?: SortOrder
+    expiryAlertSentAt?: SortOrder
     amountPaid?: SortOrder
     currency?: SortOrder
     startedAt?: SortOrder
@@ -110749,6 +110775,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: SortOrder
     currentPeriodEnd?: SortOrder
     cancelAtPeriodEnd?: SortOrder
+    expiryAlertSentAt?: SortOrder
     amountPaid?: SortOrder
     currency?: SortOrder
     startedAt?: SortOrder
@@ -110775,6 +110802,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: SortOrder
     currentPeriodEnd?: SortOrder
     cancelAtPeriodEnd?: SortOrder
+    expiryAlertSentAt?: SortOrder
     amountPaid?: SortOrder
     currency?: SortOrder
     startedAt?: SortOrder
@@ -118277,6 +118305,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -118304,6 +118333,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -118752,6 +118782,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: StringNullableFilter<"Subscription"> | string | null
     currentPeriodEnd?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     cancelAtPeriodEnd?: BoolFilter<"Subscription"> | boolean
+    expiryAlertSentAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     amountPaid?: IntNullableFilter<"Subscription"> | number | null
     currency?: StringNullableFilter<"Subscription"> | string | null
     startedAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
@@ -120001,6 +120032,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -120028,6 +120060,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -120056,6 +120089,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -120083,6 +120117,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -120851,6 +120886,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -120878,6 +120914,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -130850,6 +130887,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -130878,6 +130916,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -135034,6 +135073,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -135545,6 +135585,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -135572,6 +135613,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -135597,6 +135639,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -135622,6 +135665,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -135935,6 +135979,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -135962,6 +136007,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -135987,6 +136033,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -138956,6 +139003,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: string | null
     currentPeriodEnd?: Date | string | null
     cancelAtPeriodEnd?: boolean
+    expiryAlertSentAt?: Date | string | null
     amountPaid?: number | null
     currency?: string | null
     startedAt?: Date | string | null
@@ -139035,6 +139083,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -139063,6 +139112,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -139088,6 +139138,7 @@ export namespace Prisma {
     dodoCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    expiryAlertSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountPaid?: NullableIntFieldUpdateOperationsInput | number | null
     currency?: NullableStringFieldUpdateOperationsInput | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
