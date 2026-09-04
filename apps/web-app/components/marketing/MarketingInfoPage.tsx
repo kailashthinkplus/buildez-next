@@ -2,10 +2,10 @@ import Link from "next/link";
 
 import { MarketingFooter } from "./MarketingFooter";
 import { MarketingHeader } from "./MarketingHeader";
-import { marketingPages, type MarketingPageKey } from "./marketingPages";
+import { marketingPages, type MarketingPageKey, type MarketingPageContent } from "./marketingPages";
 
-export function MarketingInfoPage({ page }: { page: MarketingPageKey }) {
-  const content = marketingPages[page];
+export function MarketingInfoPage({ page, contentOverride }: { page: MarketingPageKey; contentOverride?: MarketingPageContent }) {
+  const content = contentOverride ?? marketingPages[page];
   const legalPages: MarketingPageKey[] = ["privacy", "terms", "refunds", "cookies", "dpa"];
   const isLegal = legalPages.includes(page);
 
