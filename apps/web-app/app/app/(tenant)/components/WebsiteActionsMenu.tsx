@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { withVerifiedDomainOverride } from "@/lib/runtime/site-live-url";
 
 export type WebsiteActionsMenuSite = {
   id: string;
@@ -21,6 +22,7 @@ export type WebsiteActionsMenuSite = {
   slug: string;
   status: string;
   archived?: boolean;
+  verifiedDomain?: string | null;
 };
 
 type WebsiteActionsMenuProps = {
@@ -133,7 +135,7 @@ export default function WebsiteActionsMenu({ site, onChanged }: WebsiteActionsMe
 
             {isPublished && !isArchived ? (
               <a
-                href={publishedSitePath(site.slug)}
+                href={withVerifiedDomainOverride(publishedSitePath(site.slug), site.verifiedDomain)}
                 target="_blank"
                 rel="noreferrer"
                 onClick={() => setOpen(false)}

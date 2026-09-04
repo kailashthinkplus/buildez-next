@@ -25,6 +25,7 @@ import {
   resolvePageCanvasState,
 } from "@/modules/builder-v3/pageCanvasState";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { withVerifiedDomainOverride } from "@/lib/runtime/site-live-url";
 import { takePendingAttachments } from "@/modules/ai-v12/pendingAttachments";
 import MediaLibrary from "@/modules/builder-v2/media/components/MediaLibrary";
 
@@ -173,6 +174,7 @@ type Builder3CanvasProps = {
   siteId: string;
   siteName: string;
   siteSlug: string;
+  verifiedDomain?: string | null;
   page?: BuilderPage;
   initialPanel?: LeftPanel;
   initialPrompt?: string;
@@ -184,6 +186,7 @@ export default function Builder3Canvas({
   siteId,
   siteName,
   siteSlug,
+  verifiedDomain,
   page,
   initialPanel,
   initialPrompt = "",
@@ -415,7 +418,7 @@ export default function Builder3Canvas({
       const payload = await response.json();
       if (!response.ok) throw new Error(apiErrorMessage(payload, "Could not publish page"));
       const publicUrl = canonicalPageUrl
-        ?? `${window.location.origin}${publishedSitePath(siteSlug, page.slug)}`;
+        ?? withVerifiedDomainOverride(`${window.location.origin}${publishedSitePath(siteSlug, page.slug)}`, verifiedDomain, page.slug);
       setPageStatus("PUBLISHED");
       setPublishedAt(new Date().toISOString());
       setScheduledPublishAt(null);
@@ -691,7 +694,7 @@ export default function Builder3Canvas({
   })();
 
   const canonicalPageUrl = page?.slug && builderOrigin
-    ? `${builderOrigin}${publishedSitePath(siteSlug, page.slug)}`
+    ? withVerifiedDomainOverride(`${builderOrigin}${publishedSitePath(siteSlug, page.slug)}`, verifiedDomain, page.slug)
     : undefined;
 
   const iframeUrl =

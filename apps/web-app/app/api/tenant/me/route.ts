@@ -69,6 +69,9 @@ export async function GET(req: NextRequest) {
     const sites = await prisma.site.findMany({
       where: { tenantId: tenant.id, deletedAt: null },
       orderBy: { createdAt: "asc" },
+      include: {
+        domains: { where: { status: "VERIFIED" }, select: { domain: true }, take: 1 },
+      },
     });
 
     console.log("📄 [tenant/me] Sites:", sites.length);

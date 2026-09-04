@@ -21,6 +21,7 @@ export interface Website {
   status?: string;
   logoUrl?: string | null;
   faviconUrl?: string | null;
+  verifiedDomain?: string | null;
 }
 
 interface SubscriptionPlan {
@@ -129,6 +130,7 @@ export function WorkspaceProvider({
             status?: string;
             logoUrl?: unknown;
             settings?: { faviconUrl?: unknown };
+            domains?: Array<{ domain: string }>;
           }) => ({
             id: s.id,
             name: s.name,
@@ -136,6 +138,7 @@ export function WorkspaceProvider({
             status: typeof s.status === "string" ? s.status : "DRAFT",
             logoUrl: typeof s.logoUrl === "string" ? s.logoUrl : null,
             faviconUrl: typeof s.settings?.faviconUrl === "string" ? s.settings.faviconUrl : null,
+            verifiedDomain: s.domains?.[0]?.domain ?? null,
           })
         );
 

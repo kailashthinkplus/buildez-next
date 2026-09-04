@@ -157,6 +157,7 @@ export const GET = async (request: NextRequest) => {
               id: true,
               slug: true,
               v12Project: { select: { id: true } },
+              domains: { where: { status: "VERIFIED" }, select: { domain: true }, take: 1 },
             },
           },
           blueprint: { select: { id: true } },
@@ -183,6 +184,7 @@ export const GET = async (request: NextRequest) => {
     );
 
     const normalizedPages = pages.map((page) => {
+      const { domains: siteDomains, ...site } = page.site;
       const metadata = asRecord(page.metadata);
       const seoTitle = asString(metadata.seoTitle);
       const seoDescription = asString(metadata.seoDescription);
@@ -200,6 +202,7 @@ export const GET = async (request: NextRequest) => {
 
       return {
         ...page,
+        site: { ...site, verifiedDomain: siteDomains[0]?.domain ?? null },
         seoTitle,
         seoDescription,
         faviconUrl,

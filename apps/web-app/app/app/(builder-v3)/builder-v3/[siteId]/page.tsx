@@ -63,6 +63,7 @@ export default async function Builder3Page({
       id: true,
       name: true,
       slug: true,
+      domains: { where: { status: "VERIFIED" }, select: { domain: true }, take: 1 },
     },
   });
 
@@ -104,6 +105,7 @@ export default async function Builder3Page({
       siteId={site.id}
       siteName={site.name}
       siteSlug={site.slug}
+      verifiedDomain={site.domains[0]?.domain ?? null}
       initialPanel={
         requested.panel === "ai"
           ? "ai"

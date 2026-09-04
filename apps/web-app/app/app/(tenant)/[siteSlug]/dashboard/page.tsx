@@ -10,6 +10,7 @@ import { WebsiteThumbnail } from "../../components/WebsiteThumbnail";
 import { useWorkspace } from "../../components/WorkspaceContext";
 import type { InsightFinding, InsightReport } from "@/modules/insights/types";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { withVerifiedDomainOverride } from "@/lib/runtime/site-live-url";
 import { stashPendingAttachments } from "@/modules/ai-v12/pendingAttachments";
 
 type Analytics = {
@@ -162,7 +163,7 @@ export default function SiteDashboardPage() {
             </button>
           </div>
           <Link
-            href={publishedSitePath(siteSlug)}
+            href={withVerifiedDomainOverride(publishedSitePath(siteSlug), website?.verifiedDomain)}
             target="_blank"
             aria-disabled={!siteIsLive}
             tabIndex={siteIsLive ? undefined : -1}
@@ -181,7 +182,7 @@ export default function SiteDashboardPage() {
         </div>
       ) : null}
 
-      <RecommendationBar key={websiteId || siteSlug} siteId={websiteId} siteSlug={siteSlug} analytics={analytics} publishedPages={pages.published} />
+      <RecommendationBar key={websiteId || siteSlug} siteId={websiteId} siteSlug={siteSlug} analytics={analytics} publishedPages={pages.published} verifiedDomain={website?.verifiedDomain} />
 
       <section className="mb-6 mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Metric icon={Eye} label="Page views" value={analytics?.totals.pageViews || 0} change={analytics?.totals.pageViewsChange} tone="cyan" loading={loading} />
@@ -196,7 +197,7 @@ export default function SiteDashboardPage() {
       </section>
 
       <section className="mt-5 grid gap-5 xl:grid-cols-[.85fr_1.15fr]">
-        <WebsitePreview siteId={websiteId} siteSlug={siteSlug} siteName={website?.name || siteSlug} siteStatus={website?.status} />
+        <WebsitePreview siteId={websiteId} siteSlug={siteSlug} siteName={website?.name || siteSlug} siteStatus={website?.status} verifiedDomain={website?.verifiedDomain} />
         <AiCreditsCard balance={creditBalance} loading={creditsLoading} />
         <div className="xl:col-start-2 xl:row-start-1 [&>*]:h-full">
           <CopilotPromptCard contextLabel={`${website?.name || siteSlug} website`} onSubmit={(prompt,attachments)=>{if(!websiteId)return;stashPendingAttachments(attachments ?? []);const query=new URLSearchParams({panel:'ai',context:'Website',prompt:prompt.slice(0,4000)});router.push(`/app/builder-v3/${websiteId}?${query.toString()}`)}} />
@@ -234,7 +235,7 @@ function PageRow({ name, path, value, width, tone }: { name: string; path: strin
   return <div className="rounded-xl p-3 dashboard-hover"><div className="flex justify-between text-sm"><div><span className="font-medium">{name}</span><span className="ml-2 text-xs dashboard-faint">{path}</span></div><span className="dashboard-muted">{value}</span></div><div className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/[.05] dark:bg-white/[.06]"><div className={`page-progress progress-${tone} h-full rounded-full`} style={{ width }} /></div></div>;
 }
 
-function RecommendationBar({ siteId, siteSlug, analytics, publishedPages }: { siteId?: string; siteSlug: string; analytics?: Analytics; publishedPages: number }) {
+function RecommendationBar({ siteId, siteSlug, analytics, publishedPages, verifiedDomain }: { siteId?: string; siteSlug: string; analytics?: Analytics; publishedPages: number; verifiedDomain?: string | null }) {
   const [report, setReport] = useState<InsightReport>();
   const [insightsLoading, setInsightsLoading] = useState(true);
   const [shopStatus, setShopStatus] = useState<{ enabled: boolean; hasPaymentGateway: boolean }>();
@@ -275,13 +276,13 @@ function RecommendationBar({ siteId, siteSlug, analytics, publishedPages }: { si
     }
     if (shopStatus?.enabled && !shopStatus.hasPaymentGateway) items.push({ text: "Shopez is live but no payment gateway is connected yet, so customers can't pay.", action: "Set up payments", href: `/app/${siteSlug}/shopez?view=payments` });
     if (!publishedPages) items.push({ text: "Publish a page so visitors can discover and interact with this website.", action: "Manage pages", href: `/app/${siteSlug}/pages` });
-    if (!analytics?.totals.pageViews) items.push({ text: "No visits have been recorded yet. Publish and share the website to begin collecting insights.", action: "Open website", href: siteId ? publishedSitePath(siteSlug) : `/app/${siteSlug}/pages` });
+    if (!analytics?.totals.pageViews) items.push({ text: "No visits have been recorded yet. Publish and share the website to begin collecting insights.", action: "Open website", href: siteId ? withVerifiedDomainOverride(publishedSitePath(siteSlug), verifiedDomain) : `/app/${siteSlug}/pages` });
     if ((analytics?.totals.bounceRate || 0) > 65) items.push({ text: `Bounce rate is ${analytics?.totals.bounceRate}%. Strengthen the opening message and primary action.`, action: "Review pages", href: `/app/${siteSlug}/pages` });
     if ((analytics?.totals.pageViews || 0) > 10 && !analytics?.totals.conversions) items.push({ text: "Traffic is arriving, but no conversions are recorded. Add a clearer form or primary call to action.", action: "Open CRM", href: `/app/${siteSlug}/crm` });
     if (items.length < 3) items.push({ text: "Review your traffic sources and top pages to decide what content to improve next.", action: "Open analytics", href: `/app/${siteSlug}/analytics` });
     if (items.length < 3) items.push({ text: "Keep your brand, SEO, social sharing, and domain information current.", action: "Site settings", href: `/app/${siteSlug}/settings` });
     return items.slice(0, 3);
-  }, [analytics, publishedPages, report, shopStatus, siteId, siteSlug]);
+  }, [analytics, publishedPages, report, shopStatus, siteId, siteSlug, verifiedDomain]);
 
   return <section className="ai-recommendations relative overflow-hidden rounded-2xl p-3">
     <div className="pointer-events-none absolute -right-16 -top-20 h-44 w-44 rounded-full bg-violet-500/10 blur-3xl" />
@@ -326,8 +327,8 @@ function Recommendation({ text, action, href, insight }: { text: string; action:
   return <div className="ai-recommendation-card rounded-xl p-3"><div className="flex gap-2">{insight ? <Sparkles size={13} className="mt-1 shrink-0 text-violet-500"/> : null}<p className="text-xs leading-5 dashboard-muted">{text}</p><button type="button" onClick={() => setVisible(false)} aria-label="Dismiss" className="ml-auto self-start dashboard-faint"><X size={14} /></button></div><Link href={href} className="mt-3 inline-flex items-center gap-1 rounded-lg border dashboard-border px-2.5 py-1.5 text-xs font-medium text-cyan-700 dark:text-cyan-300">{action}{insight ? <ArrowRight size={12}/> : null}</Link></div>;
 }
 
-function WebsitePreview({ siteId, siteSlug, siteName, siteStatus }: { siteId?: string; siteSlug: string; siteName: string; siteStatus?: string }) {
-  const previewUrl = siteId && siteStatus === "PUBLISHED" ? publishedSitePath(siteSlug) : "";
+function WebsitePreview({ siteId, siteSlug, siteName, siteStatus, verifiedDomain }: { siteId?: string; siteSlug: string; siteName: string; siteStatus?: string; verifiedDomain?: string | null }) {
+  const previewUrl = siteId && siteStatus === "PUBLISHED" ? withVerifiedDomainOverride(publishedSitePath(siteSlug), verifiedDomain) : "";
   return <div className="dashboard-card h-full rounded-2xl p-5 xl:col-start-1 xl:row-start-1"><div className="flex items-center justify-between"><div><h2 className="font-semibold">Website preview</h2><p className="mt-1 text-xs dashboard-muted">Latest website version</p></div>{previewUrl ? <Link href={previewUrl} target="_blank" className="rounded-lg p-2 dashboard-hover" aria-label="Open website"><ExternalLink size={16} /></Link> : null}</div><div className="mt-5 overflow-hidden rounded-xl border dashboard-border bg-[var(--dashboard-bg-soft)]"><div className="flex h-8 items-center gap-1.5 border-b dashboard-border bg-[var(--dashboard-surface)] px-3"><span className="h-2 w-2 rounded-full bg-neutral-300 dark:bg-neutral-600" /><span className="h-2 w-2 rounded-full bg-neutral-300 dark:bg-neutral-600" /><span className="h-2 w-2 rounded-full bg-neutral-300 dark:bg-neutral-600" /><span className="ml-2 truncate text-[9px] dashboard-faint">/{siteSlug}</span></div><div className="relative aspect-[4/3] max-h-[320px] overflow-hidden">{siteId ? <><WebsiteThumbnail siteId={siteId} siteName={siteName} siteStatus={siteStatus} className="h-full w-full" />{previewUrl ? <Link href={previewUrl} target="_blank" className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-xs font-medium text-white shadow-lg"><Monitor size={13} /> View website</Link> : null}</> : <img src="/website-placeholder.svg" alt={`${siteName} website preview placeholder`} className="h-full w-full object-cover" />}</div></div></div>;
 }
 

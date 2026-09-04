@@ -30,6 +30,7 @@ import CreateSiteModal, {
 import { WebsiteThumbnail } from "../components/WebsiteThumbnail";
 import WebsiteActionsMenu from "../components/WebsiteActionsMenu";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { withVerifiedDomainOverride } from "@/lib/runtime/site-live-url";
 import { stashPendingAttachments } from "@/modules/ai-v12/pendingAttachments";
 
 const PLATFORM_DOMAIN = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || "getbuildezy.com";
@@ -50,6 +51,7 @@ type WorkspaceAnalytics = {
     archived: boolean;
     pageViews: number;
     visitors: number;
+    verifiedDomain: string | null;
   }>;
 };
 
@@ -554,7 +556,7 @@ export default function GlobalDashboardPage() {
                                 {site.name}
                               </span>
                               <span className="block truncate text-xs dashboard-muted">
-                                {PLATFORM_DOMAIN}{publishedSitePath(site.slug)}
+                                {formatLiveAddress(site.slug, site.verifiedDomain)}
                               </span>
                             </span>
 
@@ -768,7 +770,7 @@ function WebsiteCard({
           <div className="min-w-0">
             <h3 className="truncate font-semibold">{site.name}</h3>
             <p className="mt-1 truncate text-xs dashboard-muted">
-              {PLATFORM_DOMAIN}{publishedSitePath(site.slug)}
+              {formatLiveAddress(site.slug, site.verifiedDomain)}
             </p>
           </div>
 
@@ -802,6 +804,11 @@ function WebsiteCard({
       </div>
     </article>
   );
+}
+
+function formatLiveAddress(slug: string, verifiedDomain: string | null) {
+  const url = withVerifiedDomainOverride(`https://${PLATFORM_DOMAIN}${publishedSitePath(slug)}`, verifiedDomain);
+  return url.replace(/^https?:\/\//, "");
 }
 
 function formatNumber(value: number) {

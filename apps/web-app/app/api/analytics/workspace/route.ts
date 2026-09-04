@@ -10,7 +10,15 @@ export async function GET() {
   const [sites, events, aiGenerations] = await Promise.all([
     prisma.site.findMany({
       where: { tenantId: auth.tenant.id, deletedAt: null },
-      select: { id: true, name: true, slug: true, status: true, updatedAt: true, archivedAt: true },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        status: true,
+        updatedAt: true,
+        archivedAt: true,
+        domains: { where: { status: "VERIFIED" }, select: { domain: true }, take: 1 },
+      },
     }),
     prisma.trafficEvent.findMany({
       where: {
@@ -46,11 +54,12 @@ export async function GET() {
       visitors: visitors.size,
       aiGenerations,
     },
-    sites: sites.map((x) => ({
+    sites: sites.map(({ domains, ...x }) => ({
       ...x,
       archived: Boolean(x.archivedAt),
       pageViews: bySite.get(x.id)?.views || 0,
       visitors: bySite.get(x.id)?.visitors.size || 0,
+      verifiedDomain: domains[0]?.domain ?? null,
     })),
   });
 }

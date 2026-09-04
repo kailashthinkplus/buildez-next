@@ -26,6 +26,7 @@ import CreatePageModal from "../pages/components/CreatePageModal";
 import PageSettingsModal from "../pages/components/PageSettingsModal";
 import DeletePageModal from "../pages/components/DeletePageModal";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { withVerifiedDomainOverride } from "@/lib/runtime/site-live-url";
 
 import { usePages } from "../pages/hooks/usePages";
 import { WebsiteThumbnail } from "./WebsiteThumbnail";
@@ -44,7 +45,7 @@ type PageRow = {
   status: string;
   updatedAt: string;
   deletedAt?: string | null;
-  site?: { id?: string; slug?: string; v12Project?: { id: string } | null };
+  site?: { id?: string; slug?: string; v12Project?: { id: string } | null; verifiedDomain?: string | null };
   siteSlug?: string;
   renderMode?: string;
   isFrontPage?: boolean;
@@ -492,7 +493,7 @@ export default function PagesView({ siteSlug }: Props) {
                               );
                             }
                           }}
-                          onView={pageRow.status === "PUBLISHED" && getPageSiteSlug(pageRow, siteSlug) ? () => window.open(publishedSitePath(getPageSiteSlug(pageRow, siteSlug), pageRow.slug), "_blank", "noopener,noreferrer") : undefined}
+                          onView={pageRow.status === "PUBLISHED" && getPageSiteSlug(pageRow, siteSlug) ? () => window.open(withVerifiedDomainOverride(publishedSitePath(getPageSiteSlug(pageRow, siteSlug), pageRow.slug), pageRow.site?.verifiedDomain, pageRow.slug), "_blank", "noopener,noreferrer") : undefined}
                           onDuplicate={async () => {
                             await duplicatePage(pageRow.id);
                           }}

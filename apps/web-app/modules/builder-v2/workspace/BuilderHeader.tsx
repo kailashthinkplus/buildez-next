@@ -33,6 +33,7 @@ import PublishModal from "../components/PublishModal";
 import { commandBus } from "../core/commands/CommandBus";
 import { useBuilderStore } from "../store/useBuilderStore";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { withVerifiedDomainOverride } from "@/lib/runtime/site-live-url";
 
 /* ============================================================================
    TYPES
@@ -42,7 +43,7 @@ interface PageItem {
   id: string;
   title: string;
   slug: string;
-  site: { id: string; slug: string };
+  site: { id: string; slug: string; verifiedDomain?: string | null };
   status: "DRAFT" | "PUBLISHED";
 }
 
@@ -338,7 +339,7 @@ const previewUrl = siteSlug && previewSlug
   ? `/preview/${siteSlug}/${previewSlug}`
   : "";
 const publicUrl = currentPage?.site.slug && pageSlug
-  ? publishedSitePath(currentPage.site.slug, pageSlug)
+  ? withVerifiedDomainOverride(publishedSitePath(currentPage.site.slug, pageSlug), currentPage.site.verifiedDomain, pageSlug)
   : previewUrl;
 const currentPageTitle = currentPage?.title ?? pageTitle ?? "Untitled page";
   
