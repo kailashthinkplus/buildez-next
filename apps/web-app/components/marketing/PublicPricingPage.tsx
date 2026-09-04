@@ -70,11 +70,13 @@ export function PublicPricingPage() {
           </div>
           <div className="public-pricing-intro">
             <p>Every public plan below is loaded live from the BuildEzy plan catalogue managed by Super Admin. Limits, features, and prices update here when the catalogue changes.</p>
-            <div className="pricing-cycle" aria-label="Billing cycle">
-              <button className={billing === "monthly" ? "active" : ""} onClick={() => setBilling("monthly")}>Monthly</button>
-              <button disabled={!hasYearly} className={billing === "yearly" ? "active" : ""} onClick={() => setBilling("yearly")}>Yearly</button>
+            <div className="pricing-controls-row">
+              <div className="pricing-cycle" aria-label="Billing cycle">
+                <button className={billing === "monthly" ? "active" : ""} onClick={() => setBilling("monthly")}>Monthly</button>
+                <button disabled={!hasYearly} className={billing === "yearly" ? "active" : ""} onClick={() => setBilling("yearly")}>Yearly</button>
+              </div>
+              <CurrencySwitcher symbolOnly stacked currency={displayCurrency} currencies={availableCurrencies} onChange={setCurrency} />
             </div>
-            <CurrencySwitcher symbolOnly stacked currency={displayCurrency} currencies={availableCurrencies} onChange={setCurrency} />
             {displayCurrency !== "INR" ? (
               <p className="pricing-currency-note">
                 Showing estimated prices in {displayCurrency}, converted from INR at today's rate.
