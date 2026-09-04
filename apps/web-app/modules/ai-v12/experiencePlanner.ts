@@ -139,6 +139,14 @@ function extractOutputText(payload: any): string {
   return "";
 }
 
+/** OpenAI's Responses API sets this when generation stopped early — most commonly for hitting max_output_tokens. */
+function isIncompleteResponse(payload: any): boolean {
+  return (
+    payload?.status === "incomplete" ||
+    payload?.incomplete_details?.reason === "max_output_tokens"
+  );
+}
+
 function fallbackPlan(
   deterministic: V12CapabilityPlan,
 ): V12ExperiencePlannerResult {
@@ -201,8 +209,8 @@ export async function planV12Experience(input: {
     once: true,
   });
 
-  try {
-    const response = await fetch(
+  const requestExperiencePlan = (maxOutputTokens: number) =>
+    fetch(
       "https://api.openai.com/v1/responses",
       {
         method: "POST",
@@ -221,7 +229,7 @@ export async function planV12Experience(input: {
             effort: "low",
           },
 
-          max_output_tokens: 2200,
+          max_output_tokens: maxOutputTokens,
 
           text: {
             format: {
@@ -368,20 +376,44 @@ ${input.researchContext || "None"}
       },
     );
 
-    if (!response.ok) {
-      return fallback;
+  try {
+    // The model's response can be cut off before it finishes (hitting
+    // max_output_tokens) even with strict json_schema mode, leaving the
+    // text syntactically invalid JSON. Retry once with a larger budget
+    // before falling back to the deterministic plan.
+    let maxOutputTokens = 2200;
+
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      const response = await requestExperiencePlan(maxOutputTokens);
+      if (!response.ok) return fallback;
+
+      const payload = await response.json();
+      const text = extractOutputText(payload);
+      if (!text) return fallback;
+
+      if (isIncompleteResponse(payload)) {
+        if (attempt === 2) {
+          console.warn("[Experience Planner] response was cut off after retry; using deterministic fallback plan");
+          return fallback;
+        }
+        console.warn("[Experience Planner] response was cut off before it finished, retrying with a larger output budget");
+        maxOutputTokens = 4400;
+        continue;
+      }
+
+      try {
+        return JSON.parse(text) as V12ExperiencePlannerResult;
+      } catch {
+        if (attempt === 2) {
+          console.warn("[Experience Planner] response was not valid JSON after retry; using deterministic fallback plan");
+          return fallback;
+        }
+        console.warn("[Experience Planner] response was not valid JSON, retrying with a larger output budget");
+        maxOutputTokens = 4400;
+      }
     }
 
-    const payload = await response.json();
-
-    const text = extractOutputText(payload);
-
-    if (!text) return fallback;
-
-    const parsed =
-      JSON.parse(text) as V12ExperiencePlannerResult;
-
-    return parsed;
+    return fallback;
   } catch {
     return fallback;
   } finally {

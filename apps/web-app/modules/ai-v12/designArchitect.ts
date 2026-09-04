@@ -397,6 +397,14 @@ function outputText(payload: any): string {
   return "";
 }
 
+/** OpenAI's Responses API sets this when generation stopped early — most commonly for hitting max_output_tokens. */
+function isIncompleteResponse(payload: any): boolean {
+  return (
+    payload?.status === "incomplete" ||
+    payload?.incomplete_details?.reason === "max_output_tokens"
+  );
+}
+
 function fallbackPlan(
   prompt: string,
   deterministic: V12CapabilityPlan,
@@ -582,8 +590,8 @@ export async function createV12DesignArchitectPlan(input: {
     input.deterministicPlan,
   ), input.creativeDirection);
 
-  try {
-    const response = await fetch(
+  const requestDesignArchitectPlan = (maxOutputTokens: number) =>
+    fetch(
       "https://api.openai.com/v1/responses",
       {
         method: "POST",
@@ -613,7 +621,7 @@ export async function createV12DesignArchitectPlan(input: {
             effort: "low",
           },
 
-          max_output_tokens: 5000,
+          max_output_tokens: maxOutputTokens,
 
           text: {
             format: {
@@ -960,19 +968,46 @@ Create one coherent implementation-ready design architecture.
       },
     );
 
-    if (!response.ok) {
-      return fallback;
+  try {
+    // The model's response can be cut off before it finishes (hitting
+    // max_output_tokens) even with strict json_schema mode, leaving the
+    // text syntactically invalid JSON. Retry once with a larger budget
+    // before falling back to the deterministic plan, since the fallback
+    // loses the model's actual design direction.
+    let maxOutputTokens = 5000;
+    let plan: V12DesignArchitectResult | undefined;
+
+    for (let attempt = 1; attempt <= 2 && !plan; attempt++) {
+      const response = await requestDesignArchitectPlan(maxOutputTokens);
+      if (!response.ok) return fallback;
+
+      const payload = await response.json();
+      const text = outputText(payload);
+      if (!text) return fallback;
+
+      if (isIncompleteResponse(payload)) {
+        if (attempt === 2) {
+          console.warn("[Design Architect] response was cut off after retry; using deterministic fallback plan");
+          return fallback;
+        }
+        console.warn("[Design Architect] response was cut off before it finished, retrying with a larger output budget");
+        maxOutputTokens = 9000;
+        continue;
+      }
+
+      try {
+        plan = JSON.parse(text) as V12DesignArchitectResult;
+      } catch {
+        if (attempt === 2) {
+          console.warn("[Design Architect] response was not valid JSON after retry; using deterministic fallback plan");
+          return fallback;
+        }
+        console.warn("[Design Architect] response was not valid JSON, retrying with a larger output budget");
+        maxOutputTokens = 9000;
+      }
     }
 
-    const payload = await response.json();
-    const text = outputText(payload);
-
-    if (!text) {
-      return fallback;
-    }
-
-    const plan =
-      JSON.parse(text) as V12DesignArchitectResult;
+    if (!plan) return fallback;
 
     const creativeDirection =
       input.creativeDirection &&

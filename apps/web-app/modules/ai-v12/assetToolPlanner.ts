@@ -94,6 +94,14 @@ function extractOutputText(payload: any): string {
   return "";
 }
 
+/** OpenAI's Responses API sets this when generation stopped early — most commonly for hitting max_output_tokens. */
+function isIncompleteResponse(payload: any): boolean {
+  return (
+    payload?.status === "incomplete" ||
+    payload?.incomplete_details?.reason === "max_output_tokens"
+  );
+}
+
 const schema = {
   type: "object",
   additionalProperties: false,
@@ -183,8 +191,8 @@ export async function planV12AssetsAndTools(input: {
 }): Promise<V12AssetToolPlan> {
   const fallback = fallbackPlan(input.experiencePlan);
 
-  try {
-    const response = await fetch(
+  const requestAssetToolPlan = (maxOutputTokens: number) =>
+    fetch(
       "https://api.openai.com/v1/responses",
       {
         method: "POST",
@@ -196,7 +204,7 @@ export async function planV12AssetsAndTools(input: {
         body: JSON.stringify({
           model: input.model,
           reasoning: { effort: "low" },
-          max_output_tokens: 2600,
+          max_output_tokens: maxOutputTokens,
 
           text: {
             format: {
@@ -312,14 +320,44 @@ Create a production-focused asset/tool plan.
       }
     );
 
-    if (!response.ok) return fallback;
+  try {
+    // The model's response can be cut off before it finishes (hitting
+    // max_output_tokens) even with strict json_schema mode, leaving the
+    // text syntactically invalid JSON. Retry once with a larger budget
+    // before falling back to the deterministic plan.
+    let maxOutputTokens = 2600;
 
-    const payload = await response.json();
-    const text = extractOutputText(payload);
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      const response = await requestAssetToolPlan(maxOutputTokens);
+      if (!response.ok) return fallback;
 
-    if (!text) return fallback;
+      const payload = await response.json();
+      const text = extractOutputText(payload);
+      if (!text) return fallback;
 
-    return JSON.parse(text) as V12AssetToolPlan;
+      if (isIncompleteResponse(payload)) {
+        if (attempt === 2) {
+          console.warn("[Asset/Tool Planner] response was cut off after retry; using deterministic fallback plan");
+          return fallback;
+        }
+        console.warn("[Asset/Tool Planner] response was cut off before it finished, retrying with a larger output budget");
+        maxOutputTokens = 5200;
+        continue;
+      }
+
+      try {
+        return JSON.parse(text) as V12AssetToolPlan;
+      } catch {
+        if (attempt === 2) {
+          console.warn("[Asset/Tool Planner] response was not valid JSON after retry; using deterministic fallback plan");
+          return fallback;
+        }
+        console.warn("[Asset/Tool Planner] response was not valid JSON, retrying with a larger output budget");
+        maxOutputTokens = 5200;
+      }
+    }
+
+    return fallback;
   } catch {
     return fallback;
   }
