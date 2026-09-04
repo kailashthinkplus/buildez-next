@@ -15,6 +15,7 @@ import { SiteThemeFrame } from "@/modules/builder-v2/theme/SiteThemeFrame";
 import { createDefaultSiteThemeLayout, disableSiteThemeChrome, hasExplicitSiteThemeLayout, normalizeSiteThemeLayout } from "@/modules/builder-v2/theme/siteLayout";
 import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
 import { PoweredByBuildez } from "@/modules/runtime/PoweredByBuildez";
+import { PublishedV12Frame } from "@/modules/runtime/PublishedV12Frame";
 import { shouldShowBuildezBranding } from "@/modules/runtime/publishedBranding";
 import { CookieConsentBanner } from "@/modules/legal/CookieConsentBanner";
 
@@ -34,7 +35,7 @@ export async function renderPublishedSitePage(siteSlug: string, pageSlug?: strin
   if (route.renderMode === "REACT" && route.hasV12Project) {
     const iframePath = `/api/runtime/v12/${encodeURIComponent(route.siteId)}/${route.pageSlug === "home" ? "" : route.pageSlug.split("/").map(encodeURIComponent).join("/")}`;
     const showBranding = await shouldShowBuildezBranding({ siteId: route.siteId, tenantId: route.tenantId });
-    return <main className="relative h-screen w-full overflow-hidden bg-white">{options?.preview ? null : <StructuredData siteName={route.siteName} settings={route.settings}/>}<AnalyticsTracker siteId={route.siteId}/><SiteIntegrationsScripts siteId={route.siteId}/><iframe title={`${route.siteName} website`} src={iframePath} className="h-full w-full border-0"/>{showBranding ? <PoweredByBuildez/> : null}{siteCookieBanner}</main>;
+    return <main className="relative h-screen w-full overflow-hidden bg-white">{options?.preview ? null : <StructuredData siteName={route.siteName} settings={route.settings}/>}<AnalyticsTracker siteId={route.siteId}/><SiteIntegrationsScripts siteId={route.siteId}/><PublishedV12Frame title={`${route.siteName} website`} iframePath={iframePath} currentPageSlug={route.pageSlug}/>{showBranding ? <PoweredByBuildez/> : null}{siteCookieBanner}</main>;
   }
   const result = await renderPage({ siteSlug, siteId: options?.siteId, pageSlug: route.pageSlug });
   if (!result) notFound();

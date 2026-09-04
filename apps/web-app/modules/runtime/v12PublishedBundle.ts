@@ -54,6 +54,7 @@ try{
 var slug=slugFor(location.pathname);
 if(slug===lastSlug)return;
 lastSlug=slug;
+try{if(window.parent&&window.parent!==window)window.parent.postMessage({type:"BUILDEZ_PUBLISHED_NAV",slug:slug},"*");}catch(e){}
 fetch(api+"?slug="+encodeURIComponent(slug),{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(data){
 if(!data)return;
 var existingStyle=document.getElementById("buildez-custom-css");
