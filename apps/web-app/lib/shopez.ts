@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { prisma } from "@buildez/db";
 import { NextRequest } from "next/server";
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
+import { sendShopOrderEmails } from "@/lib/shopez-order-emails";
 
 export function shopHandle(value: string) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 120);
@@ -47,7 +48,13 @@ export function money(value: unknown) {
  * return-flow confirmation) and provider webhooks (Stripe/Dodo), so both
  * paths agree on exactly what "paid" means for an order. */
 export async function markShopOrderPaid(orderId: string, providerPaymentId?: string | null) {
-  const order = await prisma.shopOrder.findUnique({ where: { id: orderId }, include: { items: true } });
+  const order = await prisma.shopOrder.findUnique({
+    where: { id: orderId },
+    include: {
+      items: true,
+      shop: { select: { id: true, siteId: true, tenantId: true, name: true, supportEmail: true } },
+    },
+  });
   if (!order || order.paymentStatus === "PAID") return order;
   await prisma.$transaction([
     prisma.shopOrder.update({
@@ -61,5 +68,6 @@ export async function markShopOrderPaid(orderId: string, providerPaymentId?: str
         data: { inventory: { decrement: item.quantity } },
       })),
   ]);
+  sendShopOrderEmails(order, order.items, order.shop);
   return order;
 }
