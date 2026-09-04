@@ -15,6 +15,7 @@ import { findAccessibleTenant } from "@/lib/auth/tenantAccess";
 import { persistGoogleAvatarForTenant, persistPendingGoogleAvatar } from "@/lib/auth/googleAvatar";
 import { NextResponse } from "next/server";
 import { publicRedirectUrl } from "@/lib/runtime/requestOrigin";
+import { notifyNewSignup } from "@/lib/email/signupNotifications";
 
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
@@ -120,6 +121,7 @@ export async function GET(req: Request) {
       where: { OR: [{ email }, { googleId }] },
     });
 
+    let isNewUser = false;
     if (!user) {
       user = await prisma.user.create({
         data: {
@@ -130,6 +132,7 @@ export async function GET(req: Request) {
           isEmailVerified: true,
         },
       });
+      isNewUser = true;
     }
 
     /* ------------------------------------------------------------
@@ -195,6 +198,16 @@ export async function GET(req: Request) {
         : onboarding?.completed === true
         ? "/app/dashboard"
         : "/app/onboarding";
+
+    if (isNewUser) {
+      notifyNewSignup({
+        email: user.email!,
+        firstName: user.name?.split(" ")[0],
+        name: user.name,
+        provider: "google",
+        continueUrl: publicRedirectUrl(req, target).toString(),
+      });
+    }
 
     return NextResponse.redirect(publicRedirectUrl(req, target));
   } catch (err) {

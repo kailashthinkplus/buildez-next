@@ -23,7 +23,9 @@ function getTransporter(): Transporter | null {
   transporterConfigured = true;
 
   const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_APP_PASSWORD;
+  // Gmail displays app passwords grouped with spaces for readability
+  // (e.g. "abcd efgh ijkl mnop") — strip them in case one was pasted as-shown.
+  const pass = process.env.SMTP_APP_PASSWORD?.replace(/\s+/g, "");
   if (!user || !pass) return null;
 
   transporter = nodemailer.createTransport({

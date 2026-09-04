@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import { AuthProvider, UserRole, prisma } from "@buildez/db";
 import { createSession } from "@/lib/auth/session";
+import { notifyNewSignup } from "@/lib/email/signupNotifications";
+import { publicRedirectUrl } from "@/lib/runtime/requestOrigin";
 
 export async function POST(req: Request) {
   try {
@@ -39,6 +41,13 @@ export async function POST(req: Request) {
     });
 
     await createSession({ user, provider: AuthProvider.PASSWORD, ttlHours: 24 * 7 });
+    notifyNewSignup({
+      email: user.email!,
+      firstName,
+      name: user.name,
+      provider: "password",
+      continueUrl: publicRedirectUrl(req, "/app/onboarding").toString(),
+    });
     const cookieStore = await cookies();
     cookieStore.set({ name: "onboarding", value: "pending", httpOnly: false, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/" });
     return NextResponse.json({ success: true, redirect: "/app/onboarding" }, { status: 201 });
