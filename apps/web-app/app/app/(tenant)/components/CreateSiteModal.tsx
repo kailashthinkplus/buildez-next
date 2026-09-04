@@ -1,225 +1,430 @@
 "use client";
 
-import { useState } from "react";
-import { X, Loader2, Rocket } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { Loader2, Rocket, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+
 import { useWorkspace } from "./WorkspaceContext";
-import CreateSiteModal from "@/app/app/(tenant)/components/CreateSiteModal";
+import { DashboardModalPortal } from "./ui/DashboardModalPortal";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
 
+const PLATFORM_DOMAIN = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || "getbuildezy.com";
 
-type Props = {
-  open: boolean;
-  onClose: () => void;
+export type CreateSiteIntent = "dashboard" | "ai";
+
+export type CreatedSite = {
+ id: string;
+ name: string;
+ slug: string;
+ status?: string;
 };
 
-export default function CreateSiteModal({ open, onClose }: Props) {
-  const { plan, websites, refreshWebsites } = useWorkspace();
+type Props = {
+ open: boolean;
+ onClose: () => void;
+ intent?: CreateSiteIntent;
+ onCreated?: (
+ site: CreatedSite,
+ intent: CreateSiteIntent,
+ ) => void | Promise<void>;
+};
 
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+export default function CreateSiteModal({
+ open,
+ onClose,
+ intent = "dashboard",
+ onCreated,
+}: Props) {
+ const { plan, websites } = useWorkspace();
 
-  /* -----------------------------------------------------------
-     PLAN LIMITS (SAFE DEFAULTS)
-  ----------------------------------------------------------- */
-  const siteLimit =
-    plan?.plan?.limits?.sites ??
-    (plan?.planCode === "starter" ? 1 : 999);
+ const [name, setName] = useState("");
+ const [slug, setSlug] = useState("");
+ const [loading, setLoading] = useState(false);
+ const [error, setError] = useState<string | null>(null);
+ const [success, setSuccess] = useState(false);
 
-  const usedSites = websites.length;
-  const remaining = Math.max(siteLimit - usedSites, 0);
-  const canCreate = remaining > 0;
+ const configuredSiteLimit = plan?.Plan?.maxSites ?? plan?.plan?.maxSites;
+ const siteLimit = typeof configuredSiteLimit === "number"
+ && Number.isFinite(configuredSiteLimit)
+ ? Math.max(0, configuredSiteLimit)
+ : 1;
 
-  function autoSlug(value: string) {
-    return value
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "");
-  }
+ const usedSites = websites.length;
+ const remaining = Math.max(siteLimit - usedSites, 0);
+ const canCreate = remaining > 0;
+ const usagePercent =
+ siteLimit > 0
+ ? Math.min(100, Math.round((usedSites / siteLimit) * 100))
+ : 0;
 
-  async function handleCreate() {
-    if (!name || !slug) {
-      setError("Site name and slug are required");
-      return;
-    }
+ const planName =
+ plan?.Plan?.name ??
+ plan?.plan?.name ??
+ plan?.planCode ??
+ "Trial";
 
-    try {
-      setLoading(true);
-      setError(null);
+ useEffect(() => {
+ if (!open) {
+ setName("");
+ setSlug("");
+ setError(null);
+ setSuccess(false);
+ setLoading(false);
+ }
+ }, [open]);
 
-      const res = await fetch("/api/sites", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, slug }),
-      });
+ function autoSlug(value: string) {
+ return value
+ .toLowerCase()
+ .trim()
+ .replace(/[^a-z0-9]+/g, "-")
+ .replace(/(^-|-$)+/g, "");
+ }
 
-      const json = await res.json();
+ async function handleCreate() {
+ const cleanName = name.trim();
+ const cleanSlug = autoSlug(slug);
 
-      if (!res.ok) {
-        throw new Error(json?.error || "Failed to create site");
-      }
+ if (!cleanName || !cleanSlug) {
+ setError("Site name and slug are required");
+ return;
+ }
 
-      setSuccess(true);
-      await refreshWebsites();
+ if (!canCreate || loading) {
+ return;
+ }
 
-      setTimeout(() => {
-        onClose();
-        setSuccess(false);
-        setName("");
-        setSlug("");
-      }, 1200);
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+ try {
+ setLoading(true);
+ setError(null);
+ setSuccess(false);
 
-  if (!open) return null;
+ const response = await fetch("/api/sites", {
+ method: "POST",
+ credentials: "include",
+ headers: {
+ "Content-Type": "application/json",
+ },
+ body: JSON.stringify({
+ name: cleanName,
+ slug: cleanSlug,
+ }),
+ });
 
-  return (
-    <AnimatePresence>
-      {/* BACKDROP */}
-      <motion.div
-        className="
-          fixed inset-0 z-[100]
-          flex items-center justify-center
-          bg-black/40 backdrop-blur-md
-        "
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-      >
-        {/* MODAL CARD */}
-        <motion.div
-          onClick={(e) => e.stopPropagation()}
-          initial={{ scale: 0.96, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.96, opacity: 0 }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
-          className="
-            w-full max-w-md
-            rounded-2xl
-            dashboard-card-strong
-            backdrop-blur-xl
-            shadow-2xl
-            p-6
-          "
-        >
-          {/* HEADER */}
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-semibold">Create new website</h2>
-            <button
-              onClick={onClose}
-              className="p-1 rounded-lg dashboard-hover"
-            >
-              <X size={18} />
-            </button>
-          </div>
+ const payload = await response.json().catch(() => null);
 
-          {/* PLAN INFO */}
-          <div className="mb-4 p-3 rounded-xl dashboard-card text-sm">
-            <div className="flex justify-between">
-              <span className="dashboard-muted">Plan</span>
-              <span className="font-medium">
-                {plan?.plan?.name ?? plan?.planCode ?? "Trial"}
-              </span>
-            </div>
-            <div className="flex justify-between mt-1">
-              <span className="dashboard-muted">Websites</span>
-              <span>
-                {usedSites}/{siteLimit} used
-              </span>
-            </div>
-          </div>
+ if (!response.ok) {
+ throw new Error(payload?.error || "Failed to create site");
+ }
 
-          {!canCreate && (
-            <div className="mb-4 p-3 rounded-xl bg-orange-500/10 border border-orange-500/20 text-sm text-orange-400">
-              You’ve reached your website limit.
-              <br />
-              <span className="underline cursor-pointer">
-                Upgrade your plan
-              </span>{" "}
-              to create more websites.
-            </div>
-          )}
+ const createdSite =
+ payload?.site ??
+ payload?.data?.site ??
+ payload?.data ??
+ payload;
 
-          {/* FORM */}
-          <div className="space-y-4">
-            <div>
-              <label className="text-xs dashboard-muted">Website name</label>
-              <input
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  setSlug(autoSlug(e.target.value));
-                }}
-                placeholder="My Startup"
-                className="
-                  mt-1 w-full px-3 py-2 rounded-xl
-                  dashboard-input
-                "
-              />
-            </div>
+ if (
+ !createdSite ||
+ typeof createdSite.id !== "string" ||
+ typeof createdSite.slug !== "string"
+ ) {
+ throw new Error(
+ "Website was created, but the server returned an invalid response.",
+ );
+ }
 
-            <div>
-              <label className="text-xs dashboard-muted">Site slug</label>
-              <input
-                value={slug}
-                onChange={(e) => setSlug(autoSlug(e.target.value))}
-                placeholder="my-startup"
-                className="
-                  mt-1 w-full px-3 py-2 rounded-xl
-                  dashboard-input
-                "
-              />
-            </div>
-          </div>
+ const site: CreatedSite = {
+ id: createdSite.id,
+ name:
+ typeof createdSite.name === "string"
+ ? createdSite.name
+ : cleanName,
+ slug: createdSite.slug,
+ status:
+ typeof createdSite.status === "string"
+ ? createdSite.status
+ : undefined,
+ };
 
-          {/* STATUS */}
-          {error && (
-            <div className="mt-4 text-sm text-red-400">{error}</div>
-          )}
+ setSuccess(true);
 
-          {success && (
-            <div className="mt-4 text-sm text-green-400">
-              Website created successfully 🎉
-            </div>
-          )}
+ if (onCreated) {
+ await onCreated(site, intent);
+ return;
+ }
 
-          {/* ACTIONS */}
-          <div className="mt-6 flex justify-end gap-3">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 rounded-xl text-sm dashboard-subtle dashboard-hover"
-            >
-              Cancel
-            </button>
+ window.location.assign(
+ intent === "ai"
+ ? `/app/builder-v3/${site.id}?panel=ai`
+ : `/app/${site.slug}/dashboard`,
+ );
+ } catch (reason: unknown) {
+ setError(
+ reason instanceof Error
+ ? reason.message
+ : "Failed to create site",
+ );
+ } finally {
+ setLoading(false);
+ }
+ }
 
-            <button
-              onClick={handleCreate}
-              disabled={!canCreate || loading}
-              className="
-                px-4 py-2 rounded-xl text-sm
-                bg-gradient-to-r from-indigo-500 to-indigo-600
-                flex items-center gap-2
-                disabled:opacity-50
-              "
-            >
-              {loading ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Rocket size={16} />
-              )}
-              Create site
-            </button>
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
+ if (!open) {
+ return null;
+ }
+
+ return (
+ <AnimatePresence>
+ <DashboardModalPortal onClose={onClose}>
+ <motion.div
+ className="fixed inset-0 z-[120] flex items-center justify-center overflow-y-auto bg-white/10 p-4 backdrop-blur-xl dark:bg-black/25 sm:p-6"
+ initial={{ opacity: 0 }}
+ animate={{ opacity: 1 }}
+ exit={{ opacity: 0 }}
+ onClick={() => {
+ if (!loading) onClose();
+ }}
+ >
+ <motion.div
+ onClick={(event) => event.stopPropagation()}
+ initial={{ opacity: 0, y: 12 }}
+ animate={{ opacity: 1, y: 0 }}
+ exit={{ opacity: 0, y: 12 }}
+ transition={{ duration: 0.2, ease: "easeOut" }}
+ className="dashboard-modal-surface relative w-full max-w-5xl overflow-hidden rounded-3xl border dashboard-border shadow-2xl backdrop-blur-2xl"
+ >
+ <div className="flex items-center justify-between border-b dashboard-border px-6 py-4 md:px-8">
+ <div>
+ <div className="text-xs font-semibold uppercase tracking-[0.08em] text-[#1349A3] dark:text-blue-300">
+ Website setup
+ </div>
+ <h2 className="mt-1 text-2xl font-semibold">
+ {intent === "ai"
+ ? "Create website with AI"
+ : "Create new website"}
+ </h2>
+ </div>
+
+ <button
+ type="button"
+ onClick={onClose}
+ disabled={loading}
+ className="rounded-xl border dashboard-border p-2.5 dashboard-hover disabled:opacity-50"
+ aria-label="Close create website"
+ >
+ <X size={18} />
+ </button>
+ </div>
+
+ <div className="w-full p-5 md:p-6">
+ <div className="grid w-full items-stretch gap-5 lg:grid-cols-[0.82fr_1.18fr]">
+ <aside className="dashboard-card flex flex-col rounded-2xl border dashboard-border p-6">
+ <div className="flex items-start justify-between gap-4">
+ <div>
+ <div className="text-xs font-semibold uppercase tracking-wide dashboard-faint">
+ Current plan
+ </div>
+
+ <h3 className="mt-1 text-2xl font-semibold">
+ {planName}
+ </h3>
+ </div>
+
+ <div className="dashboard-subtle flex h-10 w-10 items-center justify-center rounded-xl text-[#1349A3] dark:text-blue-300">
+ <Rocket size={20} />
+ </div>
+ </div>
+
+ <p className="mt-3 text-sm leading-6 dashboard-muted">
+ {intent === "ai"
+ ? "Your website will open in Builder 3 with the AI panel ready."
+ : "Create a new website workspace under your current subscription."}
+ </p>
+
+ <div className="dashboard-subtle mt-5 rounded-2xl p-4">
+ <div className="flex items-end justify-between gap-4">
+ <div>
+ <div className="text-xs dashboard-muted">
+ Websites used
+ </div>
+
+ <div className="mt-1 text-2xl font-semibold">
+ {usedSites}
+ <span className="ml-1 text-sm font-normal dashboard-muted">
+ of {siteLimit}
+ </span>
+ </div>
+ </div>
+
+ <div className="text-right">
+ <div className="text-xs dashboard-muted">
+ Remaining
+ </div>
+
+ <div className="mt-1 text-2xl font-semibold text-[#1349A3] dark:text-blue-300">
+ {remaining}
+ </div>
+ </div>
+ </div>
+
+ <div className="mt-4 h-2 overflow-hidden rounded-full bg-black/5 dark:bg-white/10">
+ <div
+ className="h-full rounded-full bg-gradient-to-r from-[#1349A3] to-[#1D6CC5] transition-[width]"
+ style={{ width: `${usagePercent}%` }}
+ />
+ </div>
+
+ <div className="mt-2 flex justify-between text-xs dashboard-faint">
+ <span>{usagePercent}% used</span>
+ <span>{remaining} available</span>
+ </div>
+ </div>
+
+ {!canCreate ? (
+ <div className="dashboard-subtle mt-4 rounded-xl border dashboard-border p-3 text-sm dashboard-muted">
+ You’ve reached your website limit. Change your plan to create more websites.
+ </div>
+ ) : (
+ <div className="dashboard-subtle mt-4 rounded-xl border dashboard-border p-3 text-sm dashboard-muted">
+ You can create {remaining} more {remaining === 1 ? "website" : "websites"} on this plan.
+ </div>
+ )}
+
+ <button
+ type="button"
+ onClick={() => {
+ window.location.assign("/app/workspace/billing");
+ }}
+ disabled={loading}
+ className="mt-5 flex w-full items-center justify-center rounded-xl border border-[#1349A3]/35 bg-[#1349A3]/[0.06] px-4 py-2.5 text-sm font-semibold text-[#1349A3] transition hover:bg-[#1349A3]/[0.11] disabled:opacity-50 dark:text-blue-300"
+ >
+ Change plan
+ </button>
+ </aside>
+
+ <section className="dashboard-card rounded-2xl border dashboard-border p-6">
+ <div className="mb-5">
+ <div className="text-xs font-semibold uppercase tracking-wide dashboard-faint">
+ Website details
+ </div>
+ <h3 className="mt-1 text-xl font-semibold">
+ Choose a name and address
+ </h3>
+ </div>
+
+ <div className="space-y-5">
+ <div>
+ <label
+ htmlFor="create-site-name"
+ className="text-xs dashboard-muted"
+ >
+ Website name
+ </label>
+
+ <input
+ id="create-site-name"
+ value={name}
+ disabled={loading}
+ onChange={(event) => {
+ const value = event.target.value;
+ setName(value);
+ setSlug(autoSlug(value));
+ }}
+ onKeyDown={(event) => {
+ if (event.key === "Enter") {
+ event.preventDefault();
+ void handleCreate();
+ }
+ }}
+ placeholder="My Startup"
+ className="dashboard-input mt-1 w-full rounded-xl px-3 py-2"
+ autoFocus
+ />
+ </div>
+
+ <div>
+ <label
+ htmlFor="create-site-slug"
+ className="text-xs dashboard-muted"
+ >
+ Site slug
+ </label>
+
+ <input
+ id="create-site-slug"
+ value={slug}
+ disabled={loading}
+ onChange={(event) =>
+ setSlug(autoSlug(event.target.value))
+ }
+ onKeyDown={(event) => {
+ if (event.key === "Enter") {
+ event.preventDefault();
+ void handleCreate();
+ }
+ }}
+ placeholder="my-startup"
+ className="dashboard-input mt-1 w-full rounded-xl px-3 py-2"
+ />
+
+ <p className="mt-2 text-xs dashboard-faint">
+ {PLATFORM_DOMAIN}{slug ? publishedSitePath(slug) : "/your-site"}
+ </p>
+ </div>
+ </div>
+
+ {error ? (
+ <div className="mt-4 text-sm text-rose-500">
+ {error}
+ </div>
+ ) : null}
+
+ {success ? (
+ <div className="mt-4 text-sm font-medium text-[#1349A3] dark:text-blue-300">
+ Website created successfully.
+ </div>
+ ) : null}
+
+ <div className="mt-6 flex justify-end gap-3 border-t dashboard-border pt-5">
+ <button
+ type="button"
+ onClick={onClose}
+ disabled={loading}
+ className="dashboard-subtle rounded-xl px-4 py-2 text-sm dashboard-hover disabled:opacity-50"
+ >
+ Cancel
+ </button>
+
+ <button
+ type="button"
+ onClick={() => void handleCreate()}
+ disabled={
+ !canCreate ||
+ loading ||
+ !name.trim() ||
+ !slug.trim()
+ }
+ className="dashboard-primary-button flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+ >
+ {loading ? (
+ <Loader2 size={16} className="animate-spin" />
+ ) : (
+ <Rocket size={16} />
+ )}
+
+ {loading
+ ? "Creating…"
+ : intent === "ai"
+ ? "Create and open AI"
+ : "Create website"}
+ </button>
+ </div>
+ </section>
+ </div>
+ </div>
+ </motion.div>
+ </motion.div>
+ </DashboardModalPortal>
+ </AnimatePresence>
+ );
 }

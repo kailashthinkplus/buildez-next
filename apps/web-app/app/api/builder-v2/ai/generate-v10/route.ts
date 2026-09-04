@@ -2,7 +2,11 @@ import { Prisma, prisma } from "@buildez/db";
 import { NextRequest, NextResponse } from "next/server";
 
 import { getUser } from "@/lib/auth/getUser";
+import { ApiError } from "@/lib/api/errors";
+import { assertPromptAllowed } from "@/lib/ai/moderation";
 import { runV10WebsiteGeneration } from "@/modules/builder-v2/ai-v10";
+import { publishV10Progress } from "@/modules/builder-v2/ai-v10/progress/v10GenerationProgress";
+import { persistAfterSemanticHydration } from "@/modules/builder-v2/ai-v10/persistence/semanticHydrationPersistenceGate";
 
 type GenerateV10Body = {
   pageId?: string;
@@ -34,6 +38,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    await assertPromptAllowed(prompt);
+
     const page = await prisma.page.findFirst({
       where: {
         id: pageId,
@@ -57,23 +63,28 @@ export async function POST(req: NextRequest) {
     }
 
     const context = record(body.context);
+    const runId = typeof context.generationRunId === "string" ? context.generationRunId : "";
+    const { generationRunId: _generationRunId, ...persistentContext } = context;
     const result = await runV10WebsiteGeneration({
       pageId,
       prompt,
       pageTitle: page.title || "Untitled",
+      pageSlug: page.slug || "home",
+      siteId: page.site.id,
       siteName: page.site.name,
       context,
+      onProgress: runId ? (update) => publishV10Progress({ runId, ...update }) : undefined,
     });
 
     const metadata = {
       ...(record(page.metadata) || {}),
       ...result.metadata,
-      aiContext: context,
+      aiContext: persistentContext,
       aiDesignStatus: "pending_review",
       aiDesignScope: "current_page_only",
     };
 
-    await prisma.$transaction(async (tx) => {
+    await persistAfterSemanticHydration(result.blueprint, () => prisma.$transaction(async (tx) => {
       await tx.page.update({
         where: { id: pageId },
         data: {
@@ -86,7 +97,7 @@ export async function POST(req: NextRequest) {
       await tx.blueprint.upsert({
         where: { pageId },
         update: {
-          data: result.blueprint as Prisma.InputJsonValue,
+          data: result.blueprint as unknown as Prisma.InputJsonValue,
           schemaVersion: 2,
           updatedBy: auth.user.id,
         },
@@ -94,12 +105,12 @@ export async function POST(req: NextRequest) {
           pageId,
           siteId: page.site.id,
           tenantId: page.site.tenantId,
-          data: result.blueprint as Prisma.InputJsonValue,
+          data: result.blueprint as unknown as Prisma.InputJsonValue,
           schemaVersion: 2,
           updatedBy: auth.user.id,
         },
       });
-    });
+    }));
 
     return NextResponse.json({
       success: true,
@@ -113,6 +124,8 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "AI v10 generation failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status = error instanceof ApiError ? error.status : 500;
+    const code = error instanceof ApiError ? error.code : undefined;
+    return NextResponse.json({ error: message, code }, { status });
   }
 }

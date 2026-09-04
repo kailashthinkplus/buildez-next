@@ -23,6 +23,7 @@ export default function PremiumWidget({ node }: { node: BuilderNode }) {
   return (
     <WidgetFrame nodeId={node.id}>
       <ProductionWidgetView
+        {...props}
         type={node.type}
         eyebrow={props.eyebrow}
         title={props.title}

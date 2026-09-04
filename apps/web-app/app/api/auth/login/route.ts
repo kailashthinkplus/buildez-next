@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { AuthProvider, prisma } from "@buildez/db";
 import { cookies } from "next/headers";
+import { createSession } from "@/lib/auth/session";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -31,28 +32,12 @@ export async function POST(req: Request) {
   }
 
   // 2️⃣ Create session row
-  const session = await prisma.session.create({
-    data: {
-      userId: user.id,
-      provider: AuthProvider.PASSWORD,
-      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
-    },
-  });
+  await createSession({ user, provider: AuthProvider.PASSWORD, ttlHours: 24 * 7 });
 
   // Prepare cookie store
   const cookieStore = await cookies();
 
-  // 3️⃣ Set session cookie
-  cookieStore.set({
-    name: "session",
-    value: session.id,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-  });
-
-  // 4️⃣ Load onboarding state to set onboarding cookie
+  // 3️⃣ Load onboarding state to set onboarding cookie
   const onboarding = await prisma.userOnboarding.findUnique({
     where: { userId: user.id },
     select: { completed: true },

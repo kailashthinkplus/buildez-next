@@ -12,7 +12,7 @@ import { mapLogoColorsToDesignTokens } from "@/app/api/_lib/designTokens/mapLogo
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { siteId: string } }
+  { params }: { params: Promise<{ siteId: string }> }
 ) {
   try {
     /* ----------------------------------------------------------
@@ -27,7 +27,7 @@ export async function POST(
       );
     }
 
-    const siteId = params.siteId;
+    const { siteId } = await params;
 
     /* ----------------------------------------------------------
        LOAD SITE
@@ -102,8 +102,7 @@ export async function POST(
     /* ----------------------------------------------------------
        EXTRACT LOGO COLORS (ALWAYS)
     ---------------------------------------------------------- */
-    const extractedColors =
-      await extractLogoColors(logoUrl);
+    const extractedColors = extractLogoColors(Buffer.from(await file.arrayBuffer()));
 
     if (!extractedColors) {
       return NextResponse.json(
@@ -121,7 +120,7 @@ export async function POST(
 
       await prisma.site.update({
         where: { id: siteId },
-        data: { designTokens: tokens },
+        data: { designTokens: tokens as unknown as Prisma.InputJsonValue },
       });
 
       console.log(
@@ -162,7 +161,7 @@ export async function POST(
 
     await prisma.site.update({
       where: { id: siteId },
-      data: { designTokens: tokens },
+      data: { designTokens: tokens as unknown as Prisma.InputJsonValue },
     });
 
     console.log(

@@ -1,5 +1,6 @@
 import { indexRepositoryRecords } from "../graph";
 import { listRepositoryRecords } from "../repository";
+import type { BusinessFamily } from "../sdk";
 import type { BusinessIntelligenceInput } from "./businessProfile";
 import { runBusinessIntelligence } from "./BusinessIntelligenceEngine";
 import { validateBusinessIntelligenceProfile } from "./validation";
@@ -73,7 +74,8 @@ export function runBusinessIntelligenceVerification(): BusinessIntelligenceVerif
   }
 
   const families = new Set(results.map((result) => result.data.businessFamily));
-  for (const required of ["real_estate", "healthcare", "food_and_beverage", "automotive", "education"]) {
+  const requiredFamilies = ["real_estate", "healthcare", "food_and_beverage", "automotive", "education"] satisfies readonly BusinessFamily[];
+  for (const required of requiredFamilies) {
     if (!families.has(required)) {
       issues.push(`required-family-missing:${required}`);
     }

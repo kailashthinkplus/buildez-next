@@ -35,10 +35,6 @@ export function validateMediaStrategy(strategy: MediaStrategy): MediaValidationR
  */
 export function validationIssuesToMediaErrors(issues: readonly MediaValidationIssue[]): EngineError[] {
   return issues.map((item) =>
-    createEngineError("INVALID_MEDIA_STRATEGY", item.message, "media-intelligence", {
-      recoverable: true,
-      severity: "major",
-      metadata: { path: item.path, code: item.code },
-    })
+    createEngineError("INVALID_MEDIA_STRATEGY", item.message, "media-intelligence", true, "major", { path: item.path, code: item.code })
   );
 }

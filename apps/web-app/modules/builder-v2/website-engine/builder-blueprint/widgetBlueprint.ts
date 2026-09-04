@@ -1,4 +1,5 @@
 import type { BuilderStyle } from "../../types/blueprint";
+import type { NodeType } from "../../types/blueprint";
 import type { BuilderBlueprintInput, BuilderPrimitiveType, WidgetBlueprint } from "./builderBlueprint";
 import { buildAIWidgetMetadata } from "./aiWidgetMetadata";
 import { buildInspectorBlueprint } from "./inspectorBlueprint";
@@ -25,7 +26,7 @@ const CHILDREN: Record<BuilderPrimitiveType, BuilderPrimitiveType[]> = {
   spacer: [],
 };
 
-export type WidgetBlueprintSeed = Readonly<{ id: string; type: BuilderPrimitiveType; name?: string; parentId: string | null; children?: string[]; props?: Record<string, unknown>; style?: BuilderStyle; sourceSectionId?: string; sourceComponentVariantId?: string; sourcePatternId?: string; sectionRole?: string }>;
+export type WidgetBlueprintSeed = Readonly<{ id: string; type: NodeType; name?: string; parentId: string | null; children?: string[]; props?: Record<string, unknown>; style?: BuilderStyle; sourceSectionId?: string; sourceComponentVariantId?: string; sourcePatternId?: string; sectionRole?: string }>;
 
 /**
  * Builds a fully editable primitive widget blueprint.
@@ -57,7 +58,7 @@ export function buildWidgetBlueprint(input: BuilderBlueprintInput, seed: WidgetB
     capabilities: buildWidgetCapabilities(seed.type),
     aiMetadata: buildAIWidgetMetadata(input, seed.sourceSectionId, seed.sourceComponentVariantId),
     regenerationMetadata: buildRegenerationMetadata(input, seed.sourceSectionId, seed.sourceComponentVariantId, seed.sectionRole),
-    allowedChildren: CHILDREN[seed.type],
+    allowedChildren: seed.type in CHILDREN ? CHILDREN[seed.type as BuilderPrimitiveType] : [],
     sourcePatternId: seed.sourcePatternId,
     sourceComponentVariantId: seed.sourceComponentVariantId,
     sectionRole: seed.sectionRole,

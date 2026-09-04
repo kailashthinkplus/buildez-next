@@ -34,7 +34,7 @@ export function toNativeWidgetProperty(definition: PropertyDefinition): WidgetPr
     target,
     category: toNativeCategory(definition.group),
     defaultValue: definition.defaultValue,
-    options: definition.allowedValues?.map((value) => ({ label: String(value), value })),
+    options: definition.allowedValues?.map((value) => ({ label: String(value), value: String(value) })),
     responsive: definition.responsive,
     aiEditable: definition.aiEditable,
     min: definition.min,

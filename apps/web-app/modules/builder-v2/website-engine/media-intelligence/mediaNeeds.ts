@@ -11,7 +11,7 @@ import { inferVideoNeeds } from "./videoNeeds";
  * @example
  * const needs = inferMediaNeeds(input, context);
  */
-export function inferMediaNeeds(input: MediaInput, context: MediaFamilyContext): MediaNeed[] {
+export function inferMediaNeeds(input: MediaInput, context: MediaFamilyContext): readonly MediaNeed[] {
   return Object.freeze([
     ...inferImageNeeds(input, context),
     ...inferVideoNeeds(input, context),

@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web-app",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "apps/web-app"],
+      "port": 3000,
+      "autoPort": false
+    },
+    {
+      "name": "marketing-root",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["next", "dev", "-p", "3211"],
+      "port": 3211,
+      "autoPort": false
+    }
+  ]
+}

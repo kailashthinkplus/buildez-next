@@ -1,20 +1,8 @@
 import type { NodeType } from "../../types/blueprint";
-import type { BuilderPrimitiveType, NativeWidgetIntent, WidgetBlueprint } from "./builderBlueprint";
+import { REGISTERED_WIDGET_DEFINITIONS } from "../../widgets/widgetCapabilities";
+import type { NativeWidgetIntent, WidgetBlueprint } from "./builderBlueprint";
 
-export const NATIVE_BUILDER_WIDGET_TYPES: readonly BuilderPrimitiveType[] = [
-  "page",
-  "section",
-  "container",
-  "column",
-  "heading",
-  "text",
-  "button",
-  "image",
-  "video",
-  "icon",
-  "divider",
-  "spacer",
-];
+export const NATIVE_BUILDER_WIDGET_TYPES: readonly NodeType[] = REGISTERED_WIDGET_DEFINITIONS.map((definition) => definition.type);
 
 const nativeTypeSet = new Set<string>(NATIVE_BUILDER_WIDGET_TYPES);
 
@@ -24,7 +12,7 @@ const nativeTypeSet = new Set<string>(NATIVE_BUILDER_WIDGET_TYPES);
  * @example
  * const supported = isNativeSupportedWidgetType("heading");
  */
-export function isNativeSupportedWidgetType(type: string): type is BuilderPrimitiveType {
+export function isNativeSupportedWidgetType(type: string): type is NodeType {
   return nativeTypeSet.has(type);
 }
 

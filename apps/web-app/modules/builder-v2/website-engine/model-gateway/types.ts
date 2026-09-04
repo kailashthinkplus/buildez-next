@@ -21,6 +21,7 @@ export type ModelBudget = {
 
 export type ModelRequest = {
   task: ModelTask;
+  debugLabel?: string;
   messages: ModelMessage[];
   model?: string;
   temperature?: number;

@@ -256,7 +256,7 @@ export function resolvePatternFamilyContext(input: PatternIntelligenceInput): Pa
         : input.intent?.businessFamily && input.intent.businessFamily !== "unknown"
           ? input.intent.businessFamily
           : "unknown";
-  const archetypes = input.intent?.archetypeHints?.length
+  const archetypes: WebsiteArchetypeId[] = input.intent?.archetypeHints?.length
     ? input.intent.archetypeHints
     : input.decisionPlan?.selectedArchetype && input.decisionPlan.selectedArchetype !== "unknown"
       ? [input.decisionPlan.selectedArchetype as WebsiteArchetypeId]

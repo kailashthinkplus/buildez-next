@@ -926,13 +926,6 @@ const defaultColumnWidth = `${100 / siblingColumnCount}%`;
             onClear={() => clearResponsive("backgroundColor")}
           />
         </Field>
-        <Field label="Background image">
-          <TextInput
-            value={backgroundImageUrl(style.backgroundImage)}
-            onChange={(value) => setGlobal("backgroundImage", value ? `url("${value}")` : "")}
-            placeholder="https://..."
-          />
-        </Field>
         <MediaPicker
           siteId={siteId}
           label="Background media"
@@ -1277,7 +1270,6 @@ function PremiumElementDesign({
       {hasMedia && (
         <Section title="Featured media" description="Default image and image treatment">
           <MediaPicker siteId={siteId} label="Image" value={String(value("mediaUrl", ""))} onChange={(asset) => set("mediaUrl", asset.url)} />
-          <Field label="Image URL"><TextInput value={value("mediaUrl", "")} onChange={(v) => set("mediaUrl", v)} placeholder="https://..." /></Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Position"><SelectInput value={value("mediaObjectPosition", "center center")} onChange={(v) => set("mediaObjectPosition", v)} options={[{value:"center center",label:"Center"},{value:"top center",label:"Top"},{value:"bottom center",label:"Bottom"},{value:"center left",label:"Left"},{value:"center right",label:"Right"}]} /></Field>
             <Field label="Radius"><SliderWithInput value={value("mediaBorderRadius", 12)} onChange={(v) => set("mediaBorderRadius", v)} min={0} max={48} unit="px" /></Field>

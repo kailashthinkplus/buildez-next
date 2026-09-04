@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { ApiError } from "@/lib/api/errors";
+import { assertPromptAllowed } from "@/lib/ai/moderation";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
+  timeout: 30_000,
+  maxRetries: 2,
 });
 
 export async function POST(req: Request) {
@@ -22,6 +26,8 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    await assertPromptAllowed(text);
 
     const systemPrompt = `
 You are a professional website copywriter.
@@ -68,6 +74,13 @@ ${text}
     });
   } catch (error: any) {
     console.error("AI Rewrite Error:", error);
+
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        { error: error.message, code: error.code },
+        { status: error.status }
+      );
+    }
 
     return NextResponse.json(
       { error: "AI rewrite failed" },

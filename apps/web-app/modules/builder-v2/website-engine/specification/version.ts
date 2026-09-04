@@ -18,4 +18,4 @@ export const WEBSITE_SPEC_BUILDER_VERSION = Object.freeze({
  * @example
  * const version = WEBSITE_SPEC_BUILDER_VERSION_STRING;
  */
-export const WEBSITE_SPEC_BUILDER_VERSION_STRING = WEBSITE_SPEC_BUILDER_VERSION.toString();
+export const WEBSITE_SPEC_BUILDER_VERSION_STRING = WEBSITE_SPEC_BUILDER_VERSION.toString() as import("../sdk").EngineVersionString;

@@ -1,18 +1,16 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { prisma } from "@buildez/db";
+import { Prisma, prisma } from "@buildez/db";
 
 import { apiHandler } from "@/lib/api/apiHandler";
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
-import { generateRuntimeHTML } from "@/modules/builder/runtime/generateRuntimeHTML";
-import { generateRuntimeCSS } from "@/modules/builder/runtime/generateRuntimeCSS";
-import { resolveBlueprintTree } from "@/modules/builder/runtime/resolveBlueprintTree";
+import { resolveBlueprintTree, type BlueprintData } from "@/modules/builder/runtime/resolveBlueprintTree";
 
 
 
 export async function POST(
   req: Request,
-  ctx: { params: { pageId: string } }
+  ctx: { params: Promise<{ slug: string }> }
 ) {
   return apiHandler(async () => {
     console.log("\n==============================");
@@ -23,7 +21,7 @@ export async function POST(
 
     const h = await headers();
     const tenantId = h.get("tenant-id");
-    const { pageId } = ctx.params;
+    const { slug: pageId } = await ctx.params;
 
     console.log("🔥 pageId:", pageId);
     console.log("🔥 tenantId:", tenantId);
@@ -70,20 +68,32 @@ export async function POST(
     /* ----------------------------------------------------------
        GENERATE RUNTIME OUTPUT
     ---------------------------------------------------------- */
-    const tree = resolveBlueprintTree(page.blueprint.data);
-    const html = generateRuntimeHTML(tree);
-    const css = generateRuntimeCSS(tree as any);
-
+    const tree = resolveBlueprintTree(page.blueprint.data as unknown as BlueprintData);
     /* ----------------------------------------------------------
        TRANSACTION (NO SILENT FAILURE)
     ---------------------------------------------------------- */
     const result = await prisma.$transaction(async (tx) => {
-      const snapshot = await tx.snapshot.create({
+      const previous = await tx.siteSnapshot.findFirst({
+        where: { siteId: page.siteId, tenantId },
+        orderBy: { version: "desc" },
+        select: { version: true },
+      });
+      const snapshot = await tx.siteSnapshot.create({
         data: {
+          siteId: page.siteId,
+          tenantId,
+          status: "PUBLISHED",
+          version: (previous?.version ?? 0) + 1,
+        },
+      });
+
+      await tx.pageSnapshot.create({
+        data: {
+          siteSnapshotId: snapshot.id,
           pageId: page.id,
-          html,
-          css,
-          type: "PUBLISHED",
+          title: page.title,
+          slug: page.slug,
+          content: tree as unknown as Prisma.InputJsonValue,
         },
       });
 
@@ -92,7 +102,6 @@ export async function POST(
         data: {
           status: "PUBLISHED",
           publishedAt: new Date(),
-          publishedSnapshotId: snapshot.id,
         },
       });
 

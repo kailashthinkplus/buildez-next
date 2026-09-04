@@ -40,7 +40,7 @@ class Registry {
       tokens: mergeThemeTokens(
         options.theme.tokens as any,
         template.themePatch
-      ),
+      ) as unknown as Record<string, unknown>,
     };
 
     const sections = template.sections.map((entry) =>

@@ -109,7 +109,7 @@ export function buildPipelineStages(mode: PipelineExecutionMode = "dry-run"): re
         ...stage,
         id: `pipeline.stage.${String(index + 1).padStart(2, "0")}.${stage.name}`,
         order: index + 1,
-        supportedModes: ["dry-run", "plan-only", "metadata-only", "shadow"] as const,
+        supportedModes: ["dry-run", "plan-only", "metadata-only", "shadow"] as PipelineExecutionMode[],
         metadata: { mode, metadataOnly: true },
       })
     )

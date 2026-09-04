@@ -1,0 +1,921 @@
+$ node --import tsx --test --test-concurrency=1 $(find modules/builder-v2/__tests__ -name '*.test.ts' -print)
+(node:69165) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ ai-compatibility/native-node-contract > fixture is a valid native Builder blueprint (0.744459ms)
+✔ ai-compatibility/native-node-contract > metadata version is native Builder v2 (0.062542ms)
+✔ ai-compatibility/native-node-contract > nodes are normalized in a node map (0.04225ms)
+✔ ai-compatibility/native-node-contract > responsive style values are representable (0.035958ms)
+✔ ai-compatibility/native-node-contract > accessibility metadata is representable (0.041958ms)
+(node:69306) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ canvas/background-controls > desktop cover resolves (0.658834ms)
+✔ canvas/background-controls > desktop no-repeat resolves (0.050667ms)
+✔ canvas/background-controls > mobile contain resolves (0.04125ms)
+✔ canvas/background-controls > mobile repeat-x resolves (0.035875ms)
+✔ canvas/background-controls > mobile position resolves (0.035292ms)
+✔ canvas/background-controls > mobile attachment resolves (0.028375ms)
+✔ canvas/background-controls > responsive background image resolves (0.03575ms)
+✔ canvas/background-controls > mobile image backgrounds default to no-repeat (0.033666ms)
+(node:69457) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ canvas/canvas-placeholders > empty states are tracked (0.738334ms)
+✔ canvas/canvas-placeholders > drop zones are tracked (0.057542ms)
+✔ canvas/canvas-placeholders > insert indicators are tracked (0.041208ms)
+✔ canvas/canvas-placeholders > section placeholders are tracked (0.036459ms)
+✔ canvas/canvas-placeholders > bottom add-section area is tracked (0.041375ms)
+✔ canvas/canvas-placeholders > new section opens column picker (0.034333ms)
+✔ canvas/canvas-placeholders > container placeholders are tracked (0.035709ms)
+✔ canvas/canvas-placeholders > loading placeholders are tracked (0.031125ms)
+✔ canvas/canvas-placeholders > placeholder metadata does not change runtime rendering (0.055292ms)
+(node:69598) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ canvas/selection-metadata > selection outline enabled (0.657667ms)
+✔ canvas/selection-metadata > hover outline enabled (0.059875ms)
+✔ canvas/selection-metadata > drop indicators enabled (0.043167ms)
+✔ canvas/selection-metadata > resize handles tracked (0.036333ms)
+✔ canvas/selection-metadata > snap indicators tracked (0.039417ms)
+✔ canvas/selection-metadata > spacing guides tracked (0.050791ms)
+✔ canvas/selection-metadata > selection metadata is builder-only (0.033375ms)
+(node:69729) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ commands/clipboard > copy/paste node duplicates with a new id (0.635959ms)
+✔ commands/clipboard > pasted node parent is compatible target (0.058083ms)
+✔ commands/clipboard > invalid parent paste is rejected (0.042875ms)
+✔ commands/clipboard > paste creates undo point (0.035958ms)
+✔ commands/clipboard > undo removes pasted node (0.040333ms)
+✔ commands/clipboard > redo restores pasted node (0.030875ms)
+(node:69810) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ commands/color-clear-removal > clear removes backgroundColor (0.687ms)
+✔ commands/color-clear-removal > clear preserves sibling color (0.06375ms)
+✔ commands/color-clear-removal > undo restores cleared color (0.038625ms)
+✔ commands/color-clear-removal > redo clears color again (0.036833ms)
+✔ commands/color-clear-removal > Update Node result contains no undefined (0.041291ms)
+✔ commands/color-clear-removal > save serialization succeeds without undefined (0.033208ms)
+✔ commands/color-clear-removal > save/load keeps cleared property absent (0.046417ms)
+✔ commands/color-clear-removal > nested hover color is removed (0.034ms)
+✔ commands/color-clear-removal > nested hover sibling remains (0.045708ms)
+✔ commands/color-clear-removal > responsive color is removed (0.071125ms)
+✔ commands/color-clear-removal > responsive sibling remains (0.042583ms)
+✔ commands/color-clear-removal > generic sanitizer removes undefined leaves (0.030791ms)
+✔ commands/color-clear-removal > generic sanitizer preserves false/zero/empty/null (0.033459ms)
+✔ commands/color-clear-removal > undefined structural array entry is not silently removed (0.037916ms)
+✔ commands/color-clear-removal > validator still rejects manually constructed undefined (0.025458ms)
+[Builder] InsertNodeCommand rejected invalid hierarchy {
+  parentId: 'test-page',
+  parentType: 'page',
+  childId: 'invalid-root-heading',
+  childType: 'heading'
+}
+(node:69831) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ commands/hierarchy-insertion > every registered native node insertion from page root validates (0.757167ms)
+✔ commands/hierarchy-insertion > every native widget insertion from page root validates (0.051333ms)
+✔ commands/hierarchy-insertion > section insertion validates (0.039959ms)
+✔ commands/hierarchy-insertion > container insertion validates (0.0315ms)
+✔ commands/hierarchy-insertion > column insertion validates (0.036666ms)
+✔ commands/hierarchy-insertion > direct invalid InsertNodeCommand is rejected without corrupting tree (0.028833ms)
+✔ commands/hierarchy-insertion > widgets inserted into an explicit empty Container keep that Container as parent without wrappers (0.034292ms)
+✔ commands/hierarchy-insertion > explicit Container insertion at index zero preserves exact order (0.027917ms)
+✔ commands/hierarchy-insertion > invalid child relationship diagnostic includes parent child expected received and insertion (0.056083ms)
+(node:70087) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ commands/history-transactions > executing a command creates an undo point (0.654375ms)
+✔ commands/history-transactions > single command updates target node (0.064875ms)
+✔ commands/history-transactions > multi-command transaction undo restores original tree (0.042125ms)
+✔ commands/history-transactions > redo restores the transaction (0.086708ms)
+✔ commands/history-transactions > redo restores transaction style (0.059125ms)
+✔ commands/history-transactions > failed command does not corrupt tree (0.035041ms)
+✔ commands/history-transactions > failed command does not create history entry (0.034209ms)
+(node:70238) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ commands/layers-reorder > layers reorder changes sibling order (0.890125ms)
+✔ commands/layers-reorder > layers reorder creates undo point (0.075583ms)
+✔ commands/layers-reorder > invalid layer move is rejected (0.04275ms)
+✔ commands/layers-reorder > undo restores sibling order (0.033916ms)
+✔ commands/layers-reorder > redo restores reordered sibling order (0.043ms)
+(node:70389) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ commands/style-clipboard > copy style/paste style is compatible for text nodes (1.096958ms)
+✔ commands/style-clipboard > allowed style field is copied (0.058459ms)
+✔ commands/style-clipboard > style paste creates undo point (0.042708ms)
+✔ commands/style-clipboard > incompatible style paste is rejected safely (0.037417ms)
+✔ commands/style-clipboard > incompatible style paste does not apply layout width (0.037583ms)
+(node:70530) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ global/header-footer-policy > policy includes header and footer (0.72025ms)
+✔ global/header-footer-policy > header AI generation is blocked (0.070791ms)
+✔ global/header-footer-policy > footer AI generation is blocked (0.047042ms)
+✔ global/header-footer-policy > header opaque output is blocked (0.038709ms)
+✔ global/header-footer-policy > footer opaque output is blocked (0.041375ms)
+✔ global/header-footer-policy > opaque header validation fails (0.03075ms)
+✔ global/header-footer-policy > opaque footer validation fails (0.035583ms)
+✔ global/header-footer-policy > policies require native builder structures (0.032417ms)
+(node:70661) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ inspector/alignment-controls > left text alignment is valid (0.643875ms)
+✔ inspector/alignment-controls > justify text alignment is valid (0.052458ms)
+✔ inspector/alignment-controls > stretch layout alignment is valid (0.04375ms)
+✔ inspector/alignment-controls > text alignment writes active mobile value (0.0355ms)
+✔ inspector/alignment-controls > layout alignment writes active desktop value (0.038208ms)
+(node:70812) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ inspector/color-picker > color property carries theme token-ready metadata (0.640958ms)
+✔ inspector/color-picker > desktop color writes responsive desktop value (0.051875ms)
+✔ inspector/color-picker > mobile color writes active device only (0.043292ms)
+✔ inspector/color-picker > desktop color survives mobile edit (0.035209ms)
+✔ inspector/color-picker > clear color keeps a real style binding (0.036542ms)
+(node:71005) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ inspector/dead-controls > visible controls all have binding paths (0.639875ms)
+✔ inspector/dead-controls > unimplemented controls are hidden with reasons (0.050791ms)
+✔ inspector/dead-controls > alignment is now renderable (0.044083ms)
+✔ inspector/dead-controls > gradient remains hidden until implemented (0.036125ms)
+✔ inspector/dead-controls > shadow remains hidden until implemented (0.0365ms)
+(node:71198) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ inspector/layout-controls > section outer remains full bleed (0.798584ms)
+✔ inspector/layout-controls > section outer has no max width (0.05025ms)
+✔ inspector/layout-controls > boxed inner fills available width (0.0425ms)
+✔ inspector/layout-controls > boxed inner uses configured max width without canvas clamping (0.035167ms)
+✔ inspector/layout-controls > boxed inner left margin is auto (0.056ms)
+✔ inspector/layout-controls > boxed inner right margin is auto (0.036292ms)
+✔ inspector/layout-controls > full inner fills width (0.044917ms)
+✔ inspector/layout-controls > full inner removes boxed constraint (0.031375ms)
+✔ inspector/layout-controls > full inner has no boxed gutter (0.042292ms)
+✔ inspector/layout-controls > mode round trip preserves boxed max width (0.075667ms)
+✔ inspector/layout-controls > direct section child adds no max width (0.046709ms)
+✔ inspector/layout-controls > nested container supports its own max width (0.031208ms)
+✔ inspector/layout-controls > tablet max width resolves (0.026542ms)
+✔ inspector/layout-controls > mobile max width resolves (0.036459ms)
+✔ inspector/layout-controls > new boxed section inherits canonical max width (0.025125ms)
+✔ inspector/layout-controls > canonical boxed width is narrower than desktop canvas (0.029334ms)
+✔ inspector/layout-controls > theme container width overrides builder default (0.024042ms)
+✔ inspector/layout-controls > desktop gutter inherits theme default (0.025542ms)
+✔ inspector/layout-controls > tablet gutter resolves responsively (0.028083ms)
+✔ inspector/layout-controls > mobile gutter resolves responsively (0.033375ms)
+✔ inspector/layout-controls > canvas/runtime shared helper parity is exact (0.038042ms)
+(node:71401) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ inspector/motion-metadata > all required motion groups exist (0.646334ms)
+✔ inspector/motion-metadata > all required motion presets exist (0.057ms)
+✔ inspector/motion-metadata > motion presets execute at runtime (0.195791ms)
+✔ inspector/motion-metadata > default motion metadata enables runtime execution (0.041666ms)
+✔ inspector/motion-metadata > default motion engine is CSS (0.041958ms)
+(node:71603) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ inspector/property-binding > style binding writes to style (0.740416ms)
+✔ inspector/property-binding > style binding keeps expected value (0.090542ms)
+✔ inspector/property-binding > prop binding writes to props (0.044458ms)
+✔ inspector/property-binding > prop binding keeps expected value (0.037ms)
+✔ inspector/property-binding > visible controls have valid bindings (0.043042ms)
+✔ inspector/property-binding > unimplemented controls are disabled or hidden (0.03375ms)
+✔ inspector/property-binding > property update changes expected responsive node path (0.033375ms)
+(node:71797) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ inspector/unit-picker > known unit parses (0.743042ms)
+✔ inspector/unit-picker > known unit value parses (0.078ms)
+✔ inspector/unit-picker > unknown unit falls back to px (0.050417ms)
+✔ inspector/unit-picker > format unit serializes CSS value (0.054709ms)
+✔ inspector/unit-picker > unit update writes active tablet value (0.062167ms)
+(node:72001) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ layers/layers-metadata > layers support collapsible tree (1.170375ms)
+✔ layers/layers-metadata > layers support icons (0.275125ms)
+✔ layers/layers-metadata > layers support drag indicators (0.382708ms)
+✔ layers/layers-metadata > layers support search (0.116292ms)
+✔ layers/layers-metadata > layers support filtering (0.05025ms)
+✔ layers/layers-metadata > layers ordering uses CommandBus (0.063459ms)
+✔ layers/layers-metadata > layers carry keyboard metadata (0.038375ms)
+(node:72195) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ layout/multi-column-selector > 1 column preset exists (0.9335ms)
+✔ layout/multi-column-selector > 2 equal preset exists (0.061666ms)
+✔ layout/multi-column-selector > 3 equal preset exists (0.04175ms)
+✔ layout/multi-column-selector > 4 equal preset exists (0.038709ms)
+✔ layout/multi-column-selector > 30/70 ratio serializes first column (0.076125ms)
+✔ layout/multi-column-selector > 30/70 ratio serializes second column (0.03375ms)
+✔ layout/multi-column-selector > 70/30 ratio serializes first column (0.032584ms)
+✔ layout/multi-column-selector > 25/50/25 command creates three columns (0.05725ms)
+✔ layout/multi-column-selector > four-column preset creates four selectable columns (0.042625ms)
+✔ layout/multi-column-selector > four-column flex ratios account for gaps (0.088125ms)
+✔ layout/multi-column-selector > four-column layout has no conflicting max width (0.043625ms)
+✔ layout/multi-column-selector > column insert supports undo (0.029959ms)
+✔ layout/multi-column-selector > undo restores original child count (0.037167ms)
+✔ layout/multi-column-selector > numeric preset normalizes to equal thirds (0.025875ms)
+(node:72408) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ parity/canvas-runtime-contract > primitive contract covers all nodes (0.780583ms)
+✔ parity/canvas-runtime-contract > responsive contract covers all nodes (0.149291ms)
+✔ parity/canvas-runtime-contract > contract comparison is deterministic for same input (0.176875ms)
+✔ parity/canvas-runtime-contract > same node resolves same style in canvas/runtime (0.067834ms)
+✔ parity/canvas-runtime-contract > responsive style parity matches for mobile canvas/runtime (0.054208ms)
+✔ parity/canvas-runtime-contract > theme token parity resolves aliases (0.102291ms)
+✔ parity/canvas-runtime-contract > unsupported widget handling is explicit (0.049708ms)
+✔ parity/canvas-runtime-contract > missing asset handling has a safe fallback contract (0.127291ms)
+✔ parity/canvas-runtime-contract > publish/preview contract uses same render snapshot shape (0.146459ms)
+✔ parity/canvas-runtime-contract > builder-only overlay styles do not leak into runtime contract (0.257ms)
+(node:72623) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ RC-T1 Blueprint accepts the deterministic valid fixture (1.442375ms)
+✔ RC-T1 Blueprint rejects missing and non-page roots (0.344875ms)
+✔ RC-T1 Blueprint rejects identity, link, reachability, and cycle defects (0.563709ms)
+✔ RC-T1 Blueprint rejects duplicate children and multiple parents (0.256625ms)
+✔ RC-T1 Blueprint rejects invalid hierarchy (0.153333ms)
+✔ RC-T1 Blueprint rejects undefined values in arrays (0.204125ms)
+✔ RC-T1 Blueprint serialization round trip preserves responsive and theme data (3.544792ms)
+✔ RC-T1 Blueprint repeated serialization is deterministic (4.124875ms)
+✔ RC-T1 Blueprint deserialization rejects malformed JSON and invalid trees (0.377875ms)
+[Builder] Initial CommandBus blueprint validation failed [ 'child-parent-mismatch:test-heading', 'missing-parent:test-heading' ]
+[Builder] InsertNodeCommand rejected invalid hierarchy {
+  parentId: 'test-heading',
+  parentType: 'heading',
+  childId: 'bad-child',
+  childType: 'text'
+}
+(node:72836) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ RC-T1 CommandBus rejects invalid initialization and resets history (7.595083ms)
+✔ RC-T1 insert executes, validates, undoes, and redoes exactly (2.572875ms)
+✔ RC-T1 invalid and duplicate inserts are atomic and do not pollute history (1.69575ms)
+✔ RC-T1 delete subtree preserves unaffected nodes and round-trips through history (1.334541ms)
+✔ RC-T1 duplicate regenerates every subtree id and is undoable (1.784833ms)
+✔ RC-T1 move and reparent reject cycles and preserve valid ordering (1.418ms)
+✔ RC-T1 reorder, update, and wrap remain valid and undoable (2.0695ms)
+✔ RC-T1 failed transaction rolls back completely and leaves history clean (1.357167ms)
+✔ RC-T1 redo is invalidated by a new command (0.887583ms)
+✔ RC-T1 seeded command sequence stays valid after every operation (19.853084ms)
+(node:73079) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ RC-T2 equal columns serialize deterministically (1.415125ms)
+✔ RC-T2 canvas width never rewrites semantic width or min-width (1.166542ms)
+✔ RC-T2 emits Flex, Grid, two-axis gap, and overflow fields responsively (0.217666ms)
+✔ RC-T2 canonical viewport widths remain desktop/tablet/mobile (0.063625ms)
+(node:73272) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ normal targets retain the established 12–28px edge behavior (0.731416ms)
+✔ short zoom-scaled targets never receive overlapping edge zones (0.139042ms)
+✔ short targets keep both before and after positions reachable (0.06825ms)
+✔ invalid spans resolve safely (0.060875ms)
+(node:73465) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ RC-T3 active Builder store exposes no direct Blueprint replacement action (0.972125ms)
+(node:73658) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ rc-t3/operations/drop-commit-safety > current valid drop commits (0.756417ms)
+✔ rc-t3/operations/drop-commit-safety > cancelled drop cannot commit (0.063708ms)
+✔ rc-t3/operations/drop-commit-safety > consumed token cannot commit twice (0.04325ms)
+✔ rc-t3/operations/drop-commit-safety > inactive drag cannot commit (0.063667ms)
+✔ rc-t3/operations/drop-commit-safety > stale over target cannot commit (0.049666ms)
+✔ rc-t3/operations/drop-commit-safety > stale intent cannot commit (0.037042ms)
+✔ rc-t3/operations/drop-commit-safety > payload mismatch cannot commit (0.058375ms)
+✔ rc-t3/operations/drop-commit-safety > Builder chrome cannot commit (0.053292ms)
+✔ rc-t3/operations/drop-commit-safety > self or descendant pointer cannot commit (0.189084ms)
+(node:73851) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ rc-t3/operations/inline-text-noop > unchanged button text produces no patch (0.705667ms)
+✔ rc-t3/operations/inline-text-noop > unchanged heading text produces no patch (0.062417ms)
+✔ rc-t3/operations/inline-text-noop > changed button updates label and text (0.047333ms)
+✔ rc-t3/operations/inline-text-noop > changed button preserves sibling props (0.038375ms)
+(node:74045) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ RC-T3 duplicate exposes the new root and preserves an independent semantic subtree (7.22925ms)
+✔ RC-T3 paste exposes its independent root and invalid paste leaves history unchanged (3.403917ms)
+✔ RC-T3 delete, wrap, and reparent round-trip exact operation state (3.952667ms)
+✔ RC-T3 rejected cycle and protected delete are exact no-ops without history (0.541542ms)
+(node:74258) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ rendering/motion-runtime-parity > motion entry is generated (0.786458ms)
+✔ rendering/motion-runtime-parity > legacy premium preset is normalized (0.061333ms)
+✔ rendering/motion-runtime-parity > parallax engine is retained (0.042333ms)
+✔ rendering/motion-runtime-parity > viewport trigger is retained (0.03825ms)
+✔ rendering/motion-runtime-parity > horizontal parallax is normalized to percent (0.04575ms)
+✔ rendering/motion-runtime-parity > vertical parallax is normalized to percent (0.034917ms)
+✔ rendering/motion-runtime-parity > hover lift is retained (0.040083ms)
+✔ rendering/motion-runtime-parity > hover scale is retained (0.034583ms)
+✔ rendering/motion-runtime-parity > mouse follow is retained (0.059666ms)
+✔ rendering/motion-runtime-parity > pin offset is retained (0.07225ms)
+(node:74451) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ resolved grid remains authoritative when layout prop is missing (0.699125ms)
+✔ resolved display takes precedence over a conflicting explicit layout prop (0.068125ms)
+✔ layout prop supplies grid only when resolved display is absent (0.051583ms)
+✔ missing display and layout preserve the established flex widget default (0.046583ms)
+✔ all supported canonical display values survive unchanged (0.0685ms)
+✔ invalid display values do not override a valid fallback contract (0.049208ms)
+(node:74634) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ responsive/device-specific-values > desktop width resolves independently (0.665959ms)
+✔ responsive/device-specific-values > tablet width resolves independently (0.056208ms)
+✔ responsive/device-specific-values > tablet inherits desktop until override (0.044708ms)
+✔ responsive/device-specific-values > tablet inheritance source is desktop (0.034375ms)
+✔ responsive/device-specific-values > mobile inherits tablet before mobile override (0.036917ms)
+✔ responsive/device-specific-values > mobile inheritance source is tablet (0.030792ms)
+✔ responsive/device-specific-values > mobile gap override can be written (0.0455ms)
+✔ responsive/device-specific-values > resetting mobile override restores tablet inheritance (0.031542ms)
+✔ responsive/device-specific-values > inspector update changes active device only (0.074167ms)
+(node:74827) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ serialization/blueprint-schema > valid primitive fixture passes production validation (0.714291ms)
+✔ serialization/blueprint-schema > missing root fixture fails production validation (0.058875ms)
+✔ serialization/blueprint-schema > invalid parent link fixture fails production validation (0.039542ms)
+✔ serialization/blueprint-schema > duplicate node ids are rejected (0.036584ms)
+✔ serialization/blueprint-schema > orphan nodes are rejected (0.046ms)
+✔ serialization/blueprint-schema > cycles are rejected (0.035709ms)
+✔ serialization/blueprint-schema > invalid child relationships are rejected (0.034125ms)
+✔ serialization/blueprint-schema > normalize fills missing props defaults (0.083916ms)
+✔ serialization/blueprint-schema > normalize fills missing style defaults (0.061084ms)
+✔ serialization/blueprint-schema > safe repair removes missing child references (0.237625ms)
+✔ serialization/blueprint-schema > unsafe repair reports structural errors (0.068042ms)
+(node:75030) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ serialization/save-reload-roundtrip > valid blueprint serializes (0.764958ms)
+✔ serialization/save-reload-roundtrip > invalid blueprint serialization is rejected (0.073167ms)
+✔ serialization/save-reload-roundtrip > invalid blueprint deserialization is rejected (0.046041ms)
+✔ serialization/save-reload-roundtrip > round-tripped blueprint remains valid (0.037917ms)
+✔ serialization/save-reload-roundtrip > root id survives round trip (0.039916ms)
+✔ serialization/save-reload-roundtrip > node count survives round trip (0.032084ms)
+(node:75224) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ serialization/undefined-normalization > blueprint with undefined prop is normalized (0.63275ms)
+✔ serialization/undefined-normalization > undefined style key is removed (0.056834ms)
+✔ serialization/undefined-normalization > undefined theme token is removed (0.041375ms)
+✔ serialization/undefined-normalization > normalized blueprint passes validation (0.034666ms)
+✔ serialization/undefined-normalization > CommandBus initializes normalized blueprint (0.065334ms)
+✔ serialization/undefined-normalization > validator reports exact path if undefined remains (0.031167ms)
+(node:75429) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ modules/builder-v2/__tests__/stress/ai-generated-page-stress.test.ts (253.789875ms)
+(node:75632) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ modules/builder-v2/__tests__/stress/deep-nesting-stress.test.ts (233.567083ms)
+(node:75815) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ modules/builder-v2/__tests__/stress/drag-drop-zoom-stress.test.ts (270.530209ms)
+(node:76018) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ modules/builder-v2/__tests__/stress/large-blueprint-stress.test.ts (234.363167ms)
+(node:76201) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ modules/builder-v2/__tests__/stress/large-image-page-stress.test.ts (230.870584ms)
+(node:76384) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ modules/builder-v2/__tests__/stress/large-undo-redo-stress.test.ts (270.256875ms)
+(node:76603) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ modules/builder-v2/__tests__/stress/responsive-switching-stress.test.ts (233.394959ms)
+(node:76792) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ modules/builder-v2/__tests__/stress/save-reload-stress.test.ts (260.637291ms)
+(node:76995) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ modules/builder-v2/__tests__/stress/section-duplication-stress.test.ts (231.2305ms)
+(node:77178) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ theme/theme-normalization > missing blueprint.theme is repaired (0.757917ms)
+✔ theme/theme-normalization > empty theme object gets defaults (0.065833ms)
+✔ theme/theme-normalization > missing theme.colors gets default background (0.042541ms)
+✔ theme/theme-normalization > missing theme.colors.background gets default background (0.036791ms)
+✔ theme/theme-normalization > partial theme preserves user primary color (0.040375ms)
+✔ theme/theme-normalization > partial theme preserves user background color (0.051667ms)
+✔ theme/theme-normalization > partial theme preserves user accent color (0.036584ms)
+✔ theme/theme-normalization > normalizing undefined tokens returns safe defaults (0.034375ms)
+✔ theme/theme-normalization > no undefined values remain after theme normalization (0.054083ms)
+(node:77376) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ theme/theme-panels > theme panel sections exist (0.627042ms)
+✔ theme/theme-panels > required theme sections are present (0.054375ms)
+✔ theme/theme-panels > every theme section has tokens (0.04075ms)
+(node:77564) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ theme/theme-tokens > color tokens exist (0.692542ms)
+✔ theme/theme-tokens > font tokens exist (0.056084ms)
+✔ theme/theme-tokens > spacing tokens exist (0.039875ms)
+✔ theme/theme-tokens > container default tokens exist (0.03525ms)
+✔ theme/theme-tokens > radius tokens exist (0.0435ms)
+✔ theme/theme-tokens > shadow tokens exist (0.038291ms)
+✔ theme/theme-tokens > semantic state tokens exist (0.037375ms)
+✔ theme/theme-tokens > form tokens exist (0.033625ms)
+✔ theme/theme-tokens > card tokens exist (0.056291ms)
+✔ theme/theme-tokens > token value lookup resolves primary color (0.080416ms)
+✔ theme/theme-tokens > container max width comes from canonical theme defaults (0.041916ms)
+(node:77757) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ canonical, flat exact-ID, patches, and nodePatches shapes normalize (1.883042ms)
+✔ ambiguous, unrelated, semantic-name, array, and non-props response shapes are rejected (0.336042ms)
+✔ normalized enrichment survives a JSON round trip (0.663584ms)
+✔ creative provider errors classify into the five reliability categories (0.44025ms)
+✔ observed flat exact-ID response is recognized without shape recovery or splitting (3.219542ms)
+✔ patches and nodePatches aliases hydrate without recovery (1.013542ms)
+✔ invalid wrapper gets exactly one same-batch shape recovery request (0.590584ms)
+✔ creative requests carry batch-specific caller labels (0.453958ms)
+✔ creative concurrency defaults to two and is capped at four (0.081833ms)
+✖ explicit model permission error fails immediately (3.526291ms)
+✔ invalid API key fails immediately with accurate classification (0.40725ms)
+✔ fatal concurrent worker failure drains running work and prevents unstarted batches (8.486583ms)
+✔ failed shape recovery throws without recursively splitting (0.58275ms)
+✔ one missing node is recovered with one additional request and no recursive split (0.617416ms)
+✔ two missing nodes are recovered together in one targeted request (0.392459ms)
+✔ unknown node and duplicate node responses are rejected without splitting (0.861375ms)
+✔ placeholder retained by GPT fails without weakening hydration (0.299375ms)
+✔ recovery stops after two targeted attempts per missing node (0.41525ms)
+✔ insufficient quota aborts immediately and rate limits retry with backoff (0.725583ms)
+✔ provider permission and invalid-request errors abort without splitting (0.439458ms)
+✔ transient 500 retries the same batch with deterministic exponential backoff (0.38175ms)
+✔ timeout retries use bounded backoff (0.273875ms)
+✔ creative response diagnostics are deterministic (0.49275ms)
+✔ multiple successful batches merge into one fully hydrated Blueprint (0.429291ms)
+✔ creative batches send compact context instead of repeating full Engine artifacts (0.719625ms)
+(node:78090) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ forensic trace is opt-in and writes immutable stage artifacts (17.140291ms)
+✔ Blueprint stage diff exposes structural, style, responsive and invalid mutations (0.436833ms)
+✔ geometry contract records raw and breakpoint-resolved styles and flags malformed desktop widths (1.962667ms)
+✔ geometry contract proves renderers preserve the canonical grid display (0.747417ms)
+(node:78383) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ ai-v10 uses Website Engine nodes as the authoritative GPT enrichment input (81.396459ms)
+✔ v10 rejects an unchanged semantic blueprint before image generation (31.627042ms)
+✔ v10 preflight engineers the prompt and returns four use-case-aware decisions (1.859875ms)
+✔ builder generation selector routes v10 to Website Engine and keeps v9 available (0.083167ms)
+✔ native v10 uses the GPT-5.6 website builder profile without changing direct v9 (0.174417ms)
+✔ v10 creative completion budget stays within the project-key ceiling (0.075666ms)
+✔ v10 progress retains ordered milestones instead of only the latest status (0.155166ms)
+(node:79357) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ preflight uses its dedicated fast model, compact budget, timeout, and structured JSON (4.441083ms)
+✔ default preflight configuration uses a repository-supported fast model (0.112375ms)
+✔ preflight compacts model word-count overruns without another request (0.670625ms)
+✔ preflight replaces structurally invalid model output with four validated decisions (1.055208ms)
+✔ preflight retries one malformed structured response instead of failing the user action (0.941291ms)
+✔ provider timeout immediately returns a validated local fallback below the latency budget (0.62025ms)
+✔ quota and provider permission failures use fallback immediately without leaking provider payloads (0.712292ms)
+✔ rate limits and network failures retry at most once then fall back (0.528292ms)
+✔ fallback output satisfies every compact word limit (0.423375ms)
+✔ route response seam returns HTTP 200 for a provider-timeout fallback (0.35875ms)
+✔ dedicated preflight configuration does not change the website generation model (0.104792ms)
+(node:79518) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ semantic duplicate fingerprints use purpose and anatomy rather than role alone (1.080667ms)
+✔ overflow classifier groups rounding, intentional media and narrow-track symptoms (0.151875ms)
+(node:79712) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ Creative Director emits an immutable executable ArtDirectionBrief (2.173167ms)
+✔ ComponentEngine consumes art direction without changing legacy behavior (1.6515ms)
+✔ CompositionEngine turns art direction into executable rhythm metadata (1.215292ms)
+✔ BuilderBlueprintInput carries art direction into recipe styles (64.808917ms)
+(node:80205) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ section-scoped candidates expose the complete Phase 3 score (19.618708ms)
+✔ page-level selection avoids repeated card-grid silhouettes (3.67725ms)
+✔ archetype compatibility and compiler coverage are explicit (3.04675ms)
+✔ exploration is reproducible for one seed and varies deterministically across seeds (6.53925ms)
+✔ hard semantic roles prevent sticky, footer, and trust anatomy collapse (2.247791ms)
+✔ intentional framed motif reuse remains allowed when semantic placement differs (1.984791ms)
+✔ semantic anatomy selection is reproducible for the fixed seed (5.362959ms)
+(node:80584) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ golden industry compositions preserve preferred ordering and score above 85 (2.442208ms)
+✔ missing trust fails and warns before conversion (0.195959ms)
+✔ conversion block before proof emits an early CTA warning (0.14025ms)
+✔ three consecutive card layouts trigger card fatigue (0.170375ms)
+✔ poor short composition scores below 60 (0.14725ms)
+✔ semantic compiler attaches warning-only composition metadata without changing section order (3.85275ms)
+(node:80903) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ all five exact IDs route through compilers without near-match routing (6.39825ms)
+✔ all five variants retain distinct meaningful structural signatures (1.566542ms)
+✔ content density changes Service, Vehicle, and Course hierarchy (2.18375ms)
+✔ Product media strategy selects typography, featured, and editorial structures (0.611417ms)
+✔ CTA cadence changes placement while preserving one editable button (0.304708ms)
+✔ service matrices differ in hierarchy and section-level CTA placement (0.499417ms)
+✔ product is a narrative stack, menu is readable, and catalogue is controlled (1.518042ms)
+✔ heading hierarchy and semantic placement remain hydration-safe (0.797625ms)
+✔ all five validate natively and serialize losslessly (30.5665ms)
+✔ industry fixtures preserve compiler selection, native nodes, roles, and validation (27.148291ms)
+✔ unknown variants use unchanged legacy fallback and composition order is stable (2.044917ms)
+(node:81276) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ same Website Intelligence input produces identical immutable creative direction (3.995083ms)
+✔ industry fixtures receive distinct art direction personalities (1.566791ms)
+✔ anti-template rules detect card fatigue, CTA overload, repeated splits, and weak storytelling (0.252875ms)
+✔ SemanticBlueprintCompiler attaches executable creative direction (5.73175ms)
+✔ all 52 golden websites expose deterministic creative metadata (3014.417792ms)
+✔ premium golden examples meet the creative quality threshold (112.5845ms)
+(node:83955) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ luxury real estate produces an airy editorial execution plan (1.278166ms)
+✔ healthcare produces readable accessible hierarchy (0.206417ms)
+✔ SaaS produces compact information-dense UI hierarchy (0.103125ms)
+✔ restaurant produces media-first editorial treatment (0.083917ms)
+✔ responsive and restrained motion rules are generated for every golden fixture (0.174458ms)
+✔ premium fixtures score above 85 and scoring remains deterministic (1.186292ms)
+✔ SemanticBlueprintCompiler attaches isolated design execution metadata (2.528167ms)
+(node:84285) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ floating proof retains three nested metric tracks only when the content contract is feasible (1.536625ms)
+✔ floating proof moves metrics below proof copy when the nested side track is infeasible (0.220959ms)
+✔ floating proof deterministically reduces tablet tracks and emits one mobile track (0.917125ms)
+(node:84484) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ every catalogued Gallery ID routes to its exact native compiler (4.333ms)
+✔ masonry and rail lock genuinely different hierarchy and responsive behavior (1.88325ms)
+✔ Gallery compilers emit hydratable image, alt, prompt, caption, and heading placeholders (12.279458ms)
+✔ Gallery Blueprints validate, map natively, hydrate, and serialize (9.863375ms)
+✔ unknown Gallery variants retain legacy GalleryRecipe fallback (0.974667ms)
+(node:84823) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ benchmark covers at least 50 unique launch-critical website archetypes (0.713ms)
+✔ all golden websites generate valid editable native deterministic Blueprints (2981.093875ms)
+✔ golden reports expose selected components and quality traces (30.301666ms)
+✔ poor composition fails the benchmark and detects missing trust (6.991625ms)
+✔ CTA abuse is detected as an anti-pattern (12.362375ms)
+✔ design-score regression drops a premium website below its quality gate (0.124375ms)
+(node:87479) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ Phase 41 creates a disposable canonical preview without side effects (63.915916ms)
+✔ Phase 41 route access is denied in production (0.093ms)
+✔ Phase 41 uses a stable request id and only compares ai-v9 when supplied (59.8945ms)
+(node:88192) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ exact component compilers retain precedence over archetypes (7.288417ms)
+✔ archetype compilation is deterministic and structurally varied (2.698875ms)
+(node:88532) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ all ten premium archetypes publish complete immutable contracts (1.51075ms)
+✔ ArtDirectionBrief and section intent select archetypes before fallback (5.440167ms)
+✔ archetype output remains native, editable, responsive, inspectable, and serializable (12.811875ms)
+✔ legacy recipes remain the fallback without an explicit ArtDirectionBrief (1.327792ms)
+(node:88900) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ native capability inventory is derived from registered editable widget contracts (0.89475ms)
+✔ production catalog exposes only capabilities that pass every generation gate (0.157ms)
+✔ purpose-aware capability selection uses appropriate native interactions (2.086125ms)
+✔ native adapter preserves premium node type, Inspector metadata, responsiveness, and serialization (3.575125ms)
+✔ Sanjeevini seed 104729 activates diverse supported native capabilities deterministically (22.007958ms)
+(node:89171) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ RC-3.5D native widget population gate
+  ✔ passes only a complete, persisted, non-demo native widget (5.505666ms)
+  ✔ is non-compensating for required media (1.998375ms)
+  ✔ rejects registered defaults and repeated unrelated headlines (0.914125ms)
+  ✔ omits an optional unresolved media section but never omits a required hero (2.235625ms)
+  ✔ rejects a contact capability without a verified destination (0.548292ms)
+  ✔ replaces unsafe WhatsApp with a role-correct standard CTA without inventing a destination (1.045375ms)
+✔ RC-3.5D native widget population gate (12.972208ms)
+(node:89464) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ RenderedVisualQualityGate inspects pixels across all three viewports (162.442666ms)
+✔ visual repair compiler preserves native schema and source immutability (40.026208ms)
+✔ rendered quality loop repairs and rerenders with a maximum of three iterations (64.288375ms)
+✔ rendered quality loop stops deterministically at iteration three (76.689ms)
+(node:90017) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ approved component replacement executes through CommandBus and remains undoable (110.307208ms)
+✔ design token, layout, and density repairs are native commands with one transaction history (70.677625ms)
+✔ invalid and incompatible replacements are rejected before command execution (33.097875ms)
+✔ missing optional assets are preserved safely without fake URLs (70.68625ms)
+✔ unapproved plans cannot execute (28.28925ms)
+(node:90622) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ semantic compiler preserves composition order and selects distinct recipes (6.242917ms)
+✔ semantic recipes emit placeholders, varied structures, and no legacy copy (1.188917ms)
+✔ semantic blueprint remains native, editable, responsive, inspectable, and design-token driven (15.391458ms)
+✔ recipe registry exposes every RC-9A recipe family (0.133666ms)
+✔ four exact hero component IDs route through native variant recipes without regex matching (4.45775ms)
+✔ hero compiler architecture locks layout, CTA, media, role, and responsive placement (2.153917ms)
+✔ native hero variants have distinct meaningful structures and exactly one h1 (2.274125ms)
+✔ native hero variants validate, map natively, and serialize losslessly (51.546708ms)
+✔ unknown variants and non-hero sections retain legacy registry fallback and section order (0.526041ms)
+✔ v10 legacy recipe expansion does not overwrite semantic compiler output (10.99125ms)
+(node:91025) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ findSemanticPlaceholders detects multiple nested semantic tokens (1.612208ms)
+✔ validateSemanticHydration reports node IDs and prop paths (0.473667ms)
+✔ collectCreativeNodeIds returns only placeholder-bearing creative nodes (0.176542ms)
+✔ missing semantic node patch fails strict coverage (0.60675ms)
+✔ unknown node ID fails strict coverage (0.142125ms)
+✔ a patch retaining a semantic placeholder fails (0.14125ms)
+✔ non-semantic nodes do not require GPT patches (0.125875ms)
+✔ style, hierarchy, type, id, and children patch fields are rejected (0.1395ms)
+✔ empty heading, text, and button values fail required-field validation (0.137375ms)
+✔ image src may remain empty but alt and aiImagePrompt are mandatory (0.186125ms)
+✔ image placeholder alt fails (0.094667ms)
+✔ valid creative output hydrates all semantic tokens without changing structure or style (0.889875ms)
+✔ semantic hydration survives JSON serialization round-trip (0.236208ms)
+✔ persistence gate performs zero writes for unresolved semantic content (0.321625ms)
+✔ persistence gate permits a fully hydrated blueprint (0.129125ms)
+(node:91313) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ reordered composition retains stable section-to-pattern provenance (1.635292ms)
+✔ sections sharing a component remain distinct in semantic compilation (4.415084ms)
+✔ missing stable association is explicit and never falls back through component ID (0.454125ms)
+(node:91621) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ RC-3.5C typed widget hydration and media
+  ✔ publishes schemas for every RC-3.5A native widget (1.462375ms)
+  ✔ accepts complete nested copy changes while preserving stable IDs (0.535792ms)
+  ✔ rejects unknown fields, identity mutation, malformed URLs, and invalid item counts (0.185792ms)
+  ✔ discovers and assigns every declared nested slot without changing IDs or order (0.673125ms)
+  ✔ rejects unsafe media URLs and preserves nested props through serialization (2.843875ms)
+  ✔ uses the same contract across five industries without embedding industry copy (0.358292ms)
+✔ RC-3.5C typed widget hydration and media (6.761875ms)
+(node:91914) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ all 52 golden websites expose deterministic critic metadata and safe recommendations (3193.588375ms)
+✔ critic does not mutate the Blueprint (29.78325ms)
+✔ three consecutive grids produce layout repair recommendations (32.658917ms)
+✔ conversion critic detects missing trust, early CTA, and CTA overload (30.854416ms)
+✔ typography, media, and responsive regressions are detected (32.869167ms)
+(node:94750) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ all 52 golden fixtures receive stable visual quality scores (3292.044791ms)
+✔ golden preview uses a complete hydrated native Blueprint (1552.882583ms)
+✔ visual evaluator detects overflow and hierarchy regressions deterministically (37.591792ms)
+✔ unknown reference metadata never blocks preview generation (30.607667ms)
+(node:98720) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ all golden previews expose deterministic section-level repair plans (95.219459ms)
+✔ luxury card fatigue identifies the middle grid and suggests an existing alternative (46.694709ms)
+✔ SaaS CTA overload identifies competing conversion sections and repairs cadence (36.552416ms)
+✔ restaurant without imagery identifies hero media balance and recommends media capability (36.647458ms)
+✔ healthcare without trust identifies the conversion section and trust sequence (30.717042ms)
+✔ automotive without conversion path produces an explainable page-level repair (33.220375ms)
+✔ repair planning never mutates the Blueprint (61.139792ms)
+(node:99316) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ RC-3.5D cross-industry population certification
+  ✖ certifies eight distinct deterministic contract/gate sequences (0.773292ms)
+  ✖ has no missing media, defaults, unsafe facts, fit failures, duplicate copy, or terminology leaks (0.112541ms)
+  ✖ does not rely on fixture logic or fake verified facts (0.068625ms)
+✖ RC-3.5D cross-industry population certification (1.607292ms)
+(node:99509) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ RC-3.5B universal widget population
+  ✔ registers immutable contracts derived from production widget support (1.666791ms)
+  ✔ populates every fact-independent widget completely without registered demo defaults (1.420542ms)
+  ✔ rejects widgets that require unavailable verified facts (0.223542ms)
+  ✔ is deterministic for a seed and allows seeded presentation variation (0.374458ms)
+  ✔ covers five declarative industry policies without fixture terms (0.217083ms)
+✔ RC-3.5B universal widget population (4.649542ms)
+(node:99792) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ RC-3.5A widget population forensic evidence
+  ✖ traces every selected native widget and preserves persistence evidence (0.841208ms)
+  ✖ records the first observed failure boundary instead of asserting visual success (0.106083ms)
+  ✖ distinguishes renderer/demo fallbacks from defaultNode prop leakage (0.076292ms)
+✖ RC-3.5A widget population forensic evidence (1.648292ms)
+(node:99985) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ widgets/core-widgets-serialization > core widget count baseline (0.71375ms)
+✔ widgets/core-widgets-serialization > page widget is present (0.060166ms)
+✔ widgets/core-widgets-serialization > section widget is present (0.051917ms)
+✔ widgets/core-widgets-serialization > button widget is present (0.042083ms)
+✔ widgets/core-widgets-serialization > all core widget defaults are JSON serializable (0.051833ms)
+(node:474) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ widgets/marketplace-launch-gates > core and complete premium catalog count remains explicit (2.155292ms)
+✔ widgets/marketplace-launch-gates > every catalog item declares launch availability (0.098208ms)
+✔ widgets/marketplace-launch-gates > all curated catalog widgets are insertable (0.048917ms)
+✔ widgets/marketplace-launch-gates > AI metadata does not imply insertion entitlement (0.041833ms)
+(node:808) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ modern carousels are native serializable Builder nodes (1.498792ms)
+✔ carousel behavior and commerce binding stay editable (1.537375ms)
+(node:1064) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ widgets/production-widget-library > every BSP-15 production widget is registered (0.856333ms)
+✔ widgets/production-widget-library > every production widget has content inspector controls (0.069292ms)
+✔ widgets/production-widget-library > every production widget has design inspector controls (0.074916ms)
+✔ widgets/production-widget-library > every production widget has advanced inspector metadata (0.075541ms)
+✔ widgets/production-widget-library > every production widget has responsive metadata (0.0805ms)
+✔ widgets/production-widget-library > every production widget has theme token metadata (0.065375ms)
+✔ widgets/production-widget-library > every production widget has editable content regions (0.113958ms)
+✔ widgets/production-widget-library > every production widget has editable style regions (0.063958ms)
+✔ widgets/production-widget-library > every premium widget exposes element-level typography controls (0.115834ms)
+✔ widgets/production-widget-library > every premium widget exposes CTA and card design controls (0.16175ms)
+✔ widgets/production-widget-library > every premium widget exposes featured media treatment metadata (0.051ms)
+✔ widgets/production-widget-library > clipboard support is enabled through native node commands (0.045542ms)
+✔ widgets/production-widget-library > undo/redo support is enabled through CommandBus contracts (0.138375ms)
+✔ widgets/production-widget-library > serialization requirements are explicit for every production widget (0.2025ms)
+✔ widgets/production-widget-library > incomplete interactions are runtime-gated rather than reported production-ready (0.104791ms)
+✔ widgets/production-widget-library > AI readiness is explicit for every production widget (0.131458ms)
+✔ widgets/production-widget-library > AI insertion remains disabled until BSP AI gates open (0.13275ms)
+(node:1391) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ widgets/production-widget-serialization > production widget default nodes serialize as native node shape (0.679458ms)
+✔ widgets/production-widget-serialization > production widgets do not store opaque html/template payloads (0.055ms)
+✔ widgets/production-widget-serialization > restricted embed defaults are policy text, not executable markup (0.044041ms)
+(node:1592) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ widgets/widget-ai-readiness > AI readiness is explicit for every widget (0.703291ms)
+✔ widgets/widget-ai-readiness > AI insertion remains disabled (0.059084ms)
+✔ widgets/widget-ai-readiness > blocked widget list is non-empty (0.049ms)
+✔ widgets/widget-ai-readiness > restricted embed widget is gated (0.038917ms)
+✔ widgets/widget-ai-readiness > restricted embed widget has safety warning (0.042667ms)
+✔ widgets/widget-ai-readiness > popup metadata widget is gated (0.033916ms)
+(node:1903) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ widgets/widget-capabilities > every registered widget has capability metadata (1.0015ms)
+✔ widgets/widget-capabilities > registered capability count matches registered definitions (0.076416ms)
+✔ widgets/widget-capabilities > all capabilities declare inspector groups (0.05925ms)
+✔ widgets/widget-capabilities > all capabilities declare serialization requirements (0.042666ms)
+(node:2208) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ widgets/widget-inspector-support > all widgets declare advanced control metadata (0.698333ms)
+✔ widgets/widget-inspector-support > content widgets declare content controls (0.063333ms)
+✔ widgets/widget-inspector-support > layout widgets declare design controls (0.049291ms)
+✔ widgets/widget-inspector-support > scaffold widgets declare motion-ready metadata (0.041125ms)
+✔ widgets/widget-inspector-support > theme-compatible widgets exist (0.043459ms)
+(node:2481) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ widgets/widget-modernization > modernization summary includes registered widgets (0.884292ms)
+✔ widgets/widget-modernization > production catalog is mostly native (0.071541ms)
+✔ widgets/widget-modernization > BSP-15 removed scaffold-only widget backlog (0.050459ms)
+✔ widgets/widget-modernization > accordion is no longer scaffold-only (0.041042ms)
+✔ widgets/widget-modernization > tabs are no longer scaffold-only (0.045458ms)
+✔ widgets/widget-modernization > carousel is no longer scaffold-only (0.03625ms)
+✔ widgets/widget-modernization > restricted widgets remain explicitly gated (0.039208ms)
+(node:2730) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ widgets/widget-serialization-support > serialization support validates (0.73675ms)
+✔ widgets/widget-serialization-support > all widgets require native editable shape (0.060708ms)
+✔ widgets/widget-serialization-support > no widget allows opaque output (0.053333ms)
+✔ widgets/widget-serialization-support > registered widgets support clipboard (0.043042ms)
+(node:3019) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ workspace/fullscreen-builder > fullscreen enables focus mode (0.719792ms)
+✔ workspace/fullscreen-builder > fullscreen collapses sidebars (0.057584ms)
+✔ workspace/fullscreen-builder > escape exits fullscreen (0.061667ms)
+✔ workspace/fullscreen-builder > disabled state is not focus mode (0.039458ms)
+✔ workspace/fullscreen-builder > preference key is stable (0.042541ms)
+✔ workspace/fullscreen-builder > preference persists (0.03575ms)
+ℹ tests 550
+ℹ suites 5
+ℹ pass 542
+ℹ fail 8
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 45716.829959
+
+✖ failing tests:
+
+test at modules/builder-v2/__tests__/website-engine/ai-v10-creative-recovery.test.ts:2:9106
+✖ explicit model permission error fails immediately (3.526291ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /AI_V10_CREATIVE_MODEL_PERMISSION_FAILED/. Input:
+  
+  'Error: AI_V10_CREATIVE_AUTHORIZATION_FAILED_AFTER_RETRY: batch 1 of 1: Error OpenAI API error (403): {"code":"permission_denied","message":"You do not have access to model gpt-5.6-sol"}'
+  
+      at async TestContext.<anonymous> (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/ai-v10-creative-recovery.test.ts:148:3)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: AI_V10_CREATIVE_AUTHORIZATION_FAILED_AFTER_RETRY: batch 1 of 1: Error OpenAI API error (403): {"code":"permission_denied","message":"You do not have access to model gpt-5.6-sol"}
+        at requestNodes (/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v10/creative/runV10CreativeEnrichment.ts:467:17)
+        at async enrichBatch (/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v10/creative/runV10CreativeEnrichment.ts:494:22)
+        at async <anonymous> (/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v10/creative/runV10CreativeEnrichment.ts:546:26)
+        at async runWorker (/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v10/creative/runV10CreativeEnrichment.ts:179:26)
+        at async Promise.all (index 0)
+        at async mapWithConcurrency (/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v10/creative/runV10CreativeEnrichment.ts:188:3)
+        at async runV10CreativeEnrichment (/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v10/creative/runV10CreativeEnrichment.ts:545:19)
+        at async waitForActual (node:assert:615:5)
+        at async strict.rejects (node:assert:738:25)
+        at async TestContext.<anonymous> (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/ai-v10-creative-recovery.test.ts:148:3),
+    expected: /AI_V10_CREATIVE_MODEL_PERMISSION_FAILED/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at modules/builder-v2/__tests__/website-engine/widget-population-certification.test.ts:2:1313
+✖ certifies eight distinct deterministic contract/gate sequences (0.773292ms)
+  Error: ENOENT: no such file or directory, open '/Users/kailash/buildez/apps/web-app/test-results/ai-v10-forensic/cross-industry-population-certification.json'
+      at readFileSync (node:fs:436:20)
+      at load (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/widget-population-certification.test.ts:7:27)
+      at TestContext.<anonymous> (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/widget-population-certification.test.ts:10:91)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.start (node:internal/test_runner/test:1096:17)
+      at node:internal/test_runner/test:1617:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/kailash/buildez/apps/web-app/test-results/ai-v10-forensic/cross-industry-population-certification.json'
+  }
+
+test at modules/builder-v2/__tests__/website-engine/widget-population-certification.test.ts:2:1699
+✖ has no missing media, defaults, unsafe facts, fit failures, duplicate copy, or terminology leaks (0.112541ms)
+  Error: ENOENT: no such file or directory, open '/Users/kailash/buildez/apps/web-app/test-results/ai-v10-forensic/cross-industry-population-certification.json'
+      at readFileSync (node:fs:436:20)
+      at load (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/widget-population-certification.test.ts:7:27)
+      at TestContext.<anonymous> (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/widget-population-certification.test.ts:11:131)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1619:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/kailash/buildez/apps/web-app/test-results/ai-v10-forensic/cross-industry-population-certification.json'
+  }
+
+test at modules/builder-v2/__tests__/website-engine/widget-population-certification.test.ts:2:2532
+✖ does not rely on fixture logic or fake verified facts (0.068625ms)
+  Error: ENOENT: no such file or directory, open '/Users/kailash/buildez/apps/web-app/test-results/ai-v10-forensic/cross-industry-population-certification.json'
+      at readFileSync (node:fs:436:20)
+      at load (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/widget-population-certification.test.ts:7:27)
+      at TestContext.<anonymous> (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/widget-population-certification.test.ts:12:82)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/kailash/buildez/apps/web-app/test-results/ai-v10-forensic/cross-industry-population-certification.json'
+  }
+
+test at modules/builder-v2/__tests__/website-engine/widget-population-forensic-audit.test.ts:2:1358
+✖ traces every selected native widget and preserves persistence evidence (0.841208ms)
+  Error: ENOENT: no such file or directory, open '/Users/kailash/buildez/apps/web-app/test-results/ai-v10-forensic/sanjeevini-group-seed-104729/widget-population-provenance.json'
+      at readFileSync (node:fs:436:20)
+      at provenance (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/widget-population-forensic-audit.test.ts:19:21)
+      at TestContext.<anonymous> (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/widget-population-forensic-audit.test.ts:27:19)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.start (node:internal/test_runner/test:1096:17)
+      at node:internal/test_runner/test:1617:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/kailash/buildez/apps/web-app/test-results/ai-v10-forensic/sanjeevini-group-seed-104729/widget-population-provenance.json'
+  }
+
+test at modules/builder-v2/__tests__/website-engine/widget-population-forensic-audit.test.ts:2:1860
+✖ records the first observed failure boundary instead of asserting visual success (0.106083ms)
+  Error: ENOENT: no such file or directory, open '/Users/kailash/buildez/apps/web-app/test-results/ai-v10-forensic/sanjeevini-group-seed-104729/widget-population-provenance.json'
+      at readFileSync (node:fs:436:20)
+      at provenance (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/widget-population-forensic-audit.test.ts:19:21)
+      at TestContext.<anonymous> (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/widget-population-forensic-audit.test.ts:37:39)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1619:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/kailash/buildez/apps/web-app/test-results/ai-v10-forensic/sanjeevini-group-seed-104729/widget-population-provenance.json'
+  }
+
+test at modules/builder-v2/__tests__/website-engine/widget-population-forensic-audit.test.ts:2:2933
+✖ distinguishes renderer/demo fallbacks from defaultNode prop leakage (0.076292ms)
+  Error: ENOENT: no such file or directory, open '/Users/kailash/buildez/apps/web-app/test-results/ai-v10-forensic/sanjeevini-group-seed-104729/widget-population-provenance.json'
+      at readFileSync (node:fs:436:20)
+      at provenance (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/widget-population-forensic-audit.test.ts:19:21)
+      at TestContext.<anonymous> (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/website-engine/widget-population-forensic-audit.test.ts:51:39)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/kailash/buildez/apps/web-app/test-results/ai-v10-forensic/sanjeevini-group-seed-104729/widget-population-provenance.json'
+  }
+
+test at modules/builder-v2/__tests__/helpers/testAssertions.ts:2:2254
+✖ widgets/marketplace-launch-gates > core and complete premium catalog count remains explicit (2.155292ms)
+  AssertionError [ERR_ASSERTION]: Expected 48 but received 49.
+  
+  false !== true
+  
+      at TestContext.<anonymous> (/Users/kailash/buildez/apps/web-app/modules/builder-v2/__tests__/helpers/testAssertions.ts:58:14)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.start (node:internal/test_runner/test:1096:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+[ELIFECYCLE] Command failed with exit code 1.

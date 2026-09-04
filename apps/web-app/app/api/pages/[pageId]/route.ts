@@ -6,8 +6,12 @@
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { Prisma, prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
+import { archiveDesignTokens } from "@/modules/pages/designTokenRegistration";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { invalidateRouteCache } from "@/lib/runtime/routeCache";
 
 function slugify(value: string) {
   return value
@@ -100,6 +104,7 @@ export async function GET(
         siteSlug: page.site.slug,
         seoTitle: String(asRecord(page.metadata).seoTitle ?? ""),
         seoDescription: String(asRecord(page.metadata).seoDescription ?? ""),
+        faviconUrl: String(asRecord(page.metadata).faviconUrl ?? ""),
         blueprint: page.blueprint?.data ?? null,
       },
     };
@@ -166,14 +171,19 @@ export async function PATCH(
 
     if (
       typeof body.seoTitle === "string" ||
-      typeof body.seoDescription === "string"
+      typeof body.seoDescription === "string" ||
+      typeof body.faviconUrl === "string" ||
+      typeof body.socialImageUrl === "string"
     ) {
-      updates.metadata = {
-        ...asRecord(existing.metadata),
-        seoTitle: typeof body.seoTitle === "string" ? body.seoTitle : undefined,
-        seoDescription:
-          typeof body.seoDescription === "string" ? body.seoDescription : undefined,
-      };
+      // Only overwrite keys actually present in the request — a metadata
+      // field omitted from `body` must keep its existing saved value, not
+      // be wiped to `undefined` (which JSON-serializes away entirely).
+      const nextMetadata = { ...asRecord(existing.metadata) };
+      if (typeof body.seoTitle === "string") nextMetadata.seoTitle = body.seoTitle;
+      if (typeof body.seoDescription === "string") nextMetadata.seoDescription = body.seoDescription;
+      if (typeof body.faviconUrl === "string") nextMetadata.faviconUrl = body.faviconUrl;
+      if (typeof body.socialImageUrl === "string") nextMetadata.socialImageUrl = body.socialImageUrl;
+      updates.metadata = nextMetadata as Prisma.InputJsonValue;
     }
 
     await prisma.page.update({
@@ -204,6 +214,8 @@ export async function PATCH(
       status: updated.status,
       seoTitle: String(metadata.seoTitle ?? ""),
       seoDescription: String(metadata.seoDescription ?? ""),
+      faviconUrl: String(metadata.faviconUrl ?? ""),
+      socialImageUrl: String(metadata.socialImageUrl ?? ""),
       blueprint:
         updated.blueprint?.data ?? {
           page: { props: {}, children: [] },
@@ -224,25 +236,89 @@ export async function DELETE(
   console.log("🗑️ [PAGE][DELETE] START", { pageId });
 
   return apiHandler(async ({ auth }) => {
-    const deleted = await prisma.page.updateMany({
-      where: {
-        id: pageId,
-        deletedAt: null,
-        site: {
-          tenantId: auth.tenant.id,
+    const result = await prisma.$transaction(async (tx) => {
+      const page = await tx.page.findFirst({
+        where: {
+          id: pageId,
+          deleted: false,
+          deletedAt: null,
+          site: {
+            tenantId: auth.tenant.id,
+          },
         },
-      },
-      data: {
-        deleted: true,
-        deletedAt: new Date(),
-        deletedByUser: auth.user.id,
-      },
+        select: {
+          id: true,
+          siteId: true,
+          slug: true,
+          site: {
+            select: {
+              slug: true,
+              designTokens: true,
+              settings: true,
+            },
+          },
+        },
+      });
+
+      if (!page) {
+        throw new Error("Page not found");
+      }
+
+      await tx.page.update({
+        where: { id: page.id },
+        data: {
+          deleted: true,
+          deletedAt: new Date(),
+          deletedByUser: auth.user.id,
+        },
+      });
+
+      // Design tokens belong to the site's active page collection. Once the
+      // final active page is removed, clear the canonical registration so a
+      // future page cannot inherit an orphaned theme from the deleted site.
+      const clearedSite = await tx.site.updateMany({
+        where: {
+          id: page.siteId,
+          tenantId: auth.tenant.id,
+          deletedAt: null,
+          pages: {
+            none: {
+              deleted: false,
+              deletedAt: null,
+            },
+          },
+        },
+        data: {
+          designTokens: Prisma.DbNull,
+          ...(page.site.designTokens == null
+            ? {}
+            : {
+                settings: archiveDesignTokens(
+                  page.site.settings,
+                  page.site.designTokens,
+                ) as Prisma.InputJsonValue,
+              }),
+        },
+      });
+
+      return {
+        designTokensCleared: clearedSite.count > 0,
+        siteSlug: page.site.slug,
+        pageSlug: page.slug,
+      };
     });
 
-    if (!deleted.count) {
-      throw new Error("Page not found");
-    }
+    // A deleted page must stop rendering everywhere it was ever reachable —
+    // the auth-gated builder preview, the published site, and the site root
+    // (in case the deleted page was the homepage).
+    revalidatePath(`/preview/${result.siteSlug}/${result.pageSlug}`);
+    revalidatePath(publishedSitePath(result.siteSlug, result.pageSlug));
+    revalidatePath(publishedSitePath(result.siteSlug));
+    invalidateRouteCache(result.siteSlug);
 
-    return { success: true };
+    return {
+      success: true,
+      designTokensCleared: result.designTokensCleared,
+    };
   })(request);
 }

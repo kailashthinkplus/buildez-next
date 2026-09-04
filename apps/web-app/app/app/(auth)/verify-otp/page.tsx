@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthBodyBackground from "../AuthBodyBackground";
 
-export default function VerifyOtpPage() {
+function VerifyOtpContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
@@ -69,5 +69,13 @@ export default function VerifyOtpPage() {
         {loading ? "Verifying..." : "Continue"}
       </button>
     </AuthBodyBackground>
+  );
+}
+
+export default function VerifyOtpPage() {
+  return (
+    <Suspense fallback={null}>
+      <VerifyOtpContent />
+    </Suspense>
   );
 }

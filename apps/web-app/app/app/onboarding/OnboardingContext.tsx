@@ -31,6 +31,9 @@ export interface OnboardingContextType {
   domain: string | null;
   setDomain: (v: string | null) => void;
 
+  phoneVerified: boolean;
+  phoneVerificationRequired: boolean;
+
   completed: boolean;
 
   refreshFromServer: () => Promise<void>;
@@ -51,6 +54,9 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   const [billing, setBilling] = useState<BillingCycle>("monthly");
 
   const [domain, setDomain] = useState<string | null>(null);
+
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [phoneVerificationRequired, setPhoneVerificationRequired] = useState(false);
 
   const [completed, setCompleted] = useState(false);
 
@@ -127,21 +133,56 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
       setDomain(data.domain ?? null);
 
+      setPhoneVerified(Boolean(data.phoneVerified));
+      setPhoneVerificationRequired(Boolean(data.phoneVerificationRequired));
+
       setCompleted(data.completed ?? false);
 
       /* ------------------------------------------------------------------
          Step calculation formula (server-authoritative)
+
+         Mirrors /api/onboarding/status exactly:
+         0 Account type
+         1 Phone verification
+         2 Business/profile details
+         3 Choose plan
+         4 Domain & launch (trial only)
+         5 Finish
+
+         Profile-completeness mirrors StepBusinessDetails' own
+         validation — a business account already has `businessName`
+         set at signup, so gating on businessName alone skipped
+         StepBusinessDetails for every business account and left
+         city/country/profession/companySize/primaryUseCase
+         permanently unset.
       ------------------------------------------------------------------ */
+      const hasPersonalFields = Boolean(
+        data.firstName &&
+        data.lastName &&
+        data.city &&
+        data.country &&
+        data.profession
+      );
+      const profileComplete =
+        data.accountType === "business"
+          ? hasPersonalFields &&
+            Boolean(data.businessName) &&
+            Boolean(data.companySize) &&
+            Boolean(data.primaryUseCase)
+          : hasPersonalFields;
+
       if (!data.accountType) {
         setStep(0);
-      } else if (!data.businessName) {
+      } else if (!data.phoneVerified) {
         setStep(1);
-      } else if (!data.planCode) {
+      } else if (!profileComplete) {
         setStep(2);
-      } else if (data.planCode !== "trial" && !data.domain) {
+      } else if (!data.planCode) {
         setStep(3);
-      } else {
+      } else if (data.planCode !== "trial" && !data.domain) {
         setStep(4);
+      } else {
+        setStep(5);
       }
     } catch (err) {
       console.warn("⚠️ onboarding-status load failed", err);
@@ -206,6 +247,8 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         setBilling,
         domain,
         setDomain,
+        phoneVerified,
+        phoneVerificationRequired,
         completed,
         refreshFromServer,
         isStepValid,

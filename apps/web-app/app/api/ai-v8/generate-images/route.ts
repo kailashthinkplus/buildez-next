@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 import { persistGeneratedImage } from "@/modules/builder-v2/media/server/persistGeneratedImage";
+import { ApiError } from "@/lib/api/errors";
+import { assertPromptAllowed } from "@/lib/ai/moderation";
 
 const MAGNIFIC_API_KEY =
   process.env.MAGNIFIC_API_KEY?.trim() || process.env.FREEPIK_API_KEY?.trim() || "";
@@ -210,6 +212,15 @@ export async function POST(req: NextRequest) {
         { error: "industry is required" },
         { status: 400 }
       );
+    }
+
+    try {
+      await Promise.all(prompts.map((prompt) => assertPromptAllowed(prompt)));
+    } catch (error) {
+      const status = error instanceof ApiError ? error.status : 500;
+      const code = error instanceof ApiError ? error.code : undefined;
+      const message = error instanceof Error ? error.message : "Request could not be processed.";
+      return NextResponse.json({ error: message, code }, { status });
     }
 
     const user = siteId ? await getCurrentUser(req) : null;

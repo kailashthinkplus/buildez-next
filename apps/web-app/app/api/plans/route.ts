@@ -1,24 +1,28 @@
-// /app/api/plans/route.ts
-
 import { NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 
-export async function GET(req: Request) {
-  console.log("--------------------------------------------------");
-  console.log("[/api/plans] HIT");
-  console.log("[/api/plans] URL:", req.url);
+import {
+  dodoProductId,
+  type BillingCycle,
+} from "@/lib/billing/dodo";
 
+function featureLabel(key: string, value: string, type: string | null) {
+  const label = key
+    .replace(/^v12\./, "")
+    .replace(/[._-]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+  if (type === "boolean") return label;
+  return `${label}: ${value}`;
+}
+
+export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const onlyActive = url.searchParams.get("active");
-    const onlyPublic = url.searchParams.get("public");
-
-    console.log("[/api/plans] Query Params:", { onlyActive, onlyPublic });
+    const onlyPublic = url.searchParams.get("public") === "true";
 
     const plans = await prisma.plan.findMany({
-      where: {
-        isPublic: onlyPublic === "true",
-      },
+      where: onlyPublic ? { isPublic: true } : undefined,
       include: {
         pricing: {
           where: { isActive: true },
@@ -26,43 +30,58 @@ export async function GET(req: Request) {
         },
         features: true,
       },
-      orderBy: { createdAt: "asc" },
     });
 
-    console.log("[/api/plans] Prisma returned:", plans.length, "plans");
+    const response = plans
+      .map((plan) => {
+        const pricing = plan.pricing.map((planPrice) => ({
+          billingCycle: planPrice.billingCycle,
+          currency: planPrice.currency,
+          amount: planPrice.amount,
+          checkoutEnabled: ["monthly", "yearly"].includes(planPrice.billingCycle)
+            ? Boolean(planPrice.dodoProductId) || Boolean(dodoProductId(plan.code, planPrice.billingCycle as BillingCycle))
+            : false,
+        }));
+        const monthly = pricing.find((planPrice) => planPrice.billingCycle === "monthly");
+        const yearly = pricing.find((planPrice) => planPrice.billingCycle === "yearly");
+        const isCustom = pricing.some((planPrice) => planPrice.billingCycle === "custom");
 
-    const response = plans.map((p) => ({
-      code: p.code,
-      name: p.name,
-      description: p.description || "",
-      tag: p.code === "trial" ? "FREE" : p.code === "pro" ? "BEST" : null,
-
-      maxSites: p.maxSites,
-      maxPages: p.maxPages,
-      aiCredits: p.aiCredits,
-      teamMembers: p.teamMembers,
-
-      priceMonthly:
-        p.pricing.find((pr) => pr.billingCycle === "monthly")?.amount || 0,
-      priceYearly:
-        p.pricing.find((pr) => pr.billingCycle === "yearly")?.amount || 0,
-
-      features: p.features.map((f) => {
-        if (f.type === "boolean") {
-          return f.key.replace(/([A-Z])/g, " $1").trim();
-        }
-        return `${f.key}: ${f.value}`;
-      }),
-    }));
-
-    console.log("[/api/plans] Returning to client:", response.length);
+        return {
+          id: plan.id,
+          code: plan.code,
+          name: plan.name,
+          description: `${plan.maxSites} website${plan.maxSites === 1 ? "" : "s"}, ${plan.maxPages} pages and ${plan.aiCredits.toLocaleString()} AI credits`,
+          tag: plan.code.toUpperCase() === "FREE" ? "FREE" : null,
+          maxSites: plan.maxSites,
+          maxPages: plan.maxPages,
+          aiCredits: plan.aiCredits,
+          teamMembers: plan.teamMembers,
+          pricing,
+          priceMonthly: monthly?.amount ?? null,
+          priceYearly: yearly?.amount ?? null,
+          currency: monthly?.currency ?? yearly?.currency ?? "INR",
+          isCustom,
+          checkoutEnabled: {
+            monthly: monthly?.checkoutEnabled ?? false,
+            yearly: yearly?.checkoutEnabled ?? false,
+          },
+          features: plan.features
+            .filter((feature) => feature.type !== "boolean" || feature.value === "true")
+            .map((feature) => featureLabel(feature.key, feature.value, feature.type)),
+        };
+      })
+      .sort((left, right) => {
+        const leftPrice = left.priceMonthly ?? left.priceYearly ?? Number.MAX_SAFE_INTEGER;
+        const rightPrice = right.priceMonthly ?? right.priceYearly ?? Number.MAX_SAFE_INTEGER;
+        return leftPrice - rightPrice;
+      });
 
     return NextResponse.json(response, { status: 200 });
-  } catch (err: any) {
-    console.error("[/api/plans] ERROR:", err);
+  } catch (error) {
+    console.error("Unable to load public plans:", error);
     return NextResponse.json(
-      { error: "Server error", detail: err?.message },
-      { status: 500 }
+      { error: "Plans could not be loaded." },
+      { status: 500 },
     );
   }
 }

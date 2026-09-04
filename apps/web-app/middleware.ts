@@ -6,22 +6,28 @@ import type { NextRequest } from "next/server";
    ========================================================== */
 const PUBLIC_ROUTES = [
   "/app/login",
+  "/app/signup",
   "/app/verify-otp",
+  "/app/forgot-password",
   "/api/auth/login",
+  "/api/auth/register",
   "/api/auth/send-otp",
   "/api/auth/verify-otp",
+  "/api/auth/forgot-password",
   "/api/auth/google",
   "/api/auth/google/callback",
   "/api/auth/recovery-login",
   "/super/login",
+  "/api/super/auth",
   "/api/plans",
-  "/api/razorpay/order",
-  "/api/razorpay/verify",
-  "/api/razorpay",
   "/api/billing/activate",
-  "/api/billing",
-  "/preview",
-  "/api/preview",
+  "/api/public",
+  // NOTE: "/preview" and "/api/preview" are intentionally NOT public — they
+  // render a page's live/unpublished draft content and are gated by
+  // getUser() + tenant-ownership checks inside the route/page themselves.
+  "/api/runtime/v12",
+  "/api/geo/consent-region",
+  "/api/cron/publish-scheduled", // Own shared-secret auth (CRON_SECRET) — see route.ts. Called by external cron with no user session.
 ];
 
 /* ==========================================================
@@ -29,6 +35,9 @@ const PUBLIC_ROUTES = [
    ========================================================== */
 const ONBOARDING_ROUTES = [
   "/app/onboarding",
+  "/app/profile",
+  "/app/help",
+  "/api/profile",
   "/api/onboarding/status",
   "/api/onboarding/account-type",
   "/api/onboarding/business-details",
@@ -39,11 +48,16 @@ const ONBOARDING_ROUTES = [
   "/api/tenant/me",
 ];
 
+function hasRoutePrefix(pathname: string, prefix: string) {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
+
 /* ==========================================================
    3) MIDDLEWARE
    ========================================================== */
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const host = (req.headers.get("x-forwarded-host") || req.headers.get("host") || "").split(":")[0].toLowerCase();
 
   console.log("\n==============================");
   console.log("🧭 MIDDLEWARE HIT");
@@ -59,10 +73,32 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/favicon") ||
     pathname.startsWith("/robots.txt") ||
     pathname.startsWith("/sitemap.xml") ||
+    pathname.startsWith("/llms.txt") ||
     pathname.startsWith("/.well-known")
   ) {
     console.log("⛔ ABSOLUTE EXCLUDE → ALLOW");
     return NextResponse.next();
+  }
+
+  // Custom domains are resolved by the storefront itself. Keep platform and
+  // local hosts on their normal routes and rewrite all tenant-domain pages.
+  const platformDomain = process.env.PLATFORM_DOMAIN || "getbuildezy.com";
+  const isPlatformHost = !host || host === "localhost" || host.endsWith(".localhost") || host === platformDomain || host.endsWith(`.${platformDomain}`);
+  const platformLabel = host.endsWith(`.${platformDomain}`) ? host.slice(0, -(platformDomain.length + 1)) : "";
+  const isTenantPlatformSubdomain = Boolean(platformLabel) && !new Set(["app", "www", "admin", "api"]).has(platformLabel);
+  const isPublicMarketingHome = pathname === "/" && isPlatformHost && (!platformLabel || platformLabel === "www") && host !== `app.${platformDomain}`;
+  if (isPublicMarketingHome) {
+    return NextResponse.next();
+  }
+  if (isTenantPlatformSubdomain && !hasRoutePrefix(pathname, "/api") && !hasRoutePrefix(pathname, "/app") && !hasRoutePrefix(pathname, "/_next")) {
+    const url = req.nextUrl.clone();
+    url.pathname = `/${platformLabel}${pathname === "/" ? "" : pathname}`;
+    return NextResponse.rewrite(url);
+  }
+  if (!isPlatformHost && !hasRoutePrefix(pathname, "/api") && !hasRoutePrefix(pathname, "/app") && !hasRoutePrefix(pathname, "/_next")) {
+    const url = req.nextUrl.clone();
+    url.pathname = `/domain-runtime/${host}${pathname === "/" ? "" : pathname}`;
+    return NextResponse.rewrite(url);
   }
 
   /* ---------------------------------------------------------
@@ -85,16 +121,17 @@ export async function middleware(req: NextRequest) {
 // Split URL into path segments once
 const parts = pathname.split("/").filter(Boolean);
 
-// Runtime pages must have at least:
+// Public runtime pages use:
+// /siteSlug
 // /siteSlug/pageSlug
 // Example:
 //   /acme/home
 //   /acme/products/chair
 const isRuntime =
-  parts.length >= 2 &&
-  !pathname.startsWith("/app") &&
-  !pathname.startsWith("/preview") &&
-  !pathname.startsWith("/api");
+  parts.length >= 1 &&
+  !hasRoutePrefix(pathname, "/app") &&
+  !hasRoutePrefix(pathname, "/preview") &&
+  !hasRoutePrefix(pathname, "/api");
 
 console.log("🔎 isRuntime?", isRuntime);
 
@@ -151,8 +188,12 @@ if (isRuntime) {
   console.log("📡 ONBOARDING STATUS:", obRes.status);
 
   if (!obRes.ok) {
-    console.log("❌ ONBOARDING STATUS FAILED → LOGIN");
-    return NextResponse.redirect(new URL("/app/login", req.url));
+    if (obRes.status === 401 || obRes.status === 403) {
+      console.log("❌ ONBOARDING SESSION REJECTED → LOGIN");
+      return NextResponse.redirect(new URL("/app/login", req.url));
+    }
+    console.error("❌ ONBOARDING STATUS UNAVAILABLE → ALLOW PAGE ERROR UI", obRes.status);
+    return NextResponse.next();
   }
 
   const obData = await obRes.json();
@@ -184,8 +225,12 @@ if (isRuntime) {
   console.log("📡 TENANT STATUS:", tenantRes.status);
 
   if (!tenantRes.ok) {
-    console.log("❌ TENANT FETCH FAILED → LOGIN");
-    return NextResponse.redirect(new URL("/app/login", req.url));
+    if (tenantRes.status === 401 || tenantRes.status === 403) {
+      console.log("❌ TENANT SESSION REJECTED → LOGIN");
+      return NextResponse.redirect(new URL("/app/login", req.url));
+    }
+    console.error("❌ TENANT FETCH UNAVAILABLE → ALLOW PAGE ERROR UI", tenantRes.status);
+    return NextResponse.next();
   }
 
   const tenantData = await tenantRes.json();
@@ -221,8 +266,9 @@ if (isRuntime) {
   res.headers.set("x-pathname", pathname);
   res.cookies.set("tenant-id", tenant.id, {
     path: "/",
-    httpOnly: false,
+    httpOnly: true,
     sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
   });
 
   return res;

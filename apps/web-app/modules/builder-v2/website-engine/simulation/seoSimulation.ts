@@ -11,7 +11,7 @@ export function runSEOSimulation(input: SimulationInput): SEOSimulationResult {
   const nodes = input.mappingPlan?.nodeCreationPlan.map((node) => node.nativeNode) ?? [];
   const hasHeadingSignal = nodes.some((node) => node.type === "heading") || Boolean(input.compiledPlan?.sections.length);
   const hasTitleSignal = Boolean(input.websiteSpec?.business.businessName || input.builderBlueprintResult?.blueprint.nativeBlueprint.metadata.title);
-  const hasDescriptionSignal = Boolean(input.compiledPlan?.seoPlan.length || input.websiteSpec?.seo.description);
+  const hasDescriptionSignal = Boolean(input.compiledPlan?.seoPlan.length || input.websiteSpec?.seoRequirements.length);
   const missing = [hasTitleSignal, hasHeadingSignal, hasDescriptionSignal].filter((value) => !value).length;
   return Object.freeze({
     score: Math.max(0, 100 - missing * 25),

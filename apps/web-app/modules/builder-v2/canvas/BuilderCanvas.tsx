@@ -30,23 +30,59 @@ type PendingDrop = {
 };
 
 function findTargetNodeElement(clientX: number, clientY: number, dragId: string | null): HTMLElement | null {
-  const draggedEl = dragId
-    ? (document.querySelector(`[data-node-id="${dragId}"]`) as HTMLElement | null)
-    : null;
+  const elements = document.elementsFromPoint(
+    clientX,
+    clientY
+  );
 
-  const stack = document.elementsFromPoint(clientX, clientY);
-  for (const hit of stack) {
-    if (!(hit instanceof HTMLElement)) continue;
-    const nodeEl = hit.closest("[data-node-id]") as HTMLElement | null;
-    if (!nodeEl) continue;
-    const targetId = nodeEl.getAttribute("data-node-id");
-    if (!targetId) continue;
-    if (dragId && targetId === dragId) continue;
-    if (draggedEl?.contains(nodeEl)) continue;
-    return nodeEl;
+  /*
+   * elementsFromPoint() is ordered by visual stacking, not Builder
+   * hierarchy depth. A Section background can therefore appear before
+   * its nested Container.
+   *
+   * Collect every Builder node represented by the hit stack, including
+   * the nearest Builder ancestor of child content, then choose the
+   * deepest DOM node. This makes nested Containers win over Sections
+   * without relying on z-index or paint order.
+   */
+  const candidates: HTMLElement[] = [];
+  const seen = new Set<HTMLElement>();
+
+  for (const element of elements) {
+    const nodeElement =
+      element instanceof HTMLElement
+        ? element.closest<HTMLElement>("[data-node-id]")
+        : null;
+
+    if (!nodeElement || seen.has(nodeElement)) {
+      continue;
+    }
+
+    seen.add(nodeElement);
+    candidates.push(nodeElement);
   }
 
-  return null;
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  const depth = (element: HTMLElement): number => {
+    let current: HTMLElement | null = element;
+    let value = 0;
+
+    while (current) {
+      value += 1;
+      current = current.parentElement;
+    }
+
+    return value;
+  };
+
+  candidates.sort(
+    (left, right) => depth(right) - depth(left)
+  );
+
+  return candidates[0] ?? null;
 }
 
 interface CanvasRootProps {

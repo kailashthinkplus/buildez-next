@@ -5,6 +5,7 @@ import {
   callOpenAIChatCompletion,
   extractAssistantText,
 } from "@/app/api/_lib/openai";
+import { getUser } from "@/lib/auth/getUser";
 
 /* ============================================================
    SYSTEM PROMPT FOR REFINEMENT
@@ -40,6 +41,15 @@ Return ONLY the complete, refined TypeScript/React component code.`;
 
 export async function POST(req: NextRequest) {
   try {
+    // This route has no siteId/credit scoping of its own — it was left
+    // reachable with no auth at all, letting anyone run unmetered GPT-4o
+    // completions at the company's expense. It has no live UI caller today;
+    // requiring a session at minimum closes that free-for-all.
+    const auth = await getUser();
+    if (!auth?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const { currentCode, userRequest, targetSection, brandContext } = body;
 

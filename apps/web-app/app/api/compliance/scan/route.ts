@@ -8,23 +8,25 @@ export async function GET(req: Request) {
     const where: any = {};
 
     if (searchParams.get("active") === "true") {
-      where.active = true;
+      where.pricing = { some: { isActive: true } };
     }
 
     if (searchParams.get("public") === "true") {
-      where.public = true;
+      where.isPublic = true;
     }
 
     const plans = await db.plan.findMany({
       where,
-      orderBy: {
-        priceMonthly: "asc",
-      },
       include: {
         pricing: true,
         features: true,
       },
     });
+
+    plans.sort((left, right) =>
+      Math.min(...left.pricing.map((item) => item.amount), Number.MAX_SAFE_INTEGER) -
+      Math.min(...right.pricing.map((item) => item.amount), Number.MAX_SAFE_INTEGER)
+    );
 
     return NextResponse.json(plans);
   } catch (err) {

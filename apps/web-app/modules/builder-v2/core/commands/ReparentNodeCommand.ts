@@ -46,7 +46,53 @@ export class ReparentNodeCommand implements BuilderCommand {
       "custom",
     ].includes(parent.type);
 
-    return canHaveChildren;
+    if (!canHaveChildren) {
+      return false;
+    }
+
+    /*
+     * A same-parent reparent can be a structural no-op. Compute the
+     * effective final sibling order after removing the moving node and
+     * applying the requested insertion index. If the order is unchanged,
+     * do not create a command/history entry or mark the Builder dirty.
+     */
+    if (node.parentId === parent.id) {
+      const normalizedChildren =
+        parent.children.filter(
+          (childId) => childId !== this.nodeId
+        );
+
+      const insertIdx =
+        this.insertIndex === undefined
+          ? normalizedChildren.length
+          : Math.max(
+              0,
+              Math.min(
+                this.insertIndex,
+                normalizedChildren.length
+              )
+            );
+
+      const nextChildren = [...normalizedChildren];
+      nextChildren.splice(
+        insertIdx,
+        0,
+        this.nodeId
+      );
+
+      const unchanged =
+        nextChildren.length === parent.children.length &&
+        nextChildren.every(
+          (childId, index) =>
+            childId === parent.children[index]
+        );
+
+      if (unchanged) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   execute(blueprint: BuilderBlueprint): BuilderBlueprint {
@@ -64,6 +110,46 @@ export class ReparentNodeCommand implements BuilderCommand {
 
     if (!isAllowedChildRelationship(newParent.type, node.type)) {
       return blueprint;
+    }
+
+    /*
+     * Keep execute() independently safe even when called outside a
+     * CommandBus implementation that checks canExecute().
+     */
+    if (oldParent?.id === newParent.id) {
+      const normalizedChildren =
+        newParent.children.filter(
+          (childId) => childId !== this.nodeId
+        );
+
+      const insertIdx =
+        this.insertIndex === undefined
+          ? normalizedChildren.length
+          : Math.max(
+              0,
+              Math.min(
+                this.insertIndex,
+                normalizedChildren.length
+              )
+            );
+
+      const nextChildren = [...normalizedChildren];
+      nextChildren.splice(
+        insertIdx,
+        0,
+        this.nodeId
+      );
+
+      const unchanged =
+        nextChildren.length === newParent.children.length &&
+        nextChildren.every(
+          (childId, index) =>
+            childId === newParent.children[index]
+        );
+
+      if (unchanged) {
+        return blueprint;
+      }
     }
 
     let cursor: string | null = this.newParentId;

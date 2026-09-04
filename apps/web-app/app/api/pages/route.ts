@@ -1,9 +1,11 @@
 // /apps/web-app/app/api/pages/route.ts
 
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@buildez/db";
+import { NextRequest } from "next/server";
+import { Prisma, prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
+import { createInsightReport } from "@/modules/insights/server";
+import { ApiError } from "@/lib/api/errors";
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -28,6 +30,13 @@ function countRecommendations(value: unknown): number {
   if (Array.isArray(value)) return value.length;
   return asNumber(value) ?? 0;
 }
+
+// AI ecommerce generation builds a custom on-brand storefront at these
+// reserved slugs (see modules/ai-v12/shopezPrompt.ts) that pulls live data
+// from ShopEZ — they're the site's real cart/checkout/account/shop pages,
+// not editable content, so they're excluded from the pages list wherever
+// ShopEZ is actually set up for the site.
+const RESERVED_COMMERCE_SLUGS = ["shop", "cart", "checkout", "account", "product-detail", "products", "product"];
 
 /* ============================================================
    GET — LIST PAGES
@@ -62,6 +71,8 @@ export const GET = async (request: NextRequest) => {
        Resolve SITE IDS
     ------------------------------------------ */
     let siteIds: string[] = [];
+    const frontPageBySite = new Map<string, string>();
+    const shopSiteIds: string[] = [];
 
     if (siteSlug) {
       console.log("🟢 [PAGES][GET] Resolving site by slug:", siteSlug);
@@ -71,7 +82,7 @@ export const GET = async (request: NextRequest) => {
           slug: siteSlug,
           tenantId: tenant.id,
         },
-        select: { id: true },
+        select: { id: true, settings: true, shop: { select: { id: true } } },
       });
 
       console.log("🟢 [PAGES][GET] Site resolved:", site);
@@ -82,15 +93,24 @@ export const GET = async (request: NextRequest) => {
       }
 
       siteIds = [site.id];
+      frontPageBySite.set(site.id, asString(asRecord(site.settings).frontPageId));
+      if (site.shop) shopSiteIds.push(site.id);
     } else {
       console.log("🟢 [PAGES][GET] Resolving ALL sites for tenant");
 
       const sites = await prisma.site.findMany({
         where: { tenantId: tenant.id },
-        select: { id: true },
+        select: { id: true, settings: true, shop: { select: { id: true } } },
       });
 
       siteIds = sites.map((s) => s.id);
+      sites.forEach((resolvedSite) => {
+        frontPageBySite.set(
+          resolvedSite.id,
+          asString(asRecord(resolvedSite.settings).frontPageId),
+        );
+        if (resolvedSite.shop) shopSiteIds.push(resolvedSite.id);
+      });
       console.log("🟢 [PAGES][GET] Site IDs:", siteIds);
     }
 
@@ -102,7 +122,7 @@ export const GET = async (request: NextRequest) => {
     /* -------------------------------------------
        WHERE clause
     ------------------------------------------ */
-    const where = {
+    const where: Prisma.PageWhereInput = {
       siteId: { in: siteIds },
       deletedAt: trash ? { not: null } : null,
       ...(search
@@ -111,6 +131,14 @@ export const GET = async (request: NextRequest) => {
               { title: { contains: search, mode: "insensitive" } },
               { slug: { contains: search, mode: "insensitive" } },
             ],
+          }
+        : {}),
+      ...(shopSiteIds.length > 0
+        ? {
+            NOT: {
+              siteId: { in: shopSiteIds },
+              slug: { in: RESERVED_COMMERCE_SLUGS },
+            },
           }
         : {}),
     };
@@ -124,7 +152,14 @@ export const GET = async (request: NextRequest) => {
         take,
         orderBy: { createdAt: "desc" },
         include: {
-          site: { select: { slug: true } },
+          site: {
+            select: {
+              id: true,
+              slug: true,
+              v12Project: { select: { id: true } },
+            },
+          },
+          blueprint: { select: { id: true } },
         },
       }),
       prisma.page.count({ where }),
@@ -132,37 +167,55 @@ export const GET = async (request: NextRequest) => {
 
     console.log("🟢 [PAGES][GET] Pages found:", pages.length, "Total:", total);
 
+    const insightReports = await Promise.all(
+      siteIds.map(async (siteId) => {
+        try {
+          return await createInsightReport({ siteId, tenantId: tenant.id });
+        } catch {
+          return null;
+        }
+      }),
+    );
+    const aiScores = new Map(
+      insightReports.flatMap((report) =>
+        report?.pages.map((page) => [page.id, page.score] as const) ?? [],
+      ),
+    );
+
     const normalizedPages = pages.map((page) => {
       const metadata = asRecord(page.metadata);
-      const seoMetadata = asRecord(metadata.seo);
       const seoTitle = asString(metadata.seoTitle);
       const seoDescription = asString(metadata.seoDescription);
+      const faviconUrl = asString(metadata.faviconUrl);
+      const socialImageUrl = asString(metadata.socialImageUrl);
       const requiredFields = [
         page.title,
         page.slug,
         seoTitle,
         seoDescription,
+        faviconUrl,
       ];
       const requiredFieldsCompleted = requiredFields.filter(Boolean).length;
       const requiredFieldsTotal = requiredFields.length;
-      const fallbackSeoScore = Math.round(
-        (requiredFieldsCompleted / requiredFieldsTotal) * 100
-      );
 
       return {
         ...page,
         seoTitle,
         seoDescription,
+        faviconUrl,
+        socialImageUrl,
         screenshotUrl:
           asString(metadata.screenshotUrl) ||
           asString(metadata.thumbnailUrl) ||
           asString(metadata.previewImageUrl) ||
           asString(metadata.previewUrl) ||
           asString(metadata.ogImage),
-        seoScore:
-          asNumber(metadata.seoScore) ??
-          asNumber(seoMetadata.score) ??
-          fallbackSeoScore,
+        hasMeaningfulPreview:
+          Boolean(page.blueprint) ||
+          Boolean(page.reactCode && page.reactCode.trim().length > 80) ||
+          (page.renderMode === "REACT" && Boolean(page.site.v12Project)),
+        aiScore: aiScores.get(page.id) ?? 0,
+        isFrontPage: frontPageBySite.get(page.siteId) === page.id,
         aiRecommendationsTotal:
           countRecommendations(metadata.aiRecommendations) ||
           countRecommendations(metadata.recommendations) ||
@@ -195,7 +248,7 @@ export const POST = async (request: NextRequest) => {
 
     if (!tenant) {
       console.warn("🔴 [PAGES][POST] Unauthorized");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new ApiError("Unauthorized", 401, "UNAUTHORIZED");
     }
 
     const body = await req.json();
@@ -205,18 +258,12 @@ export const POST = async (request: NextRequest) => {
 
     if (!title || typeof title !== "string") {
       console.warn("🔴 [PAGES][POST] Invalid title");
-      return NextResponse.json(
-        { error: "Title is required" },
-        { status: 400 }
-      );
+      throw new ApiError("Title is required", 400, "INVALID_TITLE");
     }
 
     if (!siteSlug || typeof siteSlug !== "string") {
       console.warn("🔴 [PAGES][POST] Missing siteSlug");
-      return NextResponse.json(
-        { error: "siteSlug is required" },
-        { status: 400 }
-      );
+      throw new ApiError("siteSlug is required", 400, "SITE_SLUG_REQUIRED");
     }
 
     console.log("🟢 [PAGES][POST] Resolving site:", siteSlug);
@@ -233,10 +280,7 @@ export const POST = async (request: NextRequest) => {
 
     if (!site) {
       console.warn("🔴 [PAGES][POST] Site not found:", siteSlug);
-      return NextResponse.json(
-        { error: "Site not found" },
-        { status: 404 }
-      );
+      throw new ApiError("Site not found", 404, "SITE_NOT_FOUND");
     }
 
     const baseSlug = title
@@ -267,12 +311,17 @@ while (
     const page = await prisma.page.create({
       data: {
         siteId: site.id,
-        title,
+        title: title.trim(),
         slug,
         status: "DRAFT",
+        metadata: {
+          seoTitle: typeof body.seoTitle === "string" ? body.seoTitle : title.trim(),
+          seoDescription: typeof body.seoDescription === "string" ? body.seoDescription : "",
+          faviconUrl: typeof body.faviconUrl === "string" ? body.faviconUrl : "",
+        },
       },
       include: {
-        site: { select: { slug: true } },
+        site: { select: { id: true, slug: true } },
       },
     });
 

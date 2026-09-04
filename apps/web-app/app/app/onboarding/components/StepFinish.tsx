@@ -13,8 +13,7 @@ export default function StepFinish({
     plan: string;
     billingCycle: string;
     amount: number;
-    paymentId: string;
-    orderId?: string;
+    subscriptionId?: string;
   } | null;
 }) {
   const { refreshFromServer } = useOnboarding();
@@ -29,8 +28,8 @@ export default function StepFinish({
   planCode: string;
   billingCycle: string;
   amountPaid: number;
-  razorpayPaymentId: string;
-  razorpayOrderId?: string;
+  subscriptionReference?: string;
+  currentPeriodEnd?: string;
 } | null>(null);
 
   /* -------------------------------------------------------------
@@ -110,7 +109,11 @@ useEffect(() => {
       await refreshFromServer();
 
       // ⭐ Redirect IMMEDIATELY (avoid UI step flicker)
-      window.location.replace("/app/dashboard");
+      if (data.customDomainPending && data.siteSlug) {
+        window.location.replace(`/app/${encodeURIComponent(data.siteSlug)}/settings?tab=domains`);
+      } else {
+        window.location.replace("/app/dashboard");
+      }
       return;
 
     } catch (err) {
@@ -199,20 +202,18 @@ useEffect(() => {
             </p>
 
             <p>
-              <span className="text-white/50">Payment ID:</span>{" "}
+              <span className="text-white/50">Subscription ID:</span>{" "}
               <span className="font-mono text-[13px]">
-                {subscription?.razorpayPaymentId ??
-                  paymentSummary?.paymentId}
+                {subscription?.subscriptionReference ??
+                  paymentSummary?.subscriptionId ?? "Processing"}
               </span>
             </p>
 
-            {(subscription?.razorpayOrderId ||
-              paymentSummary?.orderId) && (
+            {subscription?.currentPeriodEnd && (
               <p>
-                <span className="text-white/50">Order ID:</span>{" "}
-                <span className="font-mono text-[13px]">
-                  {subscription?.razorpayOrderId ??
-                    paymentSummary?.orderId}
+                <span className="text-white/50">Renews:</span>{" "}
+                <span className="text-[13px]">
+                  {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
                 </span>
               </p>
             )}

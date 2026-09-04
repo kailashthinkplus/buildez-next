@@ -1,12 +1,11 @@
 // /apps/web-app/app/api/auth/recovery-login/route.ts
 
 import { NextResponse } from "next/server";
-import { prisma } from "@buildez/db";
+import { AuthProvider, prisma } from "@buildez/db";
 import { hashRecovery } from "@/lib/auth/recovery";
 import { writeAuthLog } from "@/lib/auth/authLog";
 import { checkLockout } from "@/lib/auth/lockout";
-import { AuthProvider } from "@prisma/client";
-import { cookies } from "next/headers";
+import { createSession } from "@/lib/auth/session";
 
 export async function POST(req: Request) {
   const { email, code } = await req.json();
@@ -53,25 +52,7 @@ export async function POST(req: Request) {
     /* ------------------------------------------------------------
        5️⃣ Create DB session (REPLACES JWT)
     ------------------------------------------------------------ */
-    const session = await prisma.session.create({
-      data: {
-        userId: user.id,
-        provider: AuthProvider.OTP,
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
-      },
-    });
-
-    const cookieStore = await cookies();
-
-    cookieStore.set({
-      name: "session",
-      value: session.id,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-    });
+    await createSession({ user, provider: AuthProvider.OTP, ttlHours: 24 * 7 });
 
     /* ------------------------------------------------------------
        6️⃣ Log success

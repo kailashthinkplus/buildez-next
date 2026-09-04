@@ -3,6 +3,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { getCurrentUser } from "@/lib/auth/session";
+import { findAccessibleTenant } from "@/lib/auth/tenantAccess";
+import { persistGoogleAvatarForTenant } from "@/lib/auth/googleAvatar";
+
+export const dynamic = "force-dynamic";
+const PRIVATE_HEADERS = { "Cache-Control": "private, no-store, max-age=0", Vary: "Cookie" };
 
 export async function GET(req: NextRequest) {
   console.log("🚀 [tenant/me] HIT");
@@ -11,78 +16,23 @@ export async function GET(req: NextRequest) {
     const user = await getCurrentUser(req);
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: PRIVATE_HEADERS });
     }
 
     const userId = user.id;
     console.log("👤 [tenant/me] User:", userId);
 
-    let tenant = null;
+    // A browser cookie is a preference, never authorization. If it is stale or
+    // belongs to another account, resolve only among this user's relationships.
+    const tenant = await findAccessibleTenant(
+      userId,
+      req.cookies.get("tenant-user-id")?.value === userId
+        ? req.cookies.get("tenant-id")?.value
+        : undefined,
+    );
 
     /* ---------------------------------------------------------
-       1) FIRST: Check if user OWNS a tenant (most common case)
-       This handles both paid and trial users
-    --------------------------------------------------------- */
-    tenant = await prisma.tenant.findFirst({
-      where: { ownerId: userId },
-      orderBy: { createdAt: "desc" },
-      include: { subscription: true },
-    });
-
-    console.log("🔍 [tenant/me] Owner lookup:", tenant?.id || "NOT FOUND");
-
-    /* ---------------------------------------------------------
-       2) IF NO OWNED TENANT: Check subscription with userId
-       (Paid plans create subscription with userId)
-    --------------------------------------------------------- */
-    if (!tenant) {
-      const activeSub = await prisma.subscription.findFirst({
-        where: {
-          userId,
-          status: "ACTIVE",
-          tenantActiveId: { not: null },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        include: {
-          tenantActive: {
-            include: { subscription: true },
-          },
-        },
-      });
-
-      tenant = activeSub?.tenantActive || null;
-      console.log("🔍 [tenant/me] Subscription lookup:", tenant?.id || "NOT FOUND");
-    }
-
-    /* ---------------------------------------------------------
-       3) IF STILL NONE: Check team membership
-       (User might be a team member, not owner)
-    --------------------------------------------------------- */
-    if (!tenant) {
-      const member = await prisma.teamMember.findFirst({
-        where: { userId },
-        orderBy: { createdAt: "desc" },
-        include: {
-          team: {
-            include: {
-              tenant: {
-                include: { subscription: true },
-              },
-            },
-          },
-        },
-      });
-
-      if (member?.team?.tenant) {
-        tenant = member.team.tenant;
-        console.log("🔍 [tenant/me] Team member lookup:", tenant?.id);
-      }
-    }
-
-    /* ---------------------------------------------------------
-       4) STILL NONE → return empty (but valid response)
+       STILL NONE → return empty (but valid response)
     --------------------------------------------------------- */
     if (!tenant) {
       console.log("❌ [tenant/me] No tenant found for user:", userId);
@@ -95,16 +45,29 @@ export async function GET(req: NextRequest) {
           usage: [],
           user,
         },
-      });
+      }, { headers: PRIVATE_HEADERS });
     }
 
     console.log("✅ [tenant/me] Tenant found:", tenant.id);
+
+    const r2Base = process.env.R2_PUBLIC_URL?.replace(/\/+$/, "");
+    if (user.googleId && user.avatarUrl && r2Base && user.avatarUrl.startsWith(`${r2Base}/tenants/pending/`)) {
+      try {
+        user.avatarUrl = await persistGoogleAvatarForTenant({
+          userId,
+          tenantId: tenant.id,
+          sourceUrl: user.avatarUrl,
+        });
+      } catch (avatarError) {
+        console.error("[tenant/me] Could not move Google avatar into tenant storage", avatarError);
+      }
+    }
 
     /* ---------------------------------------------------------
        LOAD RELATED DATA
     --------------------------------------------------------- */
     const sites = await prisma.site.findMany({
-      where: { tenantId: tenant.id },
+      where: { tenantId: tenant.id, deletedAt: null },
       orderBy: { createdAt: "asc" },
     });
 
@@ -134,22 +97,38 @@ export async function GET(req: NextRequest) {
       where: { tenantId: tenant.id },
     });
 
+    // PlanUsage only ever tracks metered AI credits — published pages have
+    // no corresponding row there. Count them directly across every site
+    // owned by this tenant so the "pages" usage key that the billing page
+    // and header dropdown both already read is actually populated.
+    const publishedPageCount = await prisma.page.count({
+      where: {
+        site: { tenantId: tenant.id, deletedAt: null },
+        status: "PUBLISHED",
+        deletedAt: null,
+      },
+    });
+    const usageWithPages = [
+      ...usage,
+      { id: "pages", tenantId: tenant.id, key: "pages", used: publishedPageCount, billingCycle: null, periodStart: new Date(), periodEnd: null, updatedAt: new Date(), createdAt: new Date() },
+    ];
+
     return NextResponse.json({
       data: {
         tenant,
         sites,
         teams,
         plan: subscription,
-        usage,
+        usage: usageWithPages,
         user,
       },
-    });
+    }, { headers: PRIVATE_HEADERS });
 
   } catch (err: any) {
     console.error("🔥 [tenant/me] ERROR:", err);
     return NextResponse.json(
       { error: "Server error", detail: err.message },
-      { status: 500 }
+      { status: 500, headers: PRIVATE_HEADERS }
     );
   }
 }

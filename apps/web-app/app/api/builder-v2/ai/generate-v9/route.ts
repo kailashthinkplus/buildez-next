@@ -2,6 +2,8 @@ import { Prisma, prisma } from "@buildez/db";
 import { NextRequest, NextResponse } from "next/server";
 
 import { getUser } from "@/lib/auth/getUser";
+import { ApiError } from "@/lib/api/errors";
+import { assertPromptAllowed } from "@/lib/ai/moderation";
 import { createFallbackBlueprint } from "@/modules/builder-v2/ai-v9/blueprintFactory";
 import {
   appendAiMessage,
@@ -369,14 +371,14 @@ async function saveBlueprint(input: {
     await tx.blueprint.upsert({
       where: { pageId: input.pageId },
       update: {
-        data: input.blueprint as Prisma.InputJsonValue,
+        data: input.blueprint as unknown as Prisma.InputJsonValue,
         schemaVersion: 2,
       },
       create: {
         pageId: input.pageId,
         siteId: page.site.id,
         tenantId: page.site.tenantId,
-        data: input.blueprint as Prisma.InputJsonValue,
+        data: input.blueprint as unknown as Prisma.InputJsonValue,
         schemaVersion: 2,
       },
     });
@@ -415,6 +417,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    await assertPromptAllowed(prompt);
 
     const page = await prisma.page.findFirst({
       where: {
@@ -568,7 +572,7 @@ export async function POST(req: NextRequest) {
               warnings: [message],
             },
           ],
-        },
+        } as unknown as Awaited<ReturnType<typeof runV9WebsiteGeneration>>["metadata"],
       };
     }
 
@@ -615,7 +619,7 @@ export async function POST(req: NextRequest) {
           ? result.metadata?.qualityStatus === "needs_improvement"
             ? `Generated a usable v9 draft with quality warnings (${String(result.metadata?.qualityScore || "unknown")}/100): ${contextSummary(mergedContext) || "site context"}.`
             : `Generated a v9 blueprint using saved context: ${contextSummary(mergedContext) || "site context"}.`
-          : `Generated a fallback v9 blueprint. ${String(result.metadata?.warning || "")}`,
+          : `Generated a fallback v9 blueprint. ${String((result.metadata as unknown as Record<string, unknown>)?.warning || "")}`,
       createdBy: auth.user.id,
       metadata: {
         agents: result.metadata?.agents,
@@ -636,6 +640,8 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "AI v9 generation failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status = error instanceof ApiError ? error.status : 500;
+    const code = error instanceof ApiError ? error.code : undefined;
+    return NextResponse.json({ error: message, code }, { status });
   }
 }

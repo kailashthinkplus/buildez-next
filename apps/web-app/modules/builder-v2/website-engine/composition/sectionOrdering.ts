@@ -33,10 +33,13 @@ function familyBoost(section: CompositionSection, context: CompositionFamilyCont
   return 0;
 }
 
-export function orderSections(sections: readonly CompositionSection[], context: CompositionFamilyContext): CompositionSection[] {
+export function orderSections(sections: readonly CompositionSection[], context: CompositionFamilyContext, style?: import("../creative-director").ArtDirectionCompositionStyle): CompositionSection[] {
   return [...sections].sort((left, right) => {
-    const leftScore = (priorityByCategory[left.category] ?? 8) + familyBoost(left, context);
-    const rightScore = (priorityByCategory[right.category] ?? 8) + familyBoost(right, context);
+    const artBoost = (section: CompositionSection) => style === "cinematic" || style === "luxury" || style === "premium"
+      ? (["gallery", "portfolio", "media"].includes(section.category) ? -2 : ["proof", "testimonial"].includes(section.category) ? -1 : 0)
+      : style === "technical" && ["service", "product", "catalogue", "comparison"].includes(section.category) ? -1 : 0;
+    const leftScore = (priorityByCategory[left.category] ?? 8) + familyBoost(left, context) + artBoost(left);
+    const rightScore = (priorityByCategory[right.category] ?? 8) + familyBoost(right, context) + artBoost(right);
     return leftScore - rightScore || left.orderHint - right.orderHint;
   });
 }

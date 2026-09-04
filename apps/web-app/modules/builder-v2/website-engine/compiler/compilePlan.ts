@@ -254,7 +254,7 @@ export function runWebsiteCompiler(input: CompilerInput): EngineResult<CompilerR
   return createEngineResult({
     module: "compiler",
     stage: "compile-plan",
-    status: validation.valid && !finalPlan.warnings.some((warning) => warning.severity === "blocker")
+    status: validation.valid
       ? finalPlan.warnings.length ? "warning" : "ok"
       : "warning",
     data: result,

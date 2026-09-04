@@ -9,7 +9,7 @@ import type { CriticCategoryResult } from "./criticResult";
  * const result = runIndustryFitCritic({ compiledPlan, creativeLibraryResult });
  */
 export function runIndustryFitCritic(input: CriticInput): CriticCategoryResult {
-  const industry = input.compiledPlan?.selectedIndustry ?? input.websiteSpec?.business.industry ?? "unknown";
+  const industry = input.compiledPlan?.selectedIndustry ?? input.websiteSpec?.business.industryId ?? "unknown";
   const selectedRecipes = input.creativeLibraryResult?.selections ?? [];
   const supportedSelections = selectedRecipes.filter((selection) => selection.recipe.compatibility.supportedIndustries.includes(industry)).length;
   const realEstateRootSignals = input.compiledPlan?.metadata.repositoryReferencesUsed.filter((ref) => /root|foundation/i.test(ref) && /real[-_ ]?estate/i.test(ref)).length ?? 0;

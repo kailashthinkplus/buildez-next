@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Globe, Link as LinkIcon, Check } from "lucide-react";
 import slugify from "slugify";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
 
 export default function StepDomainLaunch({
   onNext,
@@ -22,7 +23,7 @@ export default function StepDomainLaunch({
   const [available, setAvailable] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const FREE_SUFFIX = "getbuildez.com";
+  const FREE_SUFFIX = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || "getbuildezy.com";
 
   /* -------------------------------------------------------------
      Load status from backend exactly once
@@ -36,7 +37,7 @@ export default function StepDomainLaunch({
 
       setPlanCode(data.planCode || null);
 
-      const isFree = data.planCode === "trial";
+      const isFree = data.planCode === "trial" || data.planCode === "FREE";
       setIsFreePlan(isFree);
 
       if (!isFree && data.domain) {
@@ -77,7 +78,7 @@ export default function StepDomainLaunch({
 
   /* -------------------------------------------------------------
      Continue → Save domain via backend
-     - Free plan: force <slug>.getbuildez.com
+     - Free plan: force <slug>.getbuildezy.com
      - Paid plan: require available=true
   ------------------------------------------------------------- */
   async function handleContinue() {
@@ -148,7 +149,7 @@ export default function StepDomainLaunch({
 
       <p className="text-sm text-white/65 mb-10">
         {isFreePlan
-          ? "Free plan uses a BuildEZ subdomain — you can upgrade anytime."
+          ? "Free plan uses a BuildEZ address — you can upgrade anytime."
           : "Enter a custom domain or skip this step for now."}
       </p>
 
@@ -174,7 +175,7 @@ export default function StepDomainLaunch({
               <p className="text-xs mt-3 text-white/60">
                 Your site will be:
                 <span className="text-blue-300 ml-1">
-                  {slugify(domain, { lower: true, strict: true })}.{FREE_SUFFIX}
+                  {FREE_SUFFIX}{publishedSitePath(slugify(domain, { lower: true, strict: true }))}
                 </span>
               </p>
             )}

@@ -11,6 +11,8 @@ import {
 } from "@/lib/auth/setCookies";
 import { writeAuthLog } from "@/lib/auth/authLog";
 import { createSession } from "@/lib/auth/session";
+import { findAccessibleTenant } from "@/lib/auth/tenantAccess";
+import { persistGoogleAvatarForTenant, persistPendingGoogleAvatar } from "@/lib/auth/googleAvatar";
 import { NextResponse } from "next/server";
 
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -123,7 +125,6 @@ export async function GET(req: Request) {
           email,
           googleId,
           name: profile.name,
-          avatarUrl: profile.picture,
           role: UserRole.TENANT_ADMIN,
           isEmailVerified: true,
         },
@@ -136,13 +137,34 @@ export async function GET(req: Request) {
     ------------------------------------------------------------ */
     await ensureOnboarding(user.id);
 
+    // Never render Google's remote URL in the product. Keep a temporary R2
+    // object until onboarding creates the tenant, then move it into that
+    // tenant's own folder on the first authenticated tenant bootstrap.
+    if (typeof profile.picture === "string" && profile.picture) {
+      try {
+        const tenant = await findAccessibleTenant(user.id);
+        const avatarUrl = tenant
+          ? await persistGoogleAvatarForTenant({ userId: user.id, tenantId: tenant.id, sourceUrl: profile.picture })
+          : await persistPendingGoogleAvatar(user.id, profile.picture);
+        user = { ...user, avatarUrl };
+      } catch (avatarError) {
+        console.error("GOOGLE AVATAR R2 COPY ERROR:", avatarError);
+      }
+    }
+
     /* ------------------------------------------------------------
        5) Create DB session cookie
+       Super-admin sessions get a much shorter TTL than regular tenant
+       sessions: that account carries full-platform privilege and is
+       the sole authentication factor for it (Google OAuth only, no
+       app-level 2FA), so limiting how long a session survives if the
+       underlying Google account is ever compromised is worthwhile
+       defense-in-depth.
     ------------------------------------------------------------ */
     await createSession({
       user,
       provider: AuthProvider.GOOGLE,
-      ttlHours: 24 * 7,
+      ttlHours: user.role === UserRole.SUPER_ADMIN ? 12 : 24 * 7,
     });
 
     /* ------------------------------------------------------------
@@ -167,7 +189,9 @@ export async function GET(req: Request) {
     });
 
     const target =
-      onboarding?.completed === true
+      user.role === UserRole.SUPER_ADMIN
+        ? "/super/dashboard"
+        : onboarding?.completed === true
         ? "/app/dashboard"
         : "/app/onboarding";
 

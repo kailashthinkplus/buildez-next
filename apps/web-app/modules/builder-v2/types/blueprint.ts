@@ -52,6 +52,7 @@ export type NodeType =
   | "smartFooter"
   | "cta"
   | "carousel"
+  | "productCarousel"
   | "beforeAfter"
   | "table"
   | "countdown"
@@ -100,7 +101,7 @@ export interface BuilderStyle {
 
   fontFamily?: string;
 
-  fontSize?: ResponsiveStyleValue<number>;
+  fontSize?: ResponsiveStyleValue<string | number>;
 
   fontWeight?: number;
 
@@ -170,9 +171,7 @@ export interface BuilderStyle {
     | "inline-block"
     | "none";
 
-  flexDirection?:
-    | "row"
-    | "column";
+  flexDirection?: ResponsiveStyleValue<"row" | "column">;
 
   justifyContent?: string;
 
@@ -316,6 +315,31 @@ export interface BuilderMetadata {
   template?: string;
 
   industry?: string;
+
+  sectionContract?: unknown;
+
+  creativeRecovery?: {
+    initialMissingNodes: string[];
+    recoveredNodes: string[];
+    recoveryAttempts: number;
+    recoveredSuccessfully: boolean;
+  };
+
+  creativeResponseDiagnostics?: {
+    normalizedShapeCount: number;
+    flatShapeNormalizedCount: number;
+    aliasShapeNormalizedCount: number;
+    shapeRecoveryAttempts: number;
+    totalCoverageMisses: number;
+    batchSplits: number;
+  };
+
+  creativeRequestDiagnostics?: {
+    semanticNodeCount: number;
+    batchCount: number;
+    compactContextCharacters: number;
+    fullArtifactsRepeatedPerBatch: boolean;
+  };
 
   themeDemo?: {
     presetId: string;

@@ -1,8 +1,7 @@
 // /apps/web-app/lib/auth/verifyTenant.ts
 
-import { prisma } from "@buildez/db";
 import { getCurrentUser } from "./session";
-import { NextRequest } from "next/server";
+import { findAccessibleTenant } from "./tenantAccess";
 
 /**
  * verifyTenantAccess(req)
@@ -15,43 +14,25 @@ import { NextRequest } from "next/server";
  * - user owns tenant  OR
  * - user is a team member of tenant
  */
-export async function verifyTenantAccess(req: NextRequest) {
+export async function verifyTenantAccess(req: Request) {
   try {
     // 1) Authenticated user
     const user = await getCurrentUser(req);
     if (!user) return null;
 
     // 2) Read tenant ID from header or cookie
-    const tenantId =
-      req.headers.get("x-tenant-id") ||
-      req.cookies.get("tenant-id")?.value;
-
-    if (!tenantId) return null;
+    const requestCookies = new Map(
+      (req.headers.get("cookie") || "").split(";").flatMap((item) => {
+        const separator = item.indexOf("=");
+        return separator < 0 ? [] : [[item.slice(0, separator).trim(), item.slice(separator + 1).trim()] as const];
+      }),
+    );
+    const tenantId = requestCookies.get("tenant-user-id") === user.id
+      ? requestCookies.get("tenant-id")
+      : undefined;
 
     // 3) Validate tenant belongs to this user
-    const tenant = await prisma.tenant.findFirst({
-      where: {
-        id: tenantId,
-        OR: [
-          // Case A: user owns tenant
-          { ownerId: user.id },
-
-          // Case B: user is team member of tenant
-          {
-            teams: {
-              some: {
-                members: {
-                  some: { userId: user.id },
-                },
-              },
-            },
-          },
-        ],
-      },
-      include: {
-        subscription: true,
-      },
-    });
+    const tenant = await findAccessibleTenant(user.id, tenantId);
 
     return tenant || null;
   } catch (err) {

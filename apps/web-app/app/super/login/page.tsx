@@ -1,88 +1,28 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import ThemeToggle from "../../app/components/ThemeToggle";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { ShieldCheck } from "lucide-react";
 
 export default function SuperAdminLoginPage() {
-  const router = useRouter();
-
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [step, setStep] = useState<"EMAIL" | "OTP">("EMAIL");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  /* ---------------------------------------------
-     SEND OTP (SUPER ADMIN ONLY)
-  --------------------------------------------- */
-  async function sendOtp() {
-    setLoading(true);
-    setError("");
-
-    try {
-      const res = await fetch("/api/super/auth/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.error || "Failed to send OTP");
-      }
-
-      setStep("OTP");
-    } catch (err: any) {
-      setError(err.message || "Failed to send OTP");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  /* ---------------------------------------------
-     VERIFY OTP (SUPER ADMIN ONLY)
-  --------------------------------------------- */
-  async function verifyOtp() {
-    setLoading(true);
-    setError("");
-
-    try {
-      const res = await fetch("/api/super/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.error || "Unauthorized");
-      }
-
-      router.replace(data.redirect || "/super/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Unauthorized super admin access");
-    } finally {
-      setLoading(false);
-    }
+  function googleLogin() {
+    window.location.href = "/api/auth/google";
   }
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground">
-      {/* Theme Toggle */}
-      <div className="fixed top-6 right-6 z-50">
+    <div className="auth-blue-bg relative min-h-screen w-full overflow-hidden text-foreground">
+      <div className="fixed right-6 top-6 z-50">
         <ThemeToggle />
       </div>
 
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="w-full max-w-md glass glass-hover p-8">
-          {/* Logo */}
-          <div className="flex justify-center mb-6">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(56,149,255,0.3),transparent_65%)] opacity-80 blur-2xl" />
+
+      <main className="relative flex min-h-screen items-center justify-center px-4 py-20">
+        <div className="glass glass-hover relative w-full max-w-md rounded-2xl border border-white/40 bg-white/50 p-8 shadow-[0_28px_80px_rgba(37,99,235,0.18)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/5 dark:shadow-[0_32px_90px_rgba(0,0,0,0.5)]">
+          <div className="mb-6 flex justify-center">
             <Image
-              src="/buildez-logo-dark.png"
+              src="/buildez-logo-light.svg"
               alt="BuildEZ"
               width={150}
               height={42}
@@ -90,7 +30,7 @@ export default function SuperAdminLoginPage() {
               className="dark:hidden"
             />
             <Image
-              src="/buildez-logo-light.png"
+              src="/buildez-logo-dark.svg"
               alt="BuildEZ"
               width={150}
               height={42}
@@ -99,104 +39,33 @@ export default function SuperAdminLoginPage() {
             />
           </div>
 
-          {/* Title */}
-          <h1 className="text-xl font-semibold text-center mb-1">
-            Super Admin Login
+          <div className="mb-4 flex justify-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
+              <ShieldCheck size={14} /> Restricted access
+            </span>
+          </div>
+
+          <h1 className="mb-1 text-center text-xl font-semibold">
+            Sign in to the command center
           </h1>
-          <p className="text-sm text-mutedForeground text-center mb-6">
-            Restricted platform access
+          <p className="mb-6 text-center text-sm text-mutedForeground">
+            BuildEZ Super Administrator access
           </p>
 
-          {/* STEP: EMAIL */}
-          {step === "EMAIL" && (
-            <>
-              <input
-                type="email"
-                placeholder="admin@buildez.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="
-                  w-full rounded-lg px-4 py-3 mb-4
-                  border border-border bg-background
-                  focus:outline-none
-                  focus:ring-2 focus:ring-[var(--brand)]
-                "
-              />
-
-              {error && (
-                <p className="text-sm text-red-500 text-center mb-3">
-                  {error}
-                </p>
-              )}
-
-              <button
-                onClick={sendOtp}
-                disabled={!email || loading}
-                className="
-                  w-full rounded-lg
-                  bg-[var(--brand)]
-                  py-3 font-semibold text-white
-                  hover:brightness-110
-                  disabled:opacity-50
-                "
-              >
-                {loading ? "Sending OTP..." : "Send OTP"}
-              </button>
-            </>
-          )}
-
-          {/* STEP: OTP */}
-          {step === "OTP" && (
-            <>
-              <input
-                type="text"
-                maxLength={6}
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="
-                  w-full rounded-lg px-4 py-3 mb-4
-                  text-center tracking-widest
-                  border border-border bg-background
-                  focus:outline-none
-                  focus:ring-2 focus:ring-[var(--brand)]
-                "
-              />
-
-              {error && (
-                <p className="text-sm text-red-500 text-center mb-3">
-                  {error}
-                </p>
-              )}
-
-              <button
-                onClick={verifyOtp}
-                disabled={otp.length !== 6 || loading}
-                className="
-                  w-full rounded-lg
-                  bg-[var(--brand)]
-                  py-3 font-semibold text-white
-                  hover:brightness-110
-                  disabled:opacity-50
-                "
-              >
-                {loading ? "Verifying..." : "Login"}
-              </button>
-            </>
-          )}
+          <button
+            onClick={googleLogin}
+            className="glass glass-button flex h-12 w-full items-center justify-center gap-3 rounded-xl text-sm font-medium"
+          >
+            <Image src="/google.svg" alt="Google" width={18} height={18} />
+            <span>Continue with Google</span>
+          </button>
         </div>
-      </div>
+      </main>
 
-      {/* Footer */}
-      <footer className="pb-6 text-center text-xs opacity-60">
+      <footer className="absolute inset-x-0 bottom-0 pb-6 text-center text-xs opacity-60">
         © {new Date().getFullYear()} BuildEZ ·
-        <a href="/terms" className="ml-1 hover:underline">
-          Terms
-        </a>{" "}
-        ·
-        <a href="/privacy" className="ml-1 hover:underline">
-          Privacy
-        </a>
+        <Link href="/terms" className="ml-1 hover:underline">Terms</Link>{" "}·
+        <Link href="/privacy" className="ml-1 hover:underline">Privacy</Link>
       </footer>
     </div>
   );

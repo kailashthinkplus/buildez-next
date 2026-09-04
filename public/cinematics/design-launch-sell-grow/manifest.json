@@ -1,0 +1,9 @@
+{
+  "id": "design-launch-sell-grow",
+  "frameCount": 4,
+  "width": 1280,
+  "height": 720,
+  "desktop": "/cinematics/design-launch-sell-grow/desktop/frame-{frame}.avif",
+  "desktopFallback": "/cinematics/design-launch-sell-grow/desktop/frame-{frame}.webp",
+  "note": "Placeholder 4-frame set derived from the existing stage screenshots (frame-design/brand/commerce/grow). Replace with a real 120-240 frame cinematic render via scripts/video-to-frames.sh, then bump frameCount to match. See public/cinematics/README.md for the full spec."
+}

@@ -214,6 +214,44 @@ function EmptyCanvasMessage() {
   );
 }
 
+function AiCanvasGenerationOverlay({ activity }: { activity?: string }) {
+  const sectionHeights = [280, 170, 240, 190, 230, 150];
+  return (
+    <div className="pointer-events-auto absolute inset-0 z-[900] min-h-screen cursor-wait overflow-hidden bg-slate-950/75 backdrop-blur-[2px]" aria-live="polite" aria-label="Website generation in progress">
+      <style>{`
+        @keyframes ai-canvas-shimmer { 0% { transform: translateX(-120%); } 100% { transform: translateX(220%); } }
+        @keyframes ai-canvas-breathe { 0%,100% { opacity:.38; transform:scale(.995); } 50% { opacity:.9; transform:scale(1); } }
+        @keyframes ai-canvas-spark { 0%,100% { opacity:.2; transform:translateY(8px) scale(.7); } 50% { opacity:1; transform:translateY(-8px) scale(1); } }
+      `}</style>
+      <div className="sticky top-5 z-20 mx-auto flex w-[min(86%,720px)] items-center gap-3 rounded-2xl border border-sky-300/25 bg-slate-950/85 px-4 py-3 text-white shadow-2xl shadow-sky-950/50 backdrop-blur-xl">
+        <Sparkles className="h-5 w-5 animate-pulse text-sky-300" />
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-200">Building on canvas</p>
+          <p className="mt-0.5 truncate text-xs text-slate-300">{activity || "Preparing the first website sections…"}</p>
+        </div>
+      </div>
+      <div className="relative mx-auto mt-6 w-[min(92%,1100px)] space-y-4 pb-16">
+        {sectionHeights.map((height, index) => (
+          <div key={height} className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.055]" style={{ height, animation: `ai-canvas-breathe 2.8s ease-in-out ${index * 180}ms infinite` }}>
+            <div className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-sky-200/15 to-transparent" style={{ animation: `ai-canvas-shimmer 2.4s ease-in-out ${index * 220}ms infinite` }} />
+            <div className={`grid h-full gap-6 p-8 ${index % 2 ? "grid-cols-[.8fr_1.2fr]" : "grid-cols-[1.2fr_.8fr]"}`}>
+              <div className="space-y-4 self-center">
+                <div className="h-3 w-24 rounded-full bg-sky-300/20" />
+                <div className="h-7 w-4/5 rounded-lg bg-white/15" />
+                <div className="h-3 w-full rounded-full bg-white/10" />
+                <div className="h-3 w-2/3 rounded-full bg-white/10" />
+                <div className="h-9 w-32 rounded-xl bg-sky-400/20" />
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-sky-400/10 via-violet-400/10 to-amber-300/10" />
+            </div>
+            {[0, 1, 2].map((spark) => <span key={spark} className="absolute h-1.5 w-1.5 rounded-full bg-sky-200" style={{ left: `${18 + spark * 31}%`, top: `${24 + ((index + spark) % 3) * 22}%`, animation: `ai-canvas-spark 2s ease-in-out ${(index + spark) * 240}ms infinite` }} />)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ============================================================
    COLLAPSIBLE PANEL BUTTON
 ============================================================ */
@@ -757,7 +795,8 @@ const onRunAI = async (prompt: string, context?: Record<string, unknown> | null)
     throw new Error("Builder is still loading. Please wait for the canvas before generating.");
   }
   try {
-    await AiConversation.run({ pageId, prompt, context });
+    const generationResult = await AiConversation.run({ pageId, prompt, context });
+    if (!generationResult) return;
 
     const res = await fetch(`/api/builder-v2/blueprints/${pageId}`, {
       method: "GET",
@@ -809,6 +848,7 @@ const aiChatRuntime = {
   status: useAiStore((s) => s.status) as "idle" | "running" | "success" | "error",
   message: useAiStore((s) => s.errorMessage) || undefined,
 };
+const currentAiActivity = useAiStore((s) => s.agents.at(-1)?.summary);
 
 const reactCode: string | null = null;
 
@@ -975,23 +1015,180 @@ const onCanvasClick = () => {
   useEffect(() => {
     if (!blueprint) return;
 
-    const findTargetNodeElement = (x: number, y: number, dragId: string | null) => {
+    const findTargetNodeElement = (
+      x: number,
+      y: number,
+      dragId: string | null
+    ) => {
       const draggedEl = dragId
-        ? (document.querySelector(`[data-node-id='${dragId}']`) as HTMLElement | null)
+        ? (document.querySelector(
+            `.builder-canvas-sandbox [data-node-id="${CSS.escape(dragId)}"]`
+          ) as HTMLElement | null)
         : null;
+
       const stack = document.elementsFromPoint(x, y);
+      const topHit = stack.find(
+        (element): element is HTMLElement =>
+          element instanceof HTMLElement
+      );
+
+      /*
+       * Builder chrome must never become a canvas drop target.
+       * Only reject when the visually topmost hit belongs to chrome.
+       */
+      if (topHit?.closest(".builder-chrome")) {
+        return null;
+      }
+
+      const candidates: HTMLElement[] = [];
+      const seen = new Set<string>();
+
       for (const hit of stack) {
         if (!(hit instanceof HTMLElement)) continue;
-        if (hit.closest(".builder-chrome")) return null;
-        const nodeEl = hit.closest("[data-node-id]") as HTMLElement | null;
+
+        const nodeEl =
+          hit.closest<HTMLElement>("[data-node-id]");
+
         if (!nodeEl) continue;
+        if (!nodeEl.closest(".builder-canvas-sandbox")) {
+          continue;
+        }
+
         const nodeId = nodeEl.getAttribute("data-node-id");
-        if (!nodeId) continue;
+
+        if (!nodeId || seen.has(nodeId)) continue;
         if (dragId && nodeId === dragId) continue;
         if (draggedEl?.contains(nodeEl)) continue;
-        return nodeEl;
+
+        seen.add(nodeId);
+        candidates.push(nodeEl);
       }
-      return null;
+
+      const firstCandidate = candidates[0] ?? null;
+      const firstCandidateType =
+        firstCandidate?.getAttribute("data-node-type");
+
+      /*
+       * A transparent or empty Container may not appear before its
+       * Section in elementsFromPoint(), even though its visual rectangle
+       * contains the pointer.
+       *
+       * Only apply this fallback when the current hit is a Section/Page
+       * or when no Builder node was directly returned. This preserves
+       * normal widget sibling targeting.
+       */
+      if (
+        !firstCandidate ||
+        firstCandidateType === "section" ||
+        firstCandidateType === "page"
+      ) {
+        const sandbox =
+          document.querySelector<HTMLElement>(
+            ".builder-canvas-sandbox"
+          );
+
+        if (sandbox) {
+          const containingLayouts = Array.from(
+            sandbox.querySelectorAll<HTMLElement>(
+              "[data-node-id][data-node-type='container'], " +
+                "[data-node-id][data-node-type='column']"
+            )
+          )
+            .filter((candidate) => {
+              const candidateId =
+                candidate.getAttribute("data-node-id");
+
+              if (!candidateId) return false;
+              if (dragId && candidateId === dragId) {
+                return false;
+              }
+              if (draggedEl?.contains(candidate)) {
+                return false;
+              }
+
+              /*
+               * DOM containment is no longer reliable after the canvas
+               * wrapper refactor. Validate ancestry using the blueprint.
+               */
+              if (firstCandidate) {
+                const firstCandidateId =
+                  firstCandidate.getAttribute("data-node-id");
+
+                if (firstCandidateId) {
+                  let cursor =
+                    blueprint.nodes[candidateId];
+
+                  let descendant = false;
+
+                  while (cursor?.parentId) {
+                    if (cursor.parentId === firstCandidateId) {
+                      descendant = true;
+                      break;
+                    }
+
+                    cursor =
+                      blueprint.nodes[cursor.parentId];
+                  }
+
+                  if (!descendant) {
+                    return false;
+                  }
+                }
+              }
+
+              const rect =
+                candidate.getBoundingClientRect();
+
+              return (
+                rect.width > 0 &&
+                rect.height > 0 &&
+                x >= rect.left &&
+                x <= rect.right &&
+                y >= rect.top &&
+                y <= rect.bottom
+              );
+            })
+            .sort((left, right) => {
+              const depth = (element: HTMLElement) => {
+                let current: HTMLElement | null = element;
+                let value = 0;
+
+                while (current) {
+                  value += 1;
+                  current = current.parentElement;
+                }
+
+                return value;
+              };
+
+              const depthDifference =
+                depth(right) - depth(left);
+
+              if (depthDifference !== 0) {
+                return depthDifference;
+              }
+
+              const leftRect =
+                left.getBoundingClientRect();
+              const rightRect =
+                right.getBoundingClientRect();
+
+              return (
+                leftRect.width * leftRect.height -
+                rightRect.width * rightRect.height
+              );
+            });
+
+          const preferredLayout =
+            containingLayouts[0];
+
+          if (preferredLayout) {
+            return preferredLayout;
+          }
+        }
+      }
+
+      return firstCandidate;
     };
 
     const computeDrop = (
@@ -1004,6 +1201,7 @@ const onCanvasClick = () => {
       if (!nodeId) return null;
       const node = blueprint.nodes[nodeId];
       if (!node) return null;
+
 
       const rect = targetEl.getBoundingClientRect();
       const isGrid =
@@ -1088,12 +1286,20 @@ const onCanvasClick = () => {
     };
 
     const onDragOverCapture = (e: DragEvent) => {
+      (window as any).__builderDndEventOrder ??= [];
+      (window as any).__builderDndEventOrder.push({
+        owner: "BuilderShell-capture-dragover",
+        x: e.clientX,
+        y: e.clientY,
+        time: performance.now(),
+      });
       const dragId = ((window as any).__builderDragId as string | null) ?? null;
       const dragType = ((window as any).__builderDragType as string | null) ?? null;
       if (!dragId) return;
 
       e.preventDefault();
       const targetEl = findTargetNodeElement(e.clientX, e.clientY, dragId);
+
       if (!targetEl) {
         pendingDropRef.current = null;
         setDndObservation((current) => ({ ...current, overId: "", intent: "", valid: false }));
@@ -1102,6 +1308,7 @@ const onCanvasClick = () => {
       }
 
       const computed = computeDrop(targetEl, e.clientX, e.clientY, dragType);
+
       if (!computed) {
         pendingDropRef.current = null;
         setDndObservation((current) => ({ ...current, overId: "", intent: "", valid: false }));
@@ -1140,6 +1347,14 @@ const onCanvasClick = () => {
     };
 
     const onDropCapture = (e: DragEvent) => {
+      (window as any).__builderDndEventOrder ??= [];
+      (window as any).__builderDndEventOrder.push({
+        owner: "BuilderShell-capture-drop",
+        x: e.clientX,
+        y: e.clientY,
+        pending: pendingDropRef.current,
+        time: performance.now(),
+      });
       e.preventDefault();
 
       const session = dragSessionRef.current;
@@ -1181,7 +1396,36 @@ const onCanvasClick = () => {
           hit === draggedElement || draggedElement.contains(hit)
         )
       );
-      const currentTarget = findTargetNodeElement(e.clientX, e.clientY, dragId);
+      let currentTarget = findTargetNodeElement(e.clientX, e.clientY, dragId);
+
+      /*
+       * Native HTML5 drop occasionally reports the parent Section
+       * even though dragover already validated a child Container.
+       * Preserve the validated pending container if the pointer
+       * still lies inside it.
+       */
+      if (
+        currentTarget &&
+        drop?.overId &&
+        currentTarget.getAttribute("data-node-type") === "section"
+      ) {
+        const pendingEl = document.querySelector(
+          `[data-node-id="${CSS.escape(drop.overId)}"]`
+        ) as HTMLElement | null;
+
+        if (pendingEl) {
+          const r = pendingEl.getBoundingClientRect();
+
+          if (
+            e.clientX >= r.left &&
+            e.clientX <= r.right &&
+            e.clientY >= r.top &&
+            e.clientY <= r.bottom
+          ) {
+            currentTarget = pendingEl;
+          }
+        }
+      }
       const currentOverId = currentTarget?.getAttribute("data-node-id") ?? null;
       const currentComputed = currentTarget
         ? computeDrop(currentTarget, e.clientX, e.clientY, dragType)
@@ -1318,23 +1562,56 @@ const fixedDeviceWidth =
       : null;
 
 const canvasScale = zoom / 100;
-const canvasWidth = fixedDeviceWidth ?? RESPONSIVE_BREAKPOINTS.desktop;
+const canvasWidth =
+  fixedDeviceWidth ?? RESPONSIVE_BREAKPOINTS.desktop;
+
 const rightChromeWidth =
   fullscreenState.sidebarsCollapsed || isInspectorCollapsed
     ? 0
     : INSPECTOR_WIDTH;
-const canvasChromeLeftInset =
-  fullscreenState.sidebarsCollapsed ? 0 : leftChromeWidth;
-const canvasChromeRightInset =
-  fullscreenState.sidebarsCollapsed ? 0 : rightChromeWidth;
-const measuredCanvasWidth = Math.max(canvasWidth, canvasContentWidth);
-const scaledCanvasWidth = measuredCanvasWidth * canvasScale;
-const scaledCanvasHeight = canvasContentHeight * canvasScale;
+
+/*
+ * The canvas viewport itself now occupies only the editing lane between
+ * the active left and right Builder chrome.
+ */
+const canvasViewportLeftInset =
+  fullscreenState.sidebarsCollapsed
+    ? 0
+    : leftChromeWidth;
+
+const canvasViewportRightInset =
+  fullscreenState.sidebarsCollapsed
+    ? 0
+    : rightChromeWidth;
+
+/*
+ * Sidebar widths are no longer included inside canvas scroll geometry,
+ * because the viewport has already been positioned between them.
+ */
+const canvasChromeLeftInset = 0;
+const canvasChromeRightInset = 0;
+const canvasVisibleLaneOffset = 0;
+
+const measuredCanvasWidth = Math.max(
+  canvasWidth,
+  canvasContentWidth
+);
+
+const scaledCanvasWidth =
+  measuredCanvasWidth * canvasScale;
+
+const scaledCanvasHeight =
+  canvasContentHeight * canvasScale;
+
 const canvasScrollWidth =
-  canvasChromeLeftInset + scaledCanvasWidth + canvasChromeRightInset + CANVAS_EDGE_GUTTER * 2;
-const canvasScrollHeight = Math.max(scaledCanvasHeight + CANVAS_EDGE_GUTTER * 2, 0);
-const canvasVisibleLaneOffset =
-  canvasChromeLeftInset + canvasChromeRightInset;
+  scaledCanvasWidth +
+  CANVAS_EDGE_GUTTER * 2;
+
+const canvasScrollHeight = Math.max(
+  scaledCanvasHeight +
+    CANVAS_EDGE_GUTTER * 2,
+  0
+);
 
 useEffect(() => {
   const canvas = canvasSandboxRef.current;
@@ -1357,16 +1634,83 @@ useEffect(() => {
 useEffect(() => {
   const viewport = canvasViewportRef.current;
   if (!viewport) return;
+
   const onWheel = (event: WheelEvent) => {
-    if (!event.shiftKey || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    if (
+      !event.shiftKey ||
+      Math.abs(event.deltaY) <= Math.abs(event.deltaX)
+    ) {
+      return;
+    }
+
     event.preventDefault();
     viewport.scrollLeft += event.deltaY;
   };
-  viewport.addEventListener("wheel", onWheel, { passive: false });
+
+  viewport.addEventListener(
+    "wheel",
+    onWheel,
+    { passive: false }
+  );
+
   return () => {
-    viewport.removeEventListener("wheel", onWheel);
+    viewport.removeEventListener(
+      "wheel",
+      onWheel
+    );
   };
 }, []);
+
+/*
+ * Keep the canvas centred in the lane that is actually visible between
+ * Builder chrome. When the scaled canvas is wider than that lane, centre
+ * the initial horizontal viewport without removing normal user scrolling.
+ */
+useEffect(() => {
+  const viewport = canvasViewportRef.current;
+  if (!viewport) return;
+
+  const frame = window.requestAnimationFrame(() => {
+    const visibleLaneWidth = Math.max(
+      0,
+      viewport.clientWidth -
+        canvasChromeLeftInset -
+        canvasChromeRightInset
+    );
+
+    if (
+      visibleLaneWidth <= 0 ||
+      scaledCanvasWidth <= visibleLaneWidth
+    ) {
+      viewport.scrollLeft = 0;
+      return;
+    }
+
+    const canvasCentre =
+      CANVAS_EDGE_GUTTER +
+      canvasChromeLeftInset +
+      scaledCanvasWidth / 2;
+
+    const visibleLaneCentre =
+      canvasChromeLeftInset +
+      visibleLaneWidth / 2;
+
+    viewport.scrollLeft = Math.max(
+      0,
+      canvasCentre - visibleLaneCentre
+    );
+  });
+
+  return () => {
+    window.cancelAnimationFrame(frame);
+  };
+}, [
+  device,
+  zoom,
+  scaledCanvasWidth,
+  canvasChromeLeftInset,
+  canvasChromeRightInset,
+]);
 
   /* ============================================================
      GUARD CHECKS (AFTER ALL HOOKS)
@@ -1442,9 +1786,13 @@ onToggleFullscreenBuilder={toggleFullscreenBuilder}
 
         {/* CANVAS */}
 <main
-  className={`builder-canvas-main absolute inset-0 ${
+  className={`builder-canvas-main absolute inset-y-0 ${
     isDarkMode ? "bg-[#1E1F22]" : "bg-[#0F1118]"
   }`}
+  style={{
+    left: `${canvasViewportLeftInset}px`,
+    right: `${canvasViewportRightInset}px`,
+  }}
 >
   <div
     ref={canvasViewportRef}
@@ -1453,8 +1801,9 @@ onToggleFullscreenBuilder={toggleFullscreenBuilder}
     data-builder-canvas-scroll="true"
   >
     <div
-      className="relative min-h-full p-6"
+      className="relative min-h-full"
       style={{
+        padding: `${CANVAS_EDGE_GUTTER}px`,
         minWidth: `max(100%, ${canvasScrollWidth}px)`,
         minHeight: `${canvasScrollHeight}px`,
       }}
@@ -1466,19 +1815,26 @@ onToggleFullscreenBuilder={toggleFullscreenBuilder}
           marginRight: `${canvasChromeRightInset}px`,
           width: `calc(100% - ${canvasVisibleLaneOffset}px)`,
           minWidth: `${scaledCanvasWidth}px`,
-          height: canvasContentHeight ? `${scaledCanvasHeight}px` : undefined,
+          height: canvasContentHeight
+            ? `${scaledCanvasHeight}px`
+            : undefined,
         }}
       >
         <div
-          className="relative shrink-0"
+          className="relative shrink-0 rounded-sm"
           style={{
             width: `${scaledCanvasWidth}px`,
-            height: canvasContentHeight ? `${scaledCanvasHeight}px` : undefined,
+            height: canvasContentHeight
+              ? `${scaledCanvasHeight}px`
+              : undefined,
+            boxShadow:
+              "0 24px 70px rgb(0 0 0 / 38%), " +
+              "0 0 0 1px rgb(255 255 255 / 7%)",
           }}
         >
           <div
             ref={canvasSandboxRef}
-            className="relative builder-canvas-sandbox"
+            className="relative overflow-hidden rounded-sm builder-canvas-sandbox"
             style={{
               width: `${canvasWidth}px`,
               minWidth: `${canvasWidth}px`,
@@ -1544,6 +1900,9 @@ onToggleFullscreenBuilder={toggleFullscreenBuilder}
                 currentDevice: device,
               }}
             />
+            {aiChatRuntime.status === "running" ? (
+              <AiCanvasGenerationOverlay activity={currentAiActivity} />
+            ) : null}
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@
 import { renderNodeToHtml } from "./renderNodeToHtml";
 import { generateRuntimeCSS } from "./generateRuntimeCSS";
 import { bindDesignTokensToCSS } from "./designTokens/bindDesignTokensToCSS";
-import type { BlueprintNode } from "@/modules/builder/types";
+import type { BlueprintNode } from "@/modules/builder/renderer/PageRenderer";
 
 /**
  * Generate complete runtime output (HTML + CSS)
@@ -39,7 +39,7 @@ export function generateRuntimeOutput(
   const designTokens = blueprint.props?.designTokens;
 
   // Generate HTML with inline styles
-  const html = renderNodeToHtml(blueprint, device, designTokens);
+  const html = renderNodeToHtml(blueprint, device);
 
   // Generate CSS (base styles + design tokens)
   const baseCSS = generateRuntimeCSS(blueprint as any);
@@ -67,7 +67,7 @@ export function generateRuntimeOutputMinimal(
   if (!blueprint) return "";
   
   const designTokens = blueprint.props?.designTokens;
-  return renderNodeToHtml(blueprint, device, designTokens);
+  return renderNodeToHtml(blueprint, device);
 }
 
 /**

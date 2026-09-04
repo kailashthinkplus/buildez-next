@@ -87,7 +87,10 @@ export default function PropertyRenderer({
                 node={node}
                 property={property.id}
                 label={property.label}
-                options={property.options ?? []}
+                options={(property.options ?? []).map((option) => ({
+                  label: option.label,
+                  value: String(option.value),
+                }))}
               />
             );
 

@@ -58,8 +58,8 @@ export default function MediaGrid({
               aspect-square
               rounded-xl
               border
-              border-white/10
-              bg-white/5
+              dashboard-border
+              dashboard-subtle
               animate-pulse
             "
           />
@@ -90,9 +90,9 @@ export default function MediaGrid({
             w-20
             h-20
             rounded-2xl
-            bg-white/5
+            dashboard-subtle
             border
-            border-white/10
+            dashboard-border
             flex
             items-center
             justify-center
@@ -107,7 +107,6 @@ export default function MediaGrid({
             mt-6
             text-lg
             font-semibold
-            text-white
           "
         >
           No media found
@@ -118,7 +117,7 @@ export default function MediaGrid({
             mt-2
             max-w-sm
             text-sm
-            text-white/50
+            dashboard-muted
           "
         >
           Upload an image or generate one using AI to

@@ -2,7 +2,7 @@
 
 import { resolveRuntimeStyle } from "./resolveRuntimeStyle";
 import { injectDesignTokensCSS } from "./designTokens/injectDesignTokensCSS";
-import type { BlueprintNode } from "@/modules/builder/types";
+import type { BlueprintNode } from "@/modules/builder/renderer/PageRenderer";
 import type { DesignTokens } from "./designTokens/designTokens.types";
 
 /* ============================================================
@@ -228,9 +228,9 @@ ${escapeHtml(label)}
 
     case "spacer": {
       const spacerStyle = styleStr || styleObjectToCss({
-        width: node.style?.width ?? "100%",
-        height: node.style?.height ?? node.props?.height ?? 32,
-        minHeight: node.style?.minHeight ?? node.style?.height ?? node.props?.height ?? 32,
+        width: node.props?.style?.width ?? "100%",
+        height: node.props?.style?.height ?? node.props?.height ?? 32,
+        minHeight: node.props?.style?.minHeight ?? node.props?.style?.height ?? node.props?.height ?? 32,
       });
       
       return `

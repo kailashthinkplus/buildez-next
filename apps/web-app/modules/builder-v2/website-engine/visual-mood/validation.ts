@@ -37,10 +37,6 @@ export function validateVisualMoodProfile(profile: VisualMoodProfile): VisualMoo
  */
 export function validationIssuesToVisualMoodErrors(issues: readonly VisualMoodValidationIssue[]): EngineError[] {
   return issues.map((item) =>
-    createEngineError("INVALID_VISUAL_MOOD_PROFILE", item.message, "visual-mood", {
-      recoverable: true,
-      severity: "major",
-      metadata: { path: item.path, code: item.code },
-    })
+    createEngineError("INVALID_VISUAL_MOOD_PROFILE", item.message, "visual-mood", true, "major", { path: item.path, code: item.code })
   );
 }

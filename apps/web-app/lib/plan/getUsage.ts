@@ -3,20 +3,13 @@
 import { prisma } from "@buildez/db";
 
 export async function getTenantUsage(tenantId: string) {
-  const usage = await prisma.planUsage.findFirst({
-    where: { tenantId },
-  });
+  const [sitesUsed, aiUsage] = await Promise.all([
+    prisma.site.count({ where: { tenantId, deletedAt: null } }),
+    prisma.planUsage.findFirst({
+      where: { tenantId, key: "ai_credits" },
+      orderBy: { periodStart: "desc" },
+    }),
+  ]);
 
-  if (!usage) {
-    // create first-time usage record
-    return await prisma.planUsage.create({
-      data: {
-        tenantId,
-        aiCreditsUsed: 0,
-        sitesUsed: 0,
-      },
-    });
-  }
-
-  return usage;
+  return { sitesUsed, aiCreditsUsed: aiUsage?.used ?? 0 };
 }

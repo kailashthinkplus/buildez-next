@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { Check, Eye, LayoutTemplate, Palette, Sparkles, X } from "lucide-react";
+import { ArrowRight, Check, LayoutGrid, LayoutTemplate, Palette, Search, Sparkles, X } from "lucide-react";
 
 import { firstPartyThemePresets } from "@/modules/builder-v2/theme/themePresets";
 import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
@@ -11,6 +11,7 @@ import {
   type SiteThemeLayout,
 } from "@/modules/builder-v2/theme/siteLayout";
 import { SiteThemeFrame } from "@/modules/builder-v2/theme/SiteThemeFrame";
+import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
 
 type Props = {
   siteId: string;
@@ -54,6 +55,8 @@ export default function ThemeMarketplaceClient({
   } | null>(null);
   const [savingLayout, setSavingLayout] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [toneFilter, setToneFilter] = useState("All");
   const activePreset = useMemo(
     () =>
       firstPartyThemePresets.find((preset) => preset.id === activePresetId) ??
@@ -66,6 +69,17 @@ export default function ThemeMarketplaceClient({
       firstPartyThemePresets[0],
     [selectedPresetId]
   );
+  const tones = useMemo(
+    () => ["All", ...Array.from(new Set(firstPartyThemePresets.map((preset) => preset.tone)))],
+    []
+  );
+  const visiblePresets = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return firstPartyThemePresets.filter((preset) =>
+      (toneFilter === "All" || preset.tone === toneFilter) &&
+      (!needle || `${preset.name} ${preset.tone} ${preset.demoData?.category ?? ""} ${preset.demoData?.description ?? ""}`.toLowerCase().includes(needle))
+    );
+  }, [query, toneFilter]);
 
   async function applyTheme(presetId: string, seedDemoBlueprints: boolean) {
     const preset = firstPartyThemePresets.find((item) => item.id === presetId);
@@ -200,28 +214,31 @@ export default function ThemeMarketplaceClient({
 
   return (
     <div className="relative px-1 py-2 md:px-2">
-      <div className="pointer-events-none absolute left-[15%] top-10 h-72 w-72 rounded-full bg-cyan-400/10 blur-[100px]" />
+      <div className="pointer-events-none absolute left-[10%] top-0 h-80 w-80 rounded-full bg-[#1349A3]/10 blur-[110px]" />
+      <div className="pointer-events-none absolute right-[8%] top-40 h-64 w-64 rounded-full bg-cyan-400/10 blur-[100px]" />
       <div className="relative mx-auto max-w-[1400px] space-y-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide dashboard-muted">
-              Site theme
-            </p>
-            <h1 className="text-2xl font-semibold">Themes for {siteName}</h1>
-            <p className="mt-2 max-w-2xl text-sm dashboard-muted">
-              Apply just the visual theme, or add safe demo content to blank
-              and theme-generated builder pages.
-            </p>
-          </div>
-
-          <div className="rounded-2xl dashboard-card-strong px-5 py-4 text-sm">
-            <div className="flex items-center gap-2 font-medium">
-              <Palette className="h-4 w-4" />
-              {activePreset.name}
+        <section className="overflow-hidden rounded-[26px] border dashboard-border dashboard-card-strong">
+          <div className="grid gap-6 p-6 md:grid-cols-[1fr_auto] md:items-end md:p-8">
+            <div>
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#1349A3]/10 px-3 py-1.5 text-xs font-semibold text-[#1349A3] dark:text-blue-300">
+                <Palette className="h-3.5 w-3.5" /> BuildEZ Theme Marketplace
+              </div>
+              <h1 className="max-w-3xl text-2xl font-semibold tracking-tight md:text-3xl">
+                Find a look that feels made for {siteName}.
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 dashboard-muted">
+                Explore professionally designed foundations, preview every detail, then apply the style alone or launch with matching demo content.
+              </p>
             </div>
-            <div className="mt-1 dashboard-muted">Currently applied</div>
+            <div className="rounded-2xl dashboard-subtle px-5 py-4 text-sm">
+              <div className="mb-1 text-xs font-medium uppercase tracking-wide dashboard-muted">Live theme</div>
+              <div className="flex items-center gap-2 font-semibold">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/10" />
+                {activePreset.name}
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
 
         {message && (
           <div className="rounded-lg dashboard-card px-4 py-3 text-sm">
@@ -229,25 +246,48 @@ export default function ThemeMarketplaceClient({
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {firstPartyThemePresets.map((preset) => {
+        <div className="sticky top-0 z-10 flex flex-col gap-3 rounded-2xl border dashboard-border dashboard-card-strong p-3 lg:flex-row lg:items-center">
+          <label className="relative min-w-0 flex-1">
+            <Search className="dashboard-muted absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search themes, styles, and industries" className="w-full rounded-xl border dashboard-border bg-transparent py-2.5 pl-10 pr-10 text-sm outline-none focus:border-[#3B82F6]" />
+            {query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search" className="dashboard-muted absolute right-3 top-1/2 -translate-y-1/2"><X className="h-4 w-4" /></button>}
+          </label>
+          <div className="flex gap-2 overflow-x-auto pb-1 lg:pb-0">
+            {tones.map((tone) => <button type="button" key={tone} onClick={() => setToneFilter(tone)} className={`whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium capitalize transition ${toneFilter === tone ? "bg-[#1349A3] text-white" : "dashboard-subtle dashboard-hover"}`}>{tone}</button>)}
+          </div>
+        </div>
+
+        {visiblePresets.length ? <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {visiblePresets.map((preset) => {
             const isActive = preset.id === activePresetId;
             const isSelected = preset.id === selectedPresetId;
-            const isSavingTheme =
-              savingAction?.presetId === preset.id && savingAction.mode === "theme";
-            const isSavingDemo =
-              savingAction?.presetId === preset.id && savingAction.mode === "demo";
-            const isSavingPreset = savingAction?.presetId === preset.id;
             const { typography, radius } = preset.tokens;
             const demoData = preset.demoData;
 
             return (
               <article
                 key={preset.id}
-                className={`theme-market-card group overflow-hidden rounded-[22px] border dashboard-card ${
-                  isActive || isSelected ? "border-blue-400/70 ring-4 ring-blue-500/10" : "dashboard-border"
-                }`}
+                role="button"
+                tabIndex={0}
+                aria-label={`Preview ${preset.name}`}
+                onClick={() => {
+                  setSelectedPresetId(preset.id);
+                  setDetailsOpen(true);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setSelectedPresetId(preset.id);
+                    setDetailsOpen(true);
+                  }
+                }}
+                className={`theme-market-card group overflow-hidden rounded-[22px] border dashboard-card transition duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#1349A3]/5 ${
+                  isActive || isSelected ? "border-[#3B82F6]/70 ring-4 ring-[#1349A3]/10" : "dashboard-border hover:border-[#3B82F6]/60"
+                } relative cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#1349A3]/10`}
               >
+                <span className="absolute bottom-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-[#1349A3]/10 text-[#1349A3] transition group-hover:bg-[#1349A3] group-hover:text-white dark:text-blue-300" aria-hidden="true">
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </span>
                 <div className="relative aspect-[16/9] overflow-hidden border-b dashboard-border">
                   {preset.previewImageUrl ? (
                     <Image
@@ -262,11 +302,11 @@ export default function ThemeMarketplaceClient({
                   )}
                 </div>
 
-                <div className="space-y-4 p-4">
+                <div className="space-y-4 p-4 pr-16">
                   <div>
                     <div className="flex items-center justify-between gap-3">
                       <h2 className="font-semibold">{preset.name}</h2>
-                      <span className="rounded-full dashboard-subtle px-2 py-1 text-xs capitalize">
+                      <span className="rounded-full bg-[#1349A3]/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-[#1349A3] dark:text-blue-300">
                         {demoData?.category ?? preset.tone}
                       </span>
                     </div>
@@ -276,67 +316,22 @@ export default function ThemeMarketplaceClient({
                     </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedPresetId(preset.id);
-                      setDetailsOpen(true);
-                    }}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border dashboard-border px-4 py-2.5 text-sm font-medium dashboard-hover"
-                  >
-                    <Eye className="h-4 w-4" />
-                    View Details
-                  </button>
-
-                  <button
-                    type="button"
-                    disabled={isSavingPreset || isActive}
-                    onClick={() => applyTheme(preset.id, false)}
-                    className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${
-                      isActive
-                        ? "bg-green-600 text-white"
-                        : "dashboard-primary-button text-white disabled:opacity-60"
-                    }`}
-                  >
-                    {isActive ? (
-                      <>
-                        <Check className="h-4 w-4" />
-                        Theme Applied
-                      </>
-                    ) : isSavingTheme ? (
-                      "Applying Theme..."
-                    ) : (
-                      "Apply Theme Only"
-                    )}
-                  </button>
-
-                  <button
-                    type="button"
-                    disabled={isSavingPreset}
-                    onClick={() => applyTheme(preset.id, true)}
-                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--brand)] px-4 py-2 text-sm font-medium text-[var(--brand)] transition hover:bg-[var(--brand)] hover:text-white disabled:opacity-60"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    {isSavingDemo
-                      ? "Adding Demo..."
-                      : isActive
-                        ? "Rebuild Demo Content"
-                        : "Apply + Demo Content"}
-                  </button>
+                  {isActive && <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1.5 text-xs font-semibold text-emerald-600"><Check className="h-3.5 w-3.5" /> Currently applied</div>}
                 </div>
               </article>
             );
           })}
-        </div>
+        </div> : <div className="rounded-[22px] border dashboard-border dashboard-card py-20 text-center"><LayoutGrid className="dashboard-muted mx-auto h-8 w-8" /><h2 className="mt-3 font-semibold">No themes found</h2><p className="mt-1 text-sm dashboard-muted">Try another search or style.</p></div>}
 
         {detailsOpen && (
+          <DashboardModalPortal onClose={() => setDetailsOpen(false)}>
           <div
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
             role="dialog"
             aria-modal="true"
             aria-labelledby="theme-details-title"
           >
-            <div className="max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-lg border dashboard-border dashboard-card shadow-2xl">
+            <div className="dashboard-modal-surface max-h-[calc(100dvh-2rem)] w-full max-w-6xl overflow-hidden rounded-lg border dashboard-border shadow-2xl">
               <div className="flex items-center justify-between border-b dashboard-border px-5 py-4">
                 <div className="flex items-center gap-2">
                   <LayoutTemplate className="h-4 w-4" />
@@ -356,6 +351,25 @@ export default function ThemeMarketplaceClient({
 
               <div className="grid max-h-[calc(90vh-65px)] grid-cols-1 gap-5 overflow-y-auto p-5 lg:grid-cols-[0.85fr_1.15fr]">
                 <div className="space-y-5">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      disabled={savingAction?.presetId === selectedPreset.id || selectedPreset.id === activePresetId}
+                      onClick={() => applyTheme(selectedPreset.id, false)}
+                      className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${selectedPreset.id === activePresetId ? "bg-emerald-500/10 text-emerald-600" : "bg-[#1349A3] text-white hover:bg-[#1D5FC7] disabled:opacity-60"}`}
+                    >
+                      {selectedPreset.id === activePresetId ? <><Check className="h-4 w-4" /> Applied</> : savingAction?.presetId === selectedPreset.id && savingAction.mode === "theme" ? "Applying..." : "Apply theme"}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={savingAction?.presetId === selectedPreset.id}
+                      onClick={() => applyTheme(selectedPreset.id, true)}
+                      className="flex items-center justify-center gap-2 rounded-xl border border-[#1349A3]/40 px-4 py-2.5 text-sm font-semibold text-[#1349A3] transition hover:bg-[#1349A3]/10 disabled:opacity-60 dark:text-blue-300"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      {savingAction?.presetId === selectedPreset.id && savingAction.mode === "demo" ? "Adding demo..." : "Apply + demo"}
+                    </button>
+                  </div>
                   {selectedPreset.demoData && (
                     <div className="rounded-lg border dashboard-border p-4">
                       <div className="text-xs font-semibold uppercase tracking-wide dashboard-muted">
@@ -557,6 +571,7 @@ export default function ThemeMarketplaceClient({
               </div>
             </div>
           </div>
+          </DashboardModalPortal>
         )}
       </div>
     </div>

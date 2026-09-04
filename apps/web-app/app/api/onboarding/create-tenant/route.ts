@@ -3,6 +3,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { getCurrentUser } from "@/lib/auth/session";
+import { nextAvailablePublicSiteSlug } from "@/lib/sites/public-slug";
 
 export async function POST(req: Request) {
   console.log("🚀 [create-tenant] START");
@@ -64,6 +65,10 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
       });
     }
 
+    const publicSiteSlug = await nextAvailablePublicSiteSlug(
+      onboarding.domain?.split(".")[0] || onboarding.businessName || "website",
+    );
+
     // ---------------------------------------------------------
     // 2️⃣ TRIAL PLAN → Check if tenant already exists
     // ---------------------------------------------------------
@@ -82,7 +87,7 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
         await prisma.site.create({
           data: {
             name: "My First Site",
-            slug: "home",
+            slug: publicSiteSlug,
             tenantId: existingTenant.id,
           },
         });
@@ -127,7 +132,7 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
         sites: {
           create: [{
             name: "My First Site",
-            slug: "home",
+            slug: publicSiteSlug,
           }],
         },
       },
@@ -146,7 +151,7 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
       await prisma.site.create({
         data: {
           name: "My First Site",
-          slug: "home",
+          slug: publicSiteSlug,
           tenantId: tenant.id,
         },
       });

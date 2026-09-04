@@ -34,7 +34,7 @@ export async function GET() {
           email: true,
           name: true,
           role: true,
-          tenantId: true,
+          tenantUsers: { select: { id: true }, take: 1 },
         },
       },
     },
@@ -48,6 +48,12 @@ export async function GET() {
      3. Return user data
   --------------------------------------------------------- */
   return NextResponse.json({
-    user: session.user,
+    user: {
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name,
+      role: session.user.role,
+      tenantId: session.user.tenantUsers[0]?.id ?? null,
+    },
   });
 }

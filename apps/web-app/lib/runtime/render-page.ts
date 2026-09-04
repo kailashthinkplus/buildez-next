@@ -3,12 +3,17 @@ import { generateRuntimeHTML } from "@/modules/builder/runtime/generateRuntimeHT
 import { generateRuntimeCSS } from "@/modules/builder/runtime/generateRuntimeCSS";
 import { resolveBlueprintTree } from "@/modules/builder/runtime/resolveBlueprintTree";
 import { isBuilderV2Blueprint } from "@/modules/builder-v2/runtime/isBuilderV2Blueprint";
+import { cachedOrStale } from "@/lib/runtime/routeCache";
+
+const ROUTE_CACHE_TTL_MS = 30_000;
 
 export async function renderPage({
   siteSlug,
+  siteId,
   pageSlug,
 }: {
   siteSlug: string;
+  siteId?: string;
   pageSlug: string;
 }) {
   console.log("\n==============================");
@@ -19,20 +24,26 @@ export async function renderPage({
   /* ----------------------------------------------------------
      1️⃣ RESOLVE SITE CANDIDATES (BY SLUG ONLY)
   ---------------------------------------------------------- */
-  const site = await prisma.site.findFirst({
+  const siteCandidates = await cachedOrStale(`pagesite:${siteSlug}:${siteId ?? ""}`, ROUTE_CACHE_TTL_MS, () => prisma.site.findMany({
     where: {
       slug: siteSlug,
+      ...(siteId ? { id: siteId } : {}),
       status: "PUBLISHED",
+      deletedAt: null,
     },
     orderBy: {
       updatedAt: "desc",
     },
     include: { layout: true },
-  });
+    take: siteId ? 1 : 2,
+  }));
+  // A slug is tenant-scoped in the database. Never guess when the shared
+  // runtime host has more than one published site with that slug.
+  const site = siteCandidates.length === 1 ? siteCandidates[0] : null;
 
   console.log(
     "🏢 SITE CANDIDATES:",
-    site ? [`${site.id}:${site.status}`] : []
+    siteCandidates.map((candidate) => `${candidate.id}:${candidate.status}`)
   );
 
   if (!site) {
@@ -43,7 +54,7 @@ export async function renderPage({
   /* ----------------------------------------------------------
      2️⃣ RESOLVE PAGE WITHIN THOSE SITES
   ---------------------------------------------------------- */
-  const page = await prisma.page.findFirst({
+  const page = await cachedOrStale(`page:${site.id}:${pageSlug}`, ROUTE_CACHE_TTL_MS, () => prisma.page.findFirst({
     where: {
       slug: pageSlug,
       status: "PUBLISHED",
@@ -60,7 +71,7 @@ export async function renderPage({
         },
       },
     },
-  });
+  }));
 
   console.log("📦 PAGE FOUND?", Boolean(page));
 
@@ -122,8 +133,8 @@ export async function renderPage({
 
   console.log("🌳 BLUEPRINT ROOT KEYS:", Object.keys(blueprintTree));
 
-  const html = generateRuntimeHTML(blueprintTree);
-  const css = generateRuntimeCSS(blueprintTree);
+  const html = generateRuntimeHTML(blueprintTree as any);
+  const css = generateRuntimeCSS(blueprintTree as any);
 
   console.log("🧾 HTML LENGTH:", html?.length || 0);
   console.log("🎨 CSS LENGTH:", css?.length || 0);

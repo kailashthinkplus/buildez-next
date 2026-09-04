@@ -32,6 +32,7 @@ import CreatePageModal from "../components/CreatePageModal";
 import PublishModal from "../components/PublishModal";
 import { commandBus } from "../core/commands/CommandBus";
 import { useBuilderStore } from "../store/useBuilderStore";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
 
 /* ============================================================================
    TYPES
@@ -41,7 +42,7 @@ interface PageItem {
   id: string;
   title: string;
   slug: string;
-  site: { slug: string };
+  site: { id: string; slug: string };
   status: "DRAFT" | "PUBLISHED";
 }
 
@@ -81,6 +82,7 @@ function formatFullDate(date: Date | null) {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
+    hour12: true,
   });
 }
 
@@ -331,13 +333,13 @@ const statusTitle =
 const publishButtonLabel =
   savedPageStatus === "PUBLISHED" ? "Save changes" : "Publish";
 const pageSlug = currentPage?.slug ?? stripPageIdFromSlug(pageSlugWithId ?? "", pageId);
-const previewSlugWithId = currentPage
-  ? `${currentPage.slug}-${currentPage.id}`
-  : pageSlugWithId;
-const previewUrl = siteSlug && previewSlugWithId
-  ? `/preview/${siteSlug}/${previewSlugWithId}`
+const previewSlug = currentPage?.slug ?? stripPageIdFromSlug(pageSlugWithId ?? "", pageId);
+const previewUrl = siteSlug && previewSlug
+  ? `/preview/${siteSlug}/${previewSlug}`
   : "";
-const publicUrl = siteSlug && pageSlug ? `/${siteSlug}/${pageSlug}` : previewUrl;
+const publicUrl = currentPage?.site.slug && pageSlug
+  ? publishedSitePath(currentPage.site.slug, pageSlug)
+  : previewUrl;
 const currentPageTitle = currentPage?.title ?? pageTitle ?? "Untitled page";
   
 
@@ -369,7 +371,8 @@ const saveBlueprint = useCallback(async (showToast: boolean) => {
 
         if (!response.ok) throw new Error(`Failed to save (HTTP ${response.status})`);
 
-        const payload = await response.json().catch(() => null);
+        const rawPayload = await response.json().catch(() => null);
+        const payload = rawPayload?.data && typeof rawPayload.data === "object" ? rawPayload.data : rawPayload;
         const savedAt = payload?.updatedAt ? new Date(payload.updatedAt) : new Date();
         if (payload?.pageStatus === "PUBLISHED") {
           setCurrentPageStatus("PUBLISHED");
@@ -474,9 +477,7 @@ async function handlePreview() {
     }
   }
 
-  const slugWithId = currentPage
-    ? `${currentPage.slug}-${currentPage.id}`
-    : pageSlugWithId;
+  const slugWithId = currentPage?.slug || pageSlugWithId;
 
   if (!slugWithId) {
     setToast({ message: "Preview unavailable", type: "error" });
@@ -540,7 +541,7 @@ const fullLastSavedAt = formatFullDate(lastSavedAt);
 
 
           <Image
-            src="/buildez-logo-dark.svg"
+              src="/buildez-logo-dark.svg"
             alt="BuildEZ"
             width={115}
             height={40}

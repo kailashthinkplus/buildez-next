@@ -8,11 +8,30 @@
     "app/app/(builder)/[siteSlug]/[pageSlugWithId]/page.tsx",
     "app/app/(builder)/[siteSlug]/[pageSlugWithId]/BuilderRoot.tsx",
     "app/api/builder-v2/blueprints/[pageId]/route.ts",
+    "app/api/builder-v3/projects/[siteId]/tree/route.ts",
+    "app/api/builder-v3/projects/[siteId]/file/route.ts",
+    "app/api/builder-v3/projects/[siteId]/patch/route.ts",
+    "app/api/builder-v3/projects/[siteId]/checkpoints/route.ts",
+    "app/api/builder-v3/projects/[siteId]/files/route.ts",
+    "app/api/builder-v3/projects/[siteId]/import/route.ts",
+    "app/api/builder-v3/agent/reset/route.ts",
+    "app/api/billing/dodo/**/*.ts",
+    "app/api/billing/current/route.ts",
+    "app/api/webhooks/dodo/route.ts",
+    "app/app/(tenant)/workspace/billing/**/*.tsx",
+    "app/app/onboarding/**/*.tsx",
+    "lib/billing/**/*.ts",
+    "app/api/builder-v3/preview/start/route.ts",
+    "app/app/(builder-v3)/builder-v3/[siteId]/**/*.tsx",
     "modules/builder-v2/ai-compatibility/**/*.ts",
-    "modules/builder-v2/__tests__/**/*.ts"
+    "modules/builder-v2/__tests__/**/*.ts",
+    "modules/builder-v3/**/*.ts",
+    "modules/ai-v12/**/*.ts",
+    "modules/v12-boundaries.test.ts"
   ],
   "exclude": [
     "node_modules",
+    "app/app/onboarding/layout.client.tsx",
     "modules/_legacy",
     "modules/builder/ai-v8"
   ]

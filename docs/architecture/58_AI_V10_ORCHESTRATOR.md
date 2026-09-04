@@ -2,11 +2,19 @@
 
 ## Purpose
 
-AI v10 Orchestrator is the disabled coordination layer for the Website Engine.
+AI v10 Orchestrator began as the disabled coordination layer for the Website Engine. Phase 42 adds its first native end-to-end Builder integration.
 
 It answers: how should the Website Engine pipeline be coordinated for a structured user request?
 
-It does not replace `ai-v9`. It does not generate production output. It does not call live LLM APIs. It does not execute Mapper, mutate Builder, insert Builder nodes, wire production routes, call DB/network/MCP/providers, or publish.
+AI-v9 is not part of v10 execution. GPT-5.6 enriches Website Engine-owned artifacts, and GPT Image 2 hydrates Website Engine image nodes.
+
+## Phase 42 Runtime Path
+
+`Prompt → Website Engine intelligence/design/components/composition/decision → WebsiteSpec → native Engine Blueprint → GPT-5.6 constrained enrichment → GPT Image 2 → parity/Critic → applied repair → final parity/Critic → persistence`
+
+The node hierarchy is produced by Website Engine. GPT may patch content and presentation for existing IDs but cannot replace IDs, types, parents, children, or root.
+
+The Builder selector exposes both paths: `AI v10 · Website Engine` is the default and `AI v9 · Direct` is the isolated comparison path.
 
 ## Position In The Architecture
 

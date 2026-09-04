@@ -52,23 +52,62 @@ export async function GET(req: Request) {
     const domain = onboarding.domain ?? null;
 
     /* ---------------------------------------------------------
+       PROFILE COMPLETENESS
+       Mirrors StepBusinessDetails' own validation. A business
+       account already has `businessName` set at signup, so
+       gating step 1 on businessName alone let business accounts
+       skip StepBusinessDetails entirely and left city/country/
+       profession/companySize/primaryUseCase permanently null.
+    --------------------------------------------------------- */
+    const hasPersonalFields = Boolean(
+      onboarding.firstName &&
+      onboarding.lastName &&
+      onboarding.city &&
+      onboarding.country &&
+      onboarding.profession
+    );
+    const profileComplete =
+      accountType === "business"
+        ? hasPersonalFields &&
+          Boolean(businessName) &&
+          Boolean(onboarding.companySize) &&
+          Boolean(onboarding.primaryUseCase)
+        : hasPersonalFields;
+
+    /* ---------------------------------------------------------
+       PHONE VERIFICATION (Firebase)
+       Only enforced once Firebase is actually configured server-side
+       — otherwise this step is treated as satisfied so onboarding
+       isn't blocked before the project/service account exist.
+    --------------------------------------------------------- */
+    const phoneVerificationRequired = Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+    const phoneVerified = !phoneVerificationRequired || Boolean(user.isPhoneVerified);
+
+    /* ---------------------------------------------------------
        STEP CALCULATION (SERVER IS SOURCE OF TRUTH)
+       0 Account type
+       1 Phone verification
+       2 Business/profile details
+       3 Choose plan
+       4 Domain & launch (trial only)
+       5 Finish
     --------------------------------------------------------- */
 
     // DEFAULT step = 0
     let step = 0;
 
     if (!accountType) step = 0;
-    else if (!businessName) step = 1;
-    else if (!planCode) step = 2;
+    else if (!phoneVerified) step = 1;
+    else if (!profileComplete) step = 2;
+    else if (!planCode) step = 3;
 
     // ⭐ Paid plan → SKIP domain step
-    else if (planCode !== "trial") step = 4;
+    else if (planCode !== "trial") step = 5;
 
     // ⭐ Trial plan → requires domain before finish
-    else if (!domain) step = 3;
+    else if (!domain) step = 4;
 
-    else step = 4;
+    else step = 5;
 
     console.log("➡️ [onboarding-status] Computed step:", step);
 
@@ -87,6 +126,11 @@ export async function GET(req: Request) {
       country: onboarding.country ?? null,
       profession: onboarding.profession ?? null,
       website: onboarding.website ?? null,
+
+      // PHONE
+      phone: user.phone ?? null,
+      phoneVerified,
+      phoneVerificationRequired,
 
       // BUSINESS INFO
       accountType,

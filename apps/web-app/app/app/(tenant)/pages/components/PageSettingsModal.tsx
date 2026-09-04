@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useUpdatePage } from "../hooks/useUpdatePage";
+import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
+import { R2ImageUpload } from "@/components/media/R2ImageUpload";
 
 export default function PageSettingsModal({ page, open, onClose, onSaved }) {
   const { updatePage, loading } = useUpdatePage();
@@ -14,6 +16,8 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
   const [seoDescription, setSeoDescription] = useState(
     page?.seoDescription || ""
   );
+  const [faviconUrl, setFaviconUrl] = useState(page?.faviconUrl || "");
+  const [socialImageUrl, setSocialImageUrl] = useState(page?.socialImageUrl || "");
 
   useEffect(() => {
     if (page) {
@@ -21,6 +25,8 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
       setSlug(page.slug);
       setSeoTitle(page.seoTitle || "");
       setSeoDescription(page.seoDescription || "");
+      setFaviconUrl(page.faviconUrl || "");
+      setSocialImageUrl(page.socialImageUrl || "");
     }
   }, [page]);
 
@@ -33,6 +39,8 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
       slug,
       seoTitle,
       seoDescription,
+      faviconUrl,
+      socialImageUrl,
     });
 
     if (!result.success) {
@@ -45,6 +53,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
   }
 
   return (
+    <DashboardModalPortal onClose={onClose}>
     <div
       className="
         fixed inset-0 z-50 flex items-center justify-center
@@ -54,7 +63,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
       <div
         className="
           w-full max-w-lg rounded-2xl p-6
-          dashboard-card-strong
+          dashboard-modal-surface border dashboard-border
           shadow-2xl backdrop-blur-2xl
           relative animate-[fadeIn_0.15s_ease-out]
         "
@@ -77,7 +86,7 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
 
         <div className="flex flex-col gap-4">
           {error && (
-            <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+            <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">
               {error}
             </p>
           )}
@@ -136,6 +145,8 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
               "
             />
           </div>
+          {page?.site?.id && <R2ImageUpload siteId={page.site.id} label="Page favicon" value={faviconUrl} onChange={setFaviconUrl} purpose="page-favicon" accept="image/png,image/svg+xml,image/x-icon,image/vnd.microsoft.icon" help="Use a square PNG, SVG, or ICO file." />}
+          {page?.site?.id && <R2ImageUpload siteId={page.site.id} label="Social share image" value={socialImageUrl} onChange={setSocialImageUrl} purpose="page-social-image" accept="image/png,image/jpeg,image/webp" help="Shown when this page is shared on social media. Falls back to the site-wide image if left blank." />}
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
@@ -160,5 +171,6 @@ export default function PageSettingsModal({ page, open, onClose, onSaved }) {
         </div>
       </div>
     </div>
+    </DashboardModalPortal>
   );
 }

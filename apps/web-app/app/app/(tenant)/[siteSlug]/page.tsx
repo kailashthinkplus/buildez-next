@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 
-export default function SiteRootPage({ params }: { params: { siteSlug: string } }) {
+export default async function SiteRootPage({ params }: { params: Promise<{ siteSlug: string }> }) {
+  const { siteSlug } = await params;
   return (
     <div className="max-w-5xl mx-auto py-12">
       <h1 className="text-2xl font-semibold">
-        {params.siteSlug}
+        {siteSlug}
       </h1>
 
       <p className="mt-2 opacity-70">
@@ -15,14 +16,14 @@ export default function SiteRootPage({ params }: { params: { siteSlug: string } 
 
       <div className="mt-6 flex gap-4">
         <Link
-          href={`/app/${params.siteSlug}/dashboard`}
+          href={`/app/${siteSlug}/dashboard`}
           className="bez-card px-6 py-4"
         >
           Dashboard
         </Link>
 
         <Link
-          href={`/app/${params.siteSlug}/pages`}
+          href={`/app/${siteSlug}/pages`}
           className="bez-card px-6 py-4"
         >
           Pages

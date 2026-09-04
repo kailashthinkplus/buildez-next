@@ -24,7 +24,7 @@ export function apiHandler(
             error: err.message,
           }),
           {
-            status: err.status,
+            status: err.statusCode,
             headers: { "Content-Type": "application/json" },
           }
         );
@@ -39,4 +39,10 @@ export function apiHandler(
       );
     }
   };
+}
+
+export function authHandler(
+  fn: (context: { req: NextRequest }) => Promise<unknown>
+) {
+  return apiHandler((req) => fn({ req }));
 }

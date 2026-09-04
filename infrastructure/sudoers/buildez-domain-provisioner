@@ -1,0 +1,4 @@
+# Install as /etc/sudoers.d/buildez-domain-provisioner using visudo -cf before enabling.
+# `buildezy` is the unprivileged account running the production application.
+Defaults:buildezy env_keep += "BUILDEZ_UPSTREAM BUILDEZ_ACME_ROOT CERTBOT_EMAIL"
+buildezy ALL=(root) NOPASSWD: /var/www/buildezy/apps/web-app/scripts/provision-nginx-domain.sh add *, /var/www/buildezy/apps/web-app/scripts/provision-nginx-domain.sh remove *

@@ -28,3 +28,7 @@ export * from "./similarityRepair";
 export * from "./structuralRepair";
 export * from "./types";
 export * from "./version";
+export * from "./RepairAction";
+export * from "./RepairEffectivenessScore";
+export * from "./RepairExecutor";
+export * from "./commands";

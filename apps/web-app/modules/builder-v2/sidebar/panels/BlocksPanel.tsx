@@ -68,7 +68,6 @@ const select = useSelectionStore((s) => s.select);
 
   select(plan.selectNodeId);
 }
-  }
 
   const categoryIcons = {
     layout: Layout,

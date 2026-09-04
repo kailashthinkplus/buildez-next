@@ -30,13 +30,17 @@ import {
   AlertTriangle,
   Boxes,
   LifeBuoy,
+  Inbox,
   MessageSquare,
   HelpCircle,
   Plug,
   Puzzle,
   AppWindow,
   ClipboardCheck,
+  Star,
+  Newspaper,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 /* ================================
    SUPER SIDEBAR
@@ -141,6 +145,7 @@ export default function SuperSidebar({
             <NavLink href="/super/tenants" icon={Users} label="Tenants" active={pathname.startsWith("/super/tenants")} collapsed={collapsed} />
             <NavLink href="/super/domains" icon={Globe} label="Domains" active={pathname.startsWith("/super/domains")} collapsed={collapsed} />
             <NavLink href="/super/websites" icon={Boxes} label="Websites" active={pathname.startsWith("/super/websites")} collapsed={collapsed} />
+            <NavLink href="/super/blog" icon={Newspaper} label="Blog" active={pathname.startsWith("/super/blog")} collapsed={collapsed} />
           </Section>
 
           <Section title="SAAS & BILLING" open={sections.saas || collapsed} collapsed={collapsed} onToggle={() => toggleSection("saas")}>
@@ -171,7 +176,9 @@ export default function SuperSidebar({
           </Section>
 
           <Section title="SUPPORT" open={sections.support || collapsed} collapsed={collapsed} onToggle={() => toggleSection("support")}>
-            <NavLink href="/super/support/tickets" icon={LifeBuoy} label="Support Tickets" active={pathname.startsWith("/super/support/tickets")} collapsed={collapsed} />
+            <NavLink href="/super/support" icon={LifeBuoy} label="Support Tickets" active={pathname.startsWith("/super/support")} collapsed={collapsed} />
+            <NavLink href="/super/requests" icon={Inbox} label="Public Inbox" active={pathname.startsWith("/super/requests")} collapsed={collapsed} />
+            <NavLink href="/super/feedback" icon={Star} label="Design Feedback" active={pathname.startsWith("/super/feedback")} collapsed={collapsed} />
             <NavLink href="/super/support/chat" icon={MessageSquare} label="Live Chat" active={pathname.startsWith("/super/support/chat")} collapsed={collapsed} />
             <NavLink href="/super/support/help" icon={HelpCircle} label="Help Center" active={pathname.startsWith("/super/support/help")} collapsed={collapsed} />
           </Section>
@@ -252,7 +259,7 @@ function NavLink({
   collapsed,
 }: {
   href: string;
-  icon: any;
+  icon: LucideIcon;
   label: string;
   active: boolean;
   collapsed: boolean;

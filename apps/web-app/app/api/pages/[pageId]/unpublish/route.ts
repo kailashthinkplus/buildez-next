@@ -3,8 +3,11 @@
 // ============================================================================
 
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
+import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { invalidateRouteCache } from "@/lib/runtime/routeCache";
 
 /* 🔒 EXECUTION CONTEXT */
 import {
@@ -27,16 +30,11 @@ export async function POST(
     const execCtx: ExecutionContext = await resolveExecutionContext({
       req,
       scope: "page",
-      source: "unpublish",
+      source: "publish",
       query: { pageId },
 
       userId: auth.user.id,
       tenantId: auth.tenant.id,
-      role: auth.role,
-      permissions: auth.permissions,
-      isSuperAdmin: auth.isSuperAdmin,
-      isTenantAdmin: auth.isTenantAdmin,
-      isEditor: auth.isEditor,
     });
 
     console.log("🔐 [UNPUBLISH] Context resolved", {
@@ -52,6 +50,12 @@ export async function POST(
       where: {
         id: execCtx.pageId,
         siteId: execCtx.siteId,
+        deletedAt: null,
+        deleted: false,
+        site: { tenantId: execCtx.tenantId, deletedAt: null },
+      },
+      include: {
+        site: { select: { slug: true } },
       },
     });
 
@@ -65,8 +69,8 @@ export async function POST(
     /* ----------------------------------------------------------
        UNPUBLISH
     ---------------------------------------------------------- */
-    const updated = await prisma.page.update({
-      where: { id: page.id },
+    const updated = await prisma.page.updateMany({
+      where: { id: page.id, siteId: execCtx.siteId, deletedAt: null, deleted: false },
       data: {
         status: "DRAFT",
       },
@@ -74,6 +78,14 @@ export async function POST(
 
     console.log("✅ [UNPUBLISH] COMPLETE");
 
-    return { success: true, page: updated };
-  })(req);
+    if (updated.count !== 1) {
+      return NextResponse.json({ error: "Page no longer belongs to this workspace" }, { status: 409 });
+    }
+
+    revalidatePath(publishedSitePath(page.site.slug, page.slug));
+    revalidatePath(publishedSitePath(page.site.slug));
+    invalidateRouteCache(page.site.slug);
+
+    return { success: true };
+  }, { requireTenant: true })(req);
 }

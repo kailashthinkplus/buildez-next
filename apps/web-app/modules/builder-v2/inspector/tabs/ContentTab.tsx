@@ -373,14 +373,6 @@ export default function ContentTab({
             />
           </Field>
 
-          <Field label="Image URL">
-            <TextInput
-              value={node.props?.src ?? ""}
-              onChange={(value) => setPropValue(node, "src", value, onUpdateNode)}
-              placeholder="https://..."
-            />
-          </Field>
-
           <Field label="AI image prompt">
             <TextArea
               rows={5}

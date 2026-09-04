@@ -3,14 +3,33 @@
 import { useEffect, useState } from "react";
 import { X, CheckCircle2, AlertTriangle, RotateCcw } from "lucide-react";
 
+function formatMoney(amount: number, currency: string) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
 export default function PayNowModal({
   open = false,
   onClose = () => {},
   plan = "",
   billing = "monthly",
   price = 0,
+  currency = "INR",
   features = [],
   onPayNow = async () => {},
+}: {
+  open?: boolean;
+  onClose?: () => void;
+  plan?: string;
+  billing?: string;
+  price?: number;
+  currency?: string;
+  features?: string[];
+  onPayNow?: () => Promise<unknown>;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -33,7 +52,7 @@ export default function PayNowModal({
 
       // Auto close after showing success animation
       setTimeout(() => {
-        onClose(data);
+        onClose();
         setStatus("idle");
         setError("");
       }, 2200);
@@ -55,11 +74,8 @@ export default function PayNowModal({
       setError("");
       setStatus("idle");
 
-      // Begin Razorpay flow
-      const result = await Promise.resolve().then(() => onPayNow());
-
-      // Razorpay UI opens → modal should keep showing loading
-      if (!result) console.log("⚠️ PayNowModal: onPayNow returned no result");
+      // Open the hosted subscription checkout.
+      await Promise.resolve().then(() => onPayNow());
     } catch (err: any) {
       console.error("❌ PayNowModal ERROR:", err);
 
@@ -94,7 +110,7 @@ export default function PayNowModal({
         {/* CLOSE BUTTON */}
         {status === "idle" && (
           <button
-            onClick={() => onClose({ success: false })}
+            onClick={onClose}
             className="
               absolute right-4 top-4 p-2 rounded-full
               hover:bg-white/10 transition
@@ -158,7 +174,7 @@ export default function PayNowModal({
             </button>
 
             <button
-              onClick={() => onClose({ success: false })}
+              onClick={onClose}
               className="
                 mt-4 text-xs text-white/40 hover:text-white/60
               "
@@ -185,7 +201,7 @@ export default function PayNowModal({
               </p>
 
               <p className="text-4xl font-bold mt-2 drop-shadow-sm">
-                ₹{(price ?? 0).toLocaleString()}
+                {formatMoney(price ?? 0, currency)}
                 <span className="text-white/60 text-sm ml-1">
                   / {billing === "monthly" ? "month" : "year"}
                 </span>
@@ -209,7 +225,7 @@ export default function PayNowModal({
               )}
             </div>
 
-            {/* ERROR FROM RAZORPAY FLOW */}
+            {/* CHECKOUT ERROR */}
             {error && (
               <p className="text-red-400 text-xs text-center mb-3">{error}</p>
             )}
@@ -229,7 +245,7 @@ export default function PayNowModal({
                 shadow-[0_0_20px_rgba(0,122,255,0.5)]
               `}
             >
-              {loading ? "Processing…" : "Proceed to Pay →"}
+              {loading ? "Opening secure checkout…" : "Continue to payment →"}
             </button>
           </>
         )}

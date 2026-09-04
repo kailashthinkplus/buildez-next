@@ -1,6 +1,6 @@
 import type { BuilderBlueprint as ExistingBuilderBlueprint, BuilderNode, BuilderStyle, NodeType } from "../../types/blueprint";
 import type { WidgetProperty } from "../../types/property";
-import type { WebsiteDNA, WebsiteSpec, EngineWarning, MissingFact } from "../sdk";
+import type { WebsiteDNA, WebsiteSpec, EngineWarning, MissingFact, PatternIntelligenceResult } from "../sdk";
 import type { ComponentResult } from "../components";
 import type { CompositionResult } from "../composition";
 import type { CompiledWebsitePlan } from "../compiler";
@@ -9,6 +9,7 @@ import type { GraphEdge, GraphNode } from "../graph";
 import type { MediaStrategy } from "../media-intelligence";
 import type { MotionStrategy } from "../motion-intelligence";
 import type { RepositoryRecord } from "../repository";
+import type { ArtDirectionBrief } from "../creative-director/ArtDirectionBrief";
 
 export type BuilderPrimitiveType = "page" | "section" | "container" | "column" | "heading" | "text" | "button" | "image" | "video" | "icon" | "divider" | "spacer";
 export type NativeBuilderNode = BuilderNode;
@@ -86,12 +87,12 @@ export type RegenerationMetadata = Readonly<{
 
 export type InspectorBlueprint = Readonly<{ widgetId: string; tabs: readonly ("content" | "design" | "advanced" | "responsive" | "ai")[]; groups: PropertyGroup[]; propertyDefinitions: PropertyDefinition[]; propertyBindings: PropertyBinding[]; editablePropertyBindings: EditablePropertyBinding[]; responsiveBindings: ResponsiveBinding[] }>;
 
-export type WidgetTreeNode = Readonly<{ id: string; type: BuilderPrimitiveType; parentId: string | null; children: WidgetTreeNode[] }>;
+export type WidgetTreeNode = Readonly<{ id: string; type: NodeType; parentId: string | null; children: WidgetTreeNode[] }>;
 export type ResponsiveBlueprint = Readonly<{ breakpoints: readonly BuilderBreakpoint[]; bindings: ResponsiveBinding[] }>;
 
 export type WidgetBlueprint = Readonly<{
   id: string;
-  type: BuilderPrimitiveType;
+  type: NodeType;
   name: string;
   parentId: string | null;
   children: string[];
@@ -107,7 +108,7 @@ export type WidgetBlueprint = Readonly<{
   capabilities: WidgetCapabilities;
   aiMetadata: AIWidgetMetadata;
   regenerationMetadata: RegenerationMetadata;
-  allowedChildren: BuilderPrimitiveType[];
+  allowedChildren: NodeType[];
   sourcePatternId?: string;
   sourceComponentVariantId?: string;
   sectionRole?: string;
@@ -150,6 +151,8 @@ export type BuilderBlueprintInput = Readonly<{
   designResult?: DesignResult;
   componentResult?: ComponentResult;
   compositionResult?: CompositionResult;
+  artDirectionBrief?: ArtDirectionBrief;
+  patternIntelligence?: PatternIntelligenceResult;
   mediaStrategy?: MediaStrategy;
   motionStrategy?: MotionStrategy;
   knownAssets?: readonly string[];
@@ -192,7 +195,7 @@ export type BuilderBlueprint = Readonly<{
 
 export type BuilderBlueprintResult = Readonly<{ blueprint: BuilderBlueprint; sections: SectionBlueprint[]; widgetTree: WidgetTreeNode; inspectorBlueprints: InspectorBlueprint[]; propertyDefinitions: PropertyDefinition[]; editablePropertyBindings: EditablePropertyBinding[]; responsiveBindings: ResponsiveBinding[]; styleBindings: StyleBinding[]; motionBindings: MotionBinding[]; widgetCapabilities: Record<string, WidgetCapabilities>; sectionCapabilities: Record<string, SectionCapabilities>; aiWidgetMetadata: AIWidgetMetadata[]; regenerationMetadata: RegenerationMetadata[]; nativeCompatibility: NativeBlueprintCompatibilityResult; nativeNodeIntents: NativeBuilderNodeIntent[]; nativeWidgetIntents: NativeWidgetIntent[]; nativeInspectorBindingIntents: NativeInspectorBindingIntent[]; nativeCommandIntents: NativeCommandIntent[]; validation: BuilderBlueprintValidationResult; warnings: BuilderBlueprintWarning[]; metrics: BuilderBlueprintMetrics; trace: string[] }>;
 
-export function primitiveToNodeType(type: BuilderPrimitiveType): NodeType {
+export function primitiveToNodeType(type: NodeType): NodeType {
   return type;
 }
 

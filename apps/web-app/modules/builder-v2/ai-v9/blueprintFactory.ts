@@ -14,12 +14,14 @@ type PremiumVariant = "editorial" | "conversion" | "visual";
 type PremiumBlueprintInput = {
   pageId: string;
   pageTitle: string;
+  prompt?: string;
   siteName?: string | null;
   designTokens?: Tokens | null;
   brandContext?: Record<string, unknown> | null;
   brandResolution?: Record<string, unknown> | null;
   research?: Record<string, unknown> | null;
   designBrief?: Record<string, unknown> | null;
+  candidateDirective?: Record<string, unknown> | null;
   intent?: {
     industry: string;
     goal: string;
@@ -1047,7 +1049,7 @@ export function normalizeV9Blueprint(
       : undefined,
   });
 
-  const blueprint = {
+  const blueprint: BuilderBlueprint = {
     metadata: {
       version: 2,
       title: input.pageTitle || "AI Generated Page",

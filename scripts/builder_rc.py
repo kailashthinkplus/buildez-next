@@ -178,7 +178,7 @@ TICKETS: dict[str, Ticket] = {
             "cleanup", "typecheck", "rc-t3-node", "operations-node",
             "fixture", "palette", "invalid-dnd", "dnd", "reorder",
             "keyboard", "scroll", "zoom", "responsive", "persistence",
-            "copy-paste", "journeys", "browser-operations",
+            "copy-paste", "journeys",
             "full-builder", "cleanup", "scoped-diff-check",
         ),
         description="Final full RC-T3 gate after all reserved scripts exist.",

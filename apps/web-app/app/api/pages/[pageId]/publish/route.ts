@@ -5,15 +5,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { apiHandler } from "@/lib/api/apiHandler";
+import { publishPageNow } from "@/lib/publishing/publishPage";
+import { buildAfterPublish } from "@/lib/publishing/buildAfterPublish";
 
 /* 🔒 EXECUTION CONTEXT */
 import {
   resolveExecutionContext,
   type ExecutionContext,
 } from "@/lib/context/resolveExecutionContext";
-
-import { resolveBlueprintTree } from "@/modules/builder/runtime/resolveBlueprintTree";
-import { isBuilderV2Blueprint } from "@/modules/builder-v2/runtime/isBuilderV2Blueprint";
 
 export async function POST(
   req: Request,
@@ -36,11 +35,6 @@ export async function POST(
       // ✅ PASS WHAT resolveExecutionContext EXPECTS
       userId: auth.user.id,
       tenantId: auth.tenant.id,
-      role: auth.role,
-      permissions: auth.permissions,
-      isSuperAdmin: auth.isSuperAdmin,
-      isTenantAdmin: auth.isTenantAdmin,
-      isEditor: auth.isEditor,
     });
 
     console.log("🔐 [PUBLISH] Context resolved", {
@@ -50,79 +44,38 @@ export async function POST(
     });
 
     /* ----------------------------------------------------------
-       LOAD PAGE
+       VERIFY OWNERSHIP, THEN DELEGATE TO THE SHARED PUBLISH LOGIC
+       (also used by the scheduled-publish scanner in lib/publishing/publishPage.ts)
     ---------------------------------------------------------- */
     const page = await prisma.page.findFirst({
       where: {
         id: execCtx.pageId,
         siteId: execCtx.siteId,
+        deletedAt: null,
+        deleted: false,
+        site: { tenantId: execCtx.tenantId, deletedAt: null },
       },
-      include: {
-        blueprint: true,
-      },
+      select: { id: true },
     });
 
-    if (!page?.blueprint?.data) {
+    if (!page) {
       return NextResponse.json(
-        { error: "Invalid page or blueprint" },
+        { error: "Invalid page" },
         { status: 400 }
       );
     }
 
-    const blueprintData = page.blueprint.data;
-    const snapshotContent = isBuilderV2Blueprint(blueprintData)
-      ? blueprintData
-      : resolveBlueprintTree(blueprintData);
-
-    /* ----------------------------------------------------------
-       TRANSACTION
-    ---------------------------------------------------------- */
-    await prisma.$transaction(async (tx) => {
-      const lastSnapshot = await tx.siteSnapshot.findFirst({
-        where: {
-          siteId: execCtx.siteId,
-          tenantId: execCtx.tenantId,
-        },
-        orderBy: { version: "desc" },
-      });
-
-      const nextVersion = (lastSnapshot?.version ?? 0) + 1;
-
-      const siteSnapshot = await tx.siteSnapshot.create({
-        data: {
-          siteId: execCtx.siteId,
-          tenantId: execCtx.tenantId,
-          status: "PUBLISHED",
-          version: nextVersion,
-        },
-      });
-
-      await tx.pageSnapshot.create({
-        data: {
-          siteSnapshotId: siteSnapshot.id,
-          pageId: page.id,
-          title: page.title,
-          slug: page.slug,
-          content: snapshotContent,
-        },
-      });
-
-      await tx.page.update({
-        where: { id: page.id },
-        data: {
-          status: "PUBLISHED",
-          publishedAt: new Date(),
-        },
-      });
-
-      await tx.site.update({
-        where: { id: execCtx.siteId },
-        data: { status: "PUBLISHED" },
-      });
-    });
+    try {
+      const result = await publishPageNow(page.id);
+      if (result.isV12) await buildAfterPublish(result.siteId, result.tenantId);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "This page could not be published.";
+      const status = message === "Page has no publishable source" ? 400 : 409;
+      return NextResponse.json({ error: message }, { status });
+    }
 
     console.log("✅ [PUBLISH] COMPLETE");
 
     return { success: true };
-  })(req);
+  }, { requireTenant: true })(req);
 }

@@ -14,7 +14,7 @@ export function buildComponentFallbacks(selections: readonly ComponentSelection[
     .map((selection) => {
       const fallbackComponentId = fallbackByCategory[selection.variant.category];
       if (!fallbackComponentId || fallbackComponentId === selection.variant.id) return undefined;
-      return Object.freeze({ componentId: selection.variant.id, fallbackComponentId, reason: "Fallback remains metadata-only if facts/assets are insufficient." });
+      return Object.freeze({ componentId: selection.variant.id, fallbackComponentId, reason: "Fallback remains metadata-only if facts/assets are insufficient." }) as ComponentFallback;
     })
-    .filter((item): item is ComponentFallback => Boolean(item));
+    .filter((item): item is ComponentFallback => item !== undefined);
 }

@@ -12,6 +12,7 @@ import * as LucideIcons from "lucide-react";
 
 import { useCanvasStore } from "@/modules/builder/state/useCanvasStore";
 import { resolveNodeStyle } from "@/modules/builder/renderer/resolveNodeStyle";
+import { sanitizeRichTextHtml } from "@/lib/sanitizeHtml";
 
 import { SectionToolbar } from
   "@/app/app/(builder)/[siteSlug]/[pageSlugWithId]/toolbars/SectionToolbar";
@@ -38,7 +39,8 @@ export type NodeType =
   | "code"
   | "spacer"
   | "html-block"
-  | "react-component";
+  | "react-component"
+  | "divider";
 
 export interface BlueprintNode {
   id: string;
@@ -457,8 +459,8 @@ function HTMLBlock({ node, ctx }: { node: BlueprintNode; ctx: RenderContext }) {
       }}
     >
       {/* AI-Generated HTML Content */}
-      <div 
-        dangerouslySetInnerHTML={{ __html: htmlContent }}
+      <div
+        dangerouslySetInnerHTML={{ __html: sanitizeRichTextHtml(htmlContent) }}
         style={{ 
           width: "100%",
           minHeight: "inherit",
@@ -784,7 +786,7 @@ function Heading({ node, ctx }: { node: BlueprintNode; ctx: RenderContext }) {
   const sel = useSelectable(node.id, ctx.selectedId, ctx.onSelect);
   const style = getNodeStyle(node, ctx);
   const className = node.props?.className || "";
-  const Tag = (node.props?.level ?? "h2") as keyof JSX.IntrinsicElements;
+  const Tag = (node.props?.level ?? "h2") as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   const [draft, setDraft] = useState(node.props?.text ?? "");
 
   useEffect(() => {

@@ -1,0 +1,67 @@
+{
+  "fixture": "coastal-resort",
+  "viewport": "tablet",
+  "contractFidelity": {
+    "passed": true,
+    "evidence": {
+      "graphValidated": true,
+      "blueprintValidated": true,
+      "serializationRoundTrip": true,
+      "compilerOutputRendered": true
+    }
+  },
+  "visualFidelity": {
+    "categories": {
+      "composition": 79,
+      "geometry": 90,
+      "responsiveComposition": 100,
+      "typography": 5,
+      "backgroundsAndColor": 69,
+      "imagePlacementAndCrop": 83,
+      "overlapAndLayering": 100,
+      "residualEffects": 100,
+      "contentCompleteness": 100,
+      "editability": 100,
+      "canvasRuntimeParity": 100
+    },
+    "criticalFailures": [],
+    "passed": false,
+    "evidence": {
+      "pixelDifferenceRatio": 0.3124256443774091,
+      "sectionOrderCorrect": true,
+      "headingDelta": 0.056806640625,
+      "ctaDelta": 0.18241312662760417,
+      "heroMediaDelta": 0.0834375,
+      "floatingCardDelta": 1,
+      "editorialImageDelta": 0.372983044775847,
+      "headingFontSizeDelta": 0.3333333333333333,
+      "gridCompositionCorrect": true,
+      "overlapCorrect": true,
+      "overlapExpected": false,
+      "responsiveStackingCorrect": true,
+      "backgroundPresent": true,
+      "imageCropCorrect": true,
+      "residualEffectsPresent": true,
+      "contentComplete": true,
+      "editable": true,
+      "canvasRuntimeParity": true,
+      "horizontalOverflow": false,
+      "productionRendererUsed": true,
+      "compilerOutputUsed": true,
+      "heroMediaRolePresent": true
+    }
+  },
+  "certification": {
+    "architectureProof": false,
+    "acceptableFidelity": false,
+    "productionGradeFidelity": false,
+    "controllingCategory": "typography",
+    "minimumScore": 5
+  },
+  "screenshotCertification": {
+    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/coastal-resort/tablet/full.png",
+    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/coastal-resort/tablet/full.png",
+    "pixelDifferenceRatio": 0.3124256443774091,
+    "certified": false
+  }
+}

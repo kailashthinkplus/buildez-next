@@ -59,11 +59,7 @@ export function WebsiteSwitcher() {
         {/* Dropdown */}
         {open && (
           <div
-            className="
-              absolute left-0 mt-2 w-64 z-50
-              rounded-xl dashboard-card-strong
-              shadow-xl overflow-hidden
-            "
+            className="absolute left-0 mt-2 w-64 rounded-xl dashboard-card-strong shadow-xl overflow-hidden border border-slate-700 bg-[#0b1118] text-slate-100 shadow-2xl shadow-black/60 z-[9999] isolate !bg-[#071018] dark:!bg-[#071018] !bg-none opacity-100 border-slate-700/80 shadow-black/80"
           >
             {/* Sites list */}
             <div className="max-h-64 overflow-y-auto">

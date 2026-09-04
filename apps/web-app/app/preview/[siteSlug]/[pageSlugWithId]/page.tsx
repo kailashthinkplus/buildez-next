@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { prisma } from "@buildez/db";
+import { getUser } from "@/lib/auth/getUser";
 import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
 import { isBuilderV2Blueprint } from "@/modules/builder-v2/runtime/isBuilderV2Blueprint";
 import {
@@ -16,6 +17,10 @@ import {
 } from "@/modules/builder-v2/theme/siteLayout";
 import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
 
+// Deleted pages must never keep rendering here, and a stale render must
+// never be served from Next's route cache after a page is deleted.
+export const dynamic = "force-dynamic";
+
 /* ============================================================
    PREVIEW PAGE — APP ROUTER SAFE
    ------------------------------------------------------------
@@ -31,9 +36,17 @@ export default async function PreviewPage({
 }) {
   const { siteSlug, pageSlugWithId } = await params;
 
+  // This renders a page's live (possibly unpublished) draft content, so it
+  // must be restricted to the site's own tenant — not just any authenticated
+  // user, and never an unauthenticated visitor.
+  const auth = await getUser();
+  if (!auth?.user || !auth.tenant) return null;
+
   const sitePages = await prisma.page.findMany({
     where: {
-      site: { slug: siteSlug },
+      site: { slug: siteSlug, tenantId: auth.tenant.id },
+      deletedAt: null,
+      deleted: false,
     },
     select: {
       id: true,

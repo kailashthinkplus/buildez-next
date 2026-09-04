@@ -6,7 +6,9 @@ import { motion } from "framer-motion";
 
 // Modals
 import PayNowModal from "./PayNowModal";
-import StarterTrialMandateModal from "./StarterTrialMandateModal";
+import EnterpriseContactModal from "@/components/billing/EnterpriseContactModal";
+import CurrencySwitcher from "@/components/billing/CurrencySwitcher";
+import { useDisplayCurrency } from "@/lib/useDisplayCurrency";
 
 type Plan = {
   code: string;
@@ -15,6 +17,9 @@ type Plan = {
   tag?: string | null;
   priceMonthly?: number | null;
   priceYearly?: number | null;
+  currency: string;
+  checkoutEnabled: Record<"monthly" | "yearly", boolean>;
+  isCustom: boolean;
   features: string[];
 };
 
@@ -22,43 +27,55 @@ export default function StepChoosePlan({
   onNext,
   onBack,
 }: {
-  onNext: (data?: any) => void;
+  onNext: (data?: unknown) => void;
   onBack: () => void;
 }) {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [loading, setLoading] = useState(false);
+  const { currency: displayCurrency, setCurrency, availableCurrencies, priceFor } = useDisplayCurrency();
 
   const [showPayNow, setShowPayNow] = useState(false);
-  const [showTrialModal, setShowTrialModal] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
+  const [enterpriseOpen, setEnterpriseOpen] = useState(false);
 
-  /* --------------------------------------------------------
-     LISTEN FOR PAYMENT SUCCESS EVENTS (from PayNowModal)
-  -------------------------------------------------------- */
   useEffect(() => {
-    function handleSuccess(e: any) {
-      const data = e.detail;
-
-      if (data?.success) {
-        setShowPayNow(false); // close modal
-
-        // Pass payment summary to parent (page.tsx)
-        onNext({
-          success: true,
-          plan: data.plan,
-          billingCycle: data.billingCycle,
-          amount: data.amount,
-          paymentId: data.paymentId,
-          orderId: data.orderId,
-        });
-      }
+    const checkoutResult = new URLSearchParams(window.location.search).get("checkout");
+    if (checkoutResult === "cancelled") {
+      history.replaceState(null, "", "/app/onboarding");
+      sessionStorage.removeItem("pending-plan-code");
+      window.setTimeout(() => setCheckoutError("Checkout was cancelled. Your plan has not changed."), 0);
+      return;
     }
-
-    window.addEventListener("BuildEZ-Payment-Success", handleSuccess);
-    return () =>
-      window.removeEventListener("BuildEZ-Payment-Success", handleSuccess);
-  }, []);
+    if (checkoutResult !== "success") return;
+    let cancelled = false;
+    let attempts = 0;
+    const expectedPlan = sessionStorage.getItem("pending-plan-code");
+    const confirmSubscription = async () => {
+      attempts += 1;
+      if (expectedPlan) {
+        await fetch("/api/billing/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ planCode: expectedPlan }),
+        }).catch(() => null);
+      }
+      const response = await fetch("/api/billing/current", { cache: "no-store" }).catch(() => null);
+      const payload = response ? await response.json().catch(() => null) : null;
+      const activePlan = payload?.subscription?.planCode?.toUpperCase();
+      if (!cancelled && response?.ok && payload?.subscription?.status === "ACTIVE" && (!expectedPlan || activePlan === expectedPlan.toUpperCase())) {
+        history.replaceState(null, "", "/app/onboarding");
+        sessionStorage.removeItem("pending-plan-code");
+        onNext();
+        return;
+      }
+      if (!cancelled && attempts < 10) window.setTimeout(confirmSubscription, 1200);
+      else if (!cancelled) setCheckoutError("Payment is complete, but activation is still processing. Refresh in a moment.");
+    };
+    void confirmSubscription();
+    return () => { cancelled = true; };
+  }, [onNext]);
 
   /* --------------------------------------------------------
      LOAD PUBLIC PLANS
@@ -84,7 +101,7 @@ export default function StepChoosePlan({
     if (!selected) return;
     setLoading(true);
 
-    await fetch("/api/onboarding/choose-plan", {
+    const response = await fetch("/api/onboarding/choose-plan", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ planId: selected, billing }),
@@ -92,27 +109,31 @@ export default function StepChoosePlan({
 
     setLoading(false);
 
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      setCheckoutError(payload.error || "Your plan selection could not be saved.");
+      return;
+    }
+
     // Continue to domain step
     onNext();
   }
 
   const selectedPlan = plans.find((p) => p.code === selected);
 
-  const modalPrice = selectedPlan
+  const selectedPrice = selectedPlan
     ? billing === "monthly"
-      ? selectedPlan.priceMonthly ?? 0
-      : selectedPlan.priceYearly ?? 0
-    : 0;
+      ? selectedPlan.priceMonthly
+      : selectedPlan.priceYearly
+    : null;
+
+  const modalPrice = selectedPrice ?? 0;
 
   const modalFeatures = selectedPlan?.features ?? [];
 
-const planCode = selected?.toUpperCase() ?? "";
-
-const isFreePlan = planCode === "FREE";
-const isStarter = planCode === "STARTER";
-const isPro = planCode === "PRO";
-const isBusiness = planCode === "BUSINESS";
-const isEnterprise = planCode === "ENTERPRISE";
+  const isFreePlan = selectedPrice === 0;
+  const isPaidPlan = typeof selectedPrice === "number" && selectedPrice > 0;
+  const checkoutEnabled = selectedPlan?.checkoutEnabled[billing] ?? false;
 
   return (
     <div className="max-w-6xl mx-auto space-y-4 pt-4 pb-8">
@@ -124,109 +145,28 @@ const isEnterprise = planCode === "ENTERPRISE";
         plan={selected ?? ""}
         billing={billing}
         price={modalPrice}
+        currency={selectedPlan?.currency || "INR"}
         features={modalFeatures}
         onPayNow={async () => {
-          try {
-            console.log("Fetching:", "/api/razorpay/order");
-
-            // ---------------------------
-            // 1. CREATE RAZORPAY ORDER
-            // ---------------------------
-            const orderRes = await fetch("/api/razorpay/order", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                amount: modalPrice,
-                currency: "INR",
-                receipt: `buildez_${selected}_${billing}_${Date.now()}`,
-              }),
-            });
-
-            if (!orderRes.ok) {
-              console.error("Order API failed:", await orderRes.text());
-              throw new Error("Razorpay Order API returned error");
-            }
-
-            const orderData = await orderRes.json();
-
-            const options = {
-              key: orderData.key,
-              amount: orderData.amount,
-              currency: "INR",
-              name: "BuildEZ",
-              description: `${selected} Plan (${billing})`,
-              order_id: orderData.orderId,
-
-              handler: async function (response: any) {
-                // ---------------------------
-                // 2. VERIFY PAYMENT
-                // ---------------------------
-                const verifyRes = await fetch("/api/razorpay/verify", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(response),
-                });
-
-                const verifyData = await verifyRes.json();
-                if (!verifyData?.verified)
-                  throw new Error("Signature verification failed");
-
-                // ---------------------------
-                // 3. ACTIVATE PAID SUBSCRIPTION
-                // ---------------------------
-                const activateRes = await fetch("/api/billing/activate", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    planCode: selected,
-                    billingCycle: billing,
-                    paymentId: response.razorpay_payment_id,
-                    orderId: response.razorpay_order_id,
-                    amount: modalPrice,
-                  }),
-                });
-
-                const activateData = await activateRes.json();
-                if (!activateData?.ok) {
-                  console.error("Activation error:", activateData);
-                  throw new Error("Subscription activation failed");
-                }
-
-                // ---------------------------
-                // 4. SEND SUCCESS EVENT
-                // ---------------------------
-                window.dispatchEvent(
-                  new CustomEvent("BuildEZ-Payment-Success", {
-                    detail: {
-                      success: true,
-                      plan: selected,
-                      billingCycle: billing,
-                      amount: modalPrice,
-                      paymentId: response.razorpay_payment_id,
-                      orderId: response.razorpay_order_id,
-                    },
-                  })
-                );
-              },
-
-              theme: { color: "#4F46E5" },
-            };
-
-            new window.Razorpay(options).open();
-            return {};
-
-          } catch (err) {
-            console.error("🔥 Razorpay Flow Error:", err);
-            throw err;
-          }
+          if (!selected) throw new Error("Choose a plan first.");
+          const selection = await fetch("/api/onboarding/choose-plan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ planId: selected, billing }),
+          });
+          if (!selection.ok) throw new Error("Your plan selection could not be saved.");
+          const response = await fetch("/api/billing/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ planCode: selected, billingCycle: billing, returnPath: "/app/onboarding", currency: displayCurrency }),
+          });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok || !payload.checkoutUrl) throw new Error(payload.error || "Secure checkout could not be started.");
+          sessionStorage.setItem("pending-plan-code", selected);
+          window.location.assign(payload.checkoutUrl);
         }}
       />
-
-      {/* STARTER TRIAL MODAL */}
-      <StarterTrialMandateModal
-        open={showTrialModal}
-        onClose={() => setShowTrialModal(false)}
-      />
+      <EnterpriseContactModal open={enterpriseOpen} onClose={() => setEnterpriseOpen(false)} />
 
       {/* HEADER */}
       <p className="text-left text-xs tracking-widest text-blue-400">
@@ -243,6 +183,7 @@ const isEnterprise = planCode === "ENTERPRISE";
       <p className="text-left text-sm text-white/60 mb-4">
         You can upgrade, downgrade, or cancel anytime.
       </p>
+      {checkoutError ? <p className="rounded-xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">{checkoutError}</p> : null}
 
       {/* BILLING SWITCH */}
       <div className="flex items-center justify-center gap-4 mb-6">
@@ -289,14 +230,18 @@ const isEnterprise = planCode === "ENTERPRISE";
         )}
       </div>
 
+      <div className="mb-4 flex justify-center">
+        <CurrencySwitcher currency={displayCurrency} currencies={availableCurrencies} onChange={setCurrency} />
+      </div>
+
       {/* PLAN CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         {plans.map((plan) => {
           const isActive = selected === plan.code;
           const price =
             billing === "monthly"
-              ? plan.priceMonthly ?? 0
-              : plan.priceYearly ?? 0;
+              ? plan.priceMonthly
+              : plan.priceYearly;
 
           return (
             <div
@@ -320,10 +265,10 @@ const isEnterprise = planCode === "ENTERPRISE";
               <p className="text-sm text-white/60 mb-3">{plan.description}</p>
 
               <div className="text-2xl font-semibold mb-4">
-                ₹{price.toLocaleString()}
-                <span className="text-sm text-white/60 ml-1">
+                {plan.isCustom ? "Custom" : price === null || price === undefined ? "Not offered" : priceFor(price, plan.currency)}
+                {!plan.isCustom && price !== null && price !== undefined && <span className="text-sm text-white/60 ml-1">
                   / {billing === "monthly" ? "month" : "year"}
-                </span>
+                </span>}
               </div>
 
               <ul className="space-y-1.5 text-sm text-white/70 mb-5">
@@ -336,7 +281,11 @@ const isEnterprise = planCode === "ENTERPRISE";
               </ul>
 
               <button
-                onClick={() => setSelected(plan.code)}
+                onClick={() => {
+                  setSelected(plan.code);
+                  if (billing === "yearly" && plan.priceYearly === null) setBilling("monthly");
+                  if (billing === "monthly" && plan.priceMonthly === null && plan.priceYearly !== null) setBilling("yearly");
+                }}
                 className={`
                   w-full py-2 rounded-xl text-sm transition
                   ${
@@ -367,39 +316,41 @@ const isEnterprise = planCode === "ENTERPRISE";
   {isFreePlan && (
     <button
       onClick={submitFreePlan}
-      className="px-5 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500"
+      disabled={loading}
+      className="px-5 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50"
     >
-      Continue →
+      {loading ? "Saving…" : "Continue →"}
     </button>
   )}
 
-  {(isStarter || isPro || isBusiness) && (
-    <>
-      {isStarter && (
-        <button
-          onClick={() => setShowTrialModal(true)}
-          className="glass px-5 py-2 rounded-xl bg-green-600 text-white"
-        >
-          Start Free Trial
-        </button>
-      )}
-
-      <button
+  {isPaidPlan && checkoutEnabled && (
+    <button
         onClick={() => setShowPayNow(true)}
         className="px-5 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500"
       >
-        Pay Now →
+        Continue to secure checkout →
       </button>
-    </>
   )}
 
-  {isEnterprise && (
+  {isPaidPlan && !checkoutEnabled && (
+    <span className="rounded-xl border border-amber-400/20 bg-amber-400/10 px-5 py-2 text-sm text-amber-200">
+      Currently unavailable
+    </span>
+  )}
+
+  {selectedPlan?.isCustom && (
     <button
-      onClick={() => window.location.href="/contact-sales"}
-      className="px-5 py-2 rounded-xl bg-purple-600 text-white"
+      onClick={() => setEnterpriseOpen(true)}
+      className="px-5 py-2 rounded-xl bg-[#1349A3] text-white hover:bg-[#1D5FC7]"
     >
-      Contact Sales →
+      Contact us →
     </button>
+  )}
+
+  {selectedPlan && !selectedPlan.isCustom && (selectedPrice === null || selectedPrice === undefined) && (
+    <span className="rounded-xl border border-white/10 px-5 py-2 text-sm text-white/60">
+      Choose an available billing cycle
+    </span>
   )}
 
 </div>

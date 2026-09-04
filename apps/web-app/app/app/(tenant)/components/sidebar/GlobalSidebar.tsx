@@ -7,6 +7,7 @@ import {
   FolderTree,
   Users,
   CreditCard,
+  WalletCards,
   Settings,
   X,
   Sparkles,
@@ -41,6 +42,12 @@ export function GlobalSidebar({ setMobileOpen }: GlobalSidebarProps) {
       icon: Users,
     },
     {
+      id: "global-plans",
+      name: "Plans",
+      href: "/app/plans",
+      icon: WalletCards,
+    },
+    {
       id: "global-billing",
       name: "Billing",
       href: "/app/workspace/billing",
@@ -69,10 +76,7 @@ export function GlobalSidebar({ setMobileOpen }: GlobalSidebarProps) {
       </div>
 
       {/* NAV */}
-      <div className="relative mt-5 mb-5">
-        <SearchBox />
-      </div>
-      <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[.14em] dashboard-faint">Workspace</p>
+      <p className="mt-5 px-3 pb-2 text-[10px] font-semibold uppercase tracking-[.14em] dashboard-faint">Workspace</p>
       <nav className="flex flex-col gap-1">
         {links.map(({ id, name, href, icon: Icon }) => {
           const active =
@@ -108,8 +112,4 @@ export function GlobalSidebar({ setMobileOpen }: GlobalSidebarProps) {
       </div>
     </div>
   );
-}
-
-function SearchBox() {
-  return <div className="dashboard-input flex h-10 items-center gap-2 rounded-xl px-3 text-xs dashboard-muted"><span className="text-base">⌕</span><span>Search</span><kbd className="ml-auto rounded border dashboard-border px-1.5 py-0.5 text-[10px]">⌘K</kbd></div>;
 }

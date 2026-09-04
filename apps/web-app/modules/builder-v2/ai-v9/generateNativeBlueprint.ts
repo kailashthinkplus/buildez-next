@@ -183,7 +183,7 @@ function layoutContractFor(input: GenerateNativeBlueprintInput) {
     .join(" ")
     .toLowerCase();
 
-  if (/saas|software|platform|app/.test(text)) {
+  if (/\b(?:saas|software|platform|app)\b/.test(text)) {
     return {
       sections: ["Hero", "Workflow", "Features", "Proof", "Integrations", "Pricing or demo path", "FAQ", "Lead form"],
       widgets: ["hero", "cardGrid", "pricing", "faq", "leadForm"],

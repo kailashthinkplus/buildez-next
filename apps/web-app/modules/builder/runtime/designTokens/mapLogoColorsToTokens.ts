@@ -24,7 +24,7 @@ export function mapLogoColorsToDesignTokens(
 
   // Extract logo colors with fallbacks
   const primary = extracted.primary;
-  const accent = extracted.accent ?? extracted.secondary ?? extracted.primary;
+  const accent = extracted.secondary ?? extracted.primary;
   const backgroundFromLogo = extracted.background;
 
   // Generate color variants

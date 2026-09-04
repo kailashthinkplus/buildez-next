@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 export default function AuthLogsPage() {
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<Array<{ id: string; createdAt: string; provider: string; success: boolean; ipAddress: string | null; user?: { email: string | null } }>>([]);
 
   useEffect(() => {
     fetch("/api/super/security/auth-logs")
@@ -30,7 +30,7 @@ export default function AuthLogsPage() {
             {logs.map((l) => (
               <tr key={l.id} className="border-t">
                 <td className="p-3">
-                  {new Date(l.createdAt).toLocaleString()}
+                  {new Date(l.createdAt).toLocaleString(undefined, { hour12: true })}
                 </td>
                 <td>{l.user?.email || "—"}</td>
                 <td>{l.provider}</td>

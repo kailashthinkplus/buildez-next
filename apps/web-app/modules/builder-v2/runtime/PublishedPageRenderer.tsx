@@ -1,5 +1,6 @@
 import type React from "react";
 import { isSystemFont, normalizeGoogleFontFamily } from "@/lib/googleFonts";
+import { sanitizeRichTextHtml } from "@/lib/sanitizeHtml";
 import {
   logBuilderDebug,
   summarizeBlueprint,
@@ -19,6 +20,7 @@ import {
   resolveRenderStyle,
   collectRenderCustomCss,
 } from "../core/rendering";
+import { resolveNativeLayoutDisplay } from "../core/rendering/renderContract";
 import {
   ArrowRight,
   Check,
@@ -65,6 +67,7 @@ const PREMIUM_NODE_TYPES = new Set([
   "smartFooter",
   "cta",
   "carousel",
+  "productCarousel",
   "beforeAfter",
   "table",
   "countdown",
@@ -379,7 +382,10 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
       );
 
     case "container": {
-      const layout = String(props?.layout ?? "flex");
+      const layout = resolveNativeLayoutDisplay({
+        resolvedDisplay: renderStyle.display,
+        layoutProp: props?.layout,
+      });
       const direction = String(renderStyle.flexDirection ?? props?.direction ?? "row");
 
       return (
@@ -389,7 +395,7 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
           style={cleanStyle({
             ...renderStyle,
             ...containerWidthStyle,
-            display: layout === "grid" ? "grid" : "flex",
+            display: layout,
             flexDirection: direction as React.CSSProperties["flexDirection"],
             boxSizing: "border-box",
             minWidth: renderStyle.minWidth ?? 0,
@@ -452,7 +458,7 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
       const HeadingTag = level;
 
       return (
-        <HeadingTag {...commonProps} style={cleanStyle(renderStyle)}>
+        <HeadingTag {...commonProps} style={cleanStyle({ ...renderStyle, whiteSpace: String(props?.text ?? "").includes("\n") ? "pre-line" : renderStyle.whiteSpace })}>
           {renderText(props?.text ?? props?.title ?? props?.content)}
         </HeadingTag>
       );
@@ -464,7 +470,7 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
           {...commonProps}
           style={cleanStyle(renderStyle)}
           dangerouslySetInnerHTML={{
-            __html: renderText(props?.html ?? props?.text ?? props?.content),
+            __html: sanitizeRichTextHtml(renderText(props?.html ?? props?.text ?? props?.content)),
           }}
         />
       );
@@ -648,6 +654,7 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
         return (
           <div {...commonProps}>
             <ProductionWidgetView
+              {...props}
               type={node.type}
               eyebrow={renderText(props?.eyebrow) || undefined}
               title={renderText(props?.title ?? props?.headline) || undefined}
@@ -660,7 +667,7 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
                 undefined
               }
               secondaryCta={renderText(props?.secondaryCta) || undefined}
-              items={renderItems(props?.items)}
+              items={Array.isArray(props?.items) ? props.items : renderItems(props?.items)}
               style={cleanStyle(renderStyle)}
             />
           </div>

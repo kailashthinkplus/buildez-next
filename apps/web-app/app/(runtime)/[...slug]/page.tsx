@@ -1,23 +1,15 @@
-import { notFound } from "next/navigation";
-import { prisma } from "@buildez/db";
-
-import { renderPage } from "@/lib/runtime/render-page";
-import { PublishedPageRenderer } from "@/modules/builder-v2/runtime/PublishedPageRenderer";
-import {
-  logBuilderDebug,
-  summarizeSiteLayout,
-} from "@/modules/builder-v2/debug/blueprintDebug";
-import { defaultThemeTokens } from "@/modules/builder-v2/theme/defaultTheme";
-import { SiteThemeFrame } from "@/modules/builder-v2/theme/SiteThemeFrame";
-import {
-  createDefaultSiteThemeLayout,
-  disableSiteThemeChrome,
-  hasExplicitSiteThemeLayout,
-  normalizeSiteThemeLayout,
-} from "@/modules/builder-v2/theme/siteLayout";
-import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
+import { metadataForSite } from "@/lib/site-metadata";
+import { renderPublishedSitePage, resolvePublishedSiteRoute } from "@/modules/runtime/renderPublishedSitePage";
+import Storefront from "@/app/store/Storefront";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(props: { params: Promise<{ slug?: string[] }> }) {
+  const parts = (await props.params).slug || [];
+  const siteSlug = parts[0] || "";
+  const route = siteSlug ? await resolvePublishedSiteRoute(siteSlug, parts.slice(1).join("/") || undefined) : null;
+  return route ? metadataForSite(siteSlug, route.pageSlug) : {};
+}
 
 export default async function PublicRuntimePage(props: {
   params: Promise<{ slug?: string[] }>;
@@ -25,106 +17,24 @@ export default async function PublicRuntimePage(props: {
   const resolvedParams = await props.params;
   const parts = resolvedParams.slug ?? [];
 
-  const siteSlug = parts[0] ?? (await resolveDefaultSiteSlug());
-  const pageSlug = parts[1] ?? "home";
+  const siteSlug = parts[0];
+  const rest = parts.slice(1);
 
-  const result = await renderPage({ siteSlug, pageSlug });
+  // Never choose a tenant website for an incomplete public URL. Doing so used
+  // to expose the oldest published site to unrelated and newly-created users.
+  if (!siteSlug) return null;
 
-  if (!result) {
-    notFound();
-  }
-
-  if (result.mode === "builder-v2") {
-    const tokens =
-      result.blueprint.theme?.tokens &&
-      typeof result.blueprint.theme.tokens === "object" &&
-      !Array.isArray(result.blueprint.theme.tokens)
-        ? (result.blueprint.theme.tokens as unknown as BuilderThemeTokens)
-        : defaultThemeTokens;
-    const fallbackLayout = createDefaultSiteThemeLayout({
-        siteName: result.page.site.name,
-        tokens,
-        presetId: result.blueprint.theme?.preset ?? "buildez-default",
-      });
-    logBuilderDebug("runtime:builder-v2-layout-decision", {
-      siteSlug,
-      pageSlug,
-      siteName: result.page.site.name,
-      hasExplicitSiteLayout: hasExplicitSiteThemeLayout(result.siteLayout),
-      rawSiteLayout: result.siteLayout,
-      fallbackLayout: summarizeSiteLayout(fallbackLayout),
-    });
-    const hasExplicitLayout = hasExplicitSiteThemeLayout(result.siteLayout);
-    const siteLayout = normalizeSiteThemeLayout(
-      hasExplicitLayout ? result.siteLayout : null,
-      hasExplicitLayout ? fallbackLayout : disableSiteThemeChrome(fallbackLayout)
-    );
-
+  // Commerce is one channel on the same site, not the owner of it.
+  if (rest[0] === "shop") {
     return (
-      <PublishedPageRenderer
-        blueprint={result.blueprint}
-        siteLayout={siteLayout}
+      <Storefront
+        lookup={{ siteSlug, path: rest.slice(1) }}
+        basePath={`/${siteSlug}/shop`}
+        siteHomeHref={`/${siteSlug}`}
       />
     );
   }
 
-  const legacyDesignTokens =
-    result.designTokens &&
-    typeof result.designTokens === "object" &&
-    !Array.isArray(result.designTokens)
-      ? (result.designTokens as Record<string, unknown>)
-      : null;
-  const legacyTokens =
-    legacyDesignTokens
-      ? (legacyDesignTokens as unknown as BuilderThemeTokens)
-      : defaultThemeTokens;
-  const legacyFallbackLayout = createDefaultSiteThemeLayout({
-      siteName: result.page.site.name,
-      tokens: legacyTokens,
-      presetId:
-        typeof legacyDesignTokens?.themePresetId === "string"
-          ? legacyDesignTokens.themePresetId
-          : "buildez-default",
-    });
-  logBuilderDebug("runtime:legacy-layout-decision", {
-    siteSlug,
-    pageSlug,
-    siteName: result.page.site.name,
-    hasExplicitSiteLayout: hasExplicitSiteThemeLayout(result.siteLayout),
-    rawSiteLayout: result.siteLayout,
-    fallbackLayout: summarizeSiteLayout(legacyFallbackLayout),
-  });
-  const hasExplicitLegacyLayout = hasExplicitSiteThemeLayout(result.siteLayout);
-  const legacySiteLayout = normalizeSiteThemeLayout(
-    hasExplicitLegacyLayout ? result.siteLayout : null,
-    hasExplicitLegacyLayout
-      ? legacyFallbackLayout
-      : disableSiteThemeChrome(legacyFallbackLayout)
-  );
-
-  return (
-    <SiteThemeFrame layout={legacySiteLayout} tokens={legacyTokens}>
-      <style dangerouslySetInnerHTML={{ __html: result.css }} />
-      <div
-        id="buildez-preview-root"
-        dangerouslySetInnerHTML={{ __html: result.html }}
-      />
-    </SiteThemeFrame>
-  );
-}
-
-async function resolveDefaultSiteSlug(): Promise<string> {
-  const site = await prisma.site.findFirst({
-    where: {
-      status: "PUBLISHED",
-    },
-    orderBy: { createdAt: "asc" },
-    select: { slug: true },
-  });
-
-  if (!site) {
-    notFound();
-  }
-
-  return site.slug;
+  const pageSlug = rest.join("/") || undefined;
+  return renderPublishedSitePage(siteSlug, pageSlug);
 }

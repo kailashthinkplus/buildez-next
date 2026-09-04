@@ -476,7 +476,7 @@ test(
 );
 
 test(
-  "@operations @persistence copy paste creates one independent node and survives reload",
+  "@operations @persistence @copy-paste copy paste creates one independent node and survives reload",
   async ({ page }) => {
     test.setTimeout(45_000);
 

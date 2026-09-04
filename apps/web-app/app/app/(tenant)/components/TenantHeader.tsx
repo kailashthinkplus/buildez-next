@@ -1,51 +1,136 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
   Menu,
-  MoreVertical,
-  Bell,
+  CircleHelp,
+  Crown,
   Search,
   LayoutGrid,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { CreditsDropdown } from "@/modules/dashboard/CreditsDropdown";
 import { WebsiteSwitcher } from "./WebsiteSwitcher";
 import { useWorkspace } from "./WorkspaceContext";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import ThemeToggle from "../../components/ThemeToggle";
-
-type User = {
-  name?: string;
-  avatarUrl?: string;
-};
+import AccountMenu from "../../components/AccountMenu";
 
 export function TenantHeader({
   setMobileSidebarOpen,
-  user,
 }: {
   setMobileSidebarOpen: (v: boolean) => void;
-  user?: User;
 }) {
   const pathname = usePathname();
-
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const router = useRouter();
+  const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState<Array<{ id: string; type: string; title: string; subtitle: string; href: string }>>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [highestPlanCode, setHighestPlanCode] = useState<string | null>(null);
+  const [planLimits, setPlanLimits] = useState<{ maxSites: number; maxPages: number } | null>(null);
+  const [usage, setUsage] = useState<{ siteCount: number; pagesUsed: number } | null>(null);
 
   const { plan } = useWorkspace();
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/tenant/me", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((payload) => {
+        if (cancelled || !payload?.data) return;
+        const sites: Array<{ pages?: unknown[] }> = Array.isArray(payload.data.sites) ? payload.data.sites : [];
+        const usageRows: Array<{ key: string; used: number }> = Array.isArray(payload.data.usage) ? payload.data.usage : [];
+        const pagesFromUsage = usageRows.find((row) => row.key?.toLowerCase() === "pages")?.used;
+        const pagesFromSites = sites.reduce((sum, site) => sum + (Array.isArray(site.pages) ? site.pages.length : 0), 0);
+        setUsage({
+          siteCount: sites.length,
+          pagesUsed: typeof pagesFromUsage === "number" ? pagesFromUsage : pagesFromSites,
+        });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/plans?active=true&public=true", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Plans unavailable");
+        return response.json();
+      })
+      .then((plans: Array<{
+        code: string;
+        maxSites: number;
+        maxPages: number;
+        aiCredits: number;
+        teamMembers: number;
+      }>) => {
+        if (cancelled || !Array.isArray(plans) || !plans.length) return;
+        const current = plans.find((candidate) => candidate.code.toUpperCase() === (plan?.planCode ?? plan?.Plan?.code ?? "").toUpperCase());
+        if (current) setPlanLimits({ maxSites: current.maxSites, maxPages: current.maxPages });
+        const highest = plans.find((candidate) =>
+          plans.every((other) =>
+            candidate.maxSites >= other.maxSites &&
+            candidate.maxPages >= other.maxPages &&
+            candidate.aiCredits >= other.aiCredits &&
+            candidate.teamMembers >= other.teamMembers,
+          ),
+        );
+        if (highest) setHighestPlanCode(highest.code.toUpperCase());
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [plan?.planCode, plan?.Plan?.code]);
+
+  function submitSearch(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const query = search.trim();
+    if (!query) return;
+    setSearchOpen(false);
+    router.push(`/app/search?q=${encodeURIComponent(query)}`);
+  }
+
+  useEffect(() => {
+    const query = search.trim();
+    if (query.length < 2) { setSearchResults([]); setSearchLoading(false); return; }
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      setSearchLoading(true);
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`, { cache: "no-store", signal: controller.signal });
+        const payload = await response.json();
+        setSearchResults(Array.isArray(payload.results) ? payload.results.slice(0, 8) : []);
+        setSearchOpen(true);
+      } catch { if (!controller.signal.aborted) setSearchResults([]); }
+      finally { if (!controller.signal.aborted) setSearchLoading(false); }
+    }, 220);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [search]);
 
   /* ------------------------------------------------
      SHOW BACK BUTTON ONLY INSIDE SITE DASHBOARD
      /app/[siteSlug]/...
   ------------------------------------------------ */
+  const routeParts = pathname?.split("/").filter(Boolean) ?? [];
+  const workspaceRoutes = new Set([
+    "dashboard",
+    "profile",
+    "help",
+    "media",
+    "pages",
+    "settings",
+    "search",
+  ]);
   const isSiteDashboard =
-    pathname?.startsWith("/app/") && pathname.split("/").length >= 3;
-
-  async function logout() {
-    await fetch("/api/auth/logout", { method: "POST" });
-    window.location.href = "/app/login";
-  }
+    routeParts[0] === "app" &&
+    Boolean(routeParts[1]) &&
+    !workspaceRoutes.has(routeParts[1]);
 
   /* -------------------------------------------
      PLAN BADGE (DYNAMIC)
@@ -59,9 +144,13 @@ export function TenantHeader({
     agency: "#10B981",
   };
 
-  const planCode = plan?.planCode ?? "trial";
-  const color = planColors[planCode] || "#3B82F6";
-  const label = plan?.plan?.name ?? planCode.toUpperCase();
+  const planCode = plan?.planCode ?? plan?.Plan?.code ?? "FREE";
+  const normalizedPlanCode = planCode.toUpperCase();
+  const color = planColors[planCode.toLowerCase()] || "#3B82F6";
+  const label = plan?.Plan?.name ?? plan?.plan?.name ?? normalizedPlanCode;
+  const canUpgrade = Boolean(
+    highestPlanCode && normalizedPlanCode !== highestPlanCode,
+  );
 
   return (
     <header
@@ -110,16 +199,16 @@ export function TenantHeader({
         <div className="md:hidden">
           <Image
             src="/buildez-logo-light.svg"
-            alt="BuildEZ"
-            width={100}
-            height={26}
+            alt="BuildEzy"
+            width={88}
+            height={23}
             className="block dark:hidden"
           />
           <Image
             src="/buildez-logo-dark.svg"
-            alt="BuildEZ"
-            width={100}
-            height={26}
+            alt="BuildEzy"
+            width={88}
+            height={23}
             className="hidden dark:block"
           />
         </div>
@@ -128,102 +217,87 @@ export function TenantHeader({
         <div className="hidden md:flex items-center gap-3">
           <WebsiteSwitcher />
 
-          <span
-            className="px-3 py-1 rounded-xl text-xs font-medium border"
-            style={{
-              backgroundColor: color + "22",
-              borderColor: color + "55",
-              color,
-            }}
-          >
-            {label}
-          </span>
+          <div className="group relative">
+            <span
+              className="cursor-default px-3 py-1 rounded-xl text-xs font-medium border"
+              style={{
+                backgroundColor: color + "22",
+                borderColor: color + "55",
+                color,
+              }}
+            >
+              {label}
+            </span>
+
+            <div className="invisible absolute left-0 top-full z-[95] w-72 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100">
+              <div className="dashboard-modal-surface overflow-hidden rounded-2xl border dashboard-border shadow-2xl backdrop-blur-xl">
+                <div className="flex items-center gap-2 border-b dashboard-border px-4 py-3">
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{ backgroundColor: color }}
+                  />
+                  <span className="text-sm font-semibold">{label} plan</span>
+                </div>
+
+                <CreditsDropdown
+                  usageStats={[
+                    { label: "Websites", used: usage?.siteCount, total: planLimits?.maxSites },
+                    { label: "Pages", used: usage?.pagesUsed, total: planLimits?.maxPages },
+                  ]}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* SEARCH */}
-      <div className="hidden xl:flex relative w-[360px] items-center">
-        <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-600 dark:text-slate-300" />
+      <form
+        onSubmit={submitSearch}
+        role="search"
+        className="relative hidden w-[360px] items-center xl:flex"
+      >
+        <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-600 dark:text-slate-300" />
         <input
-          placeholder="Search pages, media, settings..."
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search across BuildEZ..."
+          aria-label="Search websites, pages, media, products and platform links"
+          onFocus={()=>{if(search.trim().length>=2)setSearchOpen(true)}}
+          onBlur={()=>window.setTimeout(()=>setSearchOpen(false),150)}
           className="
             pl-10 pr-4 py-2 w-full rounded-xl
             dashboard-input
             text-[14px]
           "
         />
-      </div>
+        {searchOpen ? <div className="dashboard-modal-surface absolute left-0 right-0 top-11 z-[90] overflow-hidden rounded-2xl border dashboard-border p-2 shadow-2xl backdrop-blur-xl">{searchLoading?<div className="p-4 text-center text-xs dashboard-muted">Searching your workspace…</div>:searchResults.length?<>{searchResults.map(result=><Link key={result.id} href={result.href} onMouseDown={event=>event.preventDefault()} onClick={()=>setSearchOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2.5 dashboard-hover"><span className="min-w-14 rounded-md bg-blue-500/10 px-1.5 py-1 text-center text-[9px] font-semibold uppercase text-blue-600 dark:text-blue-300">{result.type}</span><span className="min-w-0"><strong className="block truncate text-xs">{result.title}</strong><span className="block truncate text-[10px] dashboard-muted">{result.subtitle}</span></span></Link>)}<button type="submit" className="mt-1 flex w-full items-center justify-center gap-2 border-t dashboard-border px-3 pt-3 text-xs font-semibold text-blue-600 dark:text-blue-300"><Search size={13}/>View all results</button></>:<div className="p-4 text-center text-xs dashboard-muted">No matching websites, pages, media, products or links.</div>}</div>:null}
+      </form>
 
       {/* RIGHT */}
       <div className="flex items-center gap-2">
+        {canUpgrade ? (
+          <Link
+            href="/app/workspace/billing?upgrade=1"
+            className="dashboard-primary-button inline-flex h-9 items-center gap-2 rounded-xl px-3 text-xs font-semibold text-white"
+          >
+            <Crown size={15} />
+            <span className="hidden sm:inline">Upgrade</span>
+          </Link>
+        ) : null}
+
         <ThemeToggle />
 
-        <div className="hidden sm:flex items-center gap-4">
-          <button className="flex h-9 w-9 items-center justify-center rounded-xl dashboard-hover"><Bell className="h-[18px] w-[18px] dashboard-muted" /></button>
-
-          {/* USER */}
-          <button
-            onClick={() => setProfileOpen((v) => !v)}
-            className="
-              flex items-center gap-2 px-2 py-1 
-              rounded-lg overflow-hidden
-              dashboard-hover
-            "
-          >
-            <Image
-              src={user?.avatarUrl ?? "/default-avatar.svg"}
-              alt="avatar"
-              width={34}
-              height={34}
-              className="rounded-full object-cover"
-            />
-            <span className="hidden sm:block font-medium truncate max-w-[120px]">
-              {user?.name || "Account"}
-            </span>
-          </button>
-
-          {/* PROFILE MENU */}
-          <AnimatePresence>
-            {profileOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                className="
-                  absolute right-4 top-16 w-48
-                  rounded-xl dashboard-card-strong p-2 shadow-xl
-                  backdrop-blur-xl z-50
-                "
-              >
-                <Link
-                  href="/app/profile"
-                  className="block px-3 py-2 rounded-lg dashboard-hover"
-                >
-                  Profile
-                </Link>
-
-                <button
-                  onClick={logout}
-                  className="w-full text-left px-3 py-2 rounded-lg dashboard-hover text-red-500"
-                >
-                  Logout
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* MOBILE MENU */}
-        <button
-          className="
-            sm:hidden p-2 rounded-xl
-            dashboard-subtle
-            border dashboard-border
-          "
-          onClick={() => setMobileMenuOpen((p) => !p)}
+        <Link
+          href="/app/help"
+          title="Help and support"
+          aria-label="Help and support"
+          className="hidden h-9 w-9 items-center justify-center rounded-xl dashboard-hover sm:flex"
         >
-          <MoreVertical className="h-5 w-5" />
-        </button>
+          <CircleHelp className="h-[18px] w-[18px] dashboard-muted" />
+        </Link>
+
+        <AccountMenu compact={false} />
       </div>
     </header>
   );

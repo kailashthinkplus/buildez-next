@@ -1,0 +1,623 @@
+$ next build
+   ▲ Next.js 15.2.8
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+ ⚠ Compiled with warnings
+
+./app/api/auth/recovery-login/route.ts
+Attempted import error: 'checkLockout' is not exported from '@/lib/auth/lockout' (imported as 'checkLockout').
+
+Import trace for requested module:
+./app/api/auth/recovery-login/route.ts
+
+./app/api/auth/recovery-login/route.ts
+Attempted import error: 'hashRecovery' is not exported from '@/lib/auth/recovery' (imported as 'hashRecovery').
+
+Import trace for requested module:
+./app/api/auth/recovery-login/route.ts
+
+./app/api/auth/send-otp/route.ts
+Attempted import error: 'authHandler' is not exported from '@/lib/api/handler' (imported as 'authHandler').
+
+Import trace for requested module:
+./app/api/auth/send-otp/route.ts
+
+./app/api/auth/send-otp/route.ts
+Attempted import error: 'checkLockout' is not exported from '@/lib/auth/lockout' (imported as 'checkLockout').
+
+Import trace for requested module:
+./app/api/auth/send-otp/route.ts
+
+./app/api/auth/send-otp/route.ts
+Attempted import error: 'generateOtp' is not exported from '@/lib/auth/otp' (imported as 'generateOtp').
+
+Import trace for requested module:
+./app/api/auth/send-otp/route.ts
+
+./app/api/auth/send-otp/route.ts
+Attempted import error: 'hashOtp' is not exported from '@/lib/auth/otp' (imported as 'hashOtp').
+
+Import trace for requested module:
+./app/api/auth/send-otp/route.ts
+
+./app/api/auth/verify-otp/route.ts
+Attempted import error: 'checkLockout' is not exported from '@/lib/auth/lockout' (imported as 'checkLockout').
+
+Import trace for requested module:
+./app/api/auth/verify-otp/route.ts
+
+./app/api/auth/verify-otp/route.ts
+Attempted import error: 'hashOtp' is not exported from '@/lib/auth/otp' (imported as 'hashOtp').
+
+Import trace for requested module:
+./app/api/auth/verify-otp/route.ts
+
+./app/api/onboarding/complete/route.ts
+Attempted import error: 'getSessionUser' is not exported from '@/lib/auth/session' (imported as 'getSessionUser').
+
+Import trace for requested module:
+./app/api/onboarding/complete/route.ts
+
+./app/api/onboarding/save/route.ts
+Attempted import error: 'getSessionUser' is not exported from '@/lib/auth/session' (imported as 'getSessionUser').
+
+Import trace for requested module:
+./app/api/onboarding/save/route.ts
+
+./app/api/super/auth/totp/verify/route.ts
+Attempted import error: 'checkLockout' is not exported from '@/lib/auth/lockout' (imported as 'checkLockout').
+
+Import trace for requested module:
+./app/api/super/auth/totp/verify/route.ts
+
+./app/api/super/auth/verify-otp/route.ts
+Attempted import error: 'hashOtp' is not exported from '@/lib/auth/otp' (imported as 'hashOtp').
+
+Import trace for requested module:
+./app/api/super/auth/verify-otp/route.ts
+
+./app/app/(tenant)/pages/[pageId]/preview/route.ts
+Attempted import error: 'ApiError' is not exported from '@/lib/api/apiHandler' (imported as 'ApiError').
+
+Import trace for requested module:
+./app/app/(tenant)/pages/[pageId]/preview/route.ts
+
+./app/app/(tenant)/pages/[pageId]/unpublish/route.ts
+Attempted import error: 'ApiError' is not exported from '@/lib/api/apiHandler' (imported as 'ApiError').
+
+Import trace for requested module:
+./app/app/(tenant)/pages/[pageId]/unpublish/route.ts
+
+./app/app/page.tsx
+Attempted import error: 'getCurrentSession' is not exported from '@/lib/auth/session' (imported as 'getCurrentSession').
+
+Import trace for requested module:
+./app/app/page.tsx
+
+   Linting and checking validity of types ...
+
+Failed to compile.
+
+./app/api/_lib/designTokens/contrast.ts
+17:33  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+45:9  Warning: 'black' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/api/_lib/designTokens/extractLogoColors.ts
+6:35  Warning: 'imageBuffer' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/api/ai/rewrite/route.ts
+69:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/ai-v8/generate-images/route.ts
+64:10  Warning: 'getLightingForIndustry' is defined but never used.  @typescript-eslint/no-unused-vars
+82:34  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+96:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+180:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+288:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+304:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/api/auth/google/route.ts
+21:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/api/auth/recovery-login/route.ts
+89:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/auth/verify-otp/route.ts
+102:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/billing/activate/route.ts
+75:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/billing/current/route.ts
+40:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/builder-v2/ai/generate/route.ts
+42:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/builder-v2/ai/generate-v10/route.ts
+63:30  Warning: '_generationRunId' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/api/builder-v2/ai/generate-v11/route.ts
+126:38  Warning: '_runId' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/api/builder-v2/assets/[assetId]/route.ts
+58:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/builder-v2/assets/route.ts
+79:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+201:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/builder-v2/assets/upload/route.ts
+227:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/cms/collections/route.ts
+18:64  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/cms/entries/route.ts
+7:249  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/compliance/scan/route.ts
+8:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/fonts/google/route.ts
+8:12  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+55:32  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/onboarding/business-details/route.ts
+123:9  Error: 'existingTenant' is never reassigned. Use 'const' instead.  prefer-const
+
+./app/api/onboarding/check-domain/route.ts
+3:10  Warning: 'prisma' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/api/onboarding/choose-plan/route.ts
+66:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/onboarding/complete/route.ts
+5:8  Warning: 'slugify' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/api/onboarding/create-tenant/route.ts
+163:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/onboarding/finish/route.ts
+318:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/onboarding/pay/verify/route.ts
+194:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/onboarding/save/route.ts
+52:38  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+109:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/onboarding/status/route.ts
+102:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/pages/[pageId]/trash/route.ts
+20:33  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+47:16  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/plans/route.ts
+61:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/razorpay/verify/route.ts
+3:10  Warning: 'getCurrentUser' is defined but never used.  @typescript-eslint/no-unused-vars
+15:14  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+64:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/runtime/css/[siteSlug]/[pageSlug]/route.ts
+40:60  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+41:42  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/sites/[siteId]/branding/logo/route.ts
+180:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/sites/[siteId]/layout/route.ts
+91:14  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+92:14  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/super/auth/totp/verify/route.ts
+2:10  Warning: 'prisma' is defined but never used.  @typescript-eslint/no-unused-vars
+37:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/super/auth/verify-otp/route.ts
+2:10  Warning: 'prisma' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/api/super/security/auth-logs/route.ts
+2:10  Warning: 'prisma' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/api/tenant/me/route.ts
+148:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(auth)/layout.tsx
+24:9  Error: Do not use an `<a>` element to navigate to `/terms/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+28:9  Error: Do not use an `<a>` element to navigate to `/privacy/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+./app/app/(auth)/login/page.tsx
+44:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+121:38  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./app/app/(auth)/verify-otp/page.tsx
+34:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(builder)/[siteSlug]/[pageSlugWithId]/page.tsx
+64:8  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(builder)/[siteSlug]/[pageSlugWithId]/sidebar/IntegratedLeftSidebar.tsx
+78:3  Warning: 'onCapturePrompt' is defined but never used.  @typescript-eslint/no-unused-vars
+83:10  Warning: 'showColumnPicker' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/app/(builder)/[siteSlug]/[pageSlugWithId]/sidebar/PageSettingsPanel.tsx
+15:9  Warning: The 'pageSettings' logical expression could make the dependencies of useCallback Hook (at line 29) change on every render. To fix this, wrap the initialization of 'pageSettings' in its own useMemo() Hook.  react-hooks/exhaustive-deps
+18:15  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(builder)/[siteSlug]/[pageSlugWithId]/sidebar/ai.v7/AiPanel.tsx
+200:6  Warning: React Hook useEffect has a missing dependency: 'runFinalAI'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/app/(builder)/[siteSlug]/[pageSlugWithId]/sidebar/ai.v7/state/aiUI.store.ts
+7:14  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+8:27  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+16:38  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(builder)/[siteSlug]/[pageSlugWithId]/sidebar/ai.v7/steps/IndustryStep.tsx
+17:30  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(builder)/[siteSlug]/[pageSlugWithId]/toolbars/SectionToolbar.tsx
+50:3  Warning: 'id' is defined but never used.  @typescript-eslint/no-unused-vars
+51:3  Warning: 'nodeType' is defined but never used.  @typescript-eslint/no-unused-vars
+60:3  Warning: 'onAIRegenerate' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/app/(builder)/components/FontPicker.tsx
+18:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(builder)/components/ImageUploadModal.tsx
+95:6  Warning: React Hook useEffect has missing dependencies: 'fetchImages' and 'images.length'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+112:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+189:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+416:25  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/app/(builder)/components/LogoUploadModal.tsx
+230:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+281:15  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/app/(builder)/components/SimpleTipTapEditor.tsx
+176:9  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/[siteSlug]/apps/AppsMarketplaceClient.tsx
+143:21  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+172:168  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/app/(tenant)/[siteSlug]/cms/page.tsx
+10:49  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+27:21  Error: Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/kailash/buildez/apps/web-app/app/app/(tenant)/[siteSlug]/cms/page.tsx:27:21
+  25 |   const loadCollections = async () => { if (!siteId) return; const r = await fetch(`/api/cms/collections?siteId=${siteId}`); const b = await r.json(); setCollections(b.collections || []); setSelectedId((id) => id || b.collections?.[0]?.id || ""); };
+  26 |   const loadEntries = async () => { if (!selectedId) return setEntries([]); const r = await fetch(`/api/cms/entries?collectionId=${selectedId}`); const b = await r.json(); setEntries(b.entries || []); };
+> 27 |   useEffect(() => { loadCollections(); }, [siteId]);
+     |                     ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  28 |   useEffect(() => { loadEntries(); setEditing(null); }, [selectedId]);
+  29 |
+  30 |   return <div className="flex min-h-full bg-transparent" onClick={() => setCollectionMenu("")}>  react-hooks/set-state-in-effect
+27:43  Warning: React Hook useEffect has a missing dependency: 'loadCollections'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+28:21  Error: Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/kailash/buildez/apps/web-app/app/app/(tenant)/[siteSlug]/cms/page.tsx:28:21
+  26 |   const loadEntries = async () => { if (!selectedId) return setEntries([]); const r = await fetch(`/api/cms/entries?collectionId=${selectedId}`); const b = await r.json(); setEntries(b.entries || []); };
+  27 |   useEffect(() => { loadCollections(); }, [siteId]);
+> 28 |   useEffect(() => { loadEntries(); setEditing(null); }, [selectedId]);
+     |                     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  29 |
+  30 |   return <div className="flex min-h-full bg-transparent" onClick={() => setCollectionMenu("")}>
+  31 |     <aside className="w-72 shrink-0 border-r dashboard-border px-4 py-6">  react-hooks/set-state-in-effect
+28:57  Warning: React Hook useEffect has a missing dependency: 'loadEntries'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+55:72  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+55:89  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/[siteSlug]/shopez/ShopezDashboard.tsx
+16:1386  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/app/(tenant)/[siteSlug]/shopez/products/[productId]/ProductEditor.tsx
+11:2248  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/app/(tenant)/components/CopilotPromptCard.tsx
+6:51  Warning: 'setMode' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+22:39  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+23:59  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/components/CreateSiteModal.tsx
+70:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/components/TenantBootstrap.tsx
+26:22  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/components/TenantHeader.tsx
+34:10  Warning: 'mobileMenuOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/app/(tenant)/components/WorkspaceContext.tsx
+97:15  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/components/sidebar/SiteSidebar.tsx
+19:3  Warning: 'Search' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/app/(tenant)/media/components/MediaActionsMenu.tsx
+5:47  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/media/components/UploadMediaModal.tsx
+7:61  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+12:32  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+65:15  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/app/(tenant)/media/hooks/useMedia.ts
+5:65  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+6:38  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+23:6  Warning: React Hook useEffect has a missing dependency: 'limit'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/app/(tenant)/pages/[pageId]/preview/route.ts
+5:10  Warning: 'requirePermission' is defined but never used.  @typescript-eslint/no-unused-vars
+8:58  Warning: 'params' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/app/(tenant)/pages/[pageId]/unpublish/route.ts
+5:10  Warning: 'requirePermission' is defined but never used.  @typescript-eslint/no-unused-vars
+8:59  Warning: 'params' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/app/(tenant)/pages/components/PageActionsDropdown.tsx
+8:55  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/pages/components/PageSettingsModal.tsx
+21:7  Error: Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/kailash/buildez/apps/web-app/app/app/(tenant)/pages/components/PageSettingsModal.tsx:21:7
+  19 |   useEffect(() => {
+  20 |     if (page) {
+> 21 |       setTitle(page.title);
+     |       ^^^^^^^^ Avoid calling setState() directly within an effect
+  22 |       setSlug(page.slug);
+  23 |       setSeoTitle(page.seoTitle || "");
+  24 |       setSeoDescription(page.seoDescription || "");  react-hooks/set-state-in-effect
+
+./app/app/(tenant)/pages/hooks/useInfinitePages.ts
+14:48  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/pages/hooks/usePageMutations.ts
+4:10  Warning: 'getPagesKey' is defined but never used.  @typescript-eslint/no-unused-vars
+11:10  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+84:16  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/app/(tenant)/pages/hooks/useUpdatePage.ts
+10:51  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+26:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/workspace/billing/components/BillingSummary.tsx
+3:74  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/workspace/billing/components/PaymentDetails.tsx
+3:74  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/workspace/billing/components/PlanDetails.tsx
+3:71  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/workspace/billing/components/UpgradePlanModal.tsx
+17:38  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+32:6  Warning: React Hook useEffect has missing dependencies: 'currentPlan' and 'selected'. Either include them or remove the dependency array. If 'setSelected' needs the current value of 'currentPlan', you can also switch to useReducer instead of useState and read 'currentPlan' in the reducer.  react-hooks/exhaustive-deps
+37:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+65:44  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/(tenant)/workspace/billing/page.tsx
+11:48  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+22:5  Error: Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/kailash/buildez/apps/web-app/app/app/(tenant)/workspace/billing/page.tsx:22:5
+  20 |
+  21 |   useEffect(() => {
+> 22 |     load();
+     |     ^^^^ Avoid calling setState() directly within an effect
+  23 |   }, []);
+  24 |
+  25 |   if (loading || !tenantData) {  react-hooks/set-state-in-effect
+
+./app/app/components/ThemeToggle.tsx
+11:19  Error: Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/kailash/buildez/apps/web-app/app/app/components/ThemeToggle.tsx:11:19
+   9 |   const [mounted, setMounted] = useState(false);
+  10 |
+> 11 |   useEffect(() => setMounted(true), []);
+     |                   ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  12 |   if (!mounted) return null;
+  13 |
+  14 |   const isDark = resolvedTheme === "dark";  react-hooks/set-state-in-effect
+
+./app/app/components/ai/LogoUploader.tsx
+43:10  Warning: 'logoUrl' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+95:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/onboarding/OnboardingContext.tsx
+159:7  Error: Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/kailash/buildez/apps/web-app/app/app/onboarding/OnboardingContext.tsx:159:7
+  157 |     if (storedState) {
+  158 |       const parsedState = JSON.parse(storedState);
+> 159 |       setStep(parsedState.step);
+      |       ^^^^^^^ Avoid calling setState() directly within an effect
+  160 |       setAccountType(parsedState.accountType);
+  161 |       setBusinessName(parsedState.businessName);
+  162 |       setPlanId(parsedState.planId);  react-hooks/set-state-in-effect
+
+./app/app/onboarding/components/OnboardingHeader.tsx
+6:10  Warning: 'useOnboarding' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/app/onboarding/components/PayNowModal.tsx
+20:42  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+26:31  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+63:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/onboarding/components/StarterTrialMandateModal.tsx
+8:10  Warning: 'customerId' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+9:10  Warning: 'mandateId' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/app/onboarding/components/StepBusinessDetails.tsx
+127:14  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/app/onboarding/components/StepChoosePlan.tsx
+25:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+31:10  Warning: 'loading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+40:31  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+61:6  Warning: React Hook useEffect has a missing dependency: 'onNext'. Either include it or remove the dependency array. If 'onNext' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
+160:50  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/onboarding/components/StepDomainLaunch.tsx
+17:10  Warning: 'planCode' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/app/onboarding/page.tsx
+54:27  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/app/onboarding/ui/OnboardingHeader.tsx
+10:5  Error: Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/kailash/buildez/apps/web-app/app/app/onboarding/ui/OnboardingHeader.tsx:10:5
+   8 |
+   9 |   useEffect(() => {
+> 10 |     setDark(document.documentElement.classList.contains("dark"));
+     |     ^^^^^^^ Avoid calling setState() directly within an effect
+  11 |   }, []);
+  12 |
+  13 |   const toggle = () => {  react-hooks/set-state-in-effect
+
+./app/app/render/[slug]/route.ts
+75:44  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/internal/visual-critic/[caseId]/page.tsx
+37:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/store/Storefront.tsx
+7:4218  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+7:5236  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+7:6566  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+7:7870  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/super/(protected)/security/auth-logs/page.tsx
+6:36  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/super/components/SuperSidebar.tsx
+255:9  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/super/login/page.tsx
+38:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+66:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+193:9  Error: Do not use an `<a>` element to navigate to `/terms/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+197:9  Error: Do not use an `<a>` element to navigate to `/privacy/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+./lib/ai/engine.ts
+13:10  Warning: 'normalizeContext' is defined but never used.  @typescript-eslint/no-unused-vars
+101:33  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+144:74  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+204:47  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+239:45  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/api/apiHandler.ts
+22:29  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+38:45  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+89:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/api/handler.ts
+5:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+17:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/api/response.ts
+5:10  Warning: 'logAiEvent' is defined but never used.  @typescript-eslint/no-unused-vars
+16:25  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+83:38  Error: The `Function` type accepts any function-like value.
+Prefer explicitly defining any function parameters and return type.  @typescript-eslint/no-unsafe-function-type
+84:40  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/auth/alerts.ts
+1:10  Warning: 'prisma' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./lib/auth/getSession.ts
+8:12  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+9:9  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+10:11  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/auth/getUser.ts
+6:9  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+7:11  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+8:9  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+11:9  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+12:10  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/auth/session.ts
+16:9  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/blueprint/revisions.ts
+4:66  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/cache.ts
+24:33  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/logging/auditLogger.ts
+42:13  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+138:28  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/runtime/render-page.ts
+121:63  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/security/rateLimiter.ts
+4:10  Warning: 'randomUUID' is defined but never used.  @typescript-eslint/no-unused-vars
+86:7  Error: 'record' is never reassigned. Use 'const' instead.  prefer-const
+
+./lib/snapshots/renderPageSnapshot.ts
+2:10  Warning: 'renderToReadableStream' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./lib/tenant/resolveDomain.ts
+8:9  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+9:11  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/tenant/resolveTenant.ts
+14:11  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+15:9  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+[ELIFECYCLE] Command failed with exit code 1.
+RC0_EXIT=1 RC0_DURATION_SECONDS=36

@@ -8,6 +8,7 @@ import React, {
   useCallback,
 } from "react";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 /* ============================================================
    TYPES
@@ -17,6 +18,9 @@ export interface Website {
   id: string;
   name: string;
   slug: string;
+  status?: string;
+  logoUrl?: string | null;
+  faviconUrl?: string | null;
 }
 
 interface SubscriptionPlan {
@@ -27,6 +31,12 @@ interface SubscriptionPlan {
   plan?: {
     name: string;
     code: string;
+    maxSites?: number;
+  };
+  Plan?: {
+    name: string;
+    code: string;
+    maxSites?: number;
   };
 }
 
@@ -41,6 +51,7 @@ interface WorkspaceContextProps {
   currentWebsite: Website | null;
 
   switchWebsite: (id: string) => void;
+  updateWebsite: (id: string, patch: Partial<Website>) => void;
 
   plan: SubscriptionPlan | null;
 
@@ -58,6 +69,21 @@ const WorkspaceContext = createContext<WorkspaceContextProps | undefined>(
   undefined
 );
 
+const BUILDEZ_FAVICON_URL = "/favicon.png";
+
+const SITE_AREAS = new Set([
+  "dashboard", "pages", "media", "cms", "themes", "apps", "shopez",
+  "analytics", "insights", "crm", "ai", "forms", "settings", "builder",
+  "plugins", "brand", "widgets",
+]);
+
+function routeSiteSlug(value: string | null | undefined) {
+  const segments = value?.split("/").filter(Boolean) ?? [];
+  return segments[0] === "app" && segments[1] && SITE_AREAS.has(segments[2] ?? "")
+    ? segments[1]
+    : null;
+}
+
 /* ============================================================
    PROVIDER
 ============================================================ */
@@ -68,6 +94,7 @@ export function WorkspaceProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [websites, setWebsites] = useState<Website[]>([]);
@@ -86,6 +113,7 @@ export function WorkspaceProvider({
       try {
         const res = await fetch("/api/tenant/me", {
           credentials: "include",
+          cache: "no-store",
         });
 
         const json = await res.json();
@@ -94,19 +122,31 @@ export function WorkspaceProvider({
         setTenant(json.data.tenant);
 
         const mappedSites: Website[] = (json.data.sites || []).map(
-          (s: any) => ({
+          (s: {
+            id: string;
+            name: string;
+            slug: string;
+            status?: string;
+            logoUrl?: unknown;
+            settings?: { faviconUrl?: unknown };
+          }) => ({
             id: s.id,
             name: s.name,
             slug: s.slug,
+            status: typeof s.status === "string" ? s.status : "DRAFT",
+            logoUrl: typeof s.logoUrl === "string" ? s.logoUrl : null,
+            faviconUrl: typeof s.settings?.faviconUrl === "string" ? s.settings.faviconUrl : null,
           })
         );
 
         setWebsites(mappedSites);
 
-        // ✅ DEFAULT SELECTION (STATE ONLY — NO NAVIGATION)
-        if (mappedSites.length > 0) {
-          setCurrentWebsite(mappedSites[0]);
-        }
+        const requestedSlug = routeSiteSlug(window.location.pathname);
+        setCurrentWebsite(
+          requestedSlug
+            ? mappedSites.find((site) => site.slug === requestedSlug) ?? null
+            : mappedSites[0] ?? null,
+        );
 
         setPlan(json.data.plan ?? null);
       } catch (err) {
@@ -117,6 +157,28 @@ export function WorkspaceProvider({
     }
 
     load();
+  }, []);
+
+  useEffect(() => {
+    const requestedSlug = routeSiteSlug(pathname);
+    if (!requestedSlug) return;
+    const routeWebsite = websites.find((site) => site.slug === requestedSlug) ?? null;
+    if (routeWebsite?.id !== currentWebsite?.id) {
+      setCurrentWebsite(routeWebsite);
+    }
+  }, [currentWebsite?.id, pathname, websites]);
+
+  useEffect(() => {
+    const selector = 'link[data-buildez-site-favicon="true"]';
+    const existing = document.head.querySelector<HTMLLinkElement>(selector);
+
+    const link = existing ?? document.createElement("link");
+    link.rel = "icon";
+    link.href = BUILDEZ_FAVICON_URL;
+    link.dataset.buildezSiteFavicon = "true";
+    if (!existing) document.head.appendChild(link);
+
+    return () => link.remove();
   }, []);
 
   /* ============================================================
@@ -135,6 +197,20 @@ export function WorkspaceProvider({
     [router, websites]
   );
 
+  const updateWebsite = useCallback(
+    (id: string, patch: Partial<Website>) => {
+      setWebsites((current) =>
+        current.map((website) =>
+          website.id === id ? { ...website, ...patch } : website,
+        ),
+      );
+      setCurrentWebsite((current) =>
+        current?.id === id ? { ...current, ...patch } : current,
+      );
+    },
+    [],
+  );
+
   /* ============================================================
      PROVIDER VALUE
   ============================================================ */
@@ -145,6 +221,7 @@ export function WorkspaceProvider({
         websites,
         currentWebsite,
         switchWebsite,
+        updateWebsite,
 
         plan,
 

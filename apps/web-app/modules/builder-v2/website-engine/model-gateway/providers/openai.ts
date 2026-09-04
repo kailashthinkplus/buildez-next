@@ -36,28 +36,70 @@ export class OpenAIProvider implements ModelProvider {
 
   async complete(request: ModelRequest): Promise<ModelResponse> {
     const model = modelForTask(request);
-
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getApiKey()}`,
-      },
-      body: JSON.stringify({
-        model,
-        messages: request.messages,
-        temperature: request.temperature ?? 0.2,
-        max_completion_tokens: request.maxOutputTokens ?? 800,
-      }),
-      cache: "no-store",
+    const debugLabel = request.debugLabel?.trim() || `website-engine-${request.task}`;
+    const startedAt = Date.now();
+    console.log("[OPENAI REQUEST]", {
+      debugLabel,
+      model,
+      task: request.task,
+      messageCount: request.messages.length,
+      inputCharacters: request.messages.reduce((total, message) => total + message.content.length, 0),
+      maxCompletionTokens: request.maxOutputTokens ?? 800,
     });
+
+    let res: Response;
+    try {
+      res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getApiKey()}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: request.messages,
+          temperature: request.temperature ?? 0.2,
+          max_completion_tokens: request.maxOutputTokens ?? 800,
+        }),
+        cache: "no-store",
+      });
+    } catch (error) {
+      console.error("[OPENAI REQUEST ERROR]", {
+        debugLabel,
+        model,
+        task: request.task,
+        durationMs: Date.now() - startedAt,
+        error: error instanceof Error ? `${error.name}: ${error.message}` : "unknown network error",
+      });
+      throw error;
+    }
 
     if (!res.ok) {
       const rawError = await res.text().catch(() => "");
+      console.error("[OPENAI RESPONSE ERROR]", {
+        debugLabel,
+        model,
+        task: request.task,
+        status: res.status,
+        durationMs: Date.now() - startedAt,
+        errorCharacters: rawError.length,
+      });
       throw new Error(`OpenAI API error (${res.status}): ${rawError}`);
     }
 
-    const raw = (await res.json()) as OpenAIChatCompletionResponse;
+    let raw: OpenAIChatCompletionResponse;
+    try {
+      raw = (await res.json()) as OpenAIChatCompletionResponse;
+    } catch (error) {
+      console.error("[OPENAI RESPONSE PARSE ERROR]", {
+        debugLabel,
+        model,
+        task: request.task,
+        durationMs: Date.now() - startedAt,
+        error: error instanceof Error ? `${error.name}: ${error.message}` : "unknown response parse error",
+      });
+      throw error;
+    }
     const text = raw.choices?.[0]?.message?.content?.trim() || "";
     const inputTokens =
       raw.usage?.prompt_tokens ??
@@ -67,6 +109,15 @@ export class OpenAIProvider implements ModelProvider {
       );
     const outputTokens =
       raw.usage?.completion_tokens ?? estimateTokenCount(text);
+    console.log("[OPENAI RESPONSE]", {
+      debugLabel,
+      model: raw.model || model,
+      task: request.task,
+      durationMs: Date.now() - startedAt,
+      promptTokens: inputTokens,
+      completionTokens: outputTokens,
+      totalTokens: raw.usage?.total_tokens ?? inputTokens + outputTokens,
+    });
 
     return {
       text,

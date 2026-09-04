@@ -1,4 +1,4 @@
-import type { BuilderBlueprint, BuilderNode } from "../../types/blueprint";
+import type { BuilderBlueprint, BuilderNode, BuilderStyle } from "../../types/blueprint";
 import type { V9Workflow } from "./types";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -591,7 +591,7 @@ function enforceBriefDrivenLayout(
     const container = firstContainerChild(blueprint, section);
     if (!container) return;
 
-    const baseGrid = {
+    const baseGrid: BuilderStyle = {
       display: "grid",
       width: "100%",
       maxWidth: container.style?.maxWidth || 1180,

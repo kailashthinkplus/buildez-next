@@ -170,13 +170,16 @@ export async function resolveRuntimeContext(
   /* --------------------------------------------
      2) Subdomain (*.buildez.app)
   -------------------------------------------- */
-  const rootDomain = process.env.ROOT_DOMAIN || "buildez.app";
+  const rootDomain = process.env.ROOT_DOMAIN || process.env.PLATFORM_DOMAIN || "getbuildezy.com";
 
   if (cleanHost.endsWith(`.${rootDomain}`)) {
     const slug = cleanHost.replace(`.${rootDomain}`, "");
 
-    const site = await prisma.site.findUnique({
-      where: { slug },
+    const site = await prisma.site.findFirst({
+      where: {
+        slug,
+        deletedAt: null,
+      },
       include: {
         layout: true,
       },

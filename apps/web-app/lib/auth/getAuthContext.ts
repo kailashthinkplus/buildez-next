@@ -1,5 +1,4 @@
 import { getSession } from "./getSession";
-import { cookies } from "next/headers";
 
 /* ============================================================
    AUTH CONTEXT (AUTHORITATIVE)
@@ -39,19 +38,12 @@ export async function getAuthContext(): Promise<AuthContext> {
   }
 
   /* ------------------------------------------------------------
-     2️⃣ TENANT (AUTHORITATIVE)
-     Source of truth = middleware-set cookie
-     ⚠️ cookies() MUST be awaited in Next 15
+     2️⃣ TENANT (AUTHORIZATION-CHECKED BY getSession)
   ------------------------------------------------------------ */
-  const cookieStore = await cookies();
-  const tenantIdFromCookie = cookieStore.get("tenant-id")?.value;
+  const tenantId = sessionData?.tenant?.id ?? null;
 
-  console.log("[AUTH CONTEXT] tenant cookie", {
-    tenantIdFromCookie,
-  });
-
-  if (!tenantIdFromCookie) {
-    console.error("[AUTH CONTEXT] ❌ tenantId missing (cookie)");
+  if (!tenantId) {
+    console.error("[AUTH CONTEXT] ❌ authorized tenant missing");
     throw new Error("Invalid auth context");
   }
 
@@ -59,12 +51,12 @@ export async function getAuthContext(): Promise<AuthContext> {
      ✅ FINAL CONTEXT
   ------------------------------------------------------------ */
   console.log("[AUTH CONTEXT] ✅ resolved", {
-    tenantId: tenantIdFromCookie,
+    tenantId,
     userId,
   });
 
   return {
-    tenantId: tenantIdFromCookie,
+    tenantId,
     userId,
   };
 }

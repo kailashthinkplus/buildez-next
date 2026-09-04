@@ -1,0 +1,67 @@
+{
+  "fixture": "editorial-architecture",
+  "viewport": "desktop",
+  "contractFidelity": {
+    "passed": true,
+    "evidence": {
+      "graphValidated": true,
+      "blueprintValidated": true,
+      "serializationRoundTrip": true,
+      "compilerOutputRendered": true
+    }
+  },
+  "visualFidelity": {
+    "categories": {
+      "composition": 87,
+      "geometry": 90,
+      "responsiveComposition": 100,
+      "typography": 100,
+      "backgroundsAndColor": 77,
+      "imagePlacementAndCrop": 94,
+      "overlapAndLayering": 100,
+      "residualEffects": 100,
+      "contentCompleteness": 100,
+      "editability": 100,
+      "canvasRuntimeParity": 100
+    },
+    "criticalFailures": [],
+    "passed": true,
+    "evidence": {
+      "pixelDifferenceRatio": 0.22802658287246522,
+      "sectionOrderCorrect": true,
+      "headingDelta": 0.09286919814675368,
+      "ctaDelta": 0.1406328765583166,
+      "heroMediaDelta": 0.030103748326639895,
+      "floatingCardDelta": 0.4935093237533467,
+      "editorialImageDelta": 0.08631727430555555,
+      "headingFontSizeDelta": 0,
+      "gridCompositionCorrect": true,
+      "overlapCorrect": true,
+      "overlapExpected": false,
+      "responsiveStackingCorrect": true,
+      "backgroundPresent": true,
+      "imageCropCorrect": true,
+      "residualEffectsPresent": true,
+      "contentComplete": true,
+      "editable": true,
+      "canvasRuntimeParity": true,
+      "horizontalOverflow": false,
+      "productionRendererUsed": true,
+      "compilerOutputUsed": true,
+      "heroMediaRolePresent": true
+    }
+  },
+  "certification": {
+    "architectureProof": true,
+    "acceptableFidelity": true,
+    "productionGradeFidelity": false,
+    "controllingCategory": "backgroundsAndColor",
+    "minimumScore": 77
+  },
+  "screenshotCertification": {
+    "referencePath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/reference/editorial-architecture/desktop/full.png",
+    "compiledPath": "/Users/kailash/buildez/apps/web-app/modules/builder-v2/ai-v11/benchmarks/captures/m4/compiled/editorial-architecture/desktop/full.png",
+    "pixelDifferenceRatio": 0.22802658287246522,
+    "certified": true
+  }
+}

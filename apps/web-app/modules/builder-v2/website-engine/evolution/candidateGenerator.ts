@@ -20,7 +20,6 @@ export function generateWebsiteCandidates(input: EvolutionInput): WebsiteCandida
     compositionResult: input.compositionResult,
     compiledPlan: input.compiledPlan,
     criticResult: input.criticResult,
-    similarityResult: input.similarityResult,
     featureFlags: input.featureFlags,
   });
   const baseProfile: CandidateProfile = Object.freeze({

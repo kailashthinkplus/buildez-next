@@ -99,6 +99,51 @@ enum MediaType {
   AUDIO
 }
 
+enum ShopProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum ShopOrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  FULFILLED
+  CANCELLED
+  REFUNDED
+}
+
+enum ShopPaymentStatus {
+  PENDING
+  AUTHORIZED
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum ShopFulfillmentStatus {
+  UNFULFILLED
+  PARTIAL
+  FULFILLED
+  RETURNED
+}
+
+enum ShopDiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+  FREE_SHIPPING
+}
+
+enum ShopPaymentProvider {
+  RAZORPAY
+  PAYPAL
+  STRIPE
+  DODO
+  COD
+}
+
 // =======================================
 // CORE USER
 // =======================================
@@ -223,6 +268,11 @@ model Otp {
   email String?
   phone String?
 
+  // Scopes an OTP to what it's allowed to authorize, so a code issued
+  // for one flow (e.g. super-admin login) can never be replayed to
+  // authorize a different one (e.g. a tenant password reset).
+  purpose String @default("SUPER_ADMIN_LOGIN")
+
   codeHash  String
   expiresAt DateTime
 
@@ -335,19 +385,22 @@ model Tenant {
 
   subscriptions Subscription[] @relation("TenantSubscriptionHistory")
 
-  teams             Team[]
-  themes            Theme[]
-  sites             Site[]
-  events            TenantEvent[]
-  complianceAudits  ComplianceAudit[]
-  siteSnapshots     SiteSnapshot[]
-  siteRenders       SiteRender[]
-  siteDomains       SiteDomain[]
-  siteSubscriptions SiteSubscription[]
-  blueprints        Blueprint[]
-  planUsages        PlanUsage[]
-  AiEvent           AiEvent[]
-  aiSnapshots       AIBlueprintSnapshot[]
+  teams                Team[]
+  themes               Theme[]
+  sites                Site[]
+  events               TenantEvent[]
+  complianceAudits     ComplianceAudit[]
+  siteSnapshots        SiteSnapshot[]
+  siteRenders          SiteRender[]
+  siteDomains          SiteDomain[]
+  siteSubscriptions    SiteSubscription[]
+  blueprints           Blueprint[]
+  planUsages           PlanUsage[]
+  AiEvent              AiEvent[]
+  aiCreditReservations AiCreditReservation[]
+  aiCreditLedger       AiCreditLedgerEntry[]
+  aiSnapshots          AIBlueprintSnapshot[]
+  v12Projects          V12Project[]
 
   aiSuspended Boolean  @default(false)
   createdAt   DateTime @default(now())
@@ -590,10 +643,12 @@ model Site {
   status   SiteStatus @default(DRAFT)
 
   designTokens Json? // ✅ Stores brand colors extracted from logo
+  settings     Json? // Site-wide general, SEO, analytics, privacy and social settings
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+  archivedAt DateTime?
 
   tenant           Tenant                @relation(fields: [tenantId], references: [id])
   subscriptions    SiteSubscription[]
@@ -608,9 +663,519 @@ model Site {
   layout           SiteLayout?
   aiSnapshots      AIBlueprintSnapshot[]
   cmsCollections   CmsCollection[]
+  crmLeads         CrmLead[]
+  crmApiKeys       CrmApiKey[]
+  agentRuns        AgentRun[]
+  integrations     SiteIntegration[]
+  shop             Shop?
+  v12Project       V12Project?
+  feedback         WebsiteFeedback[]
 
   @@unique([tenantId, slug])
   @@index([tenantId])
+}
+
+// =======================================
+// APPS MARKETPLACE / SITE INTEGRATIONS
+// =======================================
+
+model SiteIntegration {
+  id      String @id @default(cuid())
+  siteId  String
+  appSlug String
+
+  config Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@unique([siteId, appSlug])
+  @@index([siteId])
+}
+
+// =======================================
+// V12 REACT PROJECT WORKSPACE
+// =======================================
+
+model V12Project {
+  id                String   @id @default(cuid())
+  siteId            String   @unique
+  tenantId          String
+  currentRevision   Int      @default(0)
+  publishedRevision Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  site        Site                   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  files       V12ProjectFile[]
+  revisions   V12ProjectRevision[]
+  checkpoints V12ProjectCheckpoint[]
+
+  @@index([tenantId])
+}
+
+model V12ProjectFile {
+  id          String   @id @default(cuid())
+  projectId   String
+  path        String
+  content     String
+  contentHash String
+  revision    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project V12Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, path])
+  @@index([projectId, revision])
+}
+
+model V12ProjectRevision {
+  id         String   @id @default(cuid())
+  projectId  String
+  sequence   Int
+  operations Json
+  createdBy  String?
+  createdAt  DateTime @default(now())
+
+  project     V12Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  checkpoints V12ProjectCheckpoint[]
+
+  @@unique([projectId, sequence])
+  @@index([projectId, createdAt])
+}
+
+model V12ProjectCheckpoint {
+  id         String   @id @default(cuid())
+  projectId  String
+  revisionId String
+  label      String?
+  snapshot   Json
+  createdBy  String?
+  createdAt  DateTime @default(now())
+
+  project  V12Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  revision V12ProjectRevision @relation(fields: [revisionId], references: [id], onDelete: Restrict)
+
+  @@index([projectId, createdAt])
+  @@index([revisionId])
+}
+
+// Tracks a V12 generation across multiple staged HTTP requests so no
+// single request has to run the whole pipeline (research + design +
+// media + codegen) within one function invocation's timeout.
+model V12GenerationJob {
+  id        String   @id @default(cuid())
+  siteId    String
+  tenantId  String
+  stage     String // "plan" | "generate"
+  status    String // "running" | "stage_complete" | "done" | "failed" | "needs_input"
+  state     Json? // serialized V12PipelineState once the plan stage completes
+  input     Json // original request: prompt, context, creativeDirection, selectedElement, mode, pageId
+  result    Json? // terminal result once status is "done" | "failed" | "needs_input"
+  error     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([siteId, tenantId])
+  @@index([tenantId, createdAt])
+}
+
+// =======================================
+// SHOPEZ — TENANT ECOMMERCE
+// =======================================
+
+model Shop {
+  id               String   @id @default(cuid())
+  siteId           String   @unique
+  tenantId         String
+  name             String
+  currency         String   @default("INR")
+  country          String   @default("IN")
+  supportEmail     String?
+  orderPrefix      String   @default("SZ")
+  taxInclusive     Boolean  @default(false)
+  taxRate          Decimal  @default(0) @db.Decimal(5, 2)
+  freeShippingOver Decimal? @db.Decimal(12, 2)
+  flatShippingRate Decimal  @default(0) @db.Decimal(12, 2)
+  isPublished      Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  site        Site                     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  products    ShopProduct[]
+  collections ShopCollection[]
+  customers   ShopCustomer[]
+  orders      ShopOrder[]
+  discounts   ShopDiscount[]
+  payments    ShopPaymentIntegration[]
+
+  @@index([tenantId])
+}
+
+model ShopProduct {
+  id              String            @id @default(cuid())
+  shopId          String
+  title           String
+  handle          String
+  description     String            @default("")
+  vendor          String?
+  productType     String?
+  status          ShopProductStatus @default(DRAFT)
+  tags            String[]          @default([])
+  seoTitle        String?
+  seoDescription  String?
+  storySections   Json?
+  trackQuantity   Boolean           @default(true)
+  continueSelling Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  shop        Shop                    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  images      ShopProductImage[]
+  options     ShopProductOption[]
+  variants    ShopProductVariant[]
+  collections ShopCollectionProduct[]
+  orderItems  ShopOrderItem[]
+
+  @@unique([shopId, handle])
+  @@index([shopId, status])
+}
+
+model ShopProductImage {
+  id        String      @id @default(cuid())
+  productId String
+  url       String
+  alt       String?
+  position  Int         @default(0)
+  product   ShopProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, position])
+}
+
+model ShopProductOption {
+  id        String      @id @default(cuid())
+  productId String
+  name      String
+  values    String[]    @default([])
+  position  Int         @default(0)
+  product   ShopProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+model ShopProductVariant {
+  id             String          @id @default(cuid())
+  productId      String
+  title          String          @default("Default")
+  sku            String?
+  barcode        String?
+  price          Decimal         @db.Decimal(12, 2)
+  compareAtPrice Decimal?        @db.Decimal(12, 2)
+  cost           Decimal?        @db.Decimal(12, 2)
+  inventory      Int             @default(0)
+  weightGrams    Int?
+  optionValues   Json?
+  position       Int             @default(0)
+  product        ShopProduct     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems     ShopOrderItem[]
+
+  @@index([productId])
+  @@index([sku])
+}
+
+model ShopCollection {
+  id          String                  @id @default(cuid())
+  shopId      String
+  title       String
+  handle      String
+  description String                  @default("")
+  imageUrl    String?
+  shop        Shop                    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  products    ShopCollectionProduct[]
+
+  @@unique([shopId, handle])
+}
+
+model ShopCollectionProduct {
+  collectionId String
+  productId    String
+  position     Int            @default(0)
+  collection   ShopCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  product      ShopProduct    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, productId])
+}
+
+model ShopCustomer {
+  id               String                @id @default(cuid())
+  shopId           String
+  email            String
+  firstName        String?
+  lastName         String?
+  phone            String?
+  acceptsMarketing Boolean               @default(false)
+  addresses        Json?
+  notes            String?
+  passwordHash     String?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  shop             Shop                  @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  orders           ShopOrder[]
+  sessions         ShopCustomerSession[]
+
+  @@unique([shopId, email])
+}
+
+model ShopCustomerSession {
+  id         String       @id @default(cuid())
+  customerId String
+  tokenHash  String       @unique
+  expiresAt  DateTime
+  createdAt  DateTime     @default(now())
+  customer   ShopCustomer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([expiresAt])
+}
+
+model ShopDiscount {
+  id            String           @id @default(cuid())
+  shopId        String
+  code          String
+  type          ShopDiscountType
+  value         Decimal          @db.Decimal(12, 2)
+  minimumAmount Decimal?         @db.Decimal(12, 2)
+  usageLimit    Int?
+  usageCount    Int              @default(0)
+  startsAt      DateTime         @default(now())
+  endsAt        DateTime?
+  active        Boolean          @default(true)
+  shop          Shop             @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  orders        ShopOrder[]
+
+  @@unique([shopId, code])
+}
+
+model ShopOrder {
+  id                String                @id @default(cuid())
+  shopId            String
+  customerId        String?
+  discountId        String?
+  orderNumber       Int
+  email             String
+  phone             String?
+  currency          String
+  subtotal          Decimal               @db.Decimal(12, 2)
+  discount          Decimal               @default(0) @db.Decimal(12, 2)
+  shipping          Decimal               @default(0) @db.Decimal(12, 2)
+  tax               Decimal               @default(0) @db.Decimal(12, 2)
+  total             Decimal               @db.Decimal(12, 2)
+  status            ShopOrderStatus       @default(PENDING)
+  paymentStatus     ShopPaymentStatus     @default(PENDING)
+  fulfillmentStatus ShopFulfillmentStatus @default(UNFULFILLED)
+  shippingAddress   Json
+  billingAddress    Json?
+  note              String?
+  provider          ShopPaymentProvider?
+  providerOrderId   String?
+  providerPaymentId String?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  shop              Shop                  @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  customer          ShopCustomer?         @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  discountCode      ShopDiscount?         @relation(fields: [discountId], references: [id], onDelete: SetNull)
+  items             ShopOrderItem[]
+
+  @@unique([shopId, orderNumber])
+  @@index([shopId, createdAt])
+  @@index([providerOrderId])
+}
+
+model ShopOrderItem {
+  id           String              @id @default(cuid())
+  orderId      String
+  productId    String?
+  variantId    String?
+  title        String
+  variantTitle String?
+  sku          String?
+  quantity     Int
+  unitPrice    Decimal             @db.Decimal(12, 2)
+  total        Decimal             @db.Decimal(12, 2)
+  order        ShopOrder           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product      ShopProduct?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variant      ShopProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+}
+
+model ShopPaymentIntegration {
+  id              String              @id @default(cuid())
+  shopId          String
+  provider        ShopPaymentProvider
+  enabled         Boolean             @default(false)
+  publicKey       String?
+  encryptedSecret String?
+  webhookSecret   String?
+  mode            String              @default("test")
+  metadata        Json?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  shop            Shop                @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@unique([shopId, provider])
+}
+
+model SupportRequest {
+  id        String   @id @default(cuid())
+  type      String   @default("SUPPORT")
+  name      String?
+  email     String
+  subject   String?
+  message   String
+  pageUrl   String?
+  severity  String?
+  status    String   @default("NEW")
+  source    String   @default("marketing-site")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type, createdAt])
+  @@index([status])
+}
+
+model BlogPost {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  title         String
+  excerpt       String?
+  content       String    @db.Text
+  coverImageUrl String?
+  authorName    String?
+  status        String    @default("DRAFT")
+  tags          String[]  @default([])
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+model CrmLead {
+  id              String    @id @default(cuid())
+  siteId          String
+  name            String
+  email           String?
+  phone           String?
+  company         String?
+  message         String?
+  source          String    @default("manual")
+  sourceUrl       String?
+  status          String    @default("NEW")
+  score           Int       @default(0)
+  temperature     String    @default("WARM")
+  assignedToId    String?
+  assignedToName  String?
+  tags            String[]  @default([])
+  customData      Json?
+  notes           String?
+  consent         Boolean   @default(false)
+  lastContactedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  site           Site               @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  communications CrmCommunication[]
+
+  @@index([siteId, createdAt])
+  @@index([siteId, status])
+  @@index([siteId, email])
+}
+
+model CrmCommunication {
+  id        String   @id @default(cuid())
+  leadId    String
+  type      String
+  direction String   @default("OUTBOUND")
+  subject   String?
+  content   String
+  createdBy String?
+  createdAt DateTime @default(now())
+
+  lead CrmLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, createdAt])
+}
+
+// =======================================
+// AI AGENTS
+// =======================================
+
+model AgentRun {
+  id          String   @id @default(cuid())
+  siteId      String
+  tenantId    String
+  agentId     String
+  pageId      String?
+  prompt      String?
+  summary     String
+  findings    Json
+  generatedBy String   @default("analytics")
+  createdAt   DateTime @default(now())
+
+  site     Site           @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  messages AgentMessage[]
+
+  @@index([siteId, agentId, createdAt])
+  @@index([siteId, createdAt])
+}
+
+model AgentMessage {
+  id        String   @id @default(cuid())
+  runId     String
+  role      String
+  content   String
+  createdAt DateTime @default(now())
+
+  run AgentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, createdAt])
+}
+
+model WebsiteFeedback {
+  id        String   @id @default(cuid())
+  siteId    String
+  tenantId  String
+  userId    String?
+  pageId    String?
+  rating    Int
+  comment   String?
+  status    String   @default("NEW")
+  createdAt DateTime @default(now())
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, createdAt])
+  @@index([status])
+}
+
+model CrmApiKey {
+  id         String    @id @default(cuid())
+  siteId     String
+  name       String
+  keyPrefix  String
+  keyHash    String    @unique
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+  revokedAt  DateTime?
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId])
 }
 
 model CmsCollection {
@@ -676,7 +1241,10 @@ model Page {
   reactCode  String?    @db.Text // Generated React TSX code
   renderMode RenderMode @default(BLUEPRINT) // Blueprint or React
 
-  publishedAt DateTime?
+  publishedAt        DateTime?
+  scheduledPublishAt DateTime?
+  customCss          String?   @db.Text
+  customJs           String?   @db.Text
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -696,6 +1264,7 @@ model Page {
   @@index([siteId])
   @@index([status])
   @@index([renderMode]) // ✅ NEW: Query by render mode
+  @@index([scheduledPublishAt])
 }
 
 model PreviewToken {
@@ -788,6 +1357,13 @@ model Plan {
   aiCredits   Int
   teamMembers Int
 
+  aiAgentRunLimitPerHour      Int @default(20)
+  aiAgentFollowupLimitPerHour Int @default(40)
+  builderAgentLimitPerHour    Int @default(30)
+
+  uploadRateLimitPerHour Int @default(30)
+  maxDailyUploads        Int @default(50)
+
   isPublic Boolean @default(true)
 
   createdAt DateTime @default(now())
@@ -808,6 +1384,7 @@ model PlanPricing {
 
   razorpayPlanId String?
   stripePriceId  String?
+  dodoProductId  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -816,6 +1393,7 @@ model PlanPricing {
 
   @@unique([planCode, billingCycle])
   @@index([planCode])
+  @@index([dodoProductId])
 }
 
 model PlanFeature {
@@ -854,6 +1432,82 @@ model PlanUsage {
 }
 
 // =======================================
+// AI CREDIT RESERVATIONS / LEDGER
+// =======================================
+
+model AiCreditReservation {
+  id            String @id @default(cuid())
+  reservationId String @unique
+
+  tenantId String
+  userId   String?
+  siteId   String?
+
+  planCode String?
+
+  amount Int
+
+  planCreditsReserved  Int @default(0)
+  topUpCreditsReserved Int @default(0)
+
+  planUsageId  String?
+  topUpUsageId String?
+
+  // RESERVED | CAPTURED | RELEASED
+  status String @default("RESERVED")
+
+  releaseReason String?
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  capturedAt DateTime?
+  releasedAt DateTime?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  ledgerEntries AiCreditLedgerEntry[]
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([createdAt])
+}
+
+model AiCreditLedgerEntry {
+  id String @id @default(cuid())
+
+  tenantId      String
+  reservationId String?
+
+  // RESERVE | CAPTURE | RELEASE | TOPUP_GRANT |
+  // TOPUP_PURCHASE | ADMIN_ADJUSTMENT
+  type String
+
+  amount Int
+
+  planCredits  Int @default(0)
+  topUpCredits Int @default(0)
+
+  planCode String?
+  reason   String?
+
+  // Used by payment callbacks/admin actions so the same external
+  // operation cannot credit the account twice.
+  idempotencyKey String @unique
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  reservation AiCreditReservation? @relation(fields: [reservationId], references: [reservationId], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([reservationId])
+  @@index([tenantId, createdAt])
+}
+
+// =======================================
 // SUBSCRIPTIONS
 // =======================================
 
@@ -878,6 +1532,13 @@ model Subscription {
   razorpayPaymentId String?
   razorpaySignature String?
 
+  dodoCustomerId        String?
+  dodoSubscriptionId    String?   @unique
+  dodoCheckoutSessionId String?
+  currentPeriodEnd      DateTime?
+  cancelAtPeriodEnd     Boolean   @default(false)
+  expiryAlertSentAt     DateTime?
+
   amountPaid Int?
   currency   String?
   startedAt  DateTime?
@@ -890,6 +1551,29 @@ model Subscription {
 
   @@index([tenantHistoryId])
   @@index([userId])
+  @@index([dodoCustomerId])
+}
+
+model BillingTransaction {
+  id                String    @id @default(cuid())
+  tenantId          String
+  userId            String?
+  subscriptionId    String?
+  providerPaymentId String    @unique
+  type              String    @default("SUBSCRIPTION")
+  status            String
+  amountMinor       Int
+  currency          String
+  planCode          String?
+  billingCycle      String?
+  paidAt            DateTime?
+  metadata          Json?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([tenantId, createdAt])
+  @@index([subscriptionId])
+  @@index([status])
 }
 
 model SiteSubscription {
@@ -1075,8 +1759,15 @@ model SiteDomain {
   domain String       @unique
   status DomainStatus @default(PENDING)
 
-  cnameTarget String
-  verifiedAt  DateTime?
+  cnameTarget       String
+  verifiedAt        DateTime?
+  verificationToken String?   @unique
+  dnsVerifiedAt     DateTime?
+  lastCheckedAt     DateTime?
+  lastDnsResult     Json?
+  sslStatus         String    @default("PENDING")
+  sslActivatedAt    DateTime?
+  provider          String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1123,13 +1814,19 @@ model TrafficEvent {
   method      String
   status      Int
   country     String?
+  city        String?
   referrer    String?
   device      String
   visitorHash String
+  sessionId   String?
+  eventType   String   @default("pageview")
+  metadata    Json?
   bucket      DateTime
   createdAt   DateTime @default(now())
 
   @@index([siteId, bucket])
+  @@index([siteId, eventType, createdAt])
+  @@index([sessionId])
   @@index([tenantId, bucket])
   @@index([bucket])
 }

@@ -16,6 +16,7 @@ import { buildConversionJourney } from "./conversionJourney";
 import {
   resolveCompositionFamilyContext,
   sectionsFromComponents,
+  sectionsFromSectionSelections,
   type CompositionConfidence,
   type CompositionConflict,
   type CompositionFallback,
@@ -96,9 +97,11 @@ export function scoreCompositionConfidence(input: CompositionInput, sections: re
 
 export function buildCompositionPlan(input: CompositionInput): CompositionPlan {
   const context = resolveCompositionFamilyContext(input);
-  const sourceSections = sectionsFromComponents(input.componentResult?.recommendedSelections);
-  const ordered = orderSections(sourceSections, context);
-  const sectionWeights = assignSectionWeights(ordered);
+  const sourceSections = input.componentResult?.sectionSelections?.length
+    ? sectionsFromSectionSelections(input.componentResult.sectionSelections)
+    : sectionsFromComponents(input.componentResult?.recommendedSelections);
+  const ordered = orderSections(sourceSections, context, input.artDirectionBrief?.compositionStyle);
+  const sectionWeights = assignSectionWeights(ordered, input.artDirectionBrief);
   const ctaCadence = inferCTACadence(ordered, context);
   const trustPlacement = inferTrustPlacement(ordered, context);
   return Object.freeze({
@@ -176,6 +179,7 @@ export function runCompositionEngine(input: CompositionInput = {}): EngineResult
       `Resolved composition family as ${context.family}.`,
       `Arranged ${compositionPlan.sections.length} component-backed sections into journey metadata.`,
       "Component Engine selects options; Composition Engine orders and balances them.",
+      ...(input.artDirectionBrief ? [`Applied executable art direction ${input.artDirectionBrief.id}.`] : []),
     ],
     warnings: [],
   });

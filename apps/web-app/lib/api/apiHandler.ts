@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUser, type AuthContext } from "../auth/getUser";
 import { v4 as uuidv4 } from "uuid";
+import { ApiError } from "./errors";
 
 /* ============================================================
    API CONTEXT (LOCKED — AUTH CONTEXT PRESERVED)
@@ -99,12 +100,15 @@ export function apiHandler(
             : undefined,
       });
 
+      const status = err instanceof ApiError ? err.status : 500;
+
       return jsonResponse(
         {
           message: err?.message ?? "Internal Server Error",
+          ...(err instanceof ApiError && err.code ? { code: err.code } : {}),
           requestId,
         },
-        500
+        status
       );
     }
   };

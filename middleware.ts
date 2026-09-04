@@ -20,6 +20,7 @@ const PUBLIC_ROUTES = [
   "/api/razorpay",
   "/api/billing/activate",
   "/api/billing",
+  "/api/webhooks/dodo",
   "/preview",
   "/api/preview",
 ];
@@ -44,6 +45,11 @@ const ONBOARDING_ROUTES = [
    ========================================================== */
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // The marketing homepage is public; product and account routes keep their guards.
+  if (pathname === "/") {
+    return NextResponse.next();
+  }
 
   console.log("\n==============================");
   console.log("🧭 MIDDLEWARE HIT");
@@ -72,7 +78,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/_next") ||
     pathname.startsWith("/assets") ||
     pathname.startsWith("/favicon") ||
-    pathname.match(/\.(svg|png|jpg|jpeg|webp|gif|ico|css|js|woff|woff2)$/)
+    pathname.match(/\.(svg|png|jpg|jpeg|webp|avif|gif|ico|css|js|woff|woff2)$/)
   ) {
     console.log("✅ STATIC ASSET → ALLOW");
     return NextResponse.next();
@@ -239,6 +245,6 @@ export const config = {
     "/app/:path*",
     "/preview/:path*",
     "/api/:path*",
-    "/((?!_next/|assets/|favicon.ico|.*\\.svg|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.webp|.*\\.gif).*)",
+    "/((?!_next/|assets/|favicon.ico|.*\\.svg|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.webp|.*\\.avif|.*\\.gif).*)",
   ],
 };

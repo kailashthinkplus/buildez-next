@@ -8,7 +8,7 @@ It is not the Mapper. It does not insert anything into the Builder store or canv
 
 ## Current Status
 
-Phase 30.6 Native Builder Alignment.
+RC-9A Semantic Blueprint Compiler.
 
 ## Public API
 
@@ -19,7 +19,10 @@ Phase 30.6 Native Builder Alignment.
 - `buildNativeWidgetIntents(widgets)` confirms existing native widget types.
 - `buildNativeInspectorBindingIntents(widgets)` maps InspectorBlueprint metadata to existing `WidgetProperty` paths.
 - `buildNativeCommandIntents(widgets)` creates future CommandBus-compatible intent metadata for Insert, Update, Style, Move, Reorder, and Duplicate commands without executing anything.
-- `expandComponentRecipes(input)` expands component recipes into native primitive widget seeds.
+- `compileSemanticBlueprint(input)` preserves Composition ordering and selects semantic recipes from component, pattern, WebsiteSpec, and composition evidence.
+- `RecipeRegistry` resolves Hero, About, Feature Grid, Services, Pricing, Comparison, Gallery, Portfolio, Timeline, Testimonials, FAQ, Stats, CTA, Contact, and Footer recipes.
+- `expandComponentRecipes(input)` remains the backward-compatible entry point and delegates to the semantic compiler.
+- `createSemanticBuilderTheme(input)` maps Design Engine color, typography, spacing, radius, shadow, motion, and responsive tokens into the native Builder theme.
 - `buildSectionBlueprints(input, widgets)` builds section blueprint metadata.
 - `buildWidgetBlueprint(input, seed)` builds editable widget metadata.
 - `buildInspectorBlueprint(...)` builds content, design, advanced, responsive, and AI inspector metadata.
@@ -81,9 +84,9 @@ This module aliases or adapts to existing Builder contracts instead of creating 
 
 The output remains inert intent metadata. A future Mapper may consume these intents and execute real Builder commands, but this phase does not.
 
-## Creative Library Alignment
+## Semantic Recipe Policy
 
-Creative Library provides metadata-only recipe variants. Builder Blueprint Engine may later expand selected recipes into native editable primitives, while preserving InspectorBlueprint bindings and native Builder compatibility.
+Recipes emit native editable primitives with semantic placeholders such as `{{hero.headline}}`, `{{primary_cta}}`, and `{{hero.image}}`. They never generate customer copy. GPT enrichment fills content and media later without replacing Engine-owned hierarchy or layout. Every recipe inherits Inspector, responsive, motion, editable, serialization, validation, and native command intent metadata through `buildWidgetBlueprints`.
 
 ## Safety Notes
 
@@ -98,4 +101,4 @@ Creative Library provides metadata-only recipe variants. Builder Blueprint Engin
 
 ## Implementation Phase
 
-Phase 30.6 Native Builder Alignment.
+RC-9A Website Engine Semantic Blueprint Compiler.

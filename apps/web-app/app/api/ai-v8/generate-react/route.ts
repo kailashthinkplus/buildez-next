@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@buildez/db";
+import { Prisma, prisma } from "@buildez/db";
 import {
   callOpenAIChatCompletion,
   extractAssistantText,
@@ -16,6 +16,9 @@ import {
 import { runWebsiteGenerationOrchestrator } from "@/modules/builder/ai-v8/orchestrator/runWebsiteGenerationOrchestrator";
 import { parseReactToBlueprint } from "@/modules/builder/ai-v8/lib/reactToBlueprint";
 import type { AIV8BrandContext } from "@/modules/builder/ai-v8/types";
+import { getUser } from "@/lib/auth/getUser";
+import { ApiError } from "@/lib/api/errors";
+import { assertPromptAllowed } from "@/lib/ai/moderation";
 
 /* ============================================================
    AI CONFIGURATION
@@ -32,10 +35,10 @@ const AI_CONFIG = {
    BRAND CONTEXT
 ============================================================ */
 
-async function getCompleteBrandContext(siteId: string) {
+async function getCompleteBrandContext(siteId: string, tenantId: string) {
   try {
-    const site = await prisma.site.findUnique({
-      where: { id: siteId },
+    const site = await prisma.site.findFirst({
+      where: { id: siteId, tenantId, deletedAt: null },
       select: {
         logoUrl: true,
         designTokens: true,
@@ -73,12 +76,12 @@ async function getCompleteBrandContext(siteId: string) {
   }
 }
 
-async function getPageContext(pageId?: string) {
+async function getPageContext(pageId: string | undefined, siteId: string) {
   if (!pageId) return null;
 
   try {
-    const page = await prisma.page.findUnique({
-      where: { id: pageId },
+    const page = await prisma.page.findFirst({
+      where: { id: pageId, siteId, deletedAt: null },
       select: {
         title: true,
         slug: true,
@@ -703,17 +706,21 @@ Repair requirements:
 
 async function saveReactCode({
   pageId,
+  siteId,
+  tenantId,
   code,
   industry,
   generationMetadata,
 }: {
   pageId: string;
+  siteId: string;
+  tenantId: string;
   code: string;
   industry: string;
   generationMetadata: Record<string, unknown>;
 }) {
-  const page = await prisma.page.findUnique({
-    where: { id: pageId },
+  const page = await prisma.page.findFirst({
+    where: { id: pageId, siteId, site: { tenantId }, deletedAt: null },
     include: {
       site: {
         select: {
@@ -780,14 +787,14 @@ async function saveReactCode({
     await tx.blueprint.upsert({
       where: { pageId },
       update: {
-        data: blueprintData,
+        data: blueprintData as unknown as Prisma.InputJsonValue,
         schemaVersion: 1,
       },
       create: {
         pageId,
         siteId: page.site.id,
         tenantId: page.site.tenantId,
-        data: blueprintData,
+        data: blueprintData as unknown as Prisma.InputJsonValue,
         schemaVersion: 1,
       },
     });
@@ -800,6 +807,11 @@ async function saveReactCode({
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getUser();
+    if (!auth?.tenant) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { userPrompt, siteId, pageId, brandContext: incomingBrand } =
       await req.json();
 
@@ -807,7 +819,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
-    const dbBrandContext = await getCompleteBrandContext(siteId);
+    await assertPromptAllowed(userPrompt);
+
+    const authorizedSite = await prisma.site.findFirst({
+      where: { id: siteId, tenantId: auth.tenant.id, deletedAt: null },
+      select: { id: true },
+    });
+    if (!authorizedSite) {
+      return NextResponse.json({ error: "Site not found" }, { status: 404 });
+    }
+
+    const dbBrandContext = await getCompleteBrandContext(siteId, auth.tenant.id);
     const brandContext =
       incomingBrand && typeof incomingBrand === "object"
         ? {
@@ -820,7 +842,10 @@ export async function POST(req: NextRequest) {
           }
         : dbBrandContext;
 
-    const pageContext = await getPageContext(pageId);
+    const pageContext = await getPageContext(pageId, siteId);
+    if (pageId && !pageContext) {
+      return NextResponse.json({ error: "Page not found" }, { status: 404 });
+    }
     const publicResearch = await researchPublicContext(userPrompt);
     const contextualPrompt = pageContext
       ? `${userPrompt}
@@ -903,6 +928,8 @@ ${publicResearch}`;
 
           await saveReactCode({
             pageId: workflow.pageId,
+            siteId,
+            tenantId: auth.tenant.id,
             code,
             industry: intent.plan.recipe.key,
             generationMetadata: {
@@ -931,9 +958,11 @@ ${publicResearch}`;
   } catch (err: unknown) {
     const message =
       err instanceof Error ? err.message : "Generation failed";
+    const status = err instanceof ApiError ? err.status : 500;
+    const code = err instanceof ApiError ? err.code : undefined;
     return NextResponse.json(
-      { error: message },
-      { status: 500 }
+      { error: message, code },
+      { status }
     );
   }
 }

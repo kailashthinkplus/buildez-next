@@ -252,3 +252,43 @@ export function createRepairAction(input: Omit<RepairAction, "id" | "priority" |
     generatesCode: false as const,
   });
 }
+
+/* ==========================================================
+   RC-15 Blueprint Repair Execution Plan
+========================================================== */
+
+import type { VisualRepairPlan } from "../visual-critic";
+import { blueprintRepairActionFromRecommendation, type BlueprintRepairAction } from "./RepairAction";
+
+export type BlueprintRepairPlan = Readonly<{
+  id: string;
+  source: "visual-repair-plan";
+  actions: readonly BlueprintRepairAction[];
+  approvedActionIds: readonly string[];
+  deterministic: true;
+}>;
+
+export function createBlueprintRepairPlan(
+  plan: VisualRepairPlan,
+  approvedRecommendationIds: readonly string[]
+): BlueprintRepairPlan {
+  const approved = new Set(approvedRecommendationIds);
+  const actions = plan.recommendations
+    .map((recommendation) =>
+      blueprintRepairActionFromRecommendation(
+        recommendation,
+        approved.has(recommendation.id)
+      )
+    )
+    .filter((action): action is BlueprintRepairAction => Boolean(action));
+
+  return Object.freeze({
+    id: `blueprint-repair.${actions.map((action) => action.id).join(".") || "empty"}`,
+    source: "visual-repair-plan",
+    actions: Object.freeze(actions),
+    approvedActionIds: Object.freeze(
+      actions.filter((action) => action.approved).map((action) => action.id)
+    ),
+    deterministic: true,
+  });
+}

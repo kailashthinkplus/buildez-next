@@ -46,8 +46,8 @@ export default function MediaCard({
         aspect-square
         ${
           selected
-            ? "border-blue-500 ring-2 ring-blue-500/30"
-            : "border-white/10 hover:border-white/30"
+            ? "border-[#3B82F6] ring-2 ring-[#1349A3]/20"
+            : "dashboard-border hover:border-[#3B82F6]/70"
         }
       `}
     >
@@ -184,7 +184,7 @@ export default function MediaCard({
             h-7
             w-7
             rounded-full
-            bg-blue-600
+            bg-[#1349A3]
             flex
             items-center
             justify-center
