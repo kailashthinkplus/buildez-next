@@ -39,6 +39,10 @@ export default function UpgradePlanModal({
   const [billing, setBilling] = useState<BillingCycle>("monthly");
   const [paying, setPaying] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [couponInput, setCouponInput] = useState("");
+  const [couponBusy, setCouponBusy] = useState(false);
+  const [couponError, setCouponError] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number; finalAmount: number } | null>(null);
   const { currency: displayCurrency, setCurrency, availableCurrencies, priceFor } = useDisplayCurrency();
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -64,6 +68,27 @@ export default function UpgradePlanModal({
 
   if (!open) return null;
 
+  async function applyCoupon() {
+    if (!couponInput.trim() || !selected) return;
+    setCouponBusy(true);
+    setCouponError("");
+    try {
+      const res = await fetch("/api/billing/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponInput.trim(), planCode: selected, billingCycle: billing }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.valid) throw new Error(data.error || "That coupon code isn't valid.");
+      setAppliedCoupon({ code: data.code, discountAmount: data.discountAmount, finalAmount: data.finalAmount });
+    } catch (err) {
+      setAppliedCoupon(null);
+      setCouponError(err instanceof Error ? err.message : "That coupon code isn't valid.");
+    } finally {
+      setCouponBusy(false);
+    }
+  }
+
   async function startPayment(plan: UpgradePlan) {
     const price =
       billing === "monthly" ? plan.priceMonthly : plan.priceYearly;
@@ -80,7 +105,13 @@ export default function UpgradePlanModal({
       const response = await fetch("/api/billing/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planCode: plan.code, billingCycle: billing, returnPath: "/app/workspace/billing", currency: displayCurrency }),
+        body: JSON.stringify({
+          planCode: plan.code,
+          billingCycle: billing,
+          returnPath: "/app/workspace/billing",
+          currency: displayCurrency,
+          couponCode: plan.code === selected ? appliedCoupon?.code : undefined,
+        }),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok || typeof payload.checkoutUrl !== "string") {
@@ -182,12 +213,35 @@ export default function UpgradePlanModal({
         {error && <p className="mb-5 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-500">{error}</p>}
 
         {/* Plan Cards */}
-        <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <CurrencySwitcher currency={displayCurrency} currencies={availableCurrencies} onChange={setCurrency} />
           <div className="hidden gap-2 sm:flex">
             <button onClick={() => moveCarousel(-1)} aria-label="Previous plans" className="dashboard-card grid h-9 w-9 place-items-center rounded-xl"><ChevronLeft size={16} /></button>
             <button onClick={() => moveCarousel(1)} aria-label="Next plans" className="dashboard-card grid h-9 w-9 place-items-center rounded-xl"><ChevronRight size={16} /></button>
           </div>
+        </div>
+        <div className="mb-4">
+          {appliedCoupon ? (
+            <div className="flex items-center justify-between dashboard-card rounded-xl px-4 py-2 text-sm border border-emerald-500/30">
+              <span className="font-medium text-emerald-600 dark:text-emerald-400">{appliedCoupon.code} applied to {selected}</span>
+              <button type="button" onClick={() => { setAppliedCoupon(null); setCouponInput(""); }} className="text-xs dashboard-faint hover:dashboard-muted">Remove</button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                value={couponInput}
+                onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                placeholder="Coupon code"
+                disabled={!selected}
+                className="dashboard-card flex-1 min-w-0 rounded-xl border-0 px-3 py-2 text-sm outline-none disabled:opacity-50"
+              />
+              <button type="button" onClick={applyCoupon} disabled={couponBusy || !couponInput.trim() || !selected} className="dashboard-subtle dashboard-hover shrink-0 rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-40">
+                {couponBusy ? "Checking…" : "Apply"}
+              </button>
+            </div>
+          )}
+          {couponError && <p className="mt-1.5 text-xs text-red-500">{couponError}</p>}
+          {!selected && !couponError ? <p className="mt-1.5 text-xs dashboard-faint">Select a plan below to apply a coupon.</p> : null}
         </div>
         <div ref={carouselRef} className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {plans.filter((_, index) => {
@@ -215,7 +269,7 @@ export default function UpgradePlanModal({
                       : "dashboard-border dashboard-hover"
                   }
                 `}
-                onClick={() => setSelected(plan.code)}
+                onClick={() => { if (plan.code !== selected) { setSelected(plan.code); setAppliedCoupon(null); setCouponError(""); } }}
               >
                 <h3 className="text-lg font-medium mb-1">
                   {plan.name}
@@ -233,6 +287,11 @@ export default function UpgradePlanModal({
                   {!plan.isCustom && price !== null ? (
                     <span className="text-sm dashboard-faint ml-1">
                       / {billing === "monthly" ? "month" : "year"}
+                    </span>
+                  ) : null}
+                  {appliedCoupon && isActive && price !== null ? (
+                    <span className="block text-xs font-normal text-emerald-600 dark:text-emerald-400 mt-1">
+                      {appliedCoupon.code}: {priceFor(price - appliedCoupon.discountAmount, plan.currency)} after discount
                     </span>
                   ) : null}
                 </div>

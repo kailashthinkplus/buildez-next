@@ -29,10 +29,37 @@ export default function PayNowModal({
   price?: number;
   currency?: string;
   features?: string[];
-  onPayNow?: () => Promise<unknown>;
+  onPayNow?: (couponCode?: string) => Promise<unknown>;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // COUPON STATE
+  const [couponInput, setCouponInput] = useState("");
+  const [couponBusy, setCouponBusy] = useState(false);
+  const [couponError, setCouponError] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number; finalAmount: number } | null>(null);
+
+  async function applyCoupon() {
+    if (!couponInput.trim()) return;
+    setCouponBusy(true);
+    setCouponError("");
+    try {
+      const res = await fetch("/api/billing/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponInput.trim(), planCode: plan, billingCycle: billing }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.valid) throw new Error(data.error || "That coupon code isn't valid.");
+      setAppliedCoupon({ code: data.code, discountAmount: data.discountAmount, finalAmount: data.finalAmount });
+    } catch (err) {
+      setAppliedCoupon(null);
+      setCouponError(err instanceof Error ? err.message : "That coupon code isn't valid.");
+    } finally {
+      setCouponBusy(false);
+    }
+  }
 
   // NEW STATES
   const [status, setStatus] = useState<"idle" | "success" | "failed">("idle");
@@ -75,7 +102,7 @@ export default function PayNowModal({
       setStatus("idle");
 
       // Open the hosted subscription checkout.
-      await Promise.resolve().then(() => onPayNow());
+      await Promise.resolve().then(() => onPayNow(appliedCoupon?.code));
     } catch (err: any) {
       console.error("❌ PayNowModal ERROR:", err);
 
@@ -200,12 +227,43 @@ export default function PayNowModal({
                 {plan} — {billing}
               </p>
 
-              <p className="text-4xl font-bold mt-2 drop-shadow-sm">
-                {formatMoney(price ?? 0, currency)}
-                <span className="text-white/60 text-sm ml-1">
-                  / {billing === "monthly" ? "month" : "year"}
-                </span>
-              </p>
+              {appliedCoupon ? (
+                <p className="text-4xl font-bold mt-2 drop-shadow-sm">
+                  {formatMoney(appliedCoupon.finalAmount, currency)}
+                  <span className="text-white/60 text-sm ml-1">/ {billing === "monthly" ? "month" : "year"}</span>
+                  <span className="block text-sm font-normal text-white/40 line-through mt-1">{formatMoney(price ?? 0, currency)}</span>
+                </p>
+              ) : (
+                <p className="text-4xl font-bold mt-2 drop-shadow-sm">
+                  {formatMoney(price ?? 0, currency)}
+                  <span className="text-white/60 text-sm ml-1">
+                    / {billing === "monthly" ? "month" : "year"}
+                  </span>
+                </p>
+              )}
+            </div>
+
+            {/* COUPON */}
+            <div className="mb-6">
+              {appliedCoupon ? (
+                <div className="flex items-center justify-between glass px-4 py-2.5 rounded-xl text-sm border border-emerald-400/30">
+                  <span className="text-emerald-300 font-medium">{appliedCoupon.code} applied</span>
+                  <button type="button" onClick={() => { setAppliedCoupon(null); setCouponInput(""); }} className="text-white/50 hover:text-white/80 text-xs">Remove</button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                    placeholder="Coupon code"
+                    className="glass px-4 py-2.5 rounded-xl text-sm flex-1 min-w-0 border border-white/10"
+                  />
+                  <button type="button" onClick={applyCoupon} disabled={couponBusy || !couponInput.trim()} className="px-4 py-2.5 rounded-xl text-sm font-medium bg-white/10 hover:bg-white/20 disabled:opacity-40 shrink-0">
+                    {couponBusy ? "Checking…" : "Apply"}
+                  </button>
+                </div>
+              )}
+              {couponError && <p className="text-red-400 text-xs mt-2">{couponError}</p>}
             </div>
 
             {/* FEATURES */}

@@ -1,2 +1,10 @@
 import ResourceManager from "../../components/ResourceManager";
-export default function PlansPage() { return <ResourceManager mode="plans" />; }
+import CouponsPanel from "../../components/CouponsPanel";
+export default function PlansPage() {
+  return (
+    <>
+      <ResourceManager mode="plans" />
+      <CouponsPanel />
+    </>
+  );
+}

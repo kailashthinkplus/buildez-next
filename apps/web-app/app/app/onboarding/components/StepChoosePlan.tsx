@@ -153,6 +153,15 @@ export default function StepChoosePlan({
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || "Your plan selection could not be saved.");
+
+      // Free/trial plans skip Dodo checkout entirely, so this is the only
+      // point in onboarding where the tenant + first site get created —
+      // without it, StepFinish's "finish" call has nothing to activate and
+      // the user lands on the dashboard with no website.
+      const tenantRes = await fetch("/api/onboarding/create-tenant", { method: "POST" });
+      const tenantPayload = await tenantRes.json().catch(() => ({}));
+      if (!tenantRes.ok || !tenantPayload?.ok) throw new Error(tenantPayload?.error || "Your workspace could not be created.");
+
       onNext();
     } catch (error) {
       setCheckoutError(error instanceof Error ? error.message : "Your plan selection could not be saved.");
@@ -177,7 +186,7 @@ export default function StepChoosePlan({
         price={selectedPrice ?? 0}
         currency={selectedPlan?.currency || "INR"}
         features={selectedPlan?.features ?? []}
-        onPayNow={async () => {
+        onPayNow={async (couponCode) => {
           if (!selected) throw new Error("Choose a plan first.");
           const selection = await fetch("/api/onboarding/choose-plan", {
             method: "POST",
@@ -189,7 +198,7 @@ export default function StepChoosePlan({
           const response = await fetch("/api/billing/checkout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ planCode: selected, billingCycle: billing, returnPath: "/app/onboarding", currency: displayCurrency }),
+            body: JSON.stringify({ planCode: selected, billingCycle: billing, returnPath: "/app/onboarding", currency: displayCurrency, couponCode }),
           });
           const payload = await response.json().catch(() => ({}));
           if (!response.ok || !payload.checkoutUrl) throw new Error(payload.error || "Secure checkout could not be started.");

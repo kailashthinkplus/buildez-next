@@ -359,6 +359,27 @@ export async function syncDodoSubscription(payload: unknown) {
   // redelivery, which would just re-confirm a plan the user already knows
   // is active.
   const isNewActivation = active && (result.previousStatus !== "ACTIVE" || result.previousPlanCode !== planCode);
+
+  const metadataCouponCode = typeof metadata.couponCode === "string" ? metadata.couponCode : "";
+  if (isNewActivation && metadataCouponCode) {
+    // Records the redemption (for usage/per-user limit enforcement) and
+    // increments Coupon.timesUsed. The exact discounted amount lives in
+    // Dodo's own records; we don't have a reliable minor-units field on this
+    // webhook payload to mirror it, so this is an audit trail, not the
+    // source of truth for what was actually charged.
+    const { recordCouponRedemption } = await import("./coupons");
+    await recordCouponRedemption({
+      couponCode: metadataCouponCode,
+      userId,
+      tenantId,
+      subscriptionId: result.subscriptionId,
+      amountDiscounted: 0,
+      currency: pricing.currency,
+    }).catch((error) => {
+      console.error("[dodo] coupon redemption recording failed:", error);
+    });
+  }
+
   if (isNewActivation) {
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
     if (user?.email) {

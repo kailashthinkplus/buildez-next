@@ -4,6 +4,7 @@ import { ConflictError } from "dodopayments";
 import { prisma } from "@buildez/db";
 import { getUser } from "@/lib/auth/getUser";
 import { dodoClient, resolveDodoProductId, type BillingCycle } from "@/lib/billing/dodo";
+import { validateCoupon } from "@/lib/billing/coupons";
 import { isSupportedCurrency } from "@/lib/currency";
 
 const RESUMABLE_PAYMENT_STATUSES = new Set([
@@ -49,6 +50,7 @@ export async function POST(req: NextRequest) {
     : "/app/workspace/billing";
   const requestedCurrency = typeof body.currency === "string" ? body.currency.toUpperCase() : "";
   const billingCurrency = isSupportedCurrency(requestedCurrency) ? requestedCurrency : undefined;
+  const requestedCouponCode = typeof body.couponCode === "string" ? body.couponCode.trim() : "";
   if (!planCode || !billingCycle) {
     return Response.json({ error: "Choose a plan and billing cycle." }, { status: 400 });
   }
@@ -61,6 +63,25 @@ export async function POST(req: NextRequest) {
   });
   const pricing = plan?.pricing[0];
   if (!plan || !pricing) return Response.json({ error: "This plan is unavailable." }, { status: 404 });
+
+  // Never trust a client-echoed discount — re-validate against our own
+  // eligibility rules right before it's handed to Dodo.
+  let appliedCouponCode: string | undefined;
+  let discountAmount = 0;
+  if (requestedCouponCode) {
+    const validation = await validateCoupon({
+      code: requestedCouponCode,
+      userId: auth.user.id,
+      planCode,
+      billingCycle: billingCycle as BillingCycle,
+      amount: pricing.amount,
+      currency: pricing.currency,
+    });
+    if ("error" in validation) return Response.json({ error: validation.error }, { status: 400 });
+    appliedCouponCode = validation.code;
+    discountAmount = validation.discountAmount;
+  }
+
   const currentPlan = auth.plan?.Plan;
   if (currentPlan && plan.maxSites <= currentPlan.maxSites && plan.maxPages <= currentPlan.maxPages && plan.aiCredits <= currentPlan.aiCredits && plan.teamMembers <= currentPlan.teamMembers) {
     return Response.json({ error: "Choose a plan above your current plan." }, { status: 400 });
@@ -83,11 +104,13 @@ export async function POST(req: NextRequest) {
           quantity: 1,
           proration_billing_mode: "prorated_immediately",
           on_payment_failure: "prevent_change",
+          ...(appliedCouponCode ? { discount_code: appliedCouponCode } : {}),
           metadata: {
             tenantId: auth.tenant.id,
             userId: auth.user.id,
             planCode,
             billingCycle,
+            ...(appliedCouponCode ? { couponCode: appliedCouponCode } : {}),
           },
         });
         return Response.json({
@@ -115,11 +138,13 @@ export async function POST(req: NextRequest) {
         userId: auth.user.id,
         planCode,
         billingCycle,
+        ...(appliedCouponCode ? { couponCode: appliedCouponCode } : {}),
       },
       return_url: `${returnBase}${returnBase.includes("?") ? "&" : "?"}checkout=success`,
       cancel_url: `${req.nextUrl.origin}${returnPath}?checkout=cancelled`,
       ...(billingCurrency ? { billing_currency: billingCurrency as never } : {}),
-      feature_flags: { redirect_immediately: true, allow_currency_selection: true },
+      ...(appliedCouponCode ? { discount_code: appliedCouponCode } : {}),
+      feature_flags: { redirect_immediately: true, allow_currency_selection: true, allow_discount_code: true },
     });
     if (!session.checkout_url) throw new Error("Dodo Payments returned no checkout URL.");
     await prisma.subscription.create({
@@ -127,6 +152,8 @@ export async function POST(req: NextRequest) {
         tenantHistoryId: auth.tenant.id,
         userId: auth.user.id,
         planCode,
+        couponCode: appliedCouponCode,
+        discountAmount: appliedCouponCode ? discountAmount : undefined,
         planId: plan.id,
         billingCycle,
         status: "PENDING",

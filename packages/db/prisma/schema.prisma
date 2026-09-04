@@ -1545,6 +1545,9 @@ model Subscription {
   startedAt  DateTime?
   paidAt     DateTime?
 
+  couponCode     String?
+  discountAmount Int?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Plan      Plan?    @relation(fields: [planId], references: [id])
@@ -1553,6 +1556,65 @@ model Subscription {
   @@index([tenantHistoryId])
   @@index([userId])
   @@index([dodoCustomerId])
+}
+
+model Coupon {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  description String?
+
+  /// "PERCENTAGE" | "FLAT"
+  type     String
+  /// Percentage: basis points (2000 = 20%). Flat: minor units of `currency`.
+  amount   Int
+  currency String?
+
+  /// Empty = valid for every plan / cycle.
+  planCodes     String[]
+  billingCycles String[]
+
+  /// Minor units; order must be at least this much before the coupon applies.
+  minAmount Int?
+
+  usageLimit   Int?
+  timesUsed    Int  @default(0)
+  perUserLimit Int? @default(1)
+  firstTimeOnly Boolean @default(false)
+
+  startsAt  DateTime?
+  expiresAt DateTime?
+  isActive  Boolean   @default(true)
+
+  /// Mirrored discount object in Dodo Payments, created alongside this row so
+  /// Dodo independently enforces the same limits at charge time.
+  dodoDiscountId String?
+
+  createdByUserId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  redemptions CouponRedemption[]
+
+  @@index([isActive])
+}
+
+model CouponRedemption {
+  id       String @id @default(cuid())
+  couponId String
+  coupon   Coupon @relation(fields: [couponId], references: [id])
+
+  userId         String
+  tenantId       String?
+  subscriptionId String? @unique
+
+  amountDiscounted Int
+  currency         String
+
+  createdAt DateTime @default(now())
+
+  @@index([couponId])
+  @@index([userId])
 }
 
 model BillingTransaction {
