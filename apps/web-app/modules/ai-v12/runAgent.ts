@@ -2777,7 +2777,7 @@ VISUAL RICHNESS:
 
 Use purposeful combinations of:
 - editorial/product imagery
-- custom-feeling iconography
+- custom-feeling iconography (see ICONOGRAPHY below)
 - diagrams
 - UI/product compositions
 - SVG/CSS visual art
@@ -2792,6 +2792,10 @@ Use purposeful combinations of:
 - scroll reveals
 
 Only use these where they serve the selected art direction.
+
+ICONOGRAPHY:
+
+Use the lucide-react library (already proven across the platform) for every interface icon: navigation, feature markers, buttons, social/contact links, list bullets, and status indicators. Import named icons (e.g. import { ArrowRight, Menu, ShoppingBag } from "lucide-react") and render them as SVG components. Do NOT use a bare Unicode/emoji character (💿, 👋, ↗, ✓, etc.) as a substitute for a real icon — emoji render inconsistently across operating systems (Windows in particular ships very limited emoji glyph coverage) and read as unfinished. Emoji are acceptable only as genuinely expressive inline content the brief explicitly calls for (e.g. a casual chat bubble), never as the icon system itself.
 
 IMMERSIVE REQUESTS:
 
@@ -2850,6 +2854,7 @@ For advanced motion:
 - favor performant transforms/opacity
 - avoid unnecessary layout-triggering animation
 - keep expensive effects bounded to their intended sections
+- never nest a position: fixed element (site header, sticky nav, floating CTA, cookie banner, etc.) inside a container that GSAP/ScrollTrigger pins or applies a scroll-driven transform/translate to. WebKit (Safari and iOS Safari) makes a transformed ancestor the containing block for its fixed-position descendants — instead of the real viewport — so the "fixed" element collapses into that ancestor's small transformed box rather than staying full-screen. This bug is invisible on Chrome/Android, which is why it must be avoided by construction: render fixed-position chrome as a sibling OUTSIDE the pinned/transformed scroll wrapper (e.g. a direct child of the page root, positioned after or alongside the scroll container in the DOM), never inside it.
 
 SCREENSHOT / PDF / UI REPLICATION:
 

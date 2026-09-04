@@ -4,6 +4,9 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import react from "@vitejs/plugin-react";
+import autoprefixer from "autoprefixer";
+
+const SAFARI_TARGETS = ["last 3 iOS versions", "last 3 Safari versions", "last 2 Chrome versions", "last 2 Firefox versions", "last 2 Edge versions"];
 
 const [root, portValue, sessionId, siteId] = process.argv.slice(2);
 const port = Number(portValue);
@@ -32,10 +35,11 @@ const runtimeAliases = {
 const server = await createServer({
   root: projectRoot,
   configFile: false,
-  // See v12BuildWorker.mjs: blocks postcss-load-config's filesystem search
-  // for a tenant-writable postcss.config.* that Vite would otherwise
-  // require()/execute inside this server-side process.
-  css: { postcss: {} },
+  // See v12BuildWorker.mjs: an inline object still blocks postcss-load-config's
+  // filesystem search for a tenant-writable postcss.config.* that Vite would
+  // otherwise require()/execute inside this server-side process, while
+  // giving us Safari/iOS Safari vendor prefixing via autoprefixer.
+  css: { postcss: { plugins: [autoprefixer({ overrideBrowserslist: SAFARI_TARGETS })] } },
   plugins: [react()],
   resolve: {
     alias: Object.entries(runtimeAliases).map(([find, replacement]) => ({ find: new RegExp(`^${find.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`), replacement })),
