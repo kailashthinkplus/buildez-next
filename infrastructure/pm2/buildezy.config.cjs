@@ -4,7 +4,7 @@ module.exports = {
       name: "buildezy",
       cwd: "/var/www/buildezy/apps/web-app",
       script: "/usr/local/bin/node",
-      args: "node_modules/next/dist/bin/next start",
+      args: "node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3100",
       interpreter: "none",
       uid: "buildezy",
       gid: "buildezy",
