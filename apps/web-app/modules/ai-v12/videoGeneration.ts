@@ -24,6 +24,20 @@ const HIGGSFIELD_VIDEO_ENDPOINT = process.env.HIGGSFIELD_VIDEO_ENDPOINT || "/kli
 const POLL_INTERVAL_MS = 4_000;
 const POLL_TIMEOUT_MS = Number(process.env.HIGGSFIELD_VIDEO_TIMEOUT_MS || 240_000);
 
+// Higgsfield rejects a prompt over 2500 characters (its API responds with
+// "size must be between 0 and 2500"). Upstream prompt text can run well
+// past that — the design brief it's derived from is written for the code
+// generation model, not scoped to any external API's limit — so cap it
+// here, next to the limit it must satisfy, rather than relying on every
+// caller to know Higgsfield's constraint.
+const HIGGSFIELD_PROMPT_MAX_LENGTH = 2400;
+
+function clampHiggsfieldPrompt(prompt: string): string {
+  return prompt.length > HIGGSFIELD_PROMPT_MAX_LENGTH
+    ? `${prompt.slice(0, HIGGSFIELD_PROMPT_MAX_LENGTH - 1).trimEnd()}…`
+    : prompt;
+}
+
 function videoRequestBody(imageUrl: string, prompt: string): Record<string, unknown> {
   if (HIGGSFIELD_VIDEO_ENDPOINT.includes("/kling-video/")) {
     return {
@@ -96,7 +110,7 @@ export async function generateHeroVideo(input: {
           "content-type": "application/json",
           authorization: authHeader(),
         },
-        body: JSON.stringify(videoRequestBody(input.imageUrl, input.prompt)),
+        body: JSON.stringify(videoRequestBody(input.imageUrl, clampHiggsfieldPrompt(input.prompt))),
         cache: "no-store",
       },
       {
