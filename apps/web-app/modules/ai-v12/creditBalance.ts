@@ -4,16 +4,27 @@ export async function getV12CreditBalance(input: {
   tenantId: string;
   creditLimit: number;
 }) {
-  const currentUsage =
-    await prisma.planUsage.findFirst({
+  // A subscription-webhook-driven bug (fixed alongside this) used to mint a
+  // fresh PlanUsage row on every small drift in currentPeriodEnd instead of
+  // reusing the row already covering "now", fragmenting one tenant's usage
+  // across several overlapping rows. Summing every row that overlaps *now*
+  // (rather than trusting the single latest-periodStart row) reports the
+  // true total regardless of whether that fragmentation happened, and is a
+  // no-op once a tenant only ever has one row per period going forward.
+  const now = new Date();
+  const currentUsageRows =
+    await prisma.planUsage.findMany({
       where: {
         tenantId: input.tenantId,
         key: "ai_credits",
+        periodStart: { lte: now },
+        OR: [{ periodEnd: null }, { periodEnd: { gt: now } }],
       },
       orderBy: {
         periodStart: "desc",
       },
     });
+  const currentUsage = currentUsageRows[0];
 
   const topUpUsage =
     await prisma.planUsage.findFirst({
@@ -29,7 +40,7 @@ export async function getV12CreditBalance(input: {
   const usedPlanCredits =
     Math.max(
       0,
-      currentUsage?.used || 0,
+      currentUsageRows.reduce((sum, row) => sum + row.used, 0),
     );
 
   const includedRemaining =

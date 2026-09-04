@@ -499,6 +499,33 @@ html.dark .app-shell, html.dark .dashboard-shell { background: var(--background)
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
+
+  /* Firefox/Windows-Chrome show a permanent OS-style scrollbar track by
+     default; macOS's overlay scrollbars already auto-hide. This keeps the
+     track transparent until hovered so it doesn't sit there full-time. */
+  .thin-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  .thin-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 999px;
+  }
+  .thin-scrollbar:hover {
+    scrollbar-color: rgba(15, 23, 42, 0.25) transparent;
+  }
+  .thin-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.25);
+  }
+  .dark .thin-scrollbar:hover {
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  }
+  .dark .thin-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+  }
 }
 
 /* =========================

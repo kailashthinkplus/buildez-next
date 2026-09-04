@@ -249,6 +249,30 @@ function resolveCreditPeriod(input: {
 async function getTenantCreditPeriod(
   tenantId: string,
 ): Promise<CreditPeriod> {
+  // `currentPeriodEnd` on the subscription shifts with every renewal/plan-
+  // change webhook (even by a few seconds), and periods are keyed by exact
+  // periodStart — recomputing from it unconditionally minted a brand new
+  // PlanUsage row on every drift, orphaning whatever had already been
+  // recorded as "used" against the previous row. Reuse an existing row that
+  // already covers *now* before computing a fresh period.
+  const now = new Date();
+  const existing = await prisma.planUsage.findFirst({
+    where: {
+      tenantId,
+      key: "ai_credits",
+      periodStart: { lte: now },
+      OR: [{ periodEnd: null }, { periodEnd: { gt: now } }],
+    },
+    orderBy: { periodStart: "desc" },
+  });
+  if (existing) {
+    return {
+      periodStart: existing.periodStart,
+      periodEnd: existing.periodEnd,
+      billingCycle: existing.billingCycle,
+    };
+  }
+
   const subscription =
     await prisma.subscription.findFirst({
       where: {

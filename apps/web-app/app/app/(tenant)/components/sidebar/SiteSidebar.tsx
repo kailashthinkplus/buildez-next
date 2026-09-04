@@ -89,7 +89,7 @@ export function SiteSidebar({
   ];
 
   return (
-    <div className={`h-full py-4 flex flex-col overflow-y-auto ${compact ? "px-2" : "px-3"}`}>
+    <div className={`h-full py-4 flex flex-col overflow-y-auto thin-scrollbar ${compact ? "px-2" : "px-3"}`}>
       {/* LOGO */}
       <div className={`flex items-center justify-between ${compact ? "justify-center" : "px-2"}`}>
         <div className="flex items-center">
