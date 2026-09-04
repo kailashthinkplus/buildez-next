@@ -3033,7 +3033,35 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
     });
   }
   input.onProgress?.("Model response received", "Validating the generated project before applying it");
-  let parsedResult = parseResult(outputText(payload), input.mode === "auto");
+  let parsedResult: ReturnType<typeof parseResult>;
+  try {
+    parsedResult = parseResult(outputText(payload), input.mode === "auto");
+  } catch (error) {
+    // A missing required file (package.json/index.html/src/main.tsx) is
+    // usually a one-off compliance slip, not a fundamental misunderstanding
+    // of the request — worth one corrective retry before failing the whole
+    // turn and burning the user's credits on it. Any other parse/validation
+    // error (invalid JSON, empty file set, forbidden path) is not something
+    // a repeat of the same prompt is likely to fix, so it still fails fast.
+    if (input.signal.aborted || !(error instanceof Error) || !/^Preview project is missing /.test(error.message)) {
+      throw error;
+    }
+    input.onProgress?.(
+      "Retrying — the response was missing a required file",
+      error.message,
+    );
+    payload = await requestOpenAiResponse({
+      apiKey,
+      body: generationBody(
+        "low",
+        18_000,
+        `Your previous response was rejected: ${error.message}. Return the COMPLETE project again, including every required file (package.json, index.html, src/main.tsx, src/buildez.theme.json, src/buildez.pages.json) and every other file from the project, not just the ones you changed.`,
+      ),
+      signal: input.signal,
+      timeoutMs: 165_000,
+    });
+    parsedResult = parseResult(outputText(payload), input.mode === "auto");
+  }
   const photorealisticPrimaryMediaUrls = input.creativeDirection.imageStyle === "Photorealistic"
     ? generatedMedia
         .filter((media) => /hero|keyframe|primary|opening/i.test(media.role))
