@@ -1,7 +1,16 @@
+/**
+ * Absolute so the badge points at the BuildEZ platform itself, never the
+ * tenant's own (possibly custom) domain this component is rendered under.
+ */
+function buildezPlatformOrigin() {
+  return (process.env.NEXT_PUBLIC_APP_URL || `https://${process.env.PLATFORM_DOMAIN || "getbuildezy.com"}`).replace(/\/$/, "");
+}
+
 export function PoweredByBuildez() {
+  const origin = buildezPlatformOrigin();
   return (
     <a
-      href="https://buildez.ai"
+      href={`${origin}/`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Powered by BuildEZ"
@@ -18,26 +27,14 @@ export function PoweredByBuildez() {
         dark:hover:bg-[#111827] dark:hover:text-white/80
       "
     >
-      <svg
-        width="14"
-        height="14"
-        viewBox="0 0 32 32"
-        fill="none"
-        aria-hidden="true"
-        className="shrink-0"
-      >
-        <rect
-          width="32"
-          height="32"
-          rx="8"
-          fill="#1349A3"
-        />
-
-        <path
-          d="M9 8.5h8.2c3.4 0 5.6 1.7 5.6 4.5 0 1.8-.9 3.1-2.5 3.8 2 .6 3.1 2 3.1 4.1 0 3.3-2.6 5.1-6.4 5.1H9V8.5Zm7.5 7c1.7 0 2.7-.7 2.7-2s-1-1.9-2.7-1.9h-3.8v3.9h3.8Zm.4 7.3c1.9 0 2.9-.8 2.9-2.2 0-1.5-1.1-2.2-3-2.2h-4.1v4.4h4.2Z"
-          fill="white"
-        />
-      </svg>
+      {/* eslint-disable-next-line @next/next/no-img-element -- always an absolute cross-origin URL; next/image can't optimize that. */}
+      <img
+        src={`${origin}/favicon.png`}
+        alt=""
+        width={14}
+        height={14}
+        className="shrink-0 rounded-[4px]"
+      />
 
       <span className="opacity-70">
         Powered by
