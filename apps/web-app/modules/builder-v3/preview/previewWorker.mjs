@@ -46,6 +46,11 @@ const server = await createServer({
     port,
     strictPort: true,
     fs: { strict: true, allow: [projectRoot, process.cwd()] },
+    // Reached only via the app's own nginx proxy at /_v3preview/<port>/*
+    // (see PreviewSessionManager.ts), which forwards the public Host
+    // header through — Vite's dev-server Host check otherwise rejects
+    // anything but localhost as a DNS-rebinding guard.
+    allowedHosts: true,
     proxy: {
       "/api/public/shopez": {
         target: process.env.BUILDEZ_PREVIEW_API_ORIGIN || "http://127.0.0.1:3000",

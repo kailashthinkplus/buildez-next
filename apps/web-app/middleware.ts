@@ -29,6 +29,7 @@ const PUBLIC_ROUTES = [
   "/api/runtime/v12",
   "/api/geo/consent-region",
   "/api/cron/publish-scheduled", // Own shared-secret auth (CRON_SECRET) — see route.ts. Called by external cron with no user session.
+  "/api/cron/verify-domains", // Same shared-secret auth as above.
 ];
 
 /* ==========================================================

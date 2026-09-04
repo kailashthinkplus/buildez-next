@@ -4,7 +4,8 @@ import { prisma } from "@buildez/db";
 
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 import { DOMAIN_SERVER_IP, provisionNginxDomain, validDomain } from "@/lib/domain-provisioning";
-import { checkDomainPropagation } from "@/lib/domains/dns-verification";
+import { detectDnsProvider } from "@/lib/domains/dns-verification";
+import { verifyDomainRecord } from "@/lib/domains/autoVerify";
 import { customDomainEntitlement } from "@/lib/domains/entitlements";
 
 const normalize = (value: string) => value.toLowerCase().trim().replace(/^https?:\/\//, "").split("/")[0].replace(/\.$/, "");
@@ -21,10 +22,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ site
   const { siteId } = await params;
   const access = await siteAccess(req, siteId);
   if (!access) return NextResponse.json({ error: "Website not found" }, { status: 404 });
-  const [domains, entitlement] = await Promise.all([
+  const [domainRows, entitlement] = await Promise.all([
     prisma.siteDomain.findMany({ where: { siteId }, orderBy: { createdAt: "desc" } }),
     customDomainEntitlement(access.tenant.id),
   ]);
+  const domains = await Promise.all(domainRows.map(async (row) => ({
+    ...row,
+    detectedDnsProvider: row.status === "VERIFIED" ? null : await detectDnsProvider(row.domain),
+  })));
   return NextResponse.json({
     domains,
     canUseCustomDomain: entitlement.allowed,
@@ -63,25 +68,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ si
   const record = await prisma.siteDomain.findFirst({ where: { id: body?.domainId, siteId } });
   if (!record?.verificationToken) return NextResponse.json({ error: "Domain not found" }, { status: 404 });
 
-  const propagation = await checkDomainPropagation(record.domain, record.verificationToken);
-  const checkedAt = new Date();
-  if (!propagation.ready) {
-    const domain = await prisma.siteDomain.update({ where: { id: record.id }, data: { status: "PENDING", sslStatus: "PENDING", verifiedAt: null, dnsVerifiedAt: null, lastCheckedAt: checkedAt, lastDnsResult: propagation } });
-    return NextResponse.json({ domain, verified: false, propagation });
+  const result = await verifyDomainRecord(record);
+  const domain = await prisma.siteDomain.findUnique({ where: { id: record.id } });
+  if ("error" in result && result.error) {
+    return NextResponse.json({ error: "DNS is ready, but secure publishing could not be activated.", detail: result.error instanceof Error ? result.error.message : "Provisioning failed", domain, propagation: result.propagation }, { status: 502 });
   }
-  await prisma.siteDomain.update({ where: { id: record.id }, data: { dnsVerifiedAt: checkedAt, lastCheckedAt: checkedAt, lastDnsResult: propagation, sslStatus: "PROVISIONING" } });
-  try {
-    const provisioning = await provisionNginxDomain("add", record.domain);
-    if (provisioning.skipped) {
-      const domain = await prisma.siteDomain.update({ where: { id: record.id }, data: { status: "PENDING", sslStatus: "PENDING" } });
-      return NextResponse.json({ domain, verified: false, propagation, provisioning, activationPending: true });
-    }
-    const domain = await prisma.siteDomain.update({ where: { id: record.id }, data: { status: "VERIFIED", verifiedAt: checkedAt, sslStatus: "ACTIVE", sslActivatedAt: checkedAt } });
-    return NextResponse.json({ domain, verified: true, propagation, provisioning });
-  } catch (error) {
-    const domain = await prisma.siteDomain.update({ where: { id: record.id }, data: { status: "FAILED", sslStatus: "FAILED" } });
-    return NextResponse.json({ error: "DNS is ready, but secure publishing could not be activated.", detail: error instanceof Error ? error.message : "Provisioning failed", domain, propagation }, { status: 502 });
-  }
+  return NextResponse.json({ domain, verified: result.verified, propagation: result.propagation, provisioning: "provisioning" in result ? result.provisioning : undefined, activationPending: "activationPending" in result ? result.activationPending : undefined });
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ siteId: string }> }) {

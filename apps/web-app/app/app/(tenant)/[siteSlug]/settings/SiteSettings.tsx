@@ -32,6 +32,7 @@ type Domain = {
   verificationToken?: string | null;
   sslStatus?: string;
   provider?: string | null;
+  detectedDnsProvider?: "CLOUDFLARE" | "GODADDY" | "OTHER" | "UNKNOWN" | null;
   lastCheckedAt?: string | null;
   lastDnsResult?: { readyResolvers?: number; totalResolvers?: number } | null;
 };
@@ -636,7 +637,8 @@ function Domains({ site }: { site: Site }) {
     [integrations, setIntegrations] = useState({ cloudflare: false, godaddy: false }),
     [domain, setDomain] = useState(""),
     [working, setWorking] = useState(""),
-    [error, setError] = useState(searchParams.get("domainError") || "");
+    [error, setError] = useState(searchParams.get("domainError") || ""),
+    [stepsModalDomain, setStepsModalDomain] = useState<Domain | null>(null);
   const load = useCallback(async () => {
     const r = await fetch(`/api/sites/${site.id}/domains`),
       b = await r.json();
@@ -732,8 +734,56 @@ function Domains({ site }: { site: Site }) {
               {x.status}
             </span>
           </div>
-          {x.status !== "VERIFIED" && <div className="mt-4 grid gap-2 md:grid-cols-2"><div className="rounded-xl border dashboard-border p-3"><p className="text-[10px] font-semibold uppercase dashboard-faint">Routing record</p><p className="mt-2 text-xs"><strong>A</strong> · {x.domain}</p><code className="mt-1 block break-all text-xs text-blue-600">{serverIp}</code><p className="mt-1 text-[10px] dashboard-faint">Use DNS only. Keep proxying off until activation.</p><button onClick={() => void navigator.clipboard.writeText(serverIp)} className="mt-2 flex items-center gap-1 text-[10px] font-semibold"><Copy size={12}/>Copy value</button></div><div className="rounded-xl border dashboard-border p-3"><p className="text-[10px] font-semibold uppercase dashboard-faint">Ownership record</p><p className="mt-2 break-all text-xs"><strong>TXT</strong> · _buildez-verification.{x.domain}</p><code className="mt-1 block break-all text-xs text-blue-600">{x.verificationToken}</code><button onClick={() => void navigator.clipboard.writeText(x.verificationToken || "")} className="mt-2 flex items-center gap-1 text-[10px] font-semibold"><Copy size={12}/>Copy value</button></div></div>}
-          {x.status !== "VERIFIED" && <div className="mt-3 flex flex-wrap gap-2">{integrations.cloudflare ? <a href={`/api/sites/${site.id}/domains/cloudflare/start?domainId=${encodeURIComponent(x.id)}`} className="rounded-xl border dashboard-border px-3 py-2 text-xs font-semibold dashboard-hover">Connect with Cloudflare</a> : null}{integrations.godaddy ? <a href={`/api/sites/${site.id}/domains/godaddy/start?domainId=${encodeURIComponent(x.id)}`} className="rounded-xl border dashboard-border px-3 py-2 text-xs font-semibold dashboard-hover">Connect with GoDaddy</a> : null}{!integrations.cloudflare && !integrations.godaddy ? <span className="text-xs dashboard-muted">Use the DNS records above. Assisted provider connection will appear when available.</span> : null}</div>}
+          {x.status !== "VERIFIED" && (
+            <div className="mt-4 grid gap-2 md:grid-cols-2">
+              <DnsRecordCard
+                label="Routing record"
+                type="A"
+                name="@"
+                fullName={x.domain}
+                value={serverIp}
+                note="Use DNS only. Keep proxying off until activation."
+              />
+              <DnsRecordCard
+                label="Ownership record"
+                type="TXT"
+                name="_buildez-verification"
+                fullName={`_buildez-verification.${x.domain}`}
+                value={x.verificationToken || ""}
+                note="If your provider's Name/Host field asks for the full record name instead of just this label, use the full form shown below it."
+              />
+            </div>
+          )}
+          {x.status !== "VERIFIED" && <p className="mt-2 text-[11px] dashboard-faint">DNS changes can take up to 60 minutes to propagate — this page checks automatically and will activate as soon as both records are visible, no need to keep refreshing.</p>}
+          {x.status !== "VERIFIED" && (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              {x.detectedDnsProvider === "CLOUDFLARE" ? (
+                integrations.cloudflare ? (
+                  <a href={`/api/sites/${site.id}/domains/cloudflare/start?domainId=${encodeURIComponent(x.id)}`} className="flex items-center gap-2 rounded-xl border dashboard-border px-3 py-2 text-xs font-semibold dashboard-hover">
+                    <ProviderLogo provider="CLOUDFLARE" />Connect with Cloudflare
+                  </a>
+                ) : (
+                  <button onClick={() => setStepsModalDomain(x)} className="flex items-center gap-2 rounded-xl border dashboard-border px-3 py-2 text-xs font-semibold dashboard-hover">
+                    <ProviderLogo provider="CLOUDFLARE" />Cloudflare detected — view steps
+                  </button>
+                )
+              ) : x.detectedDnsProvider === "GODADDY" ? (
+                integrations.godaddy ? (
+                  <a href={`/api/sites/${site.id}/domains/godaddy/start?domainId=${encodeURIComponent(x.id)}`} className="flex items-center gap-2 rounded-xl border dashboard-border px-3 py-2 text-xs font-semibold dashboard-hover">
+                    <ProviderLogo provider="GODADDY" />Connect with GoDaddy
+                  </a>
+                ) : (
+                  <button onClick={() => setStepsModalDomain(x)} className="flex items-center gap-2 rounded-xl border dashboard-border px-3 py-2 text-xs font-semibold dashboard-hover">
+                    <ProviderLogo provider="GODADDY" />GoDaddy detected — view steps
+                  </button>
+                )
+              ) : (
+                <button onClick={() => setStepsModalDomain(x)} className="rounded-xl border dashboard-border px-3 py-2 text-xs font-semibold dashboard-hover">
+                  View connection steps
+                </button>
+              )}
+            </div>
+          )}
           {x.lastCheckedAt && <p className="mt-3 text-[10px] dashboard-faint">Last checked {new Date(x.lastCheckedAt).toLocaleString(undefined, { hour12: true })} · {x.lastDnsResult?.readyResolvers || 0} of {x.lastDnsResult?.totalResolvers || 3} public resolvers ready</p>}
           <div className="mt-4 flex gap-2">
             <button
@@ -776,6 +826,102 @@ function Domains({ site }: { site: Site }) {
           </div>
         </article>
       ))}
+      {stepsModalDomain && (
+        <DomainStepsModal domain={stepsModalDomain} serverIp={serverIp} onClose={() => setStepsModalDomain(null)} />
+      )}
+    </div>
+  );
+}
+
+function ProviderLogo({ provider }: { provider: "CLOUDFLARE" | "GODADDY" }) {
+  const config = provider === "CLOUDFLARE"
+    ? { bg: "#F38020", letter: "C" }
+    : { bg: "#00A4A6", letter: "G" };
+  return (
+    <span
+      className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white"
+      style={{ backgroundColor: config.bg }}
+      aria-hidden="true"
+    >
+      {config.letter}
+    </span>
+  );
+}
+
+function DomainStepsModal({ domain, serverIp, onClose }: { domain: Domain; serverIp: string; onClose: () => void }) {
+  const provider = domain.detectedDnsProvider;
+  const providerName = provider === "CLOUDFLARE" ? "Cloudflare" : provider === "GODADDY" ? "GoDaddy" : "your DNS provider";
+  const dashboardHint = provider === "CLOUDFLARE"
+    ? "dash.cloudflare.com → select the domain → DNS → Records"
+    : provider === "GODADDY"
+      ? "godaddy.com → My Products → DNS next to this domain"
+      : "your registrar's or DNS host's control panel, under DNS or Domain settings";
+  return (
+    <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="dashboard-modal-surface max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl p-6">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-semibold">Connect {domain.domain}</h3>
+            <p className="mt-1 text-sm dashboard-muted">Add these two records in {providerName}.</p>
+          </div>
+          {(provider === "CLOUDFLARE" || provider === "GODADDY") && <ProviderLogo provider={provider} />}
+        </div>
+        <ol className="mt-4 space-y-3 text-sm">
+          <li><strong>1.</strong> Open {dashboardHint}.</li>
+          <li><strong>2.</strong> Add an <strong>A</strong> record — Name/Host <code className="rounded bg-black/5 px-1 dark:bg-white/10">@</code>, Value <code className="rounded bg-black/5 px-1 dark:bg-white/10">{serverIp}</code>. Leave proxy/CDN off for this record until the domain is verified.</li>
+          <li><strong>3.</strong> Add a <strong>TXT</strong> record — Name/Host <code className="rounded bg-black/5 px-1 dark:bg-white/10">_buildez-verification</code>, Value <code className="break-all rounded bg-black/5 px-1 dark:bg-white/10">{domain.verificationToken}</code>.</li>
+          <li><strong>4.</strong> Save. DNS changes can take up to 60 minutes to propagate — this page checks automatically and will activate the domain as soon as both records are visible.</li>
+        </ol>
+        <button onClick={onClose} className="mt-5 w-full rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white">Got it</button>
+      </div>
+    </div>
+  );
+}
+
+function DnsRecordCard({
+  label,
+  type,
+  name,
+  fullName,
+  value,
+  note,
+}: {
+  label: string;
+  type: string;
+  /** Relative label most providers expect in the Name/Host field once you're already inside the domain's own zone. */
+  name: string;
+  /** Fully-qualified form, for the minority of providers that ask for it instead — pasting the relative name there would fail verification just as pasting the full name into a "Name" field that auto-appends the zone does. */
+  fullName: string;
+  value: string;
+  note?: string;
+}) {
+  return (
+    <div className="rounded-xl border dashboard-border p-3">
+      <p className="text-[10px] font-semibold uppercase dashboard-faint">{label}</p>
+      <dl className="mt-2 space-y-2">
+        <div>
+          <div className="flex items-center justify-between gap-2">
+            <dt className="text-[10px] font-semibold uppercase dashboard-faint">Type</dt>
+          </div>
+          <dd className="text-xs font-semibold">{type}</dd>
+        </div>
+        <div>
+          <div className="flex items-center justify-between gap-2">
+            <dt className="text-[10px] font-semibold uppercase dashboard-faint">Name / Host</dt>
+            <button onClick={() => void navigator.clipboard.writeText(name)} className="flex items-center gap-1 text-[10px] font-semibold text-blue-600 dark:text-blue-400"><Copy size={11}/>Copy</button>
+          </div>
+          <code className="mt-0.5 block break-all text-xs text-blue-600 dark:text-blue-400">{name}</code>
+          <p className="mt-0.5 break-all text-[10px] dashboard-faint">Full form (only if your provider asks for it): {fullName}</p>
+        </div>
+        <div>
+          <div className="flex items-center justify-between gap-2">
+            <dt className="text-[10px] font-semibold uppercase dashboard-faint">Value</dt>
+            <button onClick={() => void navigator.clipboard.writeText(value)} className="flex items-center gap-1 text-[10px] font-semibold text-blue-600 dark:text-blue-400"><Copy size={11}/>Copy</button>
+          </div>
+          <code className="mt-0.5 block break-all text-xs text-blue-600 dark:text-blue-400">{value}</code>
+        </div>
+      </dl>
+      {note && <p className="mt-2 text-[10px] dashboard-faint">{note}</p>}
     </div>
   );
 }

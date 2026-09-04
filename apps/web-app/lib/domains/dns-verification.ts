@@ -41,3 +41,22 @@ export function evaluateDomainPropagation(checks: DomainPropagationCheck[]) {
   const readyResolvers = checks.filter((check) => check.routed && check.ownership).length;
   return { ready: readyResolvers >= 2, readyResolvers, totalResolvers: checks.length, checks };
 }
+
+export type DetectedDnsProvider = "CLOUDFLARE" | "GODADDY" | "OTHER" | "UNKNOWN";
+
+/**
+ * Identifies the DNS provider from the domain's own nameservers, so the UI
+ * can surface a "Connect with Cloudflare/GoDaddy" action (or fall back to
+ * generic manual steps) without asking the user which registrar they use.
+ */
+export async function detectDnsProvider(domain: string): Promise<DetectedDnsProvider> {
+  try {
+    const nameservers = await dns.resolveNs(domain);
+    const lower = nameservers.map((ns) => ns.toLowerCase());
+    if (lower.some((ns) => ns.endsWith(".cloudflare.com"))) return "CLOUDFLARE";
+    if (lower.some((ns) => ns.endsWith(".domaincontrol.com"))) return "GODADDY";
+    return nameservers.length ? "OTHER" : "UNKNOWN";
+  } catch {
+    return "UNKNOWN";
+  }
+}

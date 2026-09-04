@@ -39,4 +39,11 @@ export async function register() {
       console.error("[scheduled publish] scan failed:", error);
     });
   }, INTERVAL_MS);
+
+  // Domain auto-verify deliberately does NOT live here: autoVerify.ts pulls
+  // in domain-provisioning.ts (node:child_process, for the nginx CLI calls)
+  // and dns-verification.ts (node:dns/promises) transitively, and — same
+  // issue as buildAfterPublish above — this file is compiled for an
+  // edge-like target too, which can't bundle those. It runs as an
+  // external-cron-triggered route instead; see /api/cron/verify-domains.
 }
