@@ -23,15 +23,24 @@ export default function StepPhoneVerify({
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
   const confirmationRef = useRef<ConfirmationResult | null>(null);
+
+  const RESEND_COOLDOWN_SECONDS = 30;
 
   useEffect(() => {
     return () => {
       recaptchaRef.current?.clear();
     };
   }, []);
+
+  useEffect(() => {
+    if (stage !== "code" || resendCooldown <= 0) return;
+    const timer = setInterval(() => setResendCooldown((s) => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(timer);
+  }, [stage, resendCooldown]);
 
   const dialCode = COUNTRY_DIAL_CODES.find((c) => c.iso === countryIso)?.dial || "+91";
   const phone = `${dialCode}${nationalNumber.replace(/\D/g, "")}`;
@@ -56,6 +65,7 @@ export default function StepPhoneVerify({
       }
       confirmationRef.current = await signInWithPhoneNumber(auth, phone, recaptchaRef.current);
       setStage("code");
+      setResendCooldown(RESEND_COOLDOWN_SECONDS);
     } catch (err: unknown) {
       recaptchaRef.current?.clear();
       recaptchaRef.current = null;
@@ -152,9 +162,18 @@ export default function StepPhoneVerify({
             value={code}
             onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
           />
-          <button type="button" className="text-xs text-blue-600 dark:text-blue-400 mt-2" onClick={() => { setStage("phone"); setCode(""); setError(""); }}>
-            Use a different number
-          </button>
+          <div className="flex items-center gap-4 mt-3">
+            <button type="button" className="text-xs text-blue-600 dark:text-blue-400" onClick={() => { setStage("phone"); setCode(""); setError(""); setResendCooldown(0); }}>
+              Use a different number
+            </button>
+            {resendCooldown > 0 ? (
+              <span className="text-xs text-slate-500 dark:text-white/40">Resend code in {resendCooldown}s</span>
+            ) : (
+              <button type="button" disabled={sending} className="text-xs text-blue-600 dark:text-blue-400 disabled:opacity-50" onClick={() => { setCode(""); void sendCode(); }}>
+                {sending ? "Resending…" : "Resend code"}
+              </button>
+            )}
+          </div>
         </div>
       )}
 
