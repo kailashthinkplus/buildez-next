@@ -35,6 +35,18 @@ const runtimeAliases = {
 const server = await createServer({
   root: projectRoot,
   configFile: false,
+  // The session URL this worker is reached at always carries the
+  // /_v3preview/<port> prefix (see PreviewSessionManager.ts), and the
+  // nginx rule that proxies it forwards the request's full original path
+  // unchanged rather than stripping the prefix — so Vite must know about
+  // it too. Without this, Vite serves index.html fine (the prefixed
+  // request still resolves to this server), but every absolute URL it
+  // emits for itself — /@vite/client, /@react-refresh, and its rewritten
+  // module imports — comes back rooted at "/" instead of the prefix. The
+  // browser then resolves those against the real page origin and gets a
+  // 404 from the main app instead of this Vite server: the exact
+  // "blank canvas, console 404s on @react-refresh/main.tsx/client" failure.
+  base: `/_v3preview/${port}/`,
   // See v12BuildWorker.mjs: an inline object still blocks postcss-load-config's
   // filesystem search for a tenant-writable postcss.config.* that Vite would
   // otherwise require()/execute inside this server-side process, while
