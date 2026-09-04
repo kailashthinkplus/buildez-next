@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "@/lib/auth/getUser";
 import { runPageSpeed } from "@/modules/insights/pageSpeed";
 import { createInsightReport, resolveOwnedInsightUrl } from "@/modules/insights/server";
+import { publicOrigin } from "@/lib/runtime/requestOrigin";
 
 const PRIVATE_HEADERS = { "Cache-Control": "private, no-store, max-age=0", Vary: "Cookie" };
 
@@ -71,7 +72,7 @@ export async function POST(
       siteId,
       tenantId: auth.tenant.id,
       url: body.url.trim(),
-      requestOrigin: req.nextUrl.origin,
+      requestOrigin: publicOrigin(req),
     });
     const liveReport = await runPageSpeed(report, targetUrl, strategy);
     return NextResponse.json({ report: liveReport }, { headers: PRIVATE_HEADERS });

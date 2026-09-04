@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { getUser } from "@/lib/auth/getUser";
 import { dodoClient, dodoCreditPack, parseDodoCreditPacks } from "@/lib/billing/dodo";
 import { getV12CreditBalance } from "@/modules/ai-v12/creditBalance";
+import { publicOrigin } from "@/lib/runtime/requestOrigin";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -35,7 +36,8 @@ export async function POST(req: NextRequest) {
   const pack = dodoCreditPack(typeof body.packKey === "string" ? body.packKey : "");
   if (!pack) return Response.json({ error: "Choose an available credit pack." }, { status: 400 });
   try {
-    const returnUrl = `${req.nextUrl.origin}/app/workspace/billing?credits=success`;
+    const origin = publicOrigin(req);
+    const returnUrl = `${origin}/app/workspace/billing?credits=success`;
     const customer = typeof auth.plan?.dodoCustomerId === "string" && auth.plan.dodoCustomerId
       ? { customer_id: auth.plan.dodoCustomerId }
       : { email: auth.user.email, ...(auth.user.name ? { name: auth.user.name } : {}) };
@@ -49,7 +51,7 @@ export async function POST(req: NextRequest) {
         packKey: pack.key,
       },
       return_url: returnUrl,
-      cancel_url: `${req.nextUrl.origin}/app/workspace/billing?credits=cancelled`,
+      cancel_url: `${origin}/app/workspace/billing?credits=cancelled`,
       feature_flags: { redirect_immediately: true },
     });
     if (!session.checkout_url) throw new Error("Payment service returned no checkout URL.");

@@ -5,6 +5,7 @@ import { prisma } from "@buildez/db";
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 import { customDomainEntitlement } from "@/lib/domains/entitlements";
 import { encodeDomainState } from "@/lib/domains/oauth-state";
+import { publicOrigin } from "@/lib/runtime/requestOrigin";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ siteId: string }> }) {
   const tenant = await verifyTenantAccess(req);
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ site
   if (!clientId || !clientSecret || !scopes) return NextResponse.json({ error: "Cloudflare connection is not configured yet." }, { status: 503 });
 
   const state = crypto.randomBytes(24).toString("base64url");
-  const redirectUri = new URL("/api/domains/cloudflare/callback", req.nextUrl.origin).toString();
+  const redirectUri = new URL("/api/domains/cloudflare/callback", publicOrigin(req)).toString();
   const authorization = new URL("https://dash.cloudflare.com/oauth2/auth");
   authorization.searchParams.set("client_id", clientId);
   authorization.searchParams.set("redirect_uri", redirectUri);

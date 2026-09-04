@@ -4,6 +4,7 @@ import { prisma } from "@buildez/db";
 import { getUser } from "@/lib/auth/getUser";
 import { DOMAIN_SERVER_IP } from "@/lib/domain-provisioning";
 import { decodeDomainState } from "@/lib/domains/oauth-state";
+import { publicOrigin } from "@/lib/runtime/requestOrigin";
 
 type CloudflareZone = { id: string; name: string };
 type CloudflareRecord = { id: string; name: string; type: string };
@@ -37,9 +38,10 @@ async function removeConflictingRoutingRecords(token: string, zoneId: string, ho
 export async function GET(req: NextRequest) {
   const state = decodeDomainState(req.cookies.get("buildez-domain-cloudflare")?.value || "");
   const auth = await getUser();
-  const fallback = new URL("/app/dashboard", req.nextUrl.origin);
+  const origin = publicOrigin(req);
+  const fallback = new URL("/app/dashboard", origin);
   if (!state || req.nextUrl.searchParams.get("state") !== state.state || !auth?.tenant || auth.tenant.id !== state.tenantId) return NextResponse.redirect(fallback);
-  const destination = new URL(`/app/${encodeURIComponent(state.returnSlug)}/settings`, req.nextUrl.origin);
+  const destination = new URL(`/app/${encodeURIComponent(state.returnSlug)}/settings`, origin);
   destination.searchParams.set("tab", "domains");
   const code = req.nextUrl.searchParams.get("code");
   const domain = code && await prisma.siteDomain.findFirst({ where: { id: state.domainId, siteId: state.siteId, tenantId: state.tenantId } });
@@ -50,7 +52,7 @@ export async function GET(req: NextRequest) {
   try {
     const clientId = process.env.CLOUDFLARE_OAUTH_CLIENT_ID || "";
     const clientSecret = process.env.CLOUDFLARE_OAUTH_CLIENT_SECRET || "";
-    const tokenResponse = await fetch("https://dash.cloudflare.com/oauth2/token", { method: "POST", headers: { Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`, "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ grant_type: "authorization_code", code, redirect_uri: new URL("/api/domains/cloudflare/callback", req.nextUrl.origin).toString() }) });
+    const tokenResponse = await fetch("https://dash.cloudflare.com/oauth2/token", { method: "POST", headers: { Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`, "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ grant_type: "authorization_code", code, redirect_uri: new URL("/api/domains/cloudflare/callback", origin).toString() }) });
     const token = await tokenResponse.json();
     if (!tokenResponse.ok || !token.access_token) throw new Error("Cloudflare authorization failed");
     const zones = await cloudflare(token.access_token, "/zones?status=active&per_page=50") as CloudflareZone[];

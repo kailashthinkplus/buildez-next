@@ -6,6 +6,7 @@ import { getUser } from "@/lib/auth/getUser";
 import { dodoClient, resolveDodoProductId, type BillingCycle } from "@/lib/billing/dodo";
 import { validateCoupon } from "@/lib/billing/coupons";
 import { isSupportedCurrency } from "@/lib/currency";
+import { publicOrigin } from "@/lib/runtime/requestOrigin";
 
 const RESUMABLE_PAYMENT_STATUSES = new Set([
   "processing",
@@ -93,9 +94,10 @@ export async function POST(req: NextRequest) {
   try {
     const client = dodoClient();
     const configuredReturn = process.env.DODO_PAYMENTS_RETURN_URL;
+    const origin = publicOrigin(req);
     const returnBase = returnPath === "/app/workspace/billing" && configuredReturn
       ? configuredReturn
-      : `${req.nextUrl.origin}${returnPath}`;
+      : `${origin}${returnPath}`;
     if (typeof auth.plan?.dodoSubscriptionId === "string" && auth.plan.dodoSubscriptionId) {
       const dodoSubscriptionId = auth.plan.dodoSubscriptionId;
       try {
@@ -141,7 +143,7 @@ export async function POST(req: NextRequest) {
         ...(appliedCouponCode ? { couponCode: appliedCouponCode } : {}),
       },
       return_url: `${returnBase}${returnBase.includes("?") ? "&" : "?"}checkout=success`,
-      cancel_url: `${req.nextUrl.origin}${returnPath}?checkout=cancelled`,
+      cancel_url: `${origin}${returnPath}?checkout=cancelled`,
       ...(billingCurrency ? { billing_currency: billingCurrency as never } : {}),
       ...(appliedCouponCode ? { discount_code: appliedCouponCode } : {}),
       feature_flags: { redirect_immediately: true, allow_currency_selection: true, allow_discount_code: true },

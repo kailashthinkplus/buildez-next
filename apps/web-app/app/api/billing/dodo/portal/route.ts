@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@buildez/db";
 import { getUser } from "@/lib/auth/getUser";
 import { dodoClient } from "@/lib/billing/dodo";
+import { publicOrigin } from "@/lib/runtime/requestOrigin";
 
 export const runtime = "nodejs";
 
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
   }
   try {
     const session = await dodoClient().customers.customerPortal.create(subscription.dodoCustomerId, {
-      return_url: `${req.nextUrl.origin}/app/workspace/billing`,
+      return_url: `${publicOrigin(req)}/app/workspace/billing`,
     });
     return Response.json({ portalUrl: session.link });
   } catch (error) {

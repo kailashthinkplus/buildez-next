@@ -6,6 +6,7 @@ import { prisma } from "@buildez/db";
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 import { DOMAIN_SERVER_IP } from "@/lib/domain-provisioning";
 import { customDomainEntitlement } from "@/lib/domains/entitlements";
+import { publicOrigin } from "@/lib/runtime/requestOrigin";
 
 async function dnsZone(hostname: string) {
   const labels = hostname.split(".");
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ site
 
   const zone = await dnsZone(domain.domain);
   const host = domain.domain === zone ? "" : domain.domain.slice(0, -(zone.length + 1));
-  const redirectUri = new URL(`/app/${encodeURIComponent(domain.site.slug)}/settings`, req.nextUrl.origin);
+  const redirectUri = new URL(`/app/${encodeURIComponent(domain.site.slug)}/settings`, publicOrigin(req));
   redirectUri.searchParams.set("tab", "domains");
   redirectUri.searchParams.set("domainConnected", "1");
   const apply = new URL(`/v2/domainTemplates/providers/${encodeURIComponent(providerId)}/services/${encodeURIComponent(serviceId)}/apply`, process.env.GODADDY_DOMAIN_CONNECT_URL || "https://domainconnect.godaddy.com");
