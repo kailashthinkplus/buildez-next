@@ -31,6 +31,7 @@ export interface OnboardingContextType {
   domain: string | null;
   setDomain: (v: string | null) => void;
 
+  phone: string | null;
   phoneVerified: boolean;
   phoneVerificationRequired: boolean;
   phoneVerificationConfigured: boolean;
@@ -58,6 +59,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
   const [domain, setDomain] = useState<string | null>(null);
 
+  const [phone, setPhone] = useState<string | null>(null);
   const [phoneVerified, setPhoneVerified] = useState(false);
   const [phoneVerificationRequired, setPhoneVerificationRequired] = useState(false);
   const [phoneVerificationConfigured, setPhoneVerificationConfigured] = useState(false);
@@ -141,6 +143,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
       setDomain(data.domain ?? null);
 
+      setPhone(data.phone ?? null);
       setPhoneVerified(Boolean(data.phoneVerified));
       setPhoneVerificationRequired(Boolean(data.phoneVerificationRequired));
       setPhoneVerificationConfigured(Boolean(data.phoneVerificationConfigured));
@@ -180,6 +183,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         setBilling,
         domain,
         setDomain,
+        phone,
         phoneVerified,
         phoneVerificationRequired,
         phoneVerificationConfigured,

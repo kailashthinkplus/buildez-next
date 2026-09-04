@@ -1,8 +1,18 @@
 export type CountryDialCode = { name: string; iso: string; dial: string };
 
-/** Regional-indicator flag emoji derived from a 2-letter ISO code — no per-country emoji to maintain. */
+/**
+ * Regional-indicator flag emoji derived from a 2-letter ISO code. Kept only
+ * as a fallback `alt`/title text — Windows ships no color-flag glyphs in its
+ * default fonts, so emoji flags render as plain "AB" letter pairs there.
+ * Use `flagIconSrc` for the actual on-screen flag (a self-hosted SVG).
+ */
 export function flagEmoji(iso: string): string {
   return String.fromCodePoint(...iso.toUpperCase().split("").map((c) => 127397 + c.charCodeAt(0)));
+}
+
+/** Self-hosted rectangular flag SVG (public/flags), renders identically on every OS/browser. */
+export function flagIconSrc(iso: string): string {
+  return `/flags/${iso.toUpperCase()}.svg`;
 }
 
 export const COUNTRY_DIAL_CODES: CountryDialCode[] = [

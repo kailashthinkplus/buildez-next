@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Smartphone, ShieldCheck } from "lucide-react";
 import { useOnboarding } from "../OnboardingContext";
 import { firebasePhoneAuthEnabled, getFirebaseAuth } from "@/lib/firebase/client";
-import { COUNTRY_DIAL_CODES, DEFAULT_COUNTRY_ISO, flagEmoji } from "@/lib/constants/countryDialCodes";
+import { COUNTRY_DIAL_CODES, DEFAULT_COUNTRY_ISO, flagIconSrc } from "@/lib/constants/countryDialCodes";
 import type { ConfirmationResult, RecaptchaVerifier } from "firebase/auth";
 
 export default function StepPhoneVerify({
@@ -14,7 +14,7 @@ export default function StepPhoneVerify({
   onNext: () => void;
   onBack: () => void;
 }) {
-  const { phoneVerificationConfigured } = useOnboarding();
+  const { phone: verifiedPhone, phoneVerified, phoneVerificationConfigured, refreshFromServer } = useOnboarding();
 
   const [countryIso, setCountryIso] = useState(DEFAULT_COUNTRY_ISO);
   const [nationalNumber, setNationalNumber] = useState("");
@@ -24,11 +24,27 @@ export default function StepPhoneVerify({
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [changingNumber, setChangingNumber] = useState(false);
+  const [countryOpen, setCountryOpen] = useState(false);
 
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
   const confirmationRef = useRef<ConfirmationResult | null>(null);
+  const countryBtnRef = useRef<HTMLButtonElement>(null);
+  const countryMenuRef = useRef<HTMLDivElement>(null);
 
   const RESEND_COOLDOWN_SECONDS = 30;
+  const showVerifiedState = phoneVerified && !changingNumber;
+
+  useEffect(() => {
+    if (!countryOpen) return;
+    function onClickOutside(e: MouseEvent) {
+      if (!countryMenuRef.current?.contains(e.target as Node) && !countryBtnRef.current?.contains(e.target as Node)) {
+        setCountryOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [countryOpen]);
 
   useEffect(() => {
     return () => {
@@ -96,6 +112,8 @@ export default function StepPhoneVerify({
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || "That code didn't match.");
+      await refreshFromServer();
+      setChangingNumber(false);
       onNext();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "That code didn't match.");
@@ -122,7 +140,24 @@ export default function StepPhoneVerify({
         This secures your account and lets us reach you about your website. We&apos;ll text a one-time code — standard rates may apply.
       </p>
 
-      {!firebasePhoneAuthEnabled || !phoneVerificationConfigured ? (
+      {showVerifiedState ? (
+        <div className="max-w-sm mb-8">
+          <div className="glass px-5 py-4 rounded-xl flex items-center gap-3">
+            <ShieldCheck size={18} className="text-emerald-500 shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-slate-900 dark:text-white">Number verified</p>
+              {verifiedPhone && <p className="text-xs text-slate-500 dark:text-white/50 mt-0.5">{verifiedPhone}</p>}
+            </div>
+          </div>
+          <button
+            type="button"
+            className="text-xs text-blue-600 dark:text-blue-400 mt-3"
+            onClick={() => { setChangingNumber(true); setStage("phone"); setError(""); }}
+          >
+            Use a different number
+          </button>
+        </div>
+      ) : !firebasePhoneAuthEnabled || !phoneVerificationConfigured ? (
         <div className="glass px-5 py-4 rounded-xl text-sm text-slate-600 dark:text-white/65 mb-8">
           Phone verification is temporarily unavailable. Refresh the page or contact support if this continues.
         </div>
@@ -130,16 +165,42 @@ export default function StepPhoneVerify({
         <div className="max-w-sm mb-8">
           <label className="block text-xs font-medium text-slate-600 dark:text-white/60 mb-2">Mobile number</label>
           <div className="flex gap-2">
-            <select
-              className="onboarding-select glass rounded-xl text-sm py-4 pl-3 pr-1 shrink-0 w-[104px]"
-              value={countryIso}
-              onChange={(e) => setCountryIso(e.target.value)}
-              aria-label="Country code"
-            >
-              {COUNTRY_DIAL_CODES.map((c) => (
-                <option key={c.iso} value={c.iso}>{flagEmoji(c.iso)} {c.dial}</option>
-              ))}
-            </select>
+            <div className="relative shrink-0">
+              <button
+                type="button"
+                ref={countryBtnRef}
+                onClick={() => setCountryOpen((v) => !v)}
+                className="onboarding-select glass rounded-xl text-sm py-4 pl-3 pr-2 w-[104px] flex items-center gap-1.5"
+                aria-haspopup="listbox"
+                aria-expanded={countryOpen}
+                aria-label="Country code"
+              >
+                <img src={flagIconSrc(countryIso)} alt="" className="w-5 h-3.5 rounded-[2px] object-cover shrink-0" />
+                <span className="truncate">{dialCode}</span>
+              </button>
+              {countryOpen && (
+                <div
+                  ref={countryMenuRef}
+                  role="listbox"
+                  className="absolute z-20 mt-1 max-h-64 w-60 overflow-y-auto glass rounded-xl py-1 shadow-lg"
+                >
+                  {COUNTRY_DIAL_CODES.map((c) => (
+                    <button
+                      key={c.iso}
+                      type="button"
+                      role="option"
+                      aria-selected={c.iso === countryIso}
+                      onClick={() => { setCountryIso(c.iso); setCountryOpen(false); }}
+                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-black/5 dark:hover:bg-white/10 ${c.iso === countryIso ? "bg-blue-500/10" : ""}`}
+                    >
+                      <img src={flagIconSrc(c.iso)} alt="" className="w-5 h-3.5 rounded-[2px] object-cover shrink-0" />
+                      <span className="flex-1 truncate text-slate-700 dark:text-white/80">{c.name}</span>
+                      <span className="text-slate-500 dark:text-white/50">{c.dial}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <input
               className="glass p-4 rounded-xl text-sm w-full"
               placeholder="4155551234"
@@ -198,7 +259,15 @@ export default function StepPhoneVerify({
       <div className="flex justify-between">
         <button onClick={onBack} className="glass px-6 py-2.5 rounded-xl text-xs">← Back</button>
 
-        {!firebasePhoneAuthEnabled || !phoneVerificationConfigured ? (
+        {showVerifiedState ? (
+          <button
+            type="button"
+            onClick={onNext}
+            className="rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-medium text-white transition hover:bg-blue-500"
+          >
+            Continue →
+          </button>
+        ) : !firebasePhoneAuthEnabled || !phoneVerificationConfigured ? (
           <button
             type="button"
             onClick={() => window.location.reload()}
