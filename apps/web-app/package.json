@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm --dir ../../packages/db prisma:generate && next build",
     "start": "next start",
     "replay:v11": "node --import tsx scripts/replay-v11-source.ts",
     "typecheck:builder": "tsc -p tsconfig.builder.json --noEmit",
