@@ -22,6 +22,23 @@ type AnalyticsRow = {
 const change = (current: number, previous: number) =>
   previous ? Math.round(((current - previous) / previous) * 1000) / 10 : current ? 100 : 0;
 
+/**
+ * A page's traffic events outlive the page itself (soft-deleted or
+ * unpublished pages keep their historical rows), so the "top pages"
+ * breakdown must be checked against the currently-published page list
+ * rather than showing every path ever recorded. Tracking beacons record
+ * `window.location.pathname`, which is prefixed with the site slug on the
+ * platform domain but root-relative on a custom domain — matching by
+ * suffix covers both without needing to know which one this request used.
+ */
+function isLivePagePath(path: string, pages: { slug: string }[]) {
+  const normalized = path || "/";
+  if (normalized === "/" || pages.some((page) => page.slug === "home")) {
+    if (normalized === "/" || /\/home\/?$/.test(normalized)) return true;
+  }
+  return pages.some((page) => page.slug !== "home" && (normalized === `/${page.slug}` || normalized.endsWith(`/${page.slug}`)));
+}
+
 function trafficSource(referrer: string | null) {
   if (!referrer) return "Direct";
   try {
@@ -204,7 +221,7 @@ export async function GET(
       },
       liveVisitors: liveSessions.size,
       trend: [...dayMap].map(([date, value]) => ({ date, pageViews: value.pageViews, visitors: value.visitors.size })),
-      pages: group(pageviews, (row) => row.path || "/").map((item) => ({ path: item.name, pageViews: item.pageViews, visitors: item.visitors })).slice(0, 10),
+      pages: group(pageviews.filter((row) => isLivePagePath(row.path, site.pages)), (row) => row.path || "/").map((item) => ({ path: item.name, pageViews: item.pageViews, visitors: item.visitors })).slice(0, 10),
       sources: group(pageviews, (row) => trafficSource(row.referrer)).slice(0, 10),
       countries: group(pageviews, (row) => row.country || "Unknown").map((item) => ({ country: item.name, pageViews: item.pageViews, visitors: item.visitors })).slice(0, 15),
       devices: group(pageviews, (row) => row.device || "unknown").map((item) => ({ device: item.name, pageViews: item.pageViews })),
