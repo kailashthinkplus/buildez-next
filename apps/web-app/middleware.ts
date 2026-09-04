@@ -158,7 +158,19 @@ if (isRuntime) {
 }
 
   /* ---------------------------------------------------------
-     B) PUBLIC ROUTES
+     B) ALREADY-AUTHENTICATED VISITING LOGIN/SIGNUP → DASHBOARD
+  --------------------------------------------------------- */
+  const AUTH_ENTRY_ROUTES = ["/app/login", "/app/signup"];
+  if (AUTH_ENTRY_ROUTES.some((route) => hasRoutePrefix(pathname, route))) {
+    const existingSession = req.cookies.get("session")?.value || req.cookies.get("__Secure-session")?.value;
+    if (existingSession) {
+      console.log("🔁 ALREADY AUTHENTICATED → REDIRECT DASHBOARD");
+      return NextResponse.redirect(publicRedirectUrl(req, "/app/dashboard"));
+    }
+  }
+
+  /* ---------------------------------------------------------
+     C) PUBLIC ROUTES
   --------------------------------------------------------- */
   if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
     console.log("🟢 PUBLIC ROUTE → ALLOW");
@@ -166,7 +178,7 @@ if (isRuntime) {
   }
 
    /* ---------------------------------------------------------
-     C) CHECK SESSION
+     D) CHECK SESSION
   --------------------------------------------------------- */
   const session =
     req.cookies.get("session")?.value ||
@@ -185,7 +197,7 @@ if (isRuntime) {
   }
 
   /* ---------------------------------------------------------
-     D) ONBOARDING ROUTES
+     E) ONBOARDING ROUTES
   --------------------------------------------------------- */
   if (ONBOARDING_ROUTES.some((route) => pathname.startsWith(route))) {
     console.log("🟡 ONBOARDING ROUTE → ALLOW");
@@ -193,7 +205,7 @@ if (isRuntime) {
   }
 
   /* ---------------------------------------------------------
-     E) FETCH ONBOARDING STATUS
+     F) FETCH ONBOARDING STATUS
   --------------------------------------------------------- */
   console.log("📡 FETCH ONBOARDING STATUS");
 
@@ -219,7 +231,7 @@ if (isRuntime) {
   console.log("✅ ONBOARDING COMPLETE?", onboardingComplete);
 
   /* ---------------------------------------------------------
-     F) FORCE ONBOARDING
+     G) FORCE ONBOARDING
   --------------------------------------------------------- */
   if (!onboardingComplete) {
     console.log("⛔ FORCE ONBOARDING");
@@ -230,7 +242,7 @@ if (isRuntime) {
   }
 
   /* ---------------------------------------------------------
-     G) FETCH TENANT
+     H) FETCH TENANT
   --------------------------------------------------------- */
   console.log("📡 FETCH TENANT");
 
@@ -256,7 +268,7 @@ if (isRuntime) {
   console.log("🏢 TENANT:", tenant?.id);
 
   /* ---------------------------------------------------------
-     H) NO TENANT
+     I) NO TENANT
   --------------------------------------------------------- */
   if (!tenant) {
     console.log("❌ NO TENANT → FORCE ONBOARDING");
@@ -267,7 +279,7 @@ if (isRuntime) {
   }
 
   /* ---------------------------------------------------------
-     I) BLOCK /app/onboarding
+     J) BLOCK /app/onboarding
   --------------------------------------------------------- */
   if (pathname.startsWith("/app/onboarding")) {
     console.log("🚫 BLOCK ONBOARDING → DASHBOARD");
@@ -275,7 +287,7 @@ if (isRuntime) {
   }
 
   /* ---------------------------------------------------------
-     J) FINAL PASS
+     K) FINAL PASS
   --------------------------------------------------------- */
   console.log("✅ FINAL NEXT()");
 
