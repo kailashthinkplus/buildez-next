@@ -1,1 +1,0 @@
-export { buildEditablePropertyBindings } from "./propertyBinding";
