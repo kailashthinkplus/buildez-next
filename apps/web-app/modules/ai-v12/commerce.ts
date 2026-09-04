@@ -265,6 +265,48 @@ export function commerceClarificationMessage(missingInputs: readonly string[]) {
   return `I can build the ecommerce storefront, but I need the catalogue that will power ShopEZ. Please upload ${missing}. You can attach product photos plus a CSV, Excel sheet, PDF catalogue, or paste the details here. Include sizes, colours, variants, or inventory when they apply.`;
 }
 
+const SAMPLE_PRODUCT_TAG = "sample-data";
+const SAMPLE_PRODUCT_NOTE = "Sample product — placeholder data generated so you can preview the storefront. Replace with your real catalogue before publishing.";
+
+/**
+ * Fabricated catalogue data for a site that wants ShopEZ but has no real
+ * products yet. Clearly labeled (description + tag) rather than passed
+ * off as real inventory — stageExtractedProducts() still runs them
+ * through the normal product-creation path (real generated photography,
+ * real Shop/ShopProduct/variant rows), so the storefront previews
+ * genuinely, but nothing here should ever be mistaken for real stock.
+ */
+export function buildSamplePlaceholderProducts(input: {
+  siteName: string;
+  currency: string;
+}): ExtractedCommerceProduct[] {
+  const names = ["Signature Item", "Everyday Essential", "Studio Favorite", "Limited Edition"];
+  return names.map((name, index) => ({
+    title: `${input.siteName} ${name}`,
+    description: `${SAMPLE_PRODUCT_NOTE} A placeholder listing standing in for a real ${name.toLowerCase()} from ${input.siteName}.`,
+    vendor: input.siteName,
+    productType: "General",
+    tags: [SAMPLE_PRODUCT_TAG],
+    price: 19.99 + index * 10,
+    hasPrice: true,
+    compareAtPrice: 0,
+    hasCompareAtPrice: false,
+    currency: input.currency,
+    variantTitle: "Default",
+    sku: "",
+    inventory: 25,
+    hasInventory: true,
+    sourceFileName: "",
+    imageSegment: 0,
+    hasImageRegion: false,
+    imageX: 0,
+    imageY: 0,
+    imageWidth: 0,
+    imageHeight: 0,
+    confidence: 1,
+  }));
+}
+
 export function commerceProductIdentity(title: string) {
   return shopHandle(title) || `product-${createHash("sha256").update(title).digest("hex").slice(0, 12)}`;
 }

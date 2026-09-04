@@ -59,6 +59,7 @@ import {
   type SiteMediaRequirement,
 } from "./mediaGeneration";
 import {
+  buildSamplePlaceholderProducts,
   catalogMissingInputs,
   ensureShopezProductImages,
   getOrCreateAgentConversation,
@@ -78,6 +79,9 @@ import {
  * dedicated field on V12AgentAction.
  */
 const BRAND_DIFFERENT_SENTINEL = "__BUILDEZ_BRAND_DIFFERENT__";
+
+/** The "Generate sample products for me" pill's value — never a real user prompt. */
+const COMMERCE_GENERATE_SAMPLES_SENTINEL = "__BUILDEZ_COMMERCE_GENERATE_SAMPLES__";
 
 type PendingBrandClarification = {
   originalPrompt: string;
@@ -2642,25 +2646,113 @@ ${businessContextBlock}
       missingInputs.length === 0;
 
     if (!catalogueReady) {
-      /*
-       * Missing catalogue data must not block website generation.
-       * Preserve commerce intent, but do not persist unverified
-       * products, prices, inventory, or publish an empty catalogue.
-       */
-      commerceContext = {
-        ...commerceContext,
-        phase: "NONE",
-        intent: true,
-        attachments: persistedAttachments,
-        stagedProductIds: [],
-        lastMissingInputs: missingInputs,
-        requestPrompt: effectivePrompt,
-      };
+      const choseSampleProducts = currentPrompt === COMMERCE_GENERATE_SAMPLES_SENTINEL;
+      // Already asked in an earlier turn (phase persisted as WAITING_FOR_CATALOG)
+      // and the user replied with something other than the samples pill — most
+      // likely they typed/attached real catalogue details directly, or picked
+      // "I'll upload my catalogue". Either way, don't ask again.
+      const alreadyAsked = commerceContext.phase === "WAITING_FOR_CATALOG";
 
-      input.onProgress?.(
-        "ShopEZ ready for catalogue",
-        "Continuing generation without publishing unverified product data",
-      );
+      if (choseSampleProducts) {
+        input.onProgress?.(
+          "Generating sample products",
+          "Creating placeholder products so you can preview the storefront",
+        );
+
+        const staged = await stageExtractedProducts({
+          siteId: input.siteId,
+          tenantId: input.tenantId,
+          siteName: site.name,
+          products: buildSamplePlaceholderProducts({ siteName: site.name, currency: "USD" }),
+          cropSources: [],
+        });
+
+        commerceContext = {
+          ...commerceContext,
+          phase: "PRODUCTS_STAGED",
+          intent: true,
+          attachments: persistedAttachments,
+          stagedProductIds: staged.stagedProductIds,
+          lastMissingInputs: [],
+          requestPrompt: effectivePrompt,
+        };
+
+        await saveCommerceContext({
+          conversationId: conversation.id,
+          existingContext: conversation.context,
+          commerce: commerceContext,
+          phase: "READY",
+        });
+
+        input.onProgress?.(
+          "Sample catalogue ready",
+          `${staged.createdCount} placeholder product${staged.createdCount === 1 ? "" : "s"} created — replace with your real catalogue before publishing`,
+        );
+      } else if (!alreadyAsked) {
+        const question = "This looks like it needs a ShopEZ storefront, but there's no product catalogue yet. Want me to generate sample placeholder products so you can preview the store, or would you rather upload your real catalogue?";
+        const actions: V12AgentAction[] = [
+          { id: "commerce-generate-samples", label: "Generate sample products for me", value: COMMERCE_GENERATE_SAMPLES_SENTINEL },
+          { id: "commerce-upload-catalog", label: "I'll upload my product catalog", value: "I'll upload my product catalog now." },
+        ];
+
+        commerceContext = {
+          ...commerceContext,
+          phase: "WAITING_FOR_CATALOG",
+          intent: true,
+          attachments: persistedAttachments,
+          stagedProductIds: [],
+          lastMissingInputs: missingInputs,
+          requestPrompt: effectivePrompt,
+        };
+
+        await saveCommerceContext({
+          conversationId: conversation.id,
+          existingContext: conversation.context,
+          commerce: commerceContext,
+          phase: "INTERVIEW",
+        });
+
+        await recordAgentMessage({
+          conversationId: conversation.id,
+          role: "assistant",
+          content: { text: question, status: "needs_input", actions },
+        });
+
+        input.onProgress?.("Catalogue choice needed", "Choose sample products or upload your own catalogue");
+
+        return {
+          kind: "done",
+          result: {
+            message: question,
+            actions,
+            files: [],
+            revision: project.currentRevision,
+            fileCount: 0,
+            model: "clarification",
+            status: "needs_input" as const,
+          },
+        };
+      } else {
+        /*
+         * Missing catalogue data must not block website generation.
+         * Preserve commerce intent, but do not persist unverified
+         * products, prices, inventory, or publish an empty catalogue.
+         */
+        commerceContext = {
+          ...commerceContext,
+          phase: "NONE",
+          intent: true,
+          attachments: persistedAttachments,
+          stagedProductIds: [],
+          lastMissingInputs: missingInputs,
+          requestPrompt: effectivePrompt,
+        };
+
+        input.onProgress?.(
+          "ShopEZ ready for catalogue",
+          "Continuing generation without publishing unverified product data",
+        );
+      }
     }
 
     if (existingProductCount === 0 && catalogueReady) {
