@@ -688,6 +688,7 @@ export default function V12AgentPanel({
       {showProTips && (
         <ProTipsCarousel
           onClose={() => setShowProTips(false)}
+          onSelectPrompt={(text) => { setPrompt(text); setShowProTips(false); }}
         />
       )}
       {!events.length && !pendingFullPagePrompt && !showCreativeDirection && !showLogoStage && (
@@ -1285,7 +1286,7 @@ function FeedbackModal({
   );
 }
 
-function ProTipsCarousel({ onClose }: { onClose(): void }) {
+function ProTipsCarousel({ onClose, onSelectPrompt }: { onClose(): void; onSelectPrompt(prompt: string): void }) {
   const tips = [
     {
       eyebrow: "Design to functional site",
@@ -1295,6 +1296,8 @@ function ProTipsCarousel({ onClose }: { onClose(): void }) {
       image: "/pro-tips/ui-to-code.webp",
       alt: "AI converting an existing UI design into website code",
       accent: "from-blue-500/20 via-sky-400/10 to-transparent",
+      prompt:
+        "I have a UI design I'd like turned into a working website — I'll attach a screenshot, Figma export, or PDF. Please recreate it as a responsive, production-ready site with working navigation, sections and content matching the design.",
     },
     {
       eyebrow: "Immersive experiences",
@@ -1304,6 +1307,8 @@ function ProTipsCarousel({ onClose }: { onClose(): void }) {
       image: "/pro-tips/immersive-3d.webp",
       alt: "Interactive 3D animated website experience",
       accent: "from-violet-500/20 via-fuchsia-400/10 to-transparent",
+      prompt:
+        "Build me an immersive, cinematic website with smooth scroll-triggered animations, parallax depth, subtle 3D/WebGL visuals, and an interactive product showcase section. Make it feel alive and premium, like a top design agency's site.",
     },
     {
       eyebrow: "Traditional websites",
@@ -1313,6 +1318,8 @@ function ProTipsCarousel({ onClose }: { onClose(): void }) {
       image: "/pro-tips/traditional-site.webp",
       alt: "Modern traditional business website",
       accent: "from-emerald-500/20 via-cyan-400/10 to-transparent",
+      prompt:
+        "Build me a clean, professional business website with a hero section, an about/services overview, a portfolio or product grid, testimonials, and a contact form. Keep the layout simple, responsive and easy to navigate.",
     },
   ] as const;
 
@@ -1362,8 +1369,13 @@ function ProTipsCarousel({ onClose }: { onClose(): void }) {
           </button>
         </div>
 
-        <div className="px-4">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-white/10 bg-black/25">
+        <button
+          type="button"
+          onClick={() => onSelectPrompt(tip.prompt)}
+          title="Use this prompt"
+          className="block w-full px-4 text-left"
+        >
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-white/10 bg-black/25 transition group-hover:border-white/20">
             {tips.map((item, itemIndex) => (
               <img
                 key={item.image}
@@ -1377,20 +1389,22 @@ function ProTipsCarousel({ onClose }: { onClose(): void }) {
               />
             ))}
           </div>
-        </div>
+        </button>
 
         <div className="px-4 pb-4 pt-3">
-          <div className="text-[10px] font-semibold uppercase tracking-[0.13em] text-blue-300/80">
-            {tip.eyebrow}
-          </div>
+          <button type="button" onClick={() => onSelectPrompt(tip.prompt)} className="block w-full text-left" title="Use this prompt">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.13em] text-blue-300/80">
+              {tip.eyebrow}
+            </div>
 
-          <h3 className="mt-1 text-sm font-semibold leading-5 text-white">
-            {tip.title}
-          </h3>
+            <h3 className="mt-1 text-sm font-semibold leading-5 text-white">
+              {tip.title}
+            </h3>
 
-          <p className="mt-1.5 text-[11px] leading-[1.55] text-white/50">
-            {tip.body}
-          </p>
+            <p className="mt-1.5 text-[11px] leading-[1.55] text-white/50">
+              {tip.body}
+            </p>
+          </button>
 
           <div className="mt-3 flex items-center justify-between">
             <div className="flex gap-1.5">

@@ -50,8 +50,8 @@ export default function MediaAssetDetailsModal({
           lg:flex-row
         "
       >
-        <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex h-16 items-center justify-between border-b dashboard-border px-5">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <div className="flex h-16 shrink-0 items-center justify-between border-b dashboard-border px-5">
             <div className="min-w-0">
               <div className="truncate text-sm font-semibold">{title}</div>
               <div className="text-xs dashboard-muted">{asset.mimeType}</div>
@@ -67,12 +67,12 @@ export default function MediaAssetDetailsModal({
             </button>
           </div>
 
-          <div className="flex min-h-[40vh] flex-1 items-center justify-center bg-slate-100/70 p-6 dark:bg-black/25 lg:min-h-0 lg:p-10">
+          <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-slate-100/70 p-6 dark:bg-black/25 lg:p-10">
             {asset.url ? (
               <img
                 src={asset.url}
                 alt={asset.alt || title}
-                className="max-h-full max-w-full rounded-lg object-contain"
+                className="block h-auto max-h-full w-auto max-w-full rounded-lg object-contain"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center rounded-xl border dashboard-border dashboard-subtle">
