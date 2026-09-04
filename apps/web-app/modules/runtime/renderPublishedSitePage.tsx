@@ -16,17 +16,25 @@ import { createDefaultSiteThemeLayout, disableSiteThemeChrome, hasExplicitSiteTh
 import type { BuilderThemeTokens } from "@/modules/builder-v2/theme/theme.types";
 import { PoweredByBuildez } from "@/modules/runtime/PoweredByBuildez";
 import { shouldShowBuildezBranding } from "@/modules/runtime/publishedBranding";
+import { CookieConsentBanner } from "@/modules/legal/CookieConsentBanner";
 
 export async function renderPublishedSitePage(siteSlug: string, pageSlug?: string, options?: { siteId?: string; preview?: boolean }) {
   const route = await resolvePublishedSiteRoute(siteSlug, pageSlug, options?.siteId);
   if (!route) notFound();
+  const cookieBannerEnabled = route.settings.cookieBannerEnabled !== false;
+  const cookieMessage = typeof route.settings.cookieMessage === "string" && route.settings.cookieMessage.trim()
+    ? route.settings.cookieMessage
+    : "We use cookies to improve your experience.";
+  const siteCookieBanner = options?.preview || !cookieBannerEnabled
+    ? null
+    : <CookieConsentBanner storageKey={`buildez_cookie_consent_site_${route.siteId}`} brandName={route.siteName} message={cookieMessage} />;
   if (route.maintenanceMode) {
     return <main className="grid min-h-screen place-items-center bg-slate-950 p-6 text-white"><div className="max-w-lg text-center"><p className="text-sm font-semibold uppercase tracking-[.18em] text-blue-300">{route.siteName}</p><h1 className="mt-4 text-4xl font-semibold tracking-tight">We’ll be right back.</h1><p className="mt-4 leading-7 text-white/55">This website is being updated. Please check again shortly.</p></div></main>;
   }
   if (route.renderMode === "REACT" && route.hasV12Project) {
     const iframePath = `/api/runtime/v12/${encodeURIComponent(route.siteId)}/${route.pageSlug === "home" ? "" : route.pageSlug.split("/").map(encodeURIComponent).join("/")}`;
     const showBranding = await shouldShowBuildezBranding({ siteId: route.siteId, tenantId: route.tenantId });
-    return <main className="relative h-screen w-full overflow-hidden bg-white">{options?.preview ? null : <StructuredData siteName={route.siteName} settings={route.settings}/>}<AnalyticsTracker siteId={route.siteId}/><SiteIntegrationsScripts siteId={route.siteId}/><iframe title={`${route.siteName} website`} src={iframePath} className="h-full w-full border-0"/>{showBranding ? <PoweredByBuildez/> : null}</main>;
+    return <main className="relative h-screen w-full overflow-hidden bg-white">{options?.preview ? null : <StructuredData siteName={route.siteName} settings={route.settings}/>}<AnalyticsTracker siteId={route.siteId}/><SiteIntegrationsScripts siteId={route.siteId}/><iframe title={`${route.siteName} website`} src={iframePath} className="h-full w-full border-0"/>{showBranding ? <PoweredByBuildez/> : null}{siteCookieBanner}</main>;
   }
   const result = await renderPage({ siteSlug, siteId: options?.siteId, pageSlug: route.pageSlug });
   if (!result) notFound();
@@ -42,7 +50,7 @@ export async function renderPublishedSitePage(siteSlug: string, pageSlug?: strin
     logBuilderDebug("runtime:builder-v2-layout-decision", { siteSlug, pageSlug, siteName: result.page.site.name, hasExplicitSiteLayout: hasExplicitSiteThemeLayout(result.siteLayout), rawSiteLayout: result.siteLayout, fallbackLayout: summarizeSiteLayout(fallbackLayout) });
     const hasExplicitLayout = hasExplicitSiteThemeLayout(result.siteLayout);
     const siteLayout = normalizeSiteThemeLayout(hasExplicitLayout ? result.siteLayout : null, hasExplicitLayout ? fallbackLayout : disableSiteThemeChrome(fallbackLayout));
-    return <>{options?.preview ? null : <><StructuredData siteName={route.siteName} settings={route.settings}/><AnalyticsTracker siteId={result.page.site.id}/><SiteIntegrationsScripts siteId={result.page.site.id}/></>}<PublishedPageRenderer blueprint={result.blueprint} siteLayout={siteLayout}/><PageCustomCode css={result.page.customCss} js={result.page.customJs}/>{options?.preview ? null : <SiteChatWidgets siteId={result.page.site.id}/>} {showBranding ? <PoweredByBuildez/> : null}</>;
+    return <>{options?.preview ? null : <><StructuredData siteName={route.siteName} settings={route.settings}/><AnalyticsTracker siteId={result.page.site.id}/><SiteIntegrationsScripts siteId={result.page.site.id}/></>}<PublishedPageRenderer blueprint={result.blueprint} siteLayout={siteLayout}/><PageCustomCode css={result.page.customCss} js={result.page.customJs}/>{options?.preview ? null : <SiteChatWidgets siteId={result.page.site.id}/>} {showBranding ? <PoweredByBuildez/> : null}{siteCookieBanner}</>;
   }
 
   const legacyDesignTokens = result.designTokens && typeof result.designTokens === "object" && !Array.isArray(result.designTokens)
@@ -57,7 +65,7 @@ export async function renderPublishedSitePage(siteSlug: string, pageSlug?: strin
   logBuilderDebug("runtime:legacy-layout-decision", { siteSlug, pageSlug, siteName: result.page.site.name, hasExplicitSiteLayout: hasExplicitSiteThemeLayout(result.siteLayout), rawSiteLayout: result.siteLayout, fallbackLayout: summarizeSiteLayout(legacyFallbackLayout) });
   const hasExplicitLegacyLayout = hasExplicitSiteThemeLayout(result.siteLayout);
   const legacySiteLayout = normalizeSiteThemeLayout(hasExplicitLegacyLayout ? result.siteLayout : null, hasExplicitLegacyLayout ? legacyFallbackLayout : disableSiteThemeChrome(legacyFallbackLayout));
-  return <>{options?.preview ? null : <><StructuredData siteName={route.siteName} settings={route.settings}/><AnalyticsTracker siteId={result.page.site.id}/><SiteIntegrationsScripts siteId={result.page.site.id}/></>}<SiteThemeFrame layout={legacySiteLayout} tokens={legacyTokens}><style dangerouslySetInnerHTML={{ __html: result.css }} /><div id="buildez-preview-root" dangerouslySetInnerHTML={{ __html: result.html }} /></SiteThemeFrame><PageCustomCode css={result.page.customCss} js={result.page.customJs}/>{options?.preview ? null : <SiteChatWidgets siteId={result.page.site.id}/>} {showBranding ? <PoweredByBuildez/> : null}</>;
+  return <>{options?.preview ? null : <><StructuredData siteName={route.siteName} settings={route.settings}/><AnalyticsTracker siteId={result.page.site.id}/><SiteIntegrationsScripts siteId={result.page.site.id}/></>}<SiteThemeFrame layout={legacySiteLayout} tokens={legacyTokens}><style dangerouslySetInnerHTML={{ __html: result.css }} /><div id="buildez-preview-root" dangerouslySetInnerHTML={{ __html: result.html }} /></SiteThemeFrame><PageCustomCode css={result.page.customCss} js={result.page.customJs}/>{options?.preview ? null : <SiteChatWidgets siteId={result.page.site.id}/>} {showBranding ? <PoweredByBuildez/> : null}{siteCookieBanner}</>;
 }
 
 /**

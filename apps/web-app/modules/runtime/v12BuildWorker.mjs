@@ -27,4 +27,9 @@ await build({
     dedupe: ["react", "react-dom"],
   },
   build: { outDir, emptyOutDir: true, sourcemap: false },
+  // Prevent postcss-load-config (invoked internally by Vite's CSS plugin even
+  // with configFile:false) from searching the tenant project tree for a
+  // postcss.config.*/.postcssrc.* and require()-ing/executing it. An empty
+  // inline object short-circuits that filesystem search entirely.
+  css: { postcss: {} },
 });

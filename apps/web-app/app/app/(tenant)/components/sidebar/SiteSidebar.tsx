@@ -9,7 +9,6 @@ import {
   Puzzle,
   BarChart3,
   Bot,
-  Layers,
   Settings,
   Database,
   ContactRound,
@@ -78,7 +77,7 @@ export function SiteSidebar({
         { name: "AI Insights", href: `${base}/insights`, icon: CircleGauge },
         { name: "CRM", href: `${base}/crm`, icon: ContactRound },
         { name: "AI Agents", href: `${base}/ai`, icon: Bot },
-        { name: "Forms", href: `${base}/forms`, icon: Layers },
+        // Forms remains available by direct URL while it is hidden for launch.
       ],
     },
     {

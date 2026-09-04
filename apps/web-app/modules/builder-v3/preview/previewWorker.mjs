@@ -32,6 +32,10 @@ const runtimeAliases = {
 const server = await createServer({
   root: projectRoot,
   configFile: false,
+  // See v12BuildWorker.mjs: blocks postcss-load-config's filesystem search
+  // for a tenant-writable postcss.config.* that Vite would otherwise
+  // require()/execute inside this server-side process.
+  css: { postcss: {} },
   plugins: [react()],
   resolve: {
     alias: Object.entries(runtimeAliases).map(([find, replacement]) => ({ find: new RegExp(`^${find.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`), replacement })),

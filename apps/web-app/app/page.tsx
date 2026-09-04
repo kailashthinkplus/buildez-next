@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
+import { CookieConsentBanner } from "@/modules/legal/CookieConsentBanner";
 import "./marketing.css";
 
 const Arrow = () => <svg className="cta-arrow" aria-hidden="true" viewBox="0 0 20 20"><path d="M3 10h13M11 5l5 5-5 5"/></svg>;
@@ -66,7 +67,7 @@ export default function Home() {
       <nav className={`topbar${headerScrolled ? " is-scrolled" : ""}`} aria-label="Main navigation">
         <a href="#top" className="brand" aria-label="BuildEzy home"><img className="official-logo" src="/buildez-logo-dark.svg" alt="BuildEzy" /></a>
         <div className="nav-links"><a href="#platform">Platform</a><a href="/pricing">Pricing</a><a href="#difference">Why Build Ezy</a><a href="#workflow">How it works</a></div>
-        <div className="nav-actions"><a href="/app/login" className="login-link">Log in</a><a href="/app/signup" className="mini-cta">Start building <Arrow /></a></div>
+        <div className="nav-actions"><a href="/app/login" className="login-link">Log In</a><a href="/app/signup" className="mini-cta">Start Building <Arrow /></a></div>
       </nav>
       <section className="hero" id="top">
         <div className="hero-glow" /><div className="orb orb-one" /><div className="orb orb-two" />
@@ -74,7 +75,7 @@ export default function Home() {
           <div className="eyebrow"><span /> The complete website operating system</div>
           <h1>Your idea.<br/><em>Built alive.</em></h1>
           <p>Design, launch, sell, and grow from one beautifully connected workspace. Build Ezy turns ambitious ideas into high-performing digital experiences—without the usual complexity.</p>
-          <div className="hero-actions"><a href="/app/signup" className="primary-cta">Build your first site <Arrow /></a><a href="#platform" className="text-cta">Explore the platform <span>↓</span></a></div>
+          <div className="hero-actions"><a href="/app/signup" className="primary-cta">Build Your First Site <Arrow /></a><a href="#platform" className="text-cta">Explore the Platform <span>↓</span></a></div>
           <div className="trust-line"><span className="avatar-stack"><img src="https://randomuser.me/api/portraits/women/51.jpg" alt="" /><img src="https://randomuser.me/api/portraits/men/69.jpg" alt="" /><img src="https://randomuser.me/api/portraits/women/85.jpg" alt="" /></span><span><b>Loved by designers,</b><br/>agencies &amp; business owners.</span></div>
         </div>
         <div className="world" aria-label="Interactive preview of the Build Ezy workspace">
@@ -98,7 +99,7 @@ export default function Home() {
           <textarea aria-label="Describe the website you want to build" value={sitePrompt} onChange={(event) => setSitePrompt(event.target.value)} placeholder="A modern company website with clear services, strong proof, and a premium visual identity…" rows={2}/>
           <button className="prompt-submit" type="submit" aria-label="Start building from this description" disabled={!sitePrompt.trim()}><Arrow /></button>
         </form>
-        <div className="prompt-suggestions reveal" aria-label="Prompt suggestions">{["Business website", "Product landing page", "Portfolio", "Startup launch"].map((suggestion) => <button key={suggestion} type="button" onClick={() => setSitePrompt(`Create a premium ${suggestion.toLowerCase()} with a clear story, responsive layout, and strong calls to action.`)}>{suggestion}</button>)}</div>
+        <div className="prompt-suggestions reveal" aria-label="Prompt suggestions">{["Business Website", "Product Landing Page", "Portfolio", "Startup Launch"].map((suggestion) => <button key={suggestion} type="button" onClick={() => setSitePrompt(`Create a premium ${suggestion.toLowerCase()} with a clear story, responsive layout, and strong calls to action.`)}>{suggestion}</button>)}</div>
       </section>
 
       <section className="frame-journey" aria-label="Build Ezy product journey">
@@ -169,10 +170,17 @@ export default function Home() {
       <section className="final-cta reveal">
         <div className="cta-rings"><i/><i/><i/><i/></div><div className="cta-core"><img src="/buildez-logo-dark.svg" alt="BuildEzy" /></div>
         <span className="section-no">YOUR NEXT CHAPTER STARTS HERE</span><h2>Build something<br/><em>people remember.</em></h2><p>Bring your website, business, and growth into one beautifully connected place.</p>
-        <div className="final-actions"><a href="/app/signup" className="primary-cta">Create your account <Arrow/></a><a href="/app/login" className="secondary-cta">Log in to Build Ezy</a></div><small>No complicated setup. Start building in minutes.</small>
+        <div className="final-actions"><a href="/app/signup" className="primary-cta">Create Your Account <Arrow/></a><a href="/app/login" className="secondary-cta">Log In to Build Ezy</a></div><small>No complicated setup. Start building in minutes.</small>
       </section>
 
       <MarketingFooter forceDark />
+      <CookieConsentBanner
+        storageKey="buildez_cookie_consent_marketing"
+        brandName="BuildEzy"
+        message="BuildEzy uses cookies for essential functionality, security, and (with your consent) analytics."
+        learnMoreHref="/cookies"
+        learnMoreLabel="Cookie Policy"
+      />
     </main>
   );
 }

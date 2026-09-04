@@ -1,5 +1,6 @@
 import type React from "react";
 import { isSystemFont, normalizeGoogleFontFamily } from "@/lib/googleFonts";
+import { sanitizeRichTextHtml } from "@/lib/sanitizeHtml";
 import {
   logBuilderDebug,
   summarizeBlueprint,
@@ -469,7 +470,7 @@ function PublishedNode({ node, blueprint }: PublishedNodeProps) {
           {...commonProps}
           style={cleanStyle(renderStyle)}
           dangerouslySetInnerHTML={{
-            __html: renderText(props?.html ?? props?.text ?? props?.content),
+            __html: sanitizeRichTextHtml(renderText(props?.html ?? props?.text ?? props?.content)),
           }}
         />
       );

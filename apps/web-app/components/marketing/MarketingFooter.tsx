@@ -25,10 +25,9 @@ export function MarketingFooter({ forceDark = false }: { forceDark?: boolean }) 
         </Link>
         <p>Design. Launch. Sell. Grow.<br />One connected place to build.</p>
         <div className="social-links" aria-label="Social media">
-          <a href="https://www.linkedin.com" aria-label="LinkedIn"><SocialIcon name="linkedin" /></a>
-          <a href="https://x.com" aria-label="X"><SocialIcon name="x" /></a>
-          <a href="https://www.instagram.com" aria-label="Instagram"><SocialIcon name="instagram" /></a>
-          <a href="https://www.youtube.com" aria-label="YouTube"><SocialIcon name="youtube" /></a>
+          <a href="https://www.linkedin.com/company/build-ezy-india/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><SocialIcon name="linkedin" /></a>
+          <a href="https://x.com/getbuildezy" target="_blank" rel="noopener noreferrer" aria-label="X"><SocialIcon name="x" /></a>
+          <a href="https://www.instagram.com/buildezy.ai/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><SocialIcon name="instagram" /></a>
         </div>
       </div>
       <div className="footer-column"><h3>Product</h3><Link href="/#platform">Platform</Link><Link href="/pricing">Pricing</Link><Link href="/changelog">Changelog</Link><Link href="/blog">Blogs</Link><Link href="/affiliates">Affiliate Page</Link></div>

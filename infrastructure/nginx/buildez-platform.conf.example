@@ -12,14 +12,14 @@
 # proxy_cache_path /var/cache/nginx/buildez levels=1:2 keys_zone=buildez_pages:10m max_size=1g inactive=7d use_temp_path=off;
 
 upstream buildez_app {
-    server 127.0.0.1:3000;
+    server 127.0.0.1:3100;
     keepalive 32;
 }
 
 server {
     listen 80;
     listen [::]:80;
-    server_name getbuildezy.com *.getbuildezy.com;
+    server_name getbuildezy.com www.getbuildezy.com *.getbuildezy.com;
     location ^~ /.well-known/acme-challenge/ { root /var/lib/buildez/acme; }
     location / { return 301 https://$host$request_uri; }
 }
@@ -27,7 +27,7 @@ server {
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
-    server_name getbuildezy.com *.getbuildezy.com;
+    server_name getbuildezy.com www.getbuildezy.com *.getbuildezy.com;
     ssl_certificate /etc/letsencrypt/live/getbuildezy.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/getbuildezy.com/privkey.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
@@ -41,6 +41,9 @@ server {
         proxy_set_header X-Forwarded-Proto https;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
+        proxy_connect_timeout 15s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
 
         # See the proxy_cache_path note above — uncomment once that line has
         # been moved into http{} and this file reloaded. /app, /api, and any

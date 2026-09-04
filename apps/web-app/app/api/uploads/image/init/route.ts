@@ -1,7 +1,9 @@
 import { nanoid } from "nanoid";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { prisma } from "@buildez/db";
+import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 
 /* ============================================================
    R2 CLIENT — USE EXISTING ENV VARS
@@ -20,10 +22,9 @@ const r2 = new S3Client({
    POST /api/uploads/image/init
 ============================================================ */
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    console.log("[R2:init] body:", body);
 
     const { fileName, fileType, siteId } = body;
 
@@ -32,7 +33,6 @@ export async function POST(req: Request) {
     ---------------------------------------------------------- */
 
     if (!siteId) {
-      console.error("[R2:init] ❌ siteId missing");
       return NextResponse.json(
         { error: "siteId required" },
         { status: 400 }
@@ -40,11 +40,28 @@ export async function POST(req: Request) {
     }
 
     if (!fileName || !fileType) {
-      console.error("[R2:init] ❌ fileName or fileType missing");
       return NextResponse.json(
         { error: "fileName and fileType required" },
         { status: 400 }
       );
+    }
+
+    /* ----------------------------------------------------------
+       AUTHORIZATION — the presigned URL below grants write access to
+       this exact object key, so siteId must be verified to belong to
+       the caller's own tenant before it's ever signed.
+    ---------------------------------------------------------- */
+
+    const tenant = await verifyTenantAccess(req);
+    if (!tenant) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const site = await prisma.site.findFirst({
+      where: { id: siteId, tenantId: tenant.id, deletedAt: null },
+      select: { id: true },
+    });
+    if (!site) {
+      return NextResponse.json({ error: "Website not found" }, { status: 404 });
     }
 
     /* ----------------------------------------------------------

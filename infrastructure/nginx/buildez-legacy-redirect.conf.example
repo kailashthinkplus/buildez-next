@@ -1,0 +1,17 @@
+# Keep old bookmarks and search results useful without serving the retired app.
+server {
+    listen 80;
+    listen [::]:80;
+    server_name getbuildez.com www.getbuildez.com;
+    return 301 https://getbuildezy.com$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name getbuildez.com www.getbuildez.com;
+    ssl_certificate /etc/nginx/ssl/cloudflare/cloudflare_origin-cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/cloudflare/cloudflare_origin-key.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    return 301 https://getbuildezy.com$request_uri;
+}

@@ -677,7 +677,10 @@ function Domains({ site }: { site: Site }) {
     await load();
     setWorking("");
   }
-  async function remove(id: string) {
+  async function remove(id: string, domainName: string) {
+    if (!window.confirm(`Disconnect ${domainName}? Your site will stop resolving on this domain until it's reconnected.`)) {
+      return;
+    }
     setWorking(id);
     const r = await fetch(`/api/sites/${site.id}/domains?domainId=${id}`, {
         method: "DELETE",
@@ -765,7 +768,7 @@ function Domains({ site }: { site: Site }) {
             )}
             <button
               disabled={working === x.id}
-              onClick={() => void remove(x.id)}
+              onClick={() => void remove(x.id, x.domain)}
               className="ml-auto p-2 text-rose-500"
             >
               <Trash2 size={16} />

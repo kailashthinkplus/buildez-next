@@ -169,7 +169,9 @@ export function dodoEnvironment() {
 }
 
 export function dodoClient() {
-  const bearerToken = process.env.DODO_PAYMENTS_API_KEY;
+  const bearerToken = dodoEnvironment() === "live_mode"
+    ? process.env.DODO_PAYMENTS_LIVE_API_KEY || process.env.DODO_PAYMENTS_API_KEY
+    : process.env.DODO_PAYMENTS_TEST_API_KEY || process.env.DODO_PAYMENTS_API_KEY;
   if (!bearerToken) throw new Error("Dodo Payments is not configured yet.");
   return new DodoPayments({ bearerToken, environment: dodoEnvironment() });
 }
@@ -284,6 +286,12 @@ export async function syncDodoSubscription(payload: unknown) {
         orderBy: { createdAt: "desc" },
       });
     }
+    // Captured inside the same transaction that performs the update below,
+    // rather than from a separate read before the transaction started, so
+    // two webhook deliveries racing each other can't both observe the
+    // pre-update status and both decide to send an activation email.
+    const previousStatus = subscription?.status;
+    const previousPlanCode = subscription?.planCode;
     const values = {
       planCode,
       planId: plan.id,
@@ -326,14 +334,20 @@ export async function syncDodoSubscription(payload: unknown) {
         data: { subscriptionId: null },
       });
     }
-    return { ignored: false, subscriptionId: subscription.id, status: subscription.status };
+    return {
+      ignored: false,
+      subscriptionId: subscription.id,
+      status: subscription.status,
+      previousStatus,
+      previousPlanCode,
+    };
   });
 
   // Notify on a genuinely new activation (first activation, reactivation,
   // or an upgrade/downgrade while active) — not on every renewal webhook
   // redelivery, which would just re-confirm a plan the user already knows
   // is active.
-  const isNewActivation = active && (!existing || existing.status !== "ACTIVE" || existing.planCode !== planCode);
+  const isNewActivation = active && (result.previousStatus !== "ACTIVE" || result.previousPlanCode !== planCode);
   if (isNewActivation) {
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
     if (user?.email) {

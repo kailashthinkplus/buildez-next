@@ -3,6 +3,7 @@
 import React from "react";
 import type { BlueprintNode } from "./PageRenderer";
 import { resolveNodeStyle } from "./resolveNodeStyle";
+import { sanitizeRichTextHtml } from "@/lib/sanitizeHtml";
 
 /* ============================================================
    KEYFRAMES (SAFE TO KEEP)
@@ -81,9 +82,7 @@ function renderNode(
       );
 
     case "heading": {
-      const Tag =
-        (node.props?.level as keyof React.JSX.IntrinsicElements) ||
-        "h2";
+      const Tag = (node.props?.level || "h2") as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
       return (
         <Tag key={node.id} style={style}>
@@ -98,10 +97,9 @@ function renderNode(
           key={node.id}
           style={style}
           dangerouslySetInnerHTML={{
-            __html:
-              node.props?.html ??
-              node.props?.text ??
-              "",
+            __html: sanitizeRichTextHtml(
+              node.props?.html ?? node.props?.text ?? ""
+            ),
           }}
         />
       );

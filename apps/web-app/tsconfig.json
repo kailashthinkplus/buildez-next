@@ -57,6 +57,7 @@
 
   "exclude": [
     "node_modules",
+    "tmp/**",
     "modules/_legacy/**",
     "modules/builder/ai-v8/**",
     "modules/builder-v2/ai-v9/**",

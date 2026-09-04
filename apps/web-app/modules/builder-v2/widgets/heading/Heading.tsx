@@ -18,7 +18,7 @@ export default function Heading({
     style,
   } = useWidget<HeadingProps>(node);
 
-  const Tag = (props.level ?? "h2") as React.ElementType;
+  const Tag = props.level ?? "h2";
 
   return (
     <WidgetFrame nodeId={node.id}>

@@ -154,11 +154,17 @@ export async function GET(req: Request) {
 
     /* ------------------------------------------------------------
        5) Create DB session cookie
+       Super-admin sessions get a much shorter TTL than regular tenant
+       sessions: that account carries full-platform privilege and is
+       the sole authentication factor for it (Google OAuth only, no
+       app-level 2FA), so limiting how long a session survives if the
+       underlying Google account is ever compromised is worthwhile
+       defense-in-depth.
     ------------------------------------------------------------ */
     await createSession({
       user,
       provider: AuthProvider.GOOGLE,
-      ttlHours: 24 * 7,
+      ttlHours: user.role === UserRole.SUPER_ADMIN ? 12 : 24 * 7,
     });
 
     /* ------------------------------------------------------------

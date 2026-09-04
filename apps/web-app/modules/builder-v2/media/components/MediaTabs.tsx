@@ -5,6 +5,7 @@ import {
   Upload,
   Sparkles,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 type Tab =
   | "library"
@@ -19,7 +20,7 @@ interface MediaTabsProps {
 const tabs: {
   id: Tab;
   label: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
 }[] = [
   {
     id: "library",

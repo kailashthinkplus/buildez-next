@@ -1,5 +1,6 @@
 import { resolveNodeStyle } from "../renderer/resolveNodeStyle";
 import type { BlueprintNode } from "../renderer/PageRenderer";
+import { sanitizeRichTextHtml } from "@/lib/sanitizeHtml";
 
 /* ============================================================
    HELPERS
@@ -11,6 +12,14 @@ function escapeHtml(str: string = "") {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+// Blocks a quote-breakout (`"` closing the attribute early to inject a new
+// attribute/tag) and script-executing URL schemes on href/src attributes.
+function escapeAttrUrl(value: string = "") {
+  const trimmed = value.trim();
+  if (/^\s*(javascript|data:text\/html|vbscript):/i.test(trimmed)) return "#";
+  return escapeHtml(trimmed);
 }
 
 function styleToString(
@@ -115,7 +124,7 @@ export function renderNodeToHtml(
     case "text":
       return `
 <p class="be-text"${styleString}>
-  ${node.props?.html ?? escapeHtml(node.props?.text ?? "")}
+  ${node.props?.html != null ? sanitizeRichTextHtml(node.props.html) : escapeHtml(node.props?.text ?? "")}
 </p>
 `;
 
@@ -126,7 +135,7 @@ export function renderNodeToHtml(
       return `
 <img
   class="be-image"
-  src="${src}"
+  src="${escapeAttrUrl(src)}"
   alt="${escapeHtml(alt)}"
   loading="lazy"
   decoding="async"
@@ -139,7 +148,7 @@ export function renderNodeToHtml(
       return `
 <a
   class="be-button"
-  href="${node.props?.href || "#"}"
+  href="${escapeAttrUrl(node.props?.href || "#")}"
   ${styleAttr ? `style="${styleAttr}"` : ""}
 >
   ${escapeHtml(node.props?.text || "Button")}

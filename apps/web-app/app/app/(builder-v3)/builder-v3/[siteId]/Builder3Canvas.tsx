@@ -1446,8 +1446,8 @@ An uploaded codebase has already been imported into the current project. Read sr
           <div
             className="relative min-h-full"
             style={{
-              minWidth: `max(100%, ${widths[device]})`,
-              minHeight: "100%",
+              minWidth: device === "desktop" ? "100%" : `max(100%, ${widths[device]})`,
+              height: "100%",
             }}
           >
           <div
@@ -1460,11 +1460,12 @@ An uploaded codebase has already been imported into the current project. Read sr
                */
               width: device === "desktop" ? "100%" : widths[device],
               minWidth: device === "desktop" ? "100%" : widths[device],
+              height: "max(100%, 700px)",
               transform: `scale(${zoom / 100})`,
               transformOrigin: "top center",
               marginInline: device === "desktop" ? "0" : "auto",
             }}
-            className="relative min-h-[700px] overflow-hidden rounded-sm bg-white shadow-[0_24px_70px_rgb(0_0_0/38%),0_0_0_1px_rgb(255_255_255/7%)] transition-[width]"
+            className="relative overflow-hidden rounded-sm bg-white shadow-[0_24px_70px_rgb(0_0_0/38%),0_0_0_1px_rgb(255_255_255/7%)] transition-[width]"
           >
           {!previewUrl && !error && !workspaceLoaded && <div className="min-h-[700px] bg-white"/>}
           {!previewUrl && !error && workspaceLoaded && (workspace?.files?.length ?? 0) > 0 && <div className="grid min-h-[700px] place-items-center bg-white text-sm text-slate-400"><div className="flex items-center gap-2"><span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"/>Preparing preview</div></div>}

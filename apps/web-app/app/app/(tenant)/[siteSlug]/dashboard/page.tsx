@@ -35,6 +35,7 @@ export default function SiteDashboardPage() {
   const websiteId = website?.id;
   const [greeting, setGreeting] = useState("Welcome back");
   const [analytics, setAnalytics] = useState<Analytics>();
+  const [analyticsError, setAnalyticsError] = useState("");
   const [crm, setCrm] = useState({ total: 0, new: 0, qualified: 0 });
   const [pages, setPages] = useState({ published: 0, drafts: 0 });
   const [loading, setLoading] = useState(true);
@@ -55,16 +56,29 @@ export default function SiteDashboardPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setAnalyticsError("");
     try {
-      const [analyticsResponse, crmResponse, pagesResponse] = await Promise.all([
+      const [analyticsResult, crmResult, pagesResult] = await Promise.allSettled([
         fetch(`/api/analytics/${encodeURIComponent(siteSlug)}?days=30`, { cache: "no-store" }),
         websiteId ? fetch(`/api/crm/leads?siteId=${encodeURIComponent(websiteId)}`, { cache: "no-store" }) : null,
         fetch(`/api/pages?siteSlug=${encodeURIComponent(siteSlug)}&limit=100`, { cache: "no-store" }),
       ]);
-      const analyticsPayload = analyticsResponse.ok ? await analyticsResponse.json() : null;
-      const crmPayload = crmResponse?.ok ? await crmResponse.json() : null;
-      const pagesPayload = pagesResponse.ok ? await pagesResponse.json() : null;
-      if (analyticsPayload) setAnalytics(analyticsPayload);
+
+      const analyticsResponse = analyticsResult.status === "fulfilled" ? analyticsResult.value : null;
+      const crmResponse = crmResult.status === "fulfilled" ? crmResult.value : null;
+      const pagesResponse = pagesResult.status === "fulfilled" ? pagesResult.value : null;
+      const analyticsPayload = analyticsResponse ? await analyticsResponse.json().catch(() => null) : null;
+      const crmPayload = crmResponse?.ok ? await crmResponse.json().catch(() => null) : null;
+      const pagesPayload = pagesResponse?.ok ? await pagesResponse.json().catch(() => null) : null;
+
+      if (analyticsResponse?.ok && analyticsPayload?.totals && Array.isArray(analyticsPayload.trend)) {
+        setAnalytics(analyticsPayload);
+      } else {
+        setAnalytics(undefined);
+        setAnalyticsError(
+          analyticsPayload?.message || analyticsPayload?.error || "Analytics could not be loaded.",
+        );
+      }
       if (crmPayload) setCrm({ total: crmPayload.total || 0, new: crmPayload.counts?.NEW || 0, qualified: crmPayload.counts?.QUALIFIED || 0 });
       const pageRows = pagesPayload?.pages || pagesPayload?.data?.pages || [];
       if (Array.isArray(pageRows)) setPages({ published: pageRows.filter((page: { status: string }) => page.status === "PUBLISHED").length, drafts: pageRows.filter((page: { status: string }) => page.status !== "PUBLISHED").length });
@@ -176,7 +190,7 @@ export default function SiteDashboardPage() {
       </section>
 
       <section className="grid gap-5 xl:grid-cols-[1.55fr_.85fr]">
-        <VisitorChart data={analytics?.trend || []} total={analytics?.totals.pageViews || 0} change={analytics?.totals.pageViewsChange || 0} loading={loading} siteSlug={siteSlug} />
+        <VisitorChart data={analytics?.trend || []} total={analytics?.totals.pageViews || 0} change={analytics?.totals.pageViewsChange || 0} loading={loading} error={analyticsError} onRetry={()=>void load()} siteSlug={siteSlug} />
         <TopPages rows={analytics?.pages || []} siteSlug={siteSlug} loading={loading} />
       </section>
 
@@ -197,10 +211,10 @@ function Metric({ icon: Icon, label, value, change, changeLabel, neutral, tone, 
   return <div className={`dashboard-card metric-card metric-${tone} rounded-2xl p-5`}><div className="flex items-center justify-between"><span className="metric-icon flex h-10 w-10 items-center justify-center rounded-xl"><Icon size={18} /></span><span className={neutral ? "text-xs dashboard-muted" : `metric-change text-xs font-semibold ${change !== undefined && change < 0 ? "!text-rose-500" : ""}`}>{text}</span></div>{loading ? <div className="mt-5 h-8 w-20 animate-pulse rounded bg-black/5 dark:bg-white/5" /> : <p className="mt-5 text-2xl font-semibold">{value.toLocaleString()}</p>}<p className="mt-1 text-xs dashboard-muted">{label}</p></div>;
 }
 
-function VisitorChart({ data, total, change, loading, siteSlug }: { data: Analytics["trend"]; total: number; change: number; loading: boolean; siteSlug: string }) {
+function VisitorChart({ data, total, change, loading, error, onRetry, siteSlug }: { data: Analytics["trend"]; total: number; change: number; loading: boolean; error: string; onRetry: () => void; siteSlug: string }) {
   const max = Math.max(...data.map((item) => item.pageViews), 1);
   const visible = data.length > 14 ? data.filter((_, index) => index % Math.ceil(data.length / 14) === 0).slice(-14) : data;
-  return <div className="dashboard-card rounded-2xl p-5 sm:p-6"><div className="flex items-start justify-between"><div><h2 className="font-semibold">Visitor analytics</h2><p className="mt-1 text-xs dashboard-muted">Recorded traffic across your website</p></div><Link href={`/app/${siteSlug}/analytics`} className="rounded-lg p-2 dashboard-hover" aria-label="Open analytics"><BarChart3 size={18} /></Link></div><div className="mt-6 flex items-end gap-3"><span className="text-3xl font-semibold">{loading ? "—" : total.toLocaleString()}</span><span className={`mb-1 rounded-full px-2 py-1 text-xs font-medium ${change >= 0 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-rose-500/10 text-rose-600"}`}>{change >= 0 ? "↑" : "↓"} {Math.abs(change)}%</span></div><div className="mt-7 flex h-52 items-end gap-2 border-b dashboard-border">{loading ? Array.from({ length: 14 }, (_, index) => <div key={index} className="h-full flex-1 animate-pulse rounded-t bg-black/5 dark:bg-white/5" />) : visible.map((item, index) => <div key={item.date} title={`${item.date}: ${item.pageViews} views`} className="group flex h-full flex-1 items-end"><div className={`analytics-bar analytics-bar-${index % 5} w-full rounded-t-md`} style={{ height: `${Math.max(2, (item.pageViews / max) * 100)}%`, animationDelay: `${index * 35}ms` }} /></div>)}</div><div className="mt-3 flex justify-between text-[10px] dashboard-faint"><span>{data[0]?.date || "No traffic yet"}</span><span>{data[Math.floor(data.length / 2)]?.date || ""}</span><span>{data.at(-1)?.date || ""}</span></div></div>;
+  return <div className="dashboard-card rounded-2xl p-5 sm:p-6"><div className="flex items-start justify-between"><div><h2 className="font-semibold">Visitor analytics</h2><p className="mt-1 text-xs dashboard-muted">Recorded traffic across your website</p></div><Link href={`/app/${siteSlug}/analytics`} className="rounded-lg p-2 dashboard-hover" aria-label="Open analytics"><BarChart3 size={18} /></Link></div><div className="mt-6 flex items-end gap-3"><span className="text-3xl font-semibold">{loading ? "—" : total.toLocaleString()}</span>{!error ? <span className={`mb-1 rounded-full px-2 py-1 text-xs font-medium ${change >= 0 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-rose-500/10 text-rose-600"}`}>{change >= 0 ? "↑" : "↓"} {Math.abs(change)}%</span> : null}</div><div className="mt-7 flex h-52 items-end gap-2 border-b dashboard-border">{loading ? Array.from({ length: 14 }, (_, index) => <div key={index} className="h-full flex-1 animate-pulse rounded-t bg-black/5 dark:bg-white/5" />) : error ? <div role="alert" className="m-auto max-w-sm text-center"><p className="text-sm font-medium">Analytics didn’t load</p><p className="mt-1 text-xs dashboard-muted">{error}</p><button type="button" onClick={onRetry} className="mt-3 rounded-lg border dashboard-border px-3 py-2 text-xs dashboard-hover">Try again</button></div> : visible.map((item, index) => <div key={item.date} title={`${item.date}: ${item.pageViews} views`} className="group flex h-full min-w-0 flex-1 items-end"><div className={`analytics-bar analytics-bar-${index % 5} w-full rounded-t-md`} style={{ height: `${Math.max(2, (item.pageViews / max) * 100)}%`, animationDelay: `${index * 35}ms` }} /></div>)}</div><div className="mt-3 flex justify-between text-[10px] dashboard-faint"><span>{data[0]?.date || (error ? "" : "No traffic yet")}</span><span>{data[Math.floor(data.length / 2)]?.date || ""}</span><span>{data.at(-1)?.date || ""}</span></div></div>;
 }
 
 function TopPages({ rows, siteSlug, loading }: { rows: Analytics["pages"]; siteSlug: string; loading: boolean }) {

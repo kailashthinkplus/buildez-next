@@ -122,9 +122,25 @@ export async function createProjectCheckpoint(input: {
   label?: string;
 }) {
   const project = await getOrCreateProject(input.siteId, input.tenantId);
-  const revision = await prisma.v12ProjectRevision.findUnique({
+  let revision = await prisma.v12ProjectRevision.findUnique({
     where: { projectId_sequence: { projectId: project.id, sequence: project.currentRevision } },
   });
+  if (!revision && project.currentRevision > 0) {
+    // The project has content (currentRevision advanced past 0) but its
+    // revision log has a gap at the current sequence — seen in the wild on
+    // at least one pre-existing project, from before this write path was
+    // made transactional. There's nothing to roll back to and no unsaved
+    // work at risk, so back-fill the missing log entry rather than leaving
+    // the project permanently unable to checkpoint or publish.
+    revision = await prisma.v12ProjectRevision.create({
+      data: {
+        projectId: project.id,
+        sequence: project.currentRevision,
+        operations: [{ type: "repair", reason: "missing revision log entry back-filled before checkpoint" }] as Prisma.InputJsonValue,
+        createdBy: input.userId,
+      },
+    });
+  }
   if (!revision) throw new Error("A project revision is required before checkpointing");
   const files = await prisma.v12ProjectFile.findMany({ where: { projectId: project.id }, orderBy: { path: "asc" } });
   const snapshot: ProjectCheckpointSnapshot = {

@@ -11,7 +11,7 @@ BuildEZ uses host-based tenant resolution. Free workspaces publish on `<site-slu
 3. Obtain one wildcard platform certificate with DNS-01. A wildcard cannot be issued through HTTP-01:
    - Install Certbot and the DNS plugin for the authoritative provider.
    - Issue for `getbuildezy.com` and `*.getbuildezy.com` using the DNS plugin and a least-privilege credential.
-4. Copy `infrastructure/nginx/buildez-platform.conf.example` to `/etc/nginx/sites-available/buildez-platform.conf`, update the platform domain if necessary, symlink only that file into `sites-enabled`, run `nginx -t`, then reload.
+4. Copy `infrastructure/nginx/buildez-platform.conf.example` to `/etc/nginx/sites-available/buildez-platform.conf`, update the platform domain if necessary, symlink only that file into `sites-enabled`, run `nginx -t`, then reload. On CentOS/RHEL, add `include /etc/nginx/sites-enabled/*.conf;` inside the existing `http` block because the packaged Nginx configuration includes only `conf.d` by default.
 5. Install `apps/web-app/scripts/provision-nginx-domain.sh` at the absolute path named in the sudoers rule. Set it executable and validate `infrastructure/sudoers/buildez-domain-provisioner` with `visudo -cf` before copying it to `/etc/sudoers.d`.
 6. Ensure ports 80 and 443 are allowed by the DigitalOcean firewall. HTTP must remain reachable for per-domain ACME validation and redirect to HTTPS.
 7. Install `infrastructure/letsencrypt/renewal-hooks/deploy/20-buildez-nginx-reload` as `/etc/letsencrypt/renewal-hooks/deploy/20-buildez-nginx-reload`, owned by root and executable. For an apt installation, enable the packaged timer with `systemctl enable --now certbot.timer`; for a snap installation, use `systemctl enable --now snap.certbot.renew.timer`. Confirm the selected timer with `systemctl list-timers | grep certbot`.
@@ -27,8 +27,8 @@ NEXT_PUBLIC_PLATFORM_DOMAIN=getbuildezy.com
 DOMAIN_SERVER_IP=206.189.129.113
 NGINX_DOMAIN_PROVISIONING=enabled
 NGINX_PROVISION_USE_SUDO=true
-NGINX_PROVISION_SCRIPT=/var/www/buildez/apps/web-app/scripts/provision-nginx-domain.sh
-BUILDEZ_UPSTREAM=http://127.0.0.1:3000
+NGINX_PROVISION_SCRIPT=/var/www/buildezy/apps/web-app/scripts/provision-nginx-domain.sh
+BUILDEZ_UPSTREAM=http://127.0.0.1:3100
 BUILDEZ_ACME_ROOT=/var/lib/buildez/acme
 CERTBOT_EMAIL=operations@example.com
 AUTH_SECRET=<strong-random-secret>

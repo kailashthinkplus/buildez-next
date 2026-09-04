@@ -78,7 +78,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/_next") ||
     pathname.startsWith("/assets") ||
     pathname.startsWith("/favicon") ||
-    pathname.match(/\.(svg|png|jpg|jpeg|webp|gif|ico|css|js|woff|woff2)$/)
+    pathname.match(/\.(svg|png|jpg|jpeg|webp|avif|gif|ico|css|js|woff|woff2)$/)
   ) {
     console.log("✅ STATIC ASSET → ALLOW");
     return NextResponse.next();
@@ -245,6 +245,6 @@ export const config = {
     "/app/:path*",
     "/preview/:path*",
     "/api/:path*",
-    "/((?!_next/|assets/|favicon.ico|.*\\.svg|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.webp|.*\\.gif).*)",
+    "/((?!_next/|assets/|favicon.ico|.*\\.svg|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.webp|.*\\.avif|.*\\.gif).*)",
   ],
 };

@@ -21,11 +21,12 @@ const PUBLIC_ROUTES = [
   "/api/super/auth",
   "/api/plans",
   "/api/billing/activate",
-  "/api/billing",
   "/api/public",
-  "/preview",
-  "/api/preview",
+  // NOTE: "/preview" and "/api/preview" are intentionally NOT public — they
+  // render a page's live/unpublished draft content and are gated by
+  // getUser() + tenant-ownership checks inside the route/page themselves.
   "/api/runtime/v12",
+  "/api/geo/consent-region",
   "/api/cron/publish-scheduled", // Own shared-secret auth (CRON_SECRET) — see route.ts. Called by external cron with no user session.
 ];
 
