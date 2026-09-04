@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 
 import { getUser } from "@/lib/auth/getUser";
+import { getTenantPlan } from "@/lib/plan/getPlan";
 import { dodoClient, dodoCreditPack, parseDodoCreditPacks } from "@/lib/billing/dodo";
 import { getV12CreditBalance } from "@/modules/ai-v12/creditBalance";
 import { publicOrigin } from "@/lib/runtime/requestOrigin";
@@ -11,7 +12,14 @@ export const runtime = "nodejs";
 export async function GET() {
   const auth = await getUser();
   if (!auth?.user || !auth.tenant) return Response.json({ error: "Unauthorized" }, { status: 401 });
-  const creditLimit = typeof auth.plan?.Plan?.aiCredits === "number" ? auth.plan.Plan.aiCredits : 0;
+  // getUser()'s own auth.plan.Plan resolution can come back without the
+  // Plan relation populated for some subscriptions (see the fallback
+  // comment in lib/auth/getUser.ts) — getTenantPlan() is the same lookup
+  // the builder's own credit meter (/api/builder-v3/credits) uses and
+  // reliably resolves aiCredits via the subscription's planCode, which is
+  // why the builder shows the correct balance while this endpoint didn't.
+  const tenantPlan = await getTenantPlan(auth.tenant.id);
+  const creditLimit = typeof tenantPlan?.plan?.aiCredits === "number" ? tenantPlan.plan.aiCredits : 0;
   const balance = await getV12CreditBalance({ tenantId: auth.tenant.id, creditLimit });
   return Response.json({
     balance,
