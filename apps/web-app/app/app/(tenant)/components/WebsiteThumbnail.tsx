@@ -51,7 +51,11 @@ export function WebsiteThumbnail({ siteId, siteName, siteSlug, pageId, pageSlug,
           const preview = payload?.data && typeof payload.data === "object" ? payload.data : payload;
           if (typeof preview?.url !== "string") throw new Error("Page preview returned an invalid URL");
           const url = new URL(preview.url);
-          url.pathname = pageSlug === "home" ? "/" : `/${pageSlug.replace(/^\/+|\/+$/g, "")}`;
+          // preview.url is the session's own base (e.g. /_v3preview/<port>) —
+          // append the page route rather than replacing the path, or the
+          // port prefix nginx needs to route this internally gets lost.
+          const suffix = pageSlug === "home" ? "/" : `/${pageSlug.replace(/^\/+|\/+$/g, "")}`;
+          url.pathname = `${url.pathname.replace(/\/+$/, "")}${suffix}`;
           return url.toString();
         })
         .then((previewUrl) => setDetails({

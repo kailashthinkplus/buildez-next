@@ -168,7 +168,13 @@ async function createPreviewSession(input: { siteId: string; tenantId: string; r
     siteId: input.siteId,
     tenantId: input.tenantId,
     port,
-    url: `http://127.0.0.1:${port}`,
+    // A raw http://127.0.0.1:<port> URL only resolves for whoever is on the
+    // same machine as this process — fine from a local dev browser, dead on
+    // arrival from a real user's browser hitting the production server.
+    // Route it back through the public domain via the nginx proxy added for
+    // this (see infrastructure/nginx), which forwards /_v3preview/<port>/*
+    // to this loopback port.
+    url: `${process.env.NEXT_PUBLIC_APP_URL || "https://getbuildezy.com"}/_v3preview/${port}`,
     projectRoot,
     process: child,
   });
