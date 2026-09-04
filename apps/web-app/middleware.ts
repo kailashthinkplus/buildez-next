@@ -106,10 +106,15 @@ export async function middleware(req: NextRequest) {
   if (isPublicMarketingHome) {
     return NextResponse.next();
   }
-  if (isTenantPlatformSubdomain && !hasRoutePrefix(pathname, "/api") && !hasRoutePrefix(pathname, "/app") && !hasRoutePrefix(pathname, "/_next")) {
+  // A rewrite re-enters the middleware pipeline internally, and the
+  // catch-all matcher below still matches the rewritten path — without
+  // these guards, the second pass sees the already-rewritten pathname
+  // (still on the same non-platform host) and prepends the prefix again
+  // (e.g. /domain-runtime/example.com/domain-runtime/example.com/page).
+  if (isTenantPlatformSubdomain && !hasRoutePrefix(pathname, "/api") && !hasRoutePrefix(pathname, "/app") && !hasRoutePrefix(pathname, "/_next") && !hasRoutePrefix(pathname, `/${platformLabel}`)) {
     return NextResponse.rewrite(internalRewriteUrl(req, `/${platformLabel}${pathname === "/" ? "" : pathname}`));
   }
-  if (!isPlatformHost && !hasRoutePrefix(pathname, "/api") && !hasRoutePrefix(pathname, "/app") && !hasRoutePrefix(pathname, "/_next")) {
+  if (!isPlatformHost && !hasRoutePrefix(pathname, "/api") && !hasRoutePrefix(pathname, "/app") && !hasRoutePrefix(pathname, "/_next") && !hasRoutePrefix(pathname, "/domain-runtime")) {
     return NextResponse.rewrite(internalRewriteUrl(req, `/domain-runtime/${host}${pathname === "/" ? "" : pathname}`));
   }
 
