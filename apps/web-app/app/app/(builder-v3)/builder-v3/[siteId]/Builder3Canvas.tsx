@@ -674,11 +674,17 @@ export default function Builder3Canvas({
     if (!previewUrl) return undefined;
 
     const url = new URL(previewUrl);
+    // previewUrl's pathname is "/_v3preview/<port>" — the prefix nginx
+    // strips to route into the live Vite dev server (see
+    // PreviewSessionManager.ts). The page slug must be APPENDED to it,
+    // never replace it, or the request falls through to the Next.js
+    // app's own router instead of the tenant's live preview and 404s.
+    const basePath = url.pathname.replace(/\/+$/, "");
 
-    if (page?.slug) {
-      url.pathname = page.slug === "home"
-        ? "/"
-        : `/${page.slug.replace(/^\/+|\/+$/g, "")}`;
+    if (page?.slug && page.slug !== "home") {
+      url.pathname = `${basePath}/${page.slug.replace(/^\/+|\/+$/g, "")}`;
+    } else {
+      url.pathname = basePath;
     }
 
     return url.toString().replace(/\/$/, "");
