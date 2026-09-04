@@ -182,5 +182,9 @@
      is a single small layer, so a lighter blur radius keeps the glass look
      without the memory cost of the desktop's 22px pass. */
   .buildezy-marketing .topbar.is-scrolled{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-  .buildezy-marketing .prompt-shell:before{animation:none;filter:none}
+  /* Keep the rotating gradient border (cheap: a masked conic-gradient) but
+     drop the triple drop-shadow glow, which is what actually strained
+     mobile GPUs — this was disabling the whole animation before, which is
+     why the border read as static/missing on iOS and Android. */
+  .buildezy-marketing .prompt-shell:before{filter:none}
 }

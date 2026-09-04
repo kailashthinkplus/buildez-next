@@ -25,9 +25,13 @@ export async function GET(req: Request, context: { params: Promise<{ type: strin
       record = await prisma.crmLead.findUnique({ where: { id }, include: { site: { include: { tenant: { select: { id: true, name: true } } } }, communications: { orderBy: { createdAt: "desc" } } } });
       const item = record as { name?: string; email?: string | null; customData?: unknown } | null; title = item?.name || (type === "support" ? "Support ticket" : "CRM lead"); subtitle = item?.email || id;
     } else if (type === "transactions") {
-      const separator = id.indexOf(":");
+      // Separated with "--" rather than ":" — a raw colon in this path
+      // segment was getting double URL-encoded somewhere in the Link/route-
+      // param pipeline (observed as %253A server-side), so the id Prisma
+      // received was never a real record id and every lookup 404'd.
+      const separator = id.indexOf("--");
       const kind = separator > 0 ? id.slice(0, separator) : "subscription";
-      const recordId = separator > 0 ? id.slice(separator + 1) : id;
+      const recordId = separator > 0 ? id.slice(separator + 2) : id;
       if (kind === "order") {
         record = await prisma.shopOrder.findUnique({ where: { id: recordId }, include: { shop: { include: { site: { include: { tenant: true } } } }, customer: true, items: true, discountCode: true } });
         const item = record as { orderNumber?: number; email?: string } | null; title = `Order #${item?.orderNumber || "—"}`; subtitle = item?.email || recordId;
