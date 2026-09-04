@@ -755,6 +755,17 @@ async function syncGeneratedSiteMetadata(input: {
           title,
           slug,
           renderMode: "REACT",
+          // A generated website is a single deliverable, not a set of
+          // independent pages the user separately publishes one at a
+          // time — leaving new pages at the PageStatus default (DRAFT)
+          // meant only whichever page the builder UI happened to publish
+          // explicitly ever went live, while every other AI-generated
+          // page silently stayed unreachable. New pages default to
+          // published; regenerating an EXISTING page never touches its
+          // status below, so a page the user deliberately unpublished
+          // stays that way.
+          status: "PUBLISHED",
+          publishedAt: new Date(now),
           metadata: {
             generatedAt: now,
             route,

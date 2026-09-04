@@ -484,15 +484,6 @@ export default function PagesView({ siteSlug }: Props) {
                           onSetFrontPage={() => setFrontPage(pageRow)}
                           onDelete={() => setDeletePage(pageRow)}
                           onChanged={() => mutatePages()}
-                          onPreview={() => {
-                            if (previewUrl) {
-                              window.open(
-                                previewUrl,
-                                "_blank",
-                                "noopener,noreferrer"
-                              );
-                            }
-                          }}
                           onView={pageRow.status === "PUBLISHED" && getPageSiteSlug(pageRow, siteSlug) ? () => window.open(withVerifiedDomainOverride(publishedSitePath(getPageSiteSlug(pageRow, siteSlug), pageRow.slug), pageRow.site?.verifiedDomain, pageRow.slug), "_blank", "noopener,noreferrer") : undefined}
                           onDuplicate={async () => {
                             await duplicatePage(pageRow.id);

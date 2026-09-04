@@ -7,7 +7,6 @@ import {
   Settings,
   Copy,
   Trash2,
-  Eye,
   Pencil,
   RotateCcw,
   ExternalLink,
@@ -30,7 +29,6 @@ type PageActionsMenuProps = {
   onSetFrontPage?: () => Promise<void> | void;
   onDelete?: () => void;
   onDuplicate?: () => Promise<void> | void;
-  onPreview?: () => void;
   onView?: () => void;
   onChanged?: () => void;
   isTrash?: boolean;
@@ -44,7 +42,6 @@ export default function PageActionsMenu({
   onSetFrontPage,
   onDelete,
   onDuplicate,
-  onPreview,
   onView,
   onChanged,
   isTrash = false,
@@ -156,23 +153,6 @@ export default function PageActionsMenu({
                 >
                   <Pencil className="h-4 w-4" />
                   Edit
-                </button>
-
-                {/* Preview */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    onPreview?.();
-                    setOpen(false);
-                  }}
-                  disabled={!onPreview}
-                  className="
-                    flex w-full items-center gap-3 px-4 py-2 text-left
-                    dashboard-hover disabled:opacity-40
-                  "
-                >
-                  <Eye className="h-4 w-4" />
-                  Preview
                 </button>
 
                 <button
