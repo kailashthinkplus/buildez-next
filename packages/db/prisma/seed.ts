@@ -270,23 +270,32 @@ async function seedPlans() {
 async function seedSuperAdmin() {
   console.log("🌱 Seeding Super Admin...");
 
-  await prisma.user.upsert({
-    where: {
-      email: "kailash.addanki@gmail.com",
-    },
-    update: {
-      role: "SUPER_ADMIN",
-      isEmailVerified: true,
-      isActive: true,
-    },
-    create: {
-      email: "kailash.addanki@gmail.com",
-      name: "Kailash Addanki",
-      role: "SUPER_ADMIN",
-      isEmailVerified: true,
-      isActive: true,
-    },
-  });
+  const superAdmins = [
+    { email: "kailash.addanki@gmail.com", name: "Kailash Addanki" },
+    { email: "support@getbuildezy.com", name: "BuildEZ Support" },
+  ];
+
+  for (const admin of superAdmins) {
+    // Google OAuth sign-in finds this row by email (see
+    // app/api/auth/google/callback/route.ts) and inherits whatever role is
+    // already on it — upserting here is what makes "Login with Google"
+    // work for a super admin without a separate allowlist.
+    await prisma.user.upsert({
+      where: { email: admin.email },
+      update: {
+        role: "SUPER_ADMIN",
+        isEmailVerified: true,
+        isActive: true,
+      },
+      create: {
+        email: admin.email,
+        name: admin.name,
+        role: "SUPER_ADMIN",
+        isEmailVerified: true,
+        isActive: true,
+      },
+    });
+  }
 
   console.log("✅ Super Admin Seeded");
 }

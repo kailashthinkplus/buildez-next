@@ -14,6 +14,7 @@ import { createSession } from "@/lib/auth/session";
 import { findAccessibleTenant } from "@/lib/auth/tenantAccess";
 import { persistGoogleAvatarForTenant, persistPendingGoogleAvatar } from "@/lib/auth/googleAvatar";
 import { NextResponse } from "next/server";
+import { publicRedirectUrl } from "@/lib/runtime/requestOrigin";
 
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
@@ -43,7 +44,7 @@ export async function GET(req: Request) {
     const returnedState = url.searchParams.get("state");
 
     if (!code || returnedState !== "google_oauth") {
-      return NextResponse.redirect(new URL("/app/login?error=oauth", req.url));
+      return NextResponse.redirect(publicRedirectUrl(req, "/app/login?error=oauth"));
     }
 
     /* ------------------------------------------------------------
@@ -51,7 +52,7 @@ export async function GET(req: Request) {
     ------------------------------------------------------------ */
     const stateCookie = await getTemporaryCookie("google_oauth_state");
     if (!stateCookie) {
-      return NextResponse.redirect(new URL("/app/login?error=state", req.url));
+      return NextResponse.redirect(publicRedirectUrl(req, "/app/login?error=state"));
     }
 
     let oauthState;
@@ -59,7 +60,7 @@ export async function GET(req: Request) {
       oauthState = JSON.parse(stateCookie);
     } catch {
       return NextResponse.redirect(
-        new URL("/app/login?error=state_parse", req.url)
+        publicRedirectUrl(req, "/app/login?error=state_parse")
       );
     }
 
@@ -84,7 +85,7 @@ export async function GET(req: Request) {
     });
 
     if (!tokenRes.ok) {
-      return NextResponse.redirect(new URL("/app/login?error=token", req.url));
+      return NextResponse.redirect(publicRedirectUrl(req, "/app/login?error=token"));
     }
 
     const token = await tokenRes.json();
@@ -98,7 +99,7 @@ export async function GET(req: Request) {
 
     if (!profileRes.ok) {
       return NextResponse.redirect(
-        new URL("/app/login?error=profile", req.url)
+        publicRedirectUrl(req, "/app/login?error=profile")
       );
     }
 
@@ -108,7 +109,7 @@ export async function GET(req: Request) {
 
     if (!email || !googleId) {
       return NextResponse.redirect(
-        new URL("/app/login?error=missing_profile", req.url)
+        publicRedirectUrl(req, "/app/login?error=missing_profile")
       );
     }
 
@@ -195,9 +196,9 @@ export async function GET(req: Request) {
         ? "/app/dashboard"
         : "/app/onboarding";
 
-    return NextResponse.redirect(new URL(target, req.url));
+    return NextResponse.redirect(publicRedirectUrl(req, target));
   } catch (err) {
     console.error("GOOGLE CALLBACK ERROR:", err);
-    return NextResponse.redirect(new URL("/app/login?error=server", req.url));
+    return NextResponse.redirect(publicRedirectUrl(req, "/app/login?error=server"));
   }
 }

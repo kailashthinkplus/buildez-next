@@ -20,6 +20,8 @@ export default function StepDomainLaunch({
 
   const [domain, setDomain] = useState(""); // input value
   const [checking, setChecking] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState(true);
   const [available, setAvailable] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,19 +32,24 @@ export default function StepDomainLaunch({
   ------------------------------------------------------------- */
   useEffect(() => {
     (async () => {
-      const res = await fetch("/api/onboarding/status");
-      if (!res.ok) return;
+      try {
+        const res = await fetch("/api/onboarding/status", { cache: "no-store" });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Your domain settings could not be loaded.");
 
-      const data = await res.json();
+        setPlanCode(data.planCode || null);
 
-      setPlanCode(data.planCode || null);
+        const isFree = data.planCode === "trial" || data.planCode === "FREE";
+        setIsFreePlan(isFree);
 
-      const isFree = data.planCode === "trial" || data.planCode === "FREE";
-      setIsFreePlan(isFree);
-
-      if (!isFree && data.domain) {
-        setDomain(data.domain);
-        setAvailable(true);
+        if (!isFree && data.domain) {
+          setDomain(data.domain);
+          setAvailable(true);
+        }
+      } catch (reason) {
+        setError(reason instanceof Error ? reason.message : "Your domain settings could not be loaded.");
+      } finally {
+        setLoadingStatus(false);
       }
     })();
   }, []);
@@ -57,23 +64,26 @@ export default function StepDomainLaunch({
     setAvailable(null);
     setError(null);
 
-    const res = await fetch("/api/onboarding/check-domain", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ domain }),
-    });
-
-    const json = await res.json();
-
-    if (res.ok && json.available === true) {
-      setAvailable(true);
-      setError(null);
-    } else {
+    try {
+      const res = await fetch("/api/onboarding/check-domain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (res.ok && json.available === true) {
+        setAvailable(true);
+        setError(null);
+      } else {
+        setAvailable(false);
+        setError(json.error || "Domain unavailable");
+      }
+    } catch {
       setAvailable(false);
-      setError(json.error || "Domain unavailable");
+      setError("We couldn't reach the production server. Please try again.");
+    } finally {
+      setChecking(false);
     }
-
-    setChecking(false);
   }
 
   /* -------------------------------------------------------------
@@ -91,20 +101,22 @@ export default function StepDomainLaunch({
       if (!finalDomain || available !== true) return;
     }
 
-    const res = await fetch("/api/onboarding/save-domain", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ domain: finalDomain }),
-    });
-
-    const json = await res.json();
-
-    if (!res.ok) {
-      setError(json.error || "Failed to save domain");
-      return;
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/onboarding/save-domain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: finalDomain }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error || "Failed to save domain");
+      onNext();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Failed to save domain");
+    } finally {
+      setSaving(false);
     }
-
-    onNext();
   }
 
   /* -------------------------------------------------------------
@@ -112,20 +124,22 @@ export default function StepDomainLaunch({
      Saves "domain = null" and continues
   ------------------------------------------------------------- */
   async function handleSkip() {
-    const res = await fetch("/api/onboarding/save-domain", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ domain: null }), // ⬅️ IMPORTANT
-    });
-
-    const json = await res.json();
-
-    if (!res.ok) {
-      setError(json.error || "Could not skip domain");
-      return;
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/onboarding/save-domain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: null }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error || "Could not skip domain");
+      onNext();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Could not skip domain");
+    } finally {
+      setSaving(false);
     }
-
-    onNext();
   }
 
   /* -------------------------------------------------------------
@@ -147,17 +161,20 @@ export default function StepDomainLaunch({
         Choose your website domain
       </h2>
 
-      <p className="text-sm text-white/65 mb-10">
+      <p className="text-sm text-slate-600 dark:text-white/65 mb-10">
         {isFreePlan
           ? "Free plan uses a BuildEZ address — you can upgrade anytime."
           : "Enter a custom domain or skip this step for now."}
       </p>
 
+      {loadingStatus ? <p className="mb-5 text-sm text-slate-500 dark:text-white/55">Loading domain settings…</p> : null}
+      {error && available !== false ? <p className="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</p> : null}
+
       <div className="glass p-6 rounded-2xl mb-10">
         {/* FREE PLAN UI (unchanged) */}
         {isFreePlan && (
           <div>
-            <label className="text-xs text-white/60 block mb-2">
+            <label className="text-xs text-slate-500 dark:text-white/60 block mb-2">
               Enter your site name
             </label>
 
@@ -172,7 +189,7 @@ export default function StepDomainLaunch({
             />
 
             {domain && (
-              <p className="text-xs mt-3 text-white/60">
+              <p className="text-xs mt-3 text-slate-500 dark:text-white/60">
                 Your site will be:
                 <span className="text-blue-300 ml-1">
                   {FREE_SUFFIX}{publishedSitePath(slugify(domain, { lower: true, strict: true }))}
@@ -185,14 +202,14 @@ export default function StepDomainLaunch({
         {/* PAID PLAN UI */}
         {!isFreePlan && (
           <div>
-            <label className="text-xs text-white/60 block mb-2">
+            <label className="text-xs text-slate-500 dark:text-white/60 block mb-2">
               Enter your desired domain
             </label>
 
             <div className="relative">
               <LinkIcon
                 size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40"
               />
               <input
                 value={domain}
@@ -238,6 +255,7 @@ export default function StepDomainLaunch({
           {!isFreePlan && (
             <button
               onClick={handleSkip}
+              disabled={saving || loadingStatus}
               className="px-6 py-2.5 rounded-xl text-xs bg-white/10 hover:bg-white/20 transition"
             >
               Skip
@@ -247,7 +265,7 @@ export default function StepDomainLaunch({
           {/* CONTINUE */}
           <button
             onClick={handleContinue}
-            disabled={!isFreePlan && available !== true}
+            disabled={saving || loadingStatus || (!isFreePlan && available !== true)}
             className={`
               px-6 py-2.5 rounded-xl text-xs font-medium text-white transition
               ${
@@ -259,7 +277,7 @@ export default function StepDomainLaunch({
               }
             `}
           >
-            Continue →
+            {saving ? "Saving…" : "Continue →"}
           </button>
         </div>
       </div>

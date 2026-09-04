@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { CookieConsentBanner } from "@/modules/legal/CookieConsentBanner";
+import { MarketingAnalytics, notifyAnalyticsConsentGranted } from "@/modules/legal/MarketingAnalytics";
 import "./marketing.css";
 
 const Arrow = () => <svg className="cta-arrow" aria-hidden="true" viewBox="0 0 20 20"><path d="M3 10h13M11 5l5 5-5 5"/></svg>;
@@ -17,14 +18,18 @@ export default function Home() {
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const compactDevice = window.matchMedia("(max-width: 900px), (pointer: coarse)").matches;
     const move = (event: PointerEvent) => {
       stage.style.setProperty("--mx", `${(event.clientX / innerWidth - 0.5) * 2}`);
       stage.style.setProperty("--my", `${(event.clientY / innerHeight - 0.5) * 2}`);
     };
-    window.addEventListener("pointermove", move, { passive: true });
-    const scroll = () => {
+    if (!compactDevice && !reducedMotion) window.addEventListener("pointermove", move, { passive: true });
+    let animationFrame = 0;
+    const updateScrollEffects = () => {
+      animationFrame = 0;
       setHeaderScrolled(window.scrollY > 32);
-      document.documentElement.style.setProperty("--scroll", `${window.scrollY}`);
+      if (!compactDevice && !reducedMotion) document.documentElement.style.setProperty("--scroll", `${window.scrollY}`);
       const journey = document.querySelector<HTMLElement>(".frame-journey");
       if (!journey) return;
       const rect = journey.getBoundingClientRect();
@@ -34,7 +39,7 @@ export default function Home() {
       setActiveJourney(active);
 
       const orbit = document.querySelector<HTMLElement>(".orbit-stage");
-      if (orbit) {
+      if (orbit && !compactDevice && !reducedMotion) {
         const orbitRect = orbit.getBoundingClientRect();
         const orbitProgress = Math.max(0, Math.min(1, (innerHeight - orbitRect.top) / Math.max(innerHeight + orbitRect.height, 1)));
         const turn = orbitProgress * Math.PI * 2;
@@ -55,11 +60,19 @@ export default function Home() {
         if (innerRing) innerRing.style.transform = `translate(-50%, -50%) rotateX(66deg) rotateZ(${22 - orbitProgress * 46}deg)`;
       }
     };
+    const scroll = () => {
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(updateScrollEffects);
+    };
     window.addEventListener("scroll", scroll, { passive: true });
     const observer = new IntersectionObserver((entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("is-visible")), { threshold: .15 });
     document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
-    scroll();
-    return () => { window.removeEventListener("pointermove", move); window.removeEventListener("scroll", scroll); observer.disconnect(); };
+    updateScrollEffects();
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("scroll", scroll);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      observer.disconnect();
+    };
   }, []);
 
   return (
@@ -67,7 +80,7 @@ export default function Home() {
       <nav className={`topbar${headerScrolled ? " is-scrolled" : ""}`} aria-label="Main navigation">
         <a href="#top" className="brand" aria-label="BuildEzy home"><img className="official-logo" src="/buildez-logo-dark.svg" alt="BuildEzy" /></a>
         <div className="nav-links"><a href="#platform">Platform</a><a href="/pricing">Pricing</a><a href="#difference">Why Build Ezy</a><a href="#workflow">How it works</a></div>
-        <div className="nav-actions"><a href="/app/login" className="login-link">Log In</a><a href="/app/signup" className="mini-cta">Start Building <Arrow /></a></div>
+        <div className="nav-actions"><a href="/app/login" className="login-link">Log In</a><a href="/app/signup" className="mini-cta">Signup <Arrow /></a></div>
       </nav>
       <section className="hero" id="top">
         <div className="hero-glow" /><div className="orb orb-one" /><div className="orb orb-two" />
@@ -174,12 +187,14 @@ export default function Home() {
       </section>
 
       <MarketingFooter forceDark />
+      <MarketingAnalytics />
       <CookieConsentBanner
         storageKey="buildez_cookie_consent_marketing"
         brandName="BuildEzy"
         message="BuildEzy uses cookies for essential functionality, security, and (with your consent) analytics."
         learnMoreHref="/cookies"
         learnMoreLabel="Cookie Policy"
+        onConsent={(choice) => choice === "accepted" && notifyAnalyticsConsentGranted()}
       />
     </main>
   );

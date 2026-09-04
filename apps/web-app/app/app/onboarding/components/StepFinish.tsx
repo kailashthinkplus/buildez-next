@@ -169,28 +169,28 @@ useEffect(() => {
         <div className="glass p-5 rounded-2xl mb-10 border border-white/10 shadow-md">
           <div className="flex items-center gap-2 mb-3">
             <CreditCard className="text-blue-400" size={18} />
-            <h3 className="text-sm font-semibold text-white/90">
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-white/90">
               Payment Summary
             </h3>
           </div>
 
-          <div className="text-sm text-white/80 space-y-1.5">
+          <div className="text-sm text-slate-700 dark:text-white/80 space-y-1.5">
             <p>
-              <span className="text-white/50">Plan:</span>{" "}
+              <span className="text-slate-500 dark:text-white/50">Plan:</span>{" "}
               <span className="font-medium capitalize">
                 {subscription?.planCode ?? paymentSummary?.plan}
               </span>
             </p>
 
             <p>
-              <span className="text-white/50">Billing Cycle:</span>{" "}
+              <span className="text-slate-500 dark:text-white/50">Billing Cycle:</span>{" "}
               <span className="font-medium capitalize">
                 {subscription?.billingCycle ?? paymentSummary?.billingCycle}
               </span>
             </p>
 
             <p>
-              <span className="text-white/50">Amount Paid:</span>{" "}
+              <span className="text-slate-500 dark:text-white/50">Amount Paid:</span>{" "}
               <span className="font-medium">
                 ₹
                 {(
@@ -202,7 +202,7 @@ useEffect(() => {
             </p>
 
             <p>
-              <span className="text-white/50">Subscription ID:</span>{" "}
+              <span className="text-slate-500 dark:text-white/50">Subscription ID:</span>{" "}
               <span className="font-mono text-[13px]">
                 {subscription?.subscriptionReference ??
                   paymentSummary?.subscriptionId ?? "Processing"}
@@ -211,7 +211,7 @@ useEffect(() => {
 
             {subscription?.currentPeriodEnd && (
               <p>
-                <span className="text-white/50">Renews:</span>{" "}
+                <span className="text-slate-500 dark:text-white/50">Renews:</span>{" "}
                 <span className="text-[13px]">
                   {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
                 </span>

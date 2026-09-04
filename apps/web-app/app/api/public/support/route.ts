@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { rateLimitIp } from "@/lib/api/rate-limit";
 import { ApiError } from "@/lib/api/errors";
+import { sendAdminAlert } from "@/lib/email/adminAlert";
 
 const TYPES = ["SUPPORT", "BUG", "ABUSE"] as const;
 type SupportType = (typeof TYPES)[number];
@@ -51,6 +52,21 @@ export async function POST(req: NextRequest) {
 
   const created = await prisma.supportRequest.create({
     data: { type, email, message, name, subject, pageUrl, severity },
+  });
+
+  const TYPE_LABEL: Record<SupportType, string> = { SUPPORT: "Support request", BUG: "Bug report", ABUSE: "Abuse report" };
+  void sendAdminAlert({
+    title: `${TYPE_LABEL[type]} received`,
+    message: [
+      `From: ${name || "(no name)"} <${email}>`,
+      subject ? `Subject: ${subject}` : null,
+      severity ? `Severity: ${severity}` : null,
+      pageUrl ? `Page: ${pageUrl}` : null,
+      "",
+      message,
+    ].filter((line) => line !== null).join("\n"),
+    ctaLabel: "Open in Super Admin",
+    ctaUrl: `${process.env.NEXT_PUBLIC_APP_URL || "https://getbuildezy.com"}/super/support/${created.id}`,
   });
 
   return NextResponse.json({ id: created.id, status: created.status, createdAt: created.createdAt }, { status: 201 });

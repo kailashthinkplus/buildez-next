@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { publicRedirectUrl, internalFetchUrl } from "@/lib/runtime/requestOrigin";
 
 /* ==========================================================
    1) PUBLIC ROUTES — NO AUTH REQUIRED
@@ -173,7 +174,7 @@ if (isRuntime) {
     }
 
     console.log("❌ NO SESSION → REDIRECT LOGIN");
-    return NextResponse.redirect(new URL("/app/login", req.url));
+    return NextResponse.redirect(publicRedirectUrl(req, "/app/login"));
   }
 
   /* ---------------------------------------------------------
@@ -189,7 +190,7 @@ if (isRuntime) {
   --------------------------------------------------------- */
   console.log("📡 FETCH ONBOARDING STATUS");
 
-  const obRes = await fetch(new URL("/api/onboarding/status", req.url), {
+  const obRes = await fetch(internalFetchUrl("/api/onboarding/status"), {
     headers: { cookie: req.headers.get("cookie") || "" },
     cache: "no-store",
   });
@@ -199,7 +200,7 @@ if (isRuntime) {
   if (!obRes.ok) {
     if (obRes.status === 401 || obRes.status === 403) {
       console.log("❌ ONBOARDING SESSION REJECTED → LOGIN");
-      return NextResponse.redirect(new URL("/app/login", req.url));
+      return NextResponse.redirect(publicRedirectUrl(req, "/app/login"));
     }
     console.error("❌ ONBOARDING STATUS UNAVAILABLE → ALLOW PAGE ERROR UI", obRes.status);
     return NextResponse.next();
@@ -216,7 +217,7 @@ if (isRuntime) {
   if (!onboardingComplete) {
     console.log("⛔ FORCE ONBOARDING");
     if (!pathname.startsWith("/app/onboarding")) {
-      return NextResponse.redirect(new URL("/app/onboarding", req.url));
+      return NextResponse.redirect(publicRedirectUrl(req, "/app/onboarding"));
     }
     return NextResponse.next();
   }
@@ -226,7 +227,7 @@ if (isRuntime) {
   --------------------------------------------------------- */
   console.log("📡 FETCH TENANT");
 
-  const tenantRes = await fetch(new URL("/api/tenant/me", req.url), {
+  const tenantRes = await fetch(internalFetchUrl("/api/tenant/me"), {
     headers: { cookie: req.headers.get("cookie") || "" },
     cache: "no-store",
   });
@@ -236,7 +237,7 @@ if (isRuntime) {
   if (!tenantRes.ok) {
     if (tenantRes.status === 401 || tenantRes.status === 403) {
       console.log("❌ TENANT SESSION REJECTED → LOGIN");
-      return NextResponse.redirect(new URL("/app/login", req.url));
+      return NextResponse.redirect(publicRedirectUrl(req, "/app/login"));
     }
     console.error("❌ TENANT FETCH UNAVAILABLE → ALLOW PAGE ERROR UI", tenantRes.status);
     return NextResponse.next();
@@ -253,7 +254,7 @@ if (isRuntime) {
   if (!tenant) {
     console.log("❌ NO TENANT → FORCE ONBOARDING");
     if (!pathname.startsWith("/app/onboarding")) {
-      return NextResponse.redirect(new URL("/app/onboarding", req.url));
+      return NextResponse.redirect(publicRedirectUrl(req, "/app/onboarding"));
     }
     return NextResponse.next();
   }
@@ -263,7 +264,7 @@ if (isRuntime) {
   --------------------------------------------------------- */
   if (pathname.startsWith("/app/onboarding")) {
     console.log("🚫 BLOCK ONBOARDING → DASHBOARD");
-    return NextResponse.redirect(new URL("/app/dashboard", req.url));
+    return NextResponse.redirect(publicRedirectUrl(req, "/app/dashboard"));
   }
 
   /* ---------------------------------------------------------
