@@ -70,6 +70,43 @@ import {
   type ReferenceCommerceAnalysis,
 } from "./commerce";
 
+/*
+ * BRAND / NAME CLARIFICATION
+ *
+ * The pill the "It's a different brand" action submits — never a real
+ * user prompt, so it's safe to match on exactly rather than needing a
+ * dedicated field on V12AgentAction.
+ */
+const BRAND_DIFFERENT_SENTINEL = "__BUILDEZ_BRAND_DIFFERENT__";
+
+type PendingBrandClarification = {
+  originalPrompt: string;
+  candidateName: string;
+};
+
+function readBrandClarification(value: unknown): PendingBrandClarification | null {
+  const root = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+  const raw = root.brandClarification;
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const candidate = raw as Record<string, unknown>;
+  if (typeof candidate.originalPrompt !== "string" || typeof candidate.candidateName !== "string") return null;
+  return { originalPrompt: candidate.originalPrompt, candidateName: candidate.candidateName };
+}
+
+async function saveBrandClarification(input: {
+  conversationId: string;
+  existingContext: unknown;
+  brandClarification: PendingBrandClarification | null;
+}) {
+  const root = input.existingContext && typeof input.existingContext === "object" && !Array.isArray(input.existingContext)
+    ? input.existingContext as Record<string, unknown>
+    : {};
+  return prisma.aIConversation.update({
+    where: { id: input.conversationId },
+    data: { context: { ...root, brandClarification: input.brandClarification } as Prisma.InputJsonValue },
+  });
+}
+
 type AgentFile = { path: string; content: string };
 type ProjectFile = { path: string; content: string };
 
@@ -514,6 +551,66 @@ function object(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
 }
 
+/**
+ * Facts the user already gave BuildEZ — during onboarding, and on this
+ * site's Settings page — that the model would otherwise have no way to
+ * know about. Read-only reference: the user's actual prompt for this
+ * generation always takes precedence over any of it.
+ */
+function buildBusinessContextBlock(input: {
+  onboarding: {
+    businessName: string | null;
+    profession: string | null;
+    primaryUseCase: string | null;
+    website: string | null;
+    city: string | null;
+    country: string | null;
+  } | null;
+  settings: unknown;
+}): string {
+  const settings = object(input.settings);
+  const lines: string[] = [];
+
+  const businessName = input.onboarding?.businessName?.trim();
+  if (businessName) lines.push(`- Business/brand name: ${businessName}`);
+
+  const profession = input.onboarding?.profession?.trim();
+  const useCase = input.onboarding?.primaryUseCase?.trim();
+  if (profession || useCase) {
+    lines.push(`- What the owner does: ${[profession, useCase].filter(Boolean).join(" · ")}`);
+  }
+
+  const existingWebsite = input.onboarding?.website?.trim();
+  if (existingWebsite) lines.push(`- Existing website on file: ${existingWebsite}`);
+
+  const location = [input.onboarding?.city?.trim(), input.onboarding?.country?.trim()].filter(Boolean).join(", ");
+  if (location) lines.push(`- Location: ${location}`);
+
+  const contactEmail = typeof settings.contactEmail === "string" ? settings.contactEmail.trim() : "";
+  if (contactEmail) lines.push(`- Contact email (use verbatim, do not invent another): ${contactEmail}`);
+
+  const contactPhone = typeof settings.contactPhone === "string" ? settings.contactPhone.trim() : "";
+  if (contactPhone) lines.push(`- Contact phone (use verbatim, do not invent another): ${contactPhone}`);
+
+  const seoTitle = typeof settings.seoTitle === "string" ? settings.seoTitle.trim() : "";
+  const seoDescription = typeof settings.seoDescription === "string" ? settings.seoDescription.trim() : "";
+  if (seoTitle || seoDescription) {
+    lines.push(`- Configured SEO title/description to reflect in <title>/meta tags: ${[seoTitle, seoDescription].filter(Boolean).join(" — ")}`);
+  }
+
+  const socials = (["twitterHandle", "facebookUrl", "instagramUrl", "linkedinUrl"] as const)
+    .map((key) => (typeof settings[key] === "string" ? settings[key].trim() : ""))
+    .filter(Boolean);
+  if (socials.length) lines.push(`- Real social links to use if the design includes social icons (use verbatim, do not invent others): ${socials.join(", ")}`);
+
+  if (!lines.length) return "";
+
+  return `
+REFERENCE CONTEXT (from the account's onboarding and this site's Settings page — factual reference only; the request below always wins on anything it specifies explicitly):
+${lines.join("\n")}
+  `.trim();
+}
+
 function outputText(payload: unknown) {
   const root = object(payload);
   if (typeof root.output_text === "string") return root.output_text.trim();
@@ -521,12 +618,37 @@ function outputText(payload: unknown) {
     .map(item => typeof object(item).text === "string" ? String(object(item).text) : "").filter(Boolean).join("\n").trim();
 }
 
+/**
+ * The model's response can be cut off before it finishes (hitting
+ * max_output_tokens, or a provider-side interruption) even with a
+ * strict json_schema response format — schema conformance is only
+ * enforced on completed output, not on a response that stops mid
+ * stream. That leaves `text` syntactically invalid JSON, and the raw
+ * `JSON.parse` SyntaxError ("Unexpected end of JSON input") is not
+ * actionable for a caller deciding whether to retry. Re-throw it as
+ * a distinctly labeled, retryable error instead.
+ */
 function parseResult(text: string, requireFiles: boolean) {
-  const value = object(JSON.parse(text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim()));
+  let value: Record<string, unknown>;
+  try {
+    value = object(JSON.parse(text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim()));
+  } catch {
+    throw new TruncatedResponseError(
+      "The generated project response was cut off before it finished."
+    );
+  }
   const files: AgentFile[] = Array.isArray(value.files) ? value.files.map(object).map(item => ({ path: String(item.path || ""), content: String(item.content || "") })) : [];
   if ((requireFiles && !files.length) || files.some(file => !file.path || !file.content)) throw new Error("The agent returned an invalid project file set.");
   if (files.length) validatePreviewProjectPaths(files.map(file => file.path));
   return { message: typeof value.message === "string" ? value.message : "Your page is ready to review.", files };
+}
+
+class TruncatedResponseError extends Error {}
+
+/** OpenAI's Responses API sets this when generation stopped early — most commonly for hitting max_output_tokens. */
+function isIncompleteResponse(payload: unknown): boolean {
+  const root = object(payload);
+  return root.status === "incomplete" || object(root.incomplete_details).reason === "max_output_tokens";
 }
 
 function ensureActiveWebsitePageRoute(input: {
@@ -935,7 +1057,12 @@ ${requestText || "Recreate the attached reference."}`,
   if (!responseText) {
     throw new Error("AI returned an empty visual specification.");
   }
-  const parsed = object(JSON.parse(responseText));
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = object(JSON.parse(responseText));
+  } catch {
+    throw new TruncatedResponseError("The visual specification response was cut off before it finished.");
+  }
   const commerce = object(parsed.commerce) as unknown as ReferenceCommerceAnalysis;
   const theme = object(parsed.theme);
   const visualSpecification = JSON.stringify({
@@ -1039,7 +1166,12 @@ ${JSON.stringify(creativeDirection, null, 2)}`,
   });
   const responseText = outputText(payload);
   if (!responseText) throw new Error("AI returned an empty original design specification.");
-  const parsed = object(JSON.parse(responseText));
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = object(JSON.parse(responseText));
+  } catch {
+    throw new TruncatedResponseError("The design specification response was cut off before it finished.");
+  }
   const theme = object(parsed.theme);
   return {
     visualSpecification: JSON.stringify({
@@ -1098,9 +1230,21 @@ export async function runV12AgentPlan(input: V12AgentInput): Promise<V12PlanOutc
         },
       },
       designTokens: true,
+      settings: true,
     },
   });
   if (!site) throw new Error("Site not found.");
+  const onboarding = await prisma.userOnboarding.findUnique({
+    where: { userId: input.userId },
+    select: {
+      businessName: true,
+      profession: true,
+      primaryUseCase: true,
+      website: true,
+      city: true,
+      country: true,
+    },
+  });
   const selectedPage =
     (input.pageId
       ? site.pages.find((candidate) => candidate.id === input.pageId)
@@ -1371,7 +1515,89 @@ export async function runV12AgentPlan(input: V12AgentInput): Promise<V12PlanOutc
     userId: input.userId,
   });
   let commerceContext = readCommerceContext(conversation.context);
-  const currentPrompt = input.prompt.trim();
+  let currentPrompt = input.prompt.trim();
+
+  // ----------------------------------------------------------
+  // BRAND / NAME CLARIFICATION
+  //
+  // A site's very first generation has two candidate identities to
+  // build around: the business name captured during onboarding, and
+  // the site's own internal name (often left as a generic placeholder
+  // like "New site"). Silently assuming one when the prompt doesn't
+  // say is how a whole generated website ends up built around the
+  // wrong brand. Ask once, up front, with a quick pill choice — never
+  // on a follow-up edit (currentRevision > 0), and never when there's
+  // no candidate name to disambiguate against or the prompt already
+  // names it.
+  // ----------------------------------------------------------
+
+  const pendingBrandClarification = readBrandClarification(conversation.context);
+
+  if (pendingBrandClarification) {
+    currentPrompt =
+      currentPrompt === BRAND_DIFFERENT_SENTINEL
+        ? pendingBrandClarification.originalPrompt
+        : `${pendingBrandClarification.originalPrompt}\n\nBRAND/BUSINESS NAME TO USE THROUGHOUT THIS WEBSITE: ${pendingBrandClarification.candidateName}`;
+
+    await saveBrandClarification({
+      conversationId: conversation.id,
+      existingContext: conversation.context,
+      brandClarification: null,
+    });
+  } else if (input.context === "Website" && project.currentRevision === 0 && currentPrompt) {
+    const onboardingName = onboarding?.businessName?.trim() || "";
+    const siteNameIsPlaceholder = /^(untitled|new site|new website|website|my website|my site|home)$/i.test(site.name.trim());
+    const candidateName = onboardingName || (siteNameIsPlaceholder ? "" : site.name.trim());
+    const promptMentionsCandidate =
+      candidateName.length > 1 &&
+      currentPrompt.toLowerCase().includes(candidateName.toLowerCase());
+
+    if (candidateName && !promptMentionsCandidate) {
+      const question = `Quick check before I start — is this website for "${candidateName}", or a different brand/name?`;
+      const actions: V12AgentAction[] = [
+        { id: "brand-confirm", label: `Yes, build it for ${candidateName}`, value: `Yes, build it for ${candidateName}.` },
+        { id: "brand-different", label: "It's a different brand", value: BRAND_DIFFERENT_SENTINEL },
+      ];
+
+      await saveBrandClarification({
+        conversationId: conversation.id,
+        existingContext: conversation.context,
+        brandClarification: { originalPrompt: currentPrompt, candidateName },
+      });
+
+      await recordAgentMessage({
+        conversationId: conversation.id,
+        role: "user",
+        content: {
+          text: input.prompt,
+          creativeDirection: input.creativeDirection,
+          attachments: input.attachments.map((file) => ({ name: file.name, type: file.type, size: file.size })),
+        },
+        userId: input.userId,
+      });
+
+      await recordAgentMessage({
+        conversationId: conversation.id,
+        role: "assistant",
+        content: { text: question, status: "needs_input", actions },
+      });
+
+      input.onProgress?.("One quick check", "Confirm the brand before generation starts");
+
+      return {
+        kind: "done",
+        result: {
+          message: question,
+          actions,
+          files: [],
+          revision: project.currentRevision,
+          fileCount: 0,
+          model: "clarification",
+          status: "needs_input" as const,
+        },
+      };
+    }
+  }
 
   // ----------------------------------------------------------
   // AUTHORITATIVE GENERATION SCOPE
@@ -1697,6 +1923,8 @@ ${currentPrompt}`
 
   let generationPrompt = effectivePrompt;
 
+  const businessContextBlock = buildBusinessContextBlock({ onboarding, settings: site.settings });
+
   // ----------------------------------------------------------
   // CAPABILITY ROUTER
   //
@@ -1709,6 +1937,8 @@ ${currentPrompt}`
 ${generationPrompt}
 
 ${scopeContract}
+
+${businessContextBlock}
   `.trim();
 
   const capabilityPlan = routeV12Capabilities(
@@ -1977,6 +2207,14 @@ ${scopeContract}`,
 ${generationPrompt}
 
 ${scopeContract}
+      `.trim();
+    }
+
+    if (businessContextBlock && !generationPrompt.includes(businessContextBlock)) {
+      generationPrompt = `
+${generationPrompt}
+
+${businessContextBlock}
       `.trim();
     }
 
@@ -3035,31 +3273,49 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
   input.onProgress?.("Model response received", "Validating the generated project before applying it");
   let parsedResult: ReturnType<typeof parseResult>;
   try {
+    if (isIncompleteResponse(payload)) {
+      throw new TruncatedResponseError(
+        "The generated project response was cut off before it finished.",
+      );
+    }
     parsedResult = parseResult(outputText(payload), input.mode === "auto");
   } catch (error) {
     // A missing required file (package.json/index.html/src/main.tsx) is
     // usually a one-off compliance slip, not a fundamental misunderstanding
     // of the request — worth one corrective retry before failing the whole
-    // turn and burning the user's credits on it. Any other parse/validation
-    // error (invalid JSON, empty file set, forbidden path) is not something
-    // a repeat of the same prompt is likely to fix, so it still fails fast.
-    if (input.signal.aborted || !(error instanceof Error) || !/^Preview project is missing /.test(error.message)) {
+    // turn and burning the user's credits on it. A truncated response
+    // (the model hit its output budget before finishing, most common on
+    // large multi-page/immersive builds) is retried with a larger budget
+    // and a lighter reasoning effort so more of it goes to visible output.
+    // Any other parse/validation error (invalid JSON for a reason other
+    // than truncation, empty file set, forbidden path) is not something a
+    // repeat of the same prompt is likely to fix, so it still fails fast.
+    const isMissingFile = error instanceof Error && /^Preview project is missing /.test(error.message);
+    const isTruncated = error instanceof TruncatedResponseError;
+    if (input.signal.aborted || !(isMissingFile || isTruncated)) {
       throw error;
     }
     input.onProgress?.(
-      "Retrying — the response was missing a required file",
-      error.message,
+      isTruncated ? "Retrying — the response was cut off" : "Retrying — the response was missing a required file",
+      error instanceof Error ? error.message : undefined,
     );
     payload = await requestOpenAiResponse({
       apiKey,
       body: generationBody(
         "low",
-        18_000,
-        `Your previous response was rejected: ${error.message}. Return the COMPLETE project again, including every required file (package.json, index.html, src/main.tsx, src/buildez.theme.json, src/buildez.pages.json) and every other file from the project, not just the ones you changed.`,
+        isTruncated ? 32_000 : 18_000,
+        isTruncated
+          ? "Your previous response was cut off before it finished and could not be used. Return the COMPLETE project again, including every required file (package.json, index.html, src/main.tsx, src/buildez.theme.json, src/buildez.pages.json) and every other project file. Keep component implementations focused and avoid unnecessary verbosity so the full response fits within the output budget."
+          : `Your previous response was rejected: ${error instanceof Error ? error.message : "invalid response"}. Return the COMPLETE project again, including every required file (package.json, index.html, src/main.tsx, src/buildez.theme.json, src/buildez.pages.json) and every other file from the project, not just the ones you changed.`,
       ),
       signal: input.signal,
       timeoutMs: 165_000,
     });
+    if (isIncompleteResponse(payload)) {
+      throw new Error(
+        "This project is too large to generate in one pass right now. Try a simpler request, fewer pages, or a less complex design, then generate again.",
+      );
+    }
     parsedResult = parseResult(outputText(payload), input.mode === "auto");
   }
   const photorealisticPrimaryMediaUrls = input.creativeDirection.imageStyle === "Photorealistic"
