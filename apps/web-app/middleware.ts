@@ -48,8 +48,14 @@ const ONBOARDING_ROUTES = [
   "/api/onboarding/create-tenant",
   "/api/onboarding/finish",
   "/api/onboarding/verify-phone",
+  "/api/onboarding/check-domain",
   "/api/tenant/me",
   "/api/auth/logout",
+  "/api/billing/checkout",
+  "/api/billing/confirm",
+  "/api/billing/coupons/validate",
+  "/api/billing/current",
+  "/api/compliance/scan",
 ];
 
 function hasRoutePrefix(pathname: string, prefix: string) {
