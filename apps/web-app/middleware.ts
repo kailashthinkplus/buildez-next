@@ -23,6 +23,7 @@ const PUBLIC_ROUTES = [
   "/api/plans",
   "/api/billing/activate",
   "/api/public",
+  "/api/webhooks/dodo", // Own signature verification (DODO_PAYMENTS_WEBHOOK_KEY) via @dodopayments/nextjs — called by Dodo's servers with no session cookie.
   // NOTE: "/preview" and "/api/preview" are intentionally NOT public — they
   // render a page's live/unpublished draft content and are gated by
   // getUser() + tenant-ownership checks inside the route/page themselves.
