@@ -628,6 +628,21 @@ function Publishing({
     </div>
   );
 }
+/**
+ * The relative Name/Host value a DNS provider expects depends on whether
+ * the connected domain is a bare apex (whitelilycasa.com — relative name
+ * has no prefix) or a subdomain (www.whitelilycasa.com — the zone in most
+ * providers is still the apex, so the relative name needs the "www." kept
+ * as a prefix). Approximates the registrable base as the last two labels,
+ * which covers ordinary TLDs (.com/.net/.io/...) but not two-part ones
+ * like .co.uk — an acceptable gap given those are rare for this product's
+ * customers, versus the alternative of a full public-suffix-list lookup.
+ */
+function domainSubdomainPrefix(domain: string): string {
+  const labels = domain.split(".");
+  return labels.length > 2 ? labels.slice(0, -2).join(".") : "";
+}
+
 function Domains({ site }: { site: Site }) {
   const searchParams = useSearchParams();
   const [domains, setDomains] = useState<Domain[]>([]),
@@ -734,26 +749,29 @@ function Domains({ site }: { site: Site }) {
               {x.status}
             </span>
           </div>
-          {x.status !== "VERIFIED" && (
-            <div className="mt-4 grid gap-2 md:grid-cols-2">
-              <DnsRecordCard
-                label="Routing record"
-                type="A"
-                name="@"
-                fullName={x.domain}
-                value={serverIp}
-                note="Use DNS only. Keep proxying off until activation."
-              />
-              <DnsRecordCard
-                label="Ownership record"
-                type="TXT"
-                name="_buildez-verification"
-                fullName={`_buildez-verification.${x.domain}`}
-                value={x.verificationToken || ""}
-                note="If your provider's Name/Host field asks for the full record name instead of just this label, use the full form shown below it."
-              />
-            </div>
-          )}
+          {x.status !== "VERIFIED" && (() => {
+            const prefix = domainSubdomainPrefix(x.domain);
+            return (
+              <div className="mt-4 grid gap-2 md:grid-cols-2">
+                <DnsRecordCard
+                  label="Routing record"
+                  type="A"
+                  name={prefix || "@"}
+                  fullName={x.domain}
+                  value={serverIp}
+                  note="Use DNS only — turn proxying/CDN off for this record until the domain shows VERIFIED, or public resolvers will see that provider's IP instead of ours and verification will never pass."
+                />
+                <DnsRecordCard
+                  label="Ownership record"
+                  type="TXT"
+                  name={prefix ? `_buildez-verification.${prefix}` : "_buildez-verification"}
+                  fullName={`_buildez-verification.${x.domain}`}
+                  value={x.verificationToken || ""}
+                  note="If your provider's Name/Host field asks for the full record name instead of just this label, use the full form shown below it."
+                />
+              </div>
+            );
+          })()}
           {x.status !== "VERIFIED" && <p className="mt-2 text-[11px] dashboard-faint">DNS changes can take up to 60 minutes to propagate — this page checks automatically and will activate as soon as both records are visible, no need to keep refreshing.</p>}
           {x.status !== "VERIFIED" && (
             <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -856,6 +874,9 @@ function DomainStepsModal({ domain, serverIp, onClose }: { domain: Domain; serve
     : provider === "GODADDY"
       ? "godaddy.com → My Products → DNS next to this domain"
       : "your registrar's or DNS host's control panel, under DNS or Domain settings";
+  const prefix = domainSubdomainPrefix(domain.domain);
+  const aName = prefix || "@";
+  const txtName = prefix ? `_buildez-verification.${prefix}` : "_buildez-verification";
   return (
     <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
       <div onClick={(e) => e.stopPropagation()} className="dashboard-modal-surface max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl p-6">
@@ -868,8 +889,8 @@ function DomainStepsModal({ domain, serverIp, onClose }: { domain: Domain; serve
         </div>
         <ol className="mt-4 space-y-3 text-sm">
           <li><strong>1.</strong> Open {dashboardHint}.</li>
-          <li><strong>2.</strong> Add an <strong>A</strong> record — Name/Host <code className="rounded bg-black/5 px-1 dark:bg-white/10">@</code>, Value <code className="rounded bg-black/5 px-1 dark:bg-white/10">{serverIp}</code>. Leave proxy/CDN off for this record until the domain is verified.</li>
-          <li><strong>3.</strong> Add a <strong>TXT</strong> record — Name/Host <code className="rounded bg-black/5 px-1 dark:bg-white/10">_buildez-verification</code>, Value <code className="break-all rounded bg-black/5 px-1 dark:bg-white/10">{domain.verificationToken}</code>.</li>
+          <li><strong>2.</strong> Add an <strong>A</strong> record — Name/Host <code className="rounded bg-black/5 px-1 dark:bg-white/10">{aName}</code>, Value <code className="rounded bg-black/5 px-1 dark:bg-white/10">{serverIp}</code>. Leave proxy/CDN off for this record until the domain is verified.</li>
+          <li><strong>3.</strong> Add a <strong>TXT</strong> record — Name/Host <code className="rounded bg-black/5 px-1 dark:bg-white/10">{txtName}</code>, Value <code className="break-all rounded bg-black/5 px-1 dark:bg-white/10">{domain.verificationToken}</code>.</li>
           <li><strong>4.</strong> Save. DNS changes can take up to 60 minutes to propagate — this page checks automatically and will activate the domain as soon as both records are visible.</li>
         </ol>
         <button onClick={onClose} className="mt-5 w-full rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white">Got it</button>
