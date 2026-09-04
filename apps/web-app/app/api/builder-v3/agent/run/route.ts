@@ -22,6 +22,7 @@ import {
   type V12PipelineState,
 } from "@/modules/ai-v12";
 import type { V12PlanFeatureInput } from "@/modules/ai-v12/executionPolicy";
+import { STALE_JOB_MS, reapStaleV12Jobs } from "@/lib/ai/v12JobRecovery";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 600;
@@ -46,7 +47,6 @@ const line = (value: unknown) => encoder.encode(`${JSON.stringify(value)}\n`);
  * carries the jobId forward to POST again for stage "generate".
  */
 const SAFE_GENERATION_BUDGET_MS = 540_000;
-const STALE_JOB_MS = 15 * 60_000;
 
 type SelectedElementTarget = {
   elementId: string;
@@ -201,6 +201,73 @@ type JobInput = {
   request: JobRequest;
   reservation: V12CreditReservation;
 };
+
+/**
+ * Reports the most recent generation job for a site, so the builder UI can
+ * recover from a page reload/reconnect: show a "resume"/"cancel" affordance
+ * for a job still genuinely in flight, or back-fill the final outcome of one
+ * that already finished (or was interrupted) while nobody was watching the
+ * live stream.
+ */
+export async function GET(req: NextRequest) {
+  const auth = await getUser();
+  if (!auth?.user || !auth.tenant) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const siteId = req.nextUrl.searchParams.get("siteId")?.trim() || "";
+  if (!siteId) return Response.json({ error: "siteId is required" }, { status: 400 });
+
+  const job = await prisma.v12GenerationJob.findFirst({
+    where: { siteId, tenantId: auth.tenant.id },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, stage: true, status: true, error: true, result: true, updatedAt: true },
+  });
+  if (!job) return Response.json({ job: null });
+
+  const isActive = job.status === "running" || job.status === "stage_complete";
+  const stale = isActive && job.updatedAt < new Date(Date.now() - STALE_JOB_MS);
+
+  return Response.json({
+    job: {
+      id: job.id,
+      stage: job.stage,
+      status: job.status,
+      updatedAt: job.updatedAt.toISOString(),
+      stale,
+      error: job.error,
+      result: job.status === "done" || job.status === "needs_input" ? job.result : undefined,
+    },
+  });
+}
+
+/** Explicit user-triggered cancel for a job stuck in "running"/"stage_complete" — releases its reserved credits like any other failure path. */
+export async function DELETE(req: NextRequest) {
+  const auth = await getUser();
+  if (!auth?.user || !auth.tenant) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const jobId = req.nextUrl.searchParams.get("jobId")?.trim() || "";
+  if (!jobId) return Response.json({ error: "jobId is required" }, { status: 400 });
+
+  const job = await prisma.v12GenerationJob.findFirst({
+    where: { id: jobId, tenantId: auth.tenant.id, status: { in: ["running", "stage_complete"] } },
+  });
+  if (!job) return Response.json({ cancelled: false });
+
+  await prisma.v12GenerationJob.update({
+    where: { id: job.id },
+    data: { status: "failed", error: "Cancelled by user." },
+  });
+  const reservation = (job.input as unknown as JobInput | null)?.reservation;
+  if (reservation) {
+    await releaseV12Credits(reservation, "generation_failed").catch((error) => {
+      console.error("[v12 job cancel] credit release failed:", error);
+    });
+  }
+  return Response.json({ cancelled: true });
+}
 
 export async function POST(req: NextRequest) {
   const auth = await getUser();
@@ -422,12 +489,32 @@ async function resumeJob(options: {
     data: { status: "running" },
   });
   if (claim.count !== 1) {
+    /*
+     * The job wasn't sitting at "stage_complete" to claim — either it's
+     * mid-stage on another request, or it's abandoned (its owning process
+     * was killed before reaching stage_complete/failed). Unlike the
+     * new-generation check above, there was previously no staleness
+     * fallback here at all, leaving a job killed mid-stage an unconditional
+     * dead end no retry could ever recover from. Sweep it now: if it's
+     * old enough to be considered dead, clear it so the client's retry
+     * (which falls back to starting a fresh generation) succeeds
+     * immediately instead of repeating this same 409.
+     */
+    const target = await prisma.v12GenerationJob.findUnique({
+      where: { id: jobId },
+      select: { updatedAt: true },
+    });
+    if (target && target.updatedAt < new Date(Date.now() - STALE_JOB_MS)) {
+      await reapStaleV12Jobs().catch((error) => {
+        console.error("[v12 job reaper] resume-path sweep failed:", error);
+      });
+    }
     return Response.json(
       {
         code: "AI_GENERATION_ALREADY_RUNNING",
         error: {
           code: "AI_GENERATION_ALREADY_RUNNING",
-          message: "This generation is not resumable right now.",
+          message: "That generation was interrupted. Please try again.",
         },
       },
       { status: 409 },

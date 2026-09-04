@@ -40,6 +40,24 @@ export async function register() {
     });
   }, INTERVAL_MS);
 
+  const { reapAllActiveV12Jobs, reapStaleV12Jobs } = await import("./lib/ai/v12JobRecovery");
+
+  // Runs once, immediately: this process just started, so any job still
+  // marked "running"/"stage_complete" was orphaned by whatever instance
+  // existed before it — clearing it now means a user hitting "already
+  // running" right after a deploy/restart doesn't have to wait out the
+  // staleness window before they can retry.
+  reapAllActiveV12Jobs().catch((error) => {
+    console.error("[v12 job reaper] startup sweep failed:", error);
+  });
+
+  const JOB_REAP_INTERVAL_MS = 5 * 60_000;
+  setInterval(() => {
+    reapStaleV12Jobs().catch((error) => {
+      console.error("[v12 job reaper] periodic sweep failed:", error);
+    });
+  }, JOB_REAP_INTERVAL_MS);
+
   // Domain auto-verify deliberately does NOT live here: autoVerify.ts pulls
   // in domain-provisioning.ts (node:child_process, for the nginx CLI calls)
   // and dns-verification.ts (node:dns/promises) transitively, and — same

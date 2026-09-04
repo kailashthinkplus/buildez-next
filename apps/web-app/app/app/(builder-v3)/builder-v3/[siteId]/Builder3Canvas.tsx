@@ -38,6 +38,12 @@ const widths: Record<Device, string> = {
 type LeftPanel = "ai" | "insights" | "blocks" | "layers" | "media" | "colors" | "settings";
 type AgentContext = "Website" | "Page" | "Selected element" | "Image";
 
+// Sentinel prefixes for the resume/cancel action buttons synthesized onto a
+// stuck-job recovery banner — recognized at the top of V12AgentPanel's
+// onSubmit so they never reach the normal generate-a-prompt path.
+const RESUME_JOB_PREFIX = "__resume_job__:";
+const CANCEL_JOB_PREFIX = "__cancel_job__:";
+
 function apiErrorMessage(payload: unknown, fallback: string) {
   if (!payload || typeof payload !== "object") return fallback;
   const error = (payload as { error?: unknown }).error;
@@ -216,6 +222,7 @@ export default function Builder3Canvas({
   const [workspaceLoaded, setWorkspaceLoaded] = useState(false);
   const [agentEvents, setAgentEvents] = useState<V12AgentEvent[]>([]);
   const [agentRunning, setAgentRunning] = useState(false);
+  const [historyReady, setHistoryReady] = useState(false);
   const [insightPrompt, setInsightPrompt] = useState("");
   const [insightContext, setInsightContext] = useState<AgentContext>("Page");
   const [previewGeneration, setPreviewGeneration] = useState(0);
@@ -265,6 +272,7 @@ export default function Builder3Canvas({
 
   useEffect(() => {
     let cancelled = false;
+    setHistoryReady(false);
 
     async function loadAgentHistory() {
       try {
@@ -381,6 +389,8 @@ export default function Builder3Canvas({
           "Failed to load AI chat history",
           reason,
         );
+      } finally {
+        if (!cancelled) setHistoryReady(true);
       }
     }
 
@@ -390,6 +400,228 @@ export default function Builder3Canvas({
       cancelled = true;
     };
   }, [siteId, page?.id]);
+
+  /*
+   * Recovers from a page reload/reconnect that lost track of a generation:
+   * a job left "running"/"stage_complete" by a server restart or a closed
+   * tab, or one that finished/failed while nobody was watching the live
+   * stream. Runs only after history hydration settles (historyReady) so it
+   * can reliably tell whether the persisted conversation already ends with
+   * an assistant reply, rather than racing that fetch.
+   */
+  useEffect(() => {
+    if (!historyReady) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const response = await fetch(`/api/builder-v3/agent/run?siteId=${encodeURIComponent(siteId)}`, { cache: "no-store" });
+        const payload = await response.json().catch(() => ({}));
+        if (cancelled || !response.ok || !payload?.job) return;
+        const job = payload.job as {
+          id: string;
+          stage: "plan" | "generate";
+          status: "running" | "stage_complete" | "done" | "failed" | "needs_input";
+          updatedAt: string;
+          stale: boolean;
+          error?: string | null;
+          result?: { message: string; status?: "needs_input" | "completed"; actions?: V12AgentEvent["actions"] } | null;
+        };
+
+        if (job.status === "running" || job.status === "stage_complete") {
+          if (job.stale) {
+            fetch(`/api/builder-v3/agent/run?jobId=${encodeURIComponent(job.id)}`, { method: "DELETE" }).catch(() => {});
+            setAgentEvents(events => [...events, {
+              id: crypto.randomUUID(),
+              type: "tool.failed",
+              title: "Build was interrupted",
+              detail: "A previous generation didn't finish — likely a server restart. Send a new prompt to try again.",
+              timestamp: new Date().toISOString(),
+            }]);
+            return;
+          }
+          setAgentEvents(events => [...events, {
+            id: crypto.randomUUID(),
+            type: "message",
+            role: "assistant",
+            title: "A generation from an earlier session is still marked in progress.",
+            detail: "Resume it if it's still running, or cancel it to start a fresh prompt.",
+            status: "needs_input",
+            actions: [
+              ...(job.stage === "generate" && job.status === "stage_complete"
+                ? [{ id: "resume", label: "Resume generation", value: `${RESUME_JOB_PREFIX}${job.id}` }]
+                : []),
+              { id: "cancel", label: "Cancel and start over", value: `${CANCEL_JOB_PREFIX}${job.id}` },
+            ],
+            timestamp: new Date().toISOString(),
+          }]);
+          return;
+        }
+
+        // Terminal job: back-fill its outcome only if the persisted
+        // conversation ends with the user's prompt and no assistant reply —
+        // exactly the "refresh only shows the prompt" gap this closes.
+        setAgentEvents(events => {
+          const last = events[events.length - 1];
+          if (!last || last.role !== "user") return events;
+          if (job.status === "failed") {
+            return [...events, {
+              id: crypto.randomUUID(),
+              type: "tool.failed",
+              title: "Build stopped",
+              detail: job.error || "Generation failed.",
+              timestamp: new Date().toISOString(),
+            }];
+          }
+          if (job.result) {
+            return [...events, {
+              id: crypto.randomUUID(),
+              type: "message",
+              role: "assistant",
+              title: job.result.message,
+              status: job.result.status ?? "completed",
+              actions: job.result.actions,
+              timestamp: new Date().toISOString(),
+            }];
+          }
+          return events;
+        });
+      } catch {
+        // Best-effort recovery only — never block the builder on this.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [siteId, historyReady]);
+
+  async function resumeStuckJob(jobId: string) {
+    const controller = new AbortController();
+    agentAbortRef.current = controller;
+    setAgentRunning(true);
+    try {
+      let nextForm: FormData | null = new FormData();
+      nextForm.set("siteId", siteId);
+      nextForm.set("jobId", jobId);
+      let completed = false;
+      while (nextForm) {
+        const requestForm = nextForm;
+        nextForm = null;
+        const response = await fetch("/api/builder-v3/agent/run", { method: "POST", body: requestForm, signal: controller.signal });
+        if (!response.ok || !response.body) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(apiErrorMessage(payload, "Could not resume the generation."));
+        }
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffered = "";
+        while (true) {
+          const chunk = await reader.read();
+          if (chunk.done) break;
+          buffered += decoder.decode(chunk.value, { stream: true });
+          const lines = buffered.split("\n");
+          buffered = lines.pop() ?? "";
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            const event = JSON.parse(line) as {
+              type: string;
+              title?: string;
+              detail?: string;
+              role?: "assistant";
+              revision?: number;
+              status?: "needs_input" | "completed" | "failed";
+              actions?: V12AgentEvent["actions"];
+              jobId?: string;
+            };
+            if (event.type === "stage.complete" && event.jobId) {
+              const resumeForm = new FormData();
+              resumeForm.set("siteId", siteId);
+              resumeForm.set("jobId", event.jobId);
+              nextForm = resumeForm;
+              continue;
+            }
+            if (event.type === "done") {
+              completed = event.status === "completed";
+              setAgentEvents(events => [...events, {
+                id: crypto.randomUUID(),
+                type: event.status === "failed" ? "tool.failed" : "tool.completed",
+                title: event.status === "needs_input" ? "Waiting for your response" : event.status === "failed" ? "Generation failed" : "Generation complete",
+                detail: event.status === "needs_input" ? "Generation will continue after your response." : undefined,
+                status: event.status,
+                timestamp: new Date().toISOString(),
+              }]);
+              continue;
+            }
+            if (event.type === "preview.updated") {
+              setWorkspace(current => ({ ...current, revision: event.revision ?? current?.revision }));
+              setPreviewGeneration(value => value + 1);
+              setAgentEvents(events => [...events, {
+                id: crypto.randomUUID(),
+                type: "tool.completed",
+                title: event.title || "Canvas updated",
+                detail: event.detail,
+                timestamp: new Date().toISOString(),
+              }]);
+              continue;
+            }
+            if (["message", "tool.started", "tool.completed", "tool.failed"].includes(event.type)) {
+              setAgentEvents(events => [...events, {
+                id: crypto.randomUUID(),
+                type: event.type as V12AgentEvent["type"],
+                role: event.role,
+                title: event.title || "Agent update",
+                detail: event.detail,
+                status: event.status,
+                actions: event.actions,
+                timestamp: new Date().toISOString(),
+              }]);
+            }
+          }
+        }
+      }
+      if (completed) {
+        const treeResponse = await fetch(`/api/builder-v3/projects/${siteId}/tree?refresh=${Date.now()}`, { cache: "no-store" });
+        if (treeResponse.ok) {
+          const treePayload = await treeResponse.json();
+          const normalized = treePayload?.data && typeof treePayload.data === "object" ? treePayload.data : treePayload;
+          setWorkspace({
+            revision: normalized?.revision,
+            files: Array.isArray(normalized?.files) ? normalized.files : [],
+            pageManifest: normalized?.pageManifest ?? null,
+          });
+        }
+      }
+    } catch (reason) {
+      setAgentEvents(events => [...events, {
+        id: crypto.randomUUID(),
+        type: "tool.failed",
+        title: "Resume failed",
+        detail: reason instanceof Error ? reason.message : "Unknown error",
+        timestamp: new Date().toISOString(),
+      }]);
+    } finally {
+      if (agentAbortRef.current === controller) agentAbortRef.current = null;
+      setAgentRunning(false);
+    }
+  }
+
+  async function cancelStuckJob(jobId: string) {
+    try {
+      await fetch(`/api/builder-v3/agent/run?jobId=${encodeURIComponent(jobId)}`, { method: "DELETE" });
+      setAgentEvents(events => [...events, {
+        id: crypto.randomUUID(),
+        type: "tool.completed",
+        title: "Generation cancelled",
+        detail: "You can start a new prompt now.",
+        timestamp: new Date().toISOString(),
+      }]);
+    } catch (reason) {
+      setAgentEvents(events => [...events, {
+        id: crypto.randomUUID(),
+        type: "tool.failed",
+        title: "Could not cancel",
+        detail: reason instanceof Error ? reason.message : "Unknown error",
+        timestamp: new Date().toISOString(),
+      }]);
+    }
+  }
 
   async function checkpoint(label: string) {
     const response = await fetch(`/api/builder-v3/projects/${siteId}/checkpoints`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ label }) });
@@ -967,6 +1199,14 @@ export default function Builder3Canvas({
           }}
           onClose={() => setLeftPanel(null)}
           onSubmit={async (prompt, agentMode, attachments, creativeDirection, agentContext) => {
+            if (prompt.startsWith(RESUME_JOB_PREFIX)) {
+              await resumeStuckJob(prompt.slice(RESUME_JOB_PREFIX.length));
+              return;
+            }
+            if (prompt.startsWith(CANCEL_JOB_PREFIX)) {
+              await cancelStuckJob(prompt.slice(CANCEL_JOB_PREFIX.length));
+              return;
+            }
             const attachmentNames = attachments.map(file => file.name);
 
             /*
@@ -1189,6 +1429,23 @@ An uploaded codebase has already been imported into the current project. Read sr
                     throw creditError;
                   }
 
+                  if (
+                    response.status === 409 &&
+                    (
+                      payload?.code === "AI_GENERATION_ALREADY_RUNNING" ||
+                      payload?.error?.code === "AI_GENERATION_ALREADY_RUNNING"
+                    )
+                  ) {
+                    const alreadyRunningError = new Error(
+                      apiErrorMessage(
+                        payload,
+                        "A previous generation for this website hasn't cleared yet."
+                      )
+                    );
+                    alreadyRunningError.name = "AI_GENERATION_ALREADY_RUNNING";
+                    throw alreadyRunningError;
+                  }
+
                   throw new Error(apiErrorMessage(payload, "The agent could not start."));
                 }
                 const reader = response.body.getReader();
@@ -1363,6 +1620,9 @@ An uploaded codebase has already been imported into the current project. Read sr
               const creditExceeded =
                 reason instanceof Error &&
                 reason.name === "AI_CREDITS_EXCEEDED";
+              const alreadyRunning =
+                reason instanceof Error &&
+                reason.name === "AI_GENERATION_ALREADY_RUNNING";
 
               setAgentEvents(events => [
                 ...events,
@@ -1374,6 +1634,15 @@ An uploaded codebase has already been imported into the current project. Read sr
                       title: "You're out of AI credits for this billing cycle.",
                       detail: reason instanceof Error ? reason.message : undefined,
                       showUpgrade: true,
+                      timestamp: new Date().toISOString(),
+                    }
+                  : alreadyRunning
+                  ? {
+                      id: crypto.randomUUID(),
+                      type: "message" as const,
+                      role: "assistant" as const,
+                      title: "A previous generation for this website hasn't cleared yet.",
+                      detail: "This usually resolves itself within a few minutes. Reload the page to check its status, or try again shortly.",
                       timestamp: new Date().toISOString(),
                     }
                   : {
