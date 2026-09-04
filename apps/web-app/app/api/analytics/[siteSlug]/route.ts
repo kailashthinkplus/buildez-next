@@ -41,7 +41,7 @@ async function loadEvents(siteId: string, previousSince: Date): Promise<Analytic
       where: {
         siteId,
         createdAt: { gte: previousSince },
-        OR: [{ device: null }, { device: { not: "bot" } }],
+        device: { not: "bot" },
       },
       select: {
         path: true,

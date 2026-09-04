@@ -16,7 +16,7 @@ export async function GET() {
       where: {
         tenantId: auth.tenant.id,
         eventType: "pageview",
-        OR: [{ device: null }, { device: { not: "bot" } }],
+        device: { not: "bot" },
         createdAt: { gte: since },
       },
       select: { siteId: true, visitorHash: true },
