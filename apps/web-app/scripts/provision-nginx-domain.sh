@@ -90,7 +90,91 @@ server {
 EOF
 }
 
+write_apex_http_config() {
+  local target="$1" apex="$2" www_target="$3"
+  cat >"$target" <<EOF
+# Managed by BuildEZ. Apex redirect to $www_target. Other Nginx virtual hosts are not modified.
+server {
+    listen 80;
+    listen [::]:80;
+    server_name $apex;
+    location ^~ /.well-known/acme-challenge/ {
+        root $ACME_ROOT;
+        default_type text/plain;
+    }
+    location / { return 301 https://$www_target\$request_uri; }
+}
+EOF
+}
+
+write_apex_https_config() {
+  local target="$1" apex="$2" www_target="$3"
+  cat >"$target" <<EOF
+# Managed by BuildEZ. Apex redirect to $www_target. Other Nginx virtual hosts are not modified.
+server {
+    listen 80;
+    listen [::]:80;
+    server_name $apex;
+    location ^~ /.well-known/acme-challenge/ { root $ACME_ROOT; }
+    location / { return 301 https://$www_target\$request_uri; }
+}
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name $apex;
+    ssl_certificate /etc/letsencrypt/live/$apex/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$apex/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_session_cache shared:BuildEZSSL:10m;
+    location / { return 301 https://$www_target\$request_uri; }
+}
+EOF
+}
+
 case "$ACTION" in
+  add-apex-redirect)
+    APEX="$DOMAIN"
+    WWW_TARGET="${3:-}"
+    if [[ ! "$APEX" =~ ^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}$ ]]; then
+      echo "Invalid domain: $APEX" >&2
+      exit 2
+    fi
+    if [[ ! "$WWW_TARGET" =~ ^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}$ ]]; then
+      echo "Invalid target domain: $WWW_TARGET" >&2
+      exit 2
+    fi
+    if [[ -z "$CERTBOT_EMAIL" ]]; then
+      echo "CERTBOT_EMAIL is required" >&2
+      exit 2
+    fi
+    APEX_AVAILABLE="$SITES_AVAILABLE/buildez-$APEX.conf"
+    APEX_ENABLED="$SITES_ENABLED/buildez-$APEX.conf"
+    TEMP_FILE="$(mktemp "$SITES_AVAILABLE/.buildez-domain.XXXXXX")"
+    trap 'rm -f "${TEMP_FILE:-}"' EXIT
+    write_apex_http_config "$TEMP_FILE" "$APEX" "$WWW_TARGET"
+    chmod 0644 "$TEMP_FILE"
+    mv "$TEMP_FILE" "$APEX_AVAILABLE"
+    ln -sfn "$APEX_AVAILABLE" "$APEX_ENABLED"
+    reload_nginx
+    certbot certonly --webroot -w "$ACME_ROOT" -d "$APEX" --cert-name "$APEX" --non-interactive --agree-tos --email "$CERTBOT_EMAIL" --keep-until-expiring
+    openssl x509 -in "/etc/letsencrypt/live/$APEX/fullchain.pem" -noout -checkend 604800
+    TEMP_FILE="$(mktemp "$SITES_AVAILABLE/.buildez-domain.XXXXXX")"
+    write_apex_https_config "$TEMP_FILE" "$APEX" "$WWW_TARGET"
+    chmod 0644 "$TEMP_FILE"
+    mv "$TEMP_FILE" "$APEX_AVAILABLE"
+    reload_nginx
+    echo "Apex redirect provisioned: $APEX -> $WWW_TARGET"
+    ;;
+  remove-apex-redirect)
+    APEX="$DOMAIN"
+    if [[ ! "$APEX" =~ ^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}$ ]]; then
+      echo "Invalid domain: $APEX" >&2
+      exit 2
+    fi
+    rm -f "$SITES_ENABLED/buildez-$APEX.conf" "$SITES_AVAILABLE/buildez-$APEX.conf"
+    reload_nginx || true
+    echo "Apex redirect removed: $APEX"
+    ;;
   add)
     TEMP_FILE="$(mktemp "$SITES_AVAILABLE/.buildez-domain.XXXXXX")"
     trap 'rm -f "${TEMP_FILE:-}" "${BACKUP_FILE:-}" "${HTTP_BACKUP:-}"' EXIT

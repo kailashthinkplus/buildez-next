@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
-import { DOMAIN_SERVER_IP, provisionNginxDomain, validDomain } from "@/lib/domain-provisioning";
+import { DOMAIN_SERVER_IP, provisionApexRedirect, provisionNginxDomain, validDomain } from "@/lib/domain-provisioning";
 import { detectDnsProvider } from "@/lib/domains/dns-verification";
 import { verifyDomainRecord } from "@/lib/domains/autoVerify";
 import { customDomainEntitlement } from "@/lib/domains/entitlements";
@@ -85,6 +85,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ s
   if (record.sslStatus === "ACTIVE") {
     try { await provisionNginxDomain("remove", record.domain); }
     catch (error) { return NextResponse.json({ error: "Secure domain removal failed", detail: error instanceof Error ? error.message : "Unknown error" }, { status: 502 }); }
+    await provisionApexRedirect("remove", record.domain).catch(() => {});
   }
   await prisma.siteDomain.delete({ where: { id } });
   return NextResponse.json({ success: true });

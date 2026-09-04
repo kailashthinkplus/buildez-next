@@ -1,5 +1,5 @@
 import { prisma } from "@buildez/db";
-import { provisionNginxDomain } from "@/lib/domain-provisioning";
+import { provisionApexRedirect, provisionNginxDomain } from "@/lib/domain-provisioning";
 import { checkDomainPropagation } from "./dns-verification";
 
 type DomainRecord = { id: string; domain: string; verificationToken: string | null };
@@ -39,6 +39,11 @@ export async function verifyDomainRecord(record: DomainRecord) {
       where: { id: record.id },
       data: { status: "VERIFIED", verifiedAt: checkedAt, sslStatus: "ACTIVE", sslActivatedAt: checkedAt },
     });
+    // Best-effort: also make the bare apex (e.g. example.com for a
+    // www.example.com domain) redirect to this domain, so visitors who type
+    // it without "www." land on the site instead of our platform default.
+    // Never blocks or fails the www domain's own verification above.
+    provisionApexRedirect("add", record.domain).catch(() => {});
     return { verified: true, propagation, provisioning };
   } catch (error) {
     await prisma.siteDomain.update({ where: { id: record.id }, data: { status: "FAILED", sslStatus: "FAILED" } });
