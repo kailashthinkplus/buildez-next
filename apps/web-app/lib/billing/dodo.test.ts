@@ -2,11 +2,18 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  dodoAmountMinor,
   dodoPlanForProduct,
   latestSucceededDodoPaymentId,
   parseDodoCreditPacks,
   parseDodoProductMap,
 } from "./dodo";
+
+test("converts dashboard prices to Dodo minor currency units", () => {
+  assert.equal(dodoAmountMinor(499, "INR"), 49_900);
+  assert.equal(dodoAmountMinor(19.99, "USD"), 1_999);
+  assert.equal(dodoAmountMinor(500, "JPY"), 500);
+});
 
 test("normalizes Dodo plan product mappings", () => {
   assert.deepEqual(parseDodoProductMap(JSON.stringify({ "starter:monthly": " pdt_starter " })), {

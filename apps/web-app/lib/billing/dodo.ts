@@ -90,6 +90,17 @@ function dodoBillingInterval(billingCycle: BillingCycle) {
   };
 }
 
+const ZERO_DECIMAL_CURRENCIES = new Set([
+  "BIF", "CLP", "DJF", "GNF", "JPY", "KMF", "KRW", "PYG", "RWF",
+  "UGX", "VND", "VUV", "XAF", "XOF", "XPF",
+]);
+
+/** Convert the major-unit prices used by the UI and PlanPricing to Dodo's minor units. */
+export function dodoAmountMinor(amount: number, currency: string) {
+  const multiplier = ZERO_DECIMAL_CURRENCIES.has(currency.trim().toUpperCase()) ? 1 : 100;
+  return Math.round(amount * multiplier);
+}
+
 /**
  * Pushes a plan's current price to Dodo so checkout always matches what
  * superadmin last saved. Creates the Dodo product on first sync (and stores
@@ -112,7 +123,7 @@ export async function syncPlanPricingToDodo(pricing: {
     type: "recurring_price" as const,
     currency: pricing.currency as never,
     discount: 0,
-    price: pricing.amount,
+    price: dodoAmountMinor(pricing.amount, pricing.currency),
     ...dodoBillingInterval(pricing.billingCycle),
   };
 
