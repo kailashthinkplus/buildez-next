@@ -133,8 +133,7 @@ function visibleTextLength(source: string) {
 // easily and get a multiplier of 1.
 function contentDepthMultiplier(charLength: number) {
   const healthyBaseline = 260;
-  const ratio = clamp(charLength / healthyBaseline, 0, 1);
-  return 0.2 + ratio * 0.8;
+  return clamp(charLength / healthyBaseline, 0, 1);
 }
 
 function pageSource(files: SourceFileInput[], page?: PageInput) {

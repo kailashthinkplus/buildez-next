@@ -279,14 +279,16 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
       console.log("🔄 Subscription already exists:", existingSubscription.id);
       subscription = existingSubscription;
 
-      // Ensure it's active
-      if (existingSubscription.status !== "ACTIVE") {
+      // Ensure it's active, and backfill planId for rows created before
+      // this field was set here (see the create branch below).
+      if (existingSubscription.status !== "ACTIVE" || !existingSubscription.planId) {
         subscription = await prisma.subscription.update({
           where: { id: existingSubscription.id },
           data: {
             status: "ACTIVE",
             paymentStatus: "FREE",
             startedAt: existingSubscription.startedAt || new Date(),
+            planId: existingSubscription.planId || plan.id,
           },
         });
       }
@@ -297,6 +299,7 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
           tenantActiveId: tenant.id,
           tenantHistoryId: tenant.id,
           planCode: onboarding.planCode || "trial",
+          planId: plan.id,
           billingCycle: onboarding.billingCycle || "monthly",
           status: "ACTIVE",
           paymentStatus: "FREE",

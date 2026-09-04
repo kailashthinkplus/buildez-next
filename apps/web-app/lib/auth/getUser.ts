@@ -93,6 +93,15 @@ export async function getUser(): Promise<AuthContext | null> {
       include: { Plan: true },
     });
 
+    // Free/trial subscriptions are created with only `planCode` set (no
+    // `planId` FK — see /api/onboarding/finish and create-tenant), so the
+    // `Plan` relation above comes back null for them even though the plan
+    // itself exists. Falling back to a planCode lookup keeps every existing
+    // `auth.plan.Plan` consumer working without needing a data migration.
+    if (plan && !plan.Plan && plan.planCode) {
+      plan.Plan = await prisma.plan.findUnique({ where: { code: plan.planCode } });
+    }
+
     usage = await prisma.planUsage.findMany({
       where: { tenantId: tenant.id },
     });
