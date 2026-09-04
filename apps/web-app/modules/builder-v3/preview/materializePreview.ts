@@ -5,6 +5,24 @@ import { readProjectFile, listProjectFiles, normalizeGeneratedProjectFile } from
 import { validatePreviewProjectPaths } from "./previewContract";
 import { createBuilderRuntimeScript, instrumentTsxSource } from "../visual-editor";
 
+/**
+ * The live-preview iframe is reached through nginx's /_v3preview/<port>
+ * proxy (see PreviewSessionManager.ts) and the request's full original
+ * path is forwarded unchanged, so the browser's real pathname always
+ * carries that prefix. Vite's own `base` config (set in previewWorker.mjs)
+ * already accounts for it when resolving Vite's own asset/module URLs,
+ * but the generated app's own <BrowserRouter> has no idea about it —
+ * react-router matches routes against the full browser pathname, so
+ * without a matching `basename` every route lookup misses and falls
+ * through to the app's own catch-all/NotFound route. Mirrors the same
+ * fix already applied for published sites in v12PublishedBundle.ts's
+ * addRouterBasename().
+ */
+function addRouterBasename(content: string, port: number) {
+  if (!content.includes("<BrowserRouter") || /<BrowserRouter\s+[^>]*\bbasename=/.test(content)) return content;
+  return content.replace(/<BrowserRouter(?=\s|>)/g, `<BrowserRouter basename=${JSON.stringify(`/_v3preview/${port}`)}`);
+}
+
 const BLANK_PROJECT_FILES = {
   "package.json": JSON.stringify({ private: true, type: "module", dependencies: { "@vitejs/plugin-react": "latest", vite: "latest", react: "latest", "react-dom": "latest" } }, null, 2),
   "index.html": '<!doctype html><html><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>BuildEZ Page</title></head><body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body></html>',
@@ -56,6 +74,7 @@ export async function materializePreviewProject(input: {
   tenantId: string;
   sandboxRoot: string;
   sessionId: string;
+  port: number;
 }) {
   const files = await listProjectFiles(input.siteId, input.tenantId);
   const isBlankProject = files.length === 0;
@@ -75,6 +94,7 @@ export async function materializePreviewProject(input: {
       : (await readProjectFile(input.siteId, input.tenantId, projectPath)).content;
     content = normalizeGeneratedProjectFile(content, projectPath);
     if (/\.[jt]sx$/.test(projectPath)) {
+      content = addRouterBasename(content, input.port);
       content = instrumentTsxSource(content, projectPath, projectRevision);
     }
     if (projectPath === "index.html") content = content.replace("</body>", '<script src="/__buildez_editor.js"></script></body>');

@@ -118,7 +118,7 @@ async function createPreviewSession(input: { siteId: string; tenantId: string; r
   const id = randomUUID();
   const port = portFor(id);
   const sandboxRoot = path.join(process.cwd(), "tmp", "v12-previews");
-  const { projectRoot } = await materializePreviewProject({ ...input, sandboxRoot, sessionId: id });
+  const { projectRoot } = await materializePreviewProject({ ...input, sandboxRoot, sessionId: id, port });
   const worker = path.join(process.cwd(), "modules", "builder-v3", "preview", "previewWorker.mjs");
   const child = spawn(process.execPath, [worker, projectRoot, String(port), id, input.siteId], {
     cwd: process.cwd(),
