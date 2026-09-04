@@ -52,6 +52,19 @@ function hasRoutePrefix(pathname: string, prefix: string) {
   return pathname === prefix || pathname.startsWith(`${prefix}/`);
 }
 
+function internalRewriteUrl(req: NextRequest, pathname: string) {
+  const url = req.nextUrl.clone();
+  url.pathname = pathname;
+
+  // Behind TLS-terminating Nginx, Next builds nextUrl from the public HTTPS
+  // scheme even though the private Next listener is HTTP. Without correcting
+  // that internal hop, Next tries to TLS-proxy to its own HTTP port.
+  if (url.protocol === "https:" && (url.hostname === "localhost" || url.hostname === "127.0.0.1")) {
+    url.protocol = "http:";
+  }
+  return url;
+}
+
 /* ==========================================================
    3) MIDDLEWARE
    ========================================================== */
@@ -91,14 +104,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
   if (isTenantPlatformSubdomain && !hasRoutePrefix(pathname, "/api") && !hasRoutePrefix(pathname, "/app") && !hasRoutePrefix(pathname, "/_next")) {
-    const url = req.nextUrl.clone();
-    url.pathname = `/${platformLabel}${pathname === "/" ? "" : pathname}`;
-    return NextResponse.rewrite(url);
+    return NextResponse.rewrite(internalRewriteUrl(req, `/${platformLabel}${pathname === "/" ? "" : pathname}`));
   }
   if (!isPlatformHost && !hasRoutePrefix(pathname, "/api") && !hasRoutePrefix(pathname, "/app") && !hasRoutePrefix(pathname, "/_next")) {
-    const url = req.nextUrl.clone();
-    url.pathname = `/domain-runtime/${host}${pathname === "/" ? "" : pathname}`;
-    return NextResponse.rewrite(url);
+    return NextResponse.rewrite(internalRewriteUrl(req, `/domain-runtime/${host}${pathname === "/" ? "" : pathname}`));
   }
 
   /* ---------------------------------------------------------
