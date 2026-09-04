@@ -82,10 +82,6 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const host = (req.headers.get("x-forwarded-host") || req.headers.get("host") || "").split(":")[0].toLowerCase();
 
-  console.log("\n==============================");
-  console.log("🧭 MIDDLEWARE HIT");
-  console.log("➡️ PATHNAME:", pathname);
-
   /* ---------------------------------------------------------
      🚨 ABSOLUTE EXCLUSIONS (CRITICAL FIX)
      NEVER rewrite, auth-check, or touch these
@@ -99,7 +95,6 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/llms.txt") ||
     pathname.startsWith("/.well-known")
   ) {
-    console.log("⛔ ABSOLUTE EXCLUDE → ALLOW");
     return NextResponse.next();
   }
 
@@ -134,7 +129,6 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/favicon") ||
     pathname.match(/\.(svg|png|jpg|jpeg|webp|gif|ico|css|js|woff|woff2)$/)
   ) {
-    console.log("✅ STATIC ASSET → ALLOW");
     return NextResponse.next();
   }
 
@@ -157,10 +151,7 @@ const isRuntime =
   !hasRoutePrefix(pathname, "/preview") &&
   !hasRoutePrefix(pathname, "/api");
 
-console.log("🔎 isRuntime?", isRuntime);
-
 if (isRuntime) {
-  console.log("🚀 RUNTIME PAGE → ALLOW APP ROUTER");
   return NextResponse.next();
 }
 
@@ -171,7 +162,6 @@ if (isRuntime) {
   if (AUTH_ENTRY_ROUTES.some((route) => hasRoutePrefix(pathname, route))) {
     const existingSession = req.cookies.get("session")?.value || req.cookies.get("__Secure-session")?.value;
     if (existingSession) {
-      console.log("🔁 ALREADY AUTHENTICATED → REDIRECT DASHBOARD");
       return NextResponse.redirect(publicRedirectUrl(req, "/app/dashboard"));
     }
   }
@@ -180,7 +170,6 @@ if (isRuntime) {
      C) PUBLIC ROUTES
   --------------------------------------------------------- */
   if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
-    console.log("🟢 PUBLIC ROUTE → ALLOW");
     return NextResponse.next();
   }
 
@@ -191,15 +180,11 @@ if (isRuntime) {
     req.cookies.get("session")?.value ||
     req.cookies.get("__Secure-session")?.value;
 
-  console.log("🔐 SESSION EXISTS?", Boolean(session));
-
   if (!session) {
     if (pathname.startsWith("/api")) {
-      console.log("❌ API WITHOUT SESSION → 401");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    console.log("❌ NO SESSION → REDIRECT LOGIN");
     return NextResponse.redirect(publicRedirectUrl(req, "/app/login"));
   }
 
@@ -207,25 +192,19 @@ if (isRuntime) {
      E) ONBOARDING ROUTES
   --------------------------------------------------------- */
   if (ONBOARDING_ROUTES.some((route) => pathname.startsWith(route))) {
-    console.log("🟡 ONBOARDING ROUTE → ALLOW");
     return NextResponse.next();
   }
 
   /* ---------------------------------------------------------
      F) FETCH ONBOARDING STATUS
   --------------------------------------------------------- */
-  console.log("📡 FETCH ONBOARDING STATUS");
-
   const obRes = await fetch(internalFetchUrl("/api/onboarding/status"), {
     headers: { cookie: req.headers.get("cookie") || "" },
     cache: "no-store",
   });
 
-  console.log("📡 ONBOARDING STATUS:", obRes.status);
-
   if (!obRes.ok) {
     if (obRes.status === 401 || obRes.status === 403) {
-      console.log("❌ ONBOARDING SESSION REJECTED → LOGIN");
       return NextResponse.redirect(publicRedirectUrl(req, "/app/login"));
     }
     console.error("❌ ONBOARDING STATUS UNAVAILABLE → ALLOW PAGE ERROR UI", obRes.status);
@@ -235,13 +214,10 @@ if (isRuntime) {
   const obData = await obRes.json();
   const onboardingComplete = Boolean(obData?.completed);
 
-  console.log("✅ ONBOARDING COMPLETE?", onboardingComplete);
-
   /* ---------------------------------------------------------
      G) FORCE ONBOARDING
   --------------------------------------------------------- */
   if (!onboardingComplete) {
-    console.log("⛔ FORCE ONBOARDING");
     if (!pathname.startsWith("/app/onboarding")) {
       return NextResponse.redirect(publicRedirectUrl(req, "/app/onboarding"));
     }
@@ -251,18 +227,13 @@ if (isRuntime) {
   /* ---------------------------------------------------------
      H) FETCH TENANT
   --------------------------------------------------------- */
-  console.log("📡 FETCH TENANT");
-
   const tenantRes = await fetch(internalFetchUrl("/api/tenant/me"), {
     headers: { cookie: req.headers.get("cookie") || "" },
     cache: "no-store",
   });
 
-  console.log("📡 TENANT STATUS:", tenantRes.status);
-
   if (!tenantRes.ok) {
     if (tenantRes.status === 401 || tenantRes.status === 403) {
-      console.log("❌ TENANT SESSION REJECTED → LOGIN");
       return NextResponse.redirect(publicRedirectUrl(req, "/app/login"));
     }
     console.error("❌ TENANT FETCH UNAVAILABLE → ALLOW PAGE ERROR UI", tenantRes.status);
@@ -272,13 +243,10 @@ if (isRuntime) {
   const tenantData = await tenantRes.json();
   const tenant = tenantData?.data?.tenant;
 
-  console.log("🏢 TENANT:", tenant?.id);
-
   /* ---------------------------------------------------------
      I) NO TENANT
   --------------------------------------------------------- */
   if (!tenant) {
-    console.log("❌ NO TENANT → FORCE ONBOARDING");
     if (!pathname.startsWith("/app/onboarding")) {
       return NextResponse.redirect(publicRedirectUrl(req, "/app/onboarding"));
     }
@@ -289,15 +257,12 @@ if (isRuntime) {
      J) BLOCK /app/onboarding
   --------------------------------------------------------- */
   if (pathname.startsWith("/app/onboarding")) {
-    console.log("🚫 BLOCK ONBOARDING → DASHBOARD");
     return NextResponse.redirect(publicRedirectUrl(req, "/app/dashboard"));
   }
 
   /* ---------------------------------------------------------
      K) FINAL PASS
   --------------------------------------------------------- */
-  console.log("✅ FINAL NEXT()");
-
   const res = NextResponse.next();
   res.headers.set("x-pathname", pathname);
   res.cookies.set("tenant-id", tenant.id, {
