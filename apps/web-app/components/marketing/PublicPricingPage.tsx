@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { MarketingFooter } from "./MarketingFooter";
 import { MarketingHeader } from "./MarketingHeader";
@@ -50,6 +50,14 @@ export function PublicPricingPage() {
   }, []);
 
   const hasYearly = useMemo(() => plans.some((plan) => plan.priceYearly !== null), [plans]);
+  const trackRef = useRef<HTMLElement>(null);
+  function scrollByCard(direction: 1 | -1) {
+    const track = trackRef.current;
+    if (!track) return;
+    const card = track.querySelector<HTMLElement>(".public-plan-card");
+    const step = (card?.offsetWidth ?? track.clientWidth * 0.85) + 20;
+    track.scrollBy({ left: direction * step, behavior: "smooth" });
+  }
 
   return (
     <div className="marketing-info-shell pricing-page-shell">
@@ -66,7 +74,7 @@ export function PublicPricingPage() {
               <button className={billing === "monthly" ? "active" : ""} onClick={() => setBilling("monthly")}>Monthly</button>
               <button disabled={!hasYearly} className={billing === "yearly" ? "active" : ""} onClick={() => setBilling("yearly")}>Yearly</button>
             </div>
-            <CurrencySwitcher currency={displayCurrency} currencies={availableCurrencies} onChange={setCurrency} />
+            <CurrencySwitcher symbolOnly stacked currency={displayCurrency} currencies={availableCurrencies} onChange={setCurrency} />
             {displayCurrency !== "INR" ? (
               <p className="pricing-currency-note">
                 Showing estimated prices in {displayCurrency}, converted from INR at today's rate.
@@ -80,7 +88,14 @@ export function PublicPricingPage() {
         {error ? <div className="pricing-state pricing-error">{error} Please refresh or open Plans after signing in.</div> : null}
         {!loading && !error && plans.length === 0 ? <div className="pricing-state">No public plans are available right now.</div> : null}
 
-        <section className="public-pricing-grid" aria-label="BuildEzy plans">
+        <div className="public-pricing-carousel">
+          {plans.length > 1 ? (
+            <div className="pricing-carousel-nav">
+              <button type="button" aria-label="Scroll to previous plan" onClick={() => scrollByCard(-1)}>←</button>
+              <button type="button" aria-label="Scroll to next plan" onClick={() => scrollByCard(1)}>→</button>
+            </div>
+          ) : null}
+          <section className="public-pricing-grid" aria-label="BuildEzy plans" ref={trackRef}>
           {plans.map((plan, index) => {
             const amount = billing === "monthly" ? plan.priceMonthly : plan.priceYearly;
             const unavailable = !plan.isCustom && amount === null;
@@ -111,7 +126,8 @@ export function PublicPricingPage() {
               </article>
             );
           })}
-        </section>
+          </section>
+        </div>
 
         <section className="pricing-assurance">
           <div><span>01</span><h3>Live catalogue</h3><p>Plans, limits, prices and feature lists come directly from the same catalogue used in the authenticated workspace.</p></div>

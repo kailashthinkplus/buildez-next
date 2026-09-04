@@ -13,8 +13,8 @@ export function MarketingHeader() {
         <Link href="/faq">Support</Link>
       </nav>
       <div className="marketing-standard-actions">
-        <Link href="/app/login">Log in</Link>
-        <Link href="/app/signup" className="marketing-standard-cta">Start building</Link>
+        <Link href="/app/login" className="marketing-standard-login">Log in</Link>
+        <Link href="/app/signup" className="marketing-standard-cta">Signup</Link>
       </div>
     </header>
   );

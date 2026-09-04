@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Smartphone, ShieldCheck } from "lucide-react";
 import { useOnboarding } from "../OnboardingContext";
 import { firebasePhoneAuthEnabled, getFirebaseAuth } from "@/lib/firebase/client";
+import { COUNTRY_DIAL_CODES, DEFAULT_COUNTRY_ISO, flagEmoji } from "@/lib/constants/countryDialCodes";
 import type { ConfirmationResult, RecaptchaVerifier } from "firebase/auth";
 
 export default function StepPhoneVerify({
@@ -15,7 +16,8 @@ export default function StepPhoneVerify({
 }) {
   const { phoneVerificationConfigured } = useOnboarding();
 
-  const [phone, setPhone] = useState("");
+  const [countryIso, setCountryIso] = useState(DEFAULT_COUNTRY_ISO);
+  const [nationalNumber, setNationalNumber] = useState("");
   const [code, setCode] = useState("");
   const [stage, setStage] = useState<"phone" | "code">("phone");
   const [sending, setSending] = useState(false);
@@ -31,11 +33,13 @@ export default function StepPhoneVerify({
     };
   }, []);
 
-  const phoneValid = /^\+[1-9]\d{7,14}$/.test(phone.trim());
+  const dialCode = COUNTRY_DIAL_CODES.find((c) => c.iso === countryIso)?.dial || "+91";
+  const phone = `${dialCode}${nationalNumber.replace(/\D/g, "")}`;
+  const phoneValid = /^\+[1-9]\d{7,14}$/.test(phone);
 
   async function sendCode() {
     if (!phoneValid) {
-      setError("Enter your number in international format, e.g. +14155551234.");
+      setError("Enter a valid mobile number for the selected country.");
       return;
     }
     const auth = getFirebaseAuth();
@@ -50,16 +54,19 @@ export default function StepPhoneVerify({
       if (!recaptchaRef.current) {
         recaptchaRef.current = new RecaptchaVerifier(auth, "phone-verify-recaptcha", { size: "invisible" });
       }
-      confirmationRef.current = await signInWithPhoneNumber(auth, phone.trim(), recaptchaRef.current);
+      confirmationRef.current = await signInWithPhoneNumber(auth, phone, recaptchaRef.current);
       setStage("code");
     } catch (err: unknown) {
       recaptchaRef.current?.clear();
       recaptchaRef.current = null;
-      const code = typeof err === "object" && err && "code" in err ? String(err.code) : "";
-      if (code.includes("too-many-requests")) setError("Too many attempts. Please wait a few minutes and try again.");
-      else if (code.includes("invalid-phone-number")) setError("Enter a valid mobile number with its country code.");
-      else if (code.includes("captcha") || code.includes("app-credential")) setError("The security check could not be completed. Refresh the page and try again.");
-      else setError("We couldn't send the verification code. Please try again.");
+      const rawCode = typeof err === "object" && err && "code" in err ? String(err.code) : "";
+      console.error("Firebase phone auth failed:", rawCode, err);
+      if (rawCode.includes("too-many-requests")) setError("Too many attempts. Please wait a few minutes and try again.");
+      else if (rawCode.includes("invalid-phone-number")) setError("Enter a valid mobile number with its country code.");
+      else if (rawCode.includes("unauthorized-domain")) setError("This domain isn't authorized for phone sign-in yet. Contact support.");
+      else if (rawCode.includes("quota") || rawCode.includes("billing")) setError("SMS sending is temporarily unavailable (quota/billing). Contact support.");
+      else if (rawCode.includes("captcha") || rawCode.includes("app-credential")) setError("The security check could not be completed. Refresh the page and try again.");
+      else setError(`We couldn't send the verification code. Please try again.${rawCode ? ` (${rawCode})` : ""}`);
     } finally {
       setSending(false);
     }
@@ -112,14 +119,27 @@ export default function StepPhoneVerify({
       ) : stage === "phone" ? (
         <div className="max-w-sm mb-8">
           <label className="block text-xs font-medium text-slate-600 dark:text-white/60 mb-2">Mobile number</label>
-          <input
-            className="glass p-4 rounded-xl text-sm w-full"
-            placeholder="+14155551234"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            autoComplete="tel"
-          />
-          <p className="text-xs text-slate-500 dark:text-white/45 mt-2">Include your country code, e.g. +91 for India.</p>
+          <div className="flex gap-2">
+            <select
+              className="onboarding-select glass rounded-xl text-sm py-4 pl-3 pr-1 shrink-0 w-[104px]"
+              value={countryIso}
+              onChange={(e) => setCountryIso(e.target.value)}
+              aria-label="Country code"
+            >
+              {COUNTRY_DIAL_CODES.map((c) => (
+                <option key={c.iso} value={c.iso}>{flagEmoji(c.iso)} {c.dial}</option>
+              ))}
+            </select>
+            <input
+              className="glass p-4 rounded-xl text-sm w-full"
+              placeholder="4155551234"
+              inputMode="numeric"
+              value={nationalNumber}
+              onChange={(e) => setNationalNumber(e.target.value.replace(/[^\d]/g, ""))}
+              autoComplete="tel-national"
+            />
+          </div>
+          <p className="text-xs text-slate-500 dark:text-white/45 mt-2">Choose your country, then enter your number without the country code.</p>
         </div>
       ) : (
         <div className="max-w-sm mb-8">

@@ -17,16 +17,20 @@ export default function CurrencySwitcher({
   onChange,
   className = "",
   symbolOnly = false,
+  stacked = false,
 }: {
   currency: string;
   currencies: readonly string[];
   onChange: (currency: string) => void;
   className?: string;
   symbolOnly?: boolean;
+  /** Label above the dropdown instead of beside it. */
+  stacked?: boolean;
 }) {
+  const showLabel = stacked || !symbolOnly;
   return (
-    <label className={`inline-flex items-center gap-2 text-xs font-medium ${className}`}>
-      <span className={symbolOnly ? "sr-only" : "dashboard-muted"}>Currency</span>
+    <label className={`${stacked ? "flex flex-col items-start gap-1.5" : "inline-flex items-center gap-2"} text-xs font-medium ${className}`}>
+      <span className={showLabel ? "dashboard-muted" : "sr-only"}>Currency</span>
       <select
         aria-label="Display currency"
         value={currency}

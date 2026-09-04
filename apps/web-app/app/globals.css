@@ -64,6 +64,15 @@
   margin: 0;
   color: var(--foreground);
   font-family: ui-sans-serif, system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Google's reCAPTCHA badge is fixed-position and injected with inline styles
+   we can't otherwise touch — pull it in from the edge so it can't push the
+   viewport's scrollable width past 100%. */
+.grecaptcha-badge {
+  right: 4px !important;
+  bottom: 4px !important;
 }
 
 /* Tenant dashboard visual layer. Builder chrome is intentionally excluded. */
