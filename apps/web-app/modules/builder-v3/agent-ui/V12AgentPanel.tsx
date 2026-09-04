@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { Check, ChevronDown, ChevronLeft, ChevronRight, FileText, ImagePlus, Loader2, Paperclip, RotateCcw, Send, Sparkles, Square, Star, Upload, Wand2, X } from "lucide-react";
+import { Check, ChevronDown, ChevronLeft, ChevronRight, FileText, Globe2, ImagePlus, Loader2, Paperclip, RotateCcw, Send, Sparkles, Square, Star, Upload, Wand2, X, Zap } from "lucide-react";
 
 import {
   AI_ATTACHMENT_ACCEPT,
@@ -927,6 +927,13 @@ export default function V12AgentPanel({
         </div>
       ))}
 
+      {!running &&
+        messageEvents.length > 0 &&
+        messageEvents[messageEvents.length - 1].role === "assistant" &&
+        messageEvents[messageEvents.length - 1].status === "completed" && (
+          <PostGenerationCTACard siteId={siteId} />
+        )}
+
       {(running || groupedProgress.length > 0) && (
         <div className="py-2">
           <button
@@ -1283,6 +1290,93 @@ function FeedbackModal({
       </div>
     </div>,
     document.body,
+  );
+}
+
+type PostGenerationState = {
+  loading: boolean;
+  creditsRemaining: number | null;
+  isFreePlan: boolean;
+  canUseCustomDomain: boolean;
+  hasConnectedDomain: boolean;
+  settingsHref: string;
+};
+
+/**
+ * Shown once under the last completed generation — never mid-generation,
+ * never on a failed one. Surfaces exactly one next step, in priority
+ * order: out of credits blocks further generation entirely, a free plan
+ * can't connect a domain at all (so upgrading is the only path), and only
+ * then an unconnected domain on a plan that supports one.
+ */
+function PostGenerationCTACard({ siteId }: { siteId: string }) {
+  const [state, setState] = useState<PostGenerationState | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      fetch("/api/builder-v3/credits", { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+      fetch(`/api/sites/${siteId}/domains`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+    ]).then(([credits, domains]) => {
+      if (cancelled) return;
+      const planCode = String(credits?.planCode || "").toUpperCase();
+      let slug = "";
+      try { slug = domains?.platformUrl ? new URL(domains.platformUrl).hostname.split(".")[0] : ""; } catch { slug = ""; }
+      setState({
+        loading: false,
+        creditsRemaining: typeof credits?.balance?.totalRemaining === "number" ? credits.balance.totalRemaining : null,
+        isFreePlan: planCode === "FREE" || planCode === "TRIAL" || planCode === "",
+        canUseCustomDomain: domains?.canUseCustomDomain === true,
+        hasConnectedDomain: Array.isArray(domains?.domains) && domains.domains.some((d: { status?: string }) => d.status === "VERIFIED"),
+        settingsHref: slug ? `/app/${slug}/settings?tab=domains` : "/app/workspace/websites",
+      });
+    }).catch(() => { if (!cancelled) setState(null); });
+    return () => { cancelled = true; };
+  }, [siteId]);
+
+  if (!state || state.loading) return null;
+
+  if (state.creditsRemaining !== null && state.creditsRemaining <= 0) {
+    return (
+      <CTACard icon={<Zap size={15} />} tone="amber" title="AI credits exhausted"
+        body="You're out of AI credits for this period. Add more to keep generating and editing."
+        ctaLabel="Add credits" ctaHref="/app/workspace/billing#ai-credits" />
+    );
+  }
+  if (state.isFreePlan) {
+    return (
+      <CTACard icon={<Sparkles size={15} />} tone="blue" title="Ready to launch?"
+        body="Upgrade to connect your own domain, unlock more AI credits, and get the full toolkit for launching a real website."
+        ctaLabel="Upgrade plan" ctaHref="/app/plans" />
+    );
+  }
+  if (state.canUseCustomDomain && !state.hasConnectedDomain) {
+    return (
+      <CTACard icon={<Globe2 size={15} />} tone="emerald" title="Connect your domain"
+        body="Your site is ready — connect a custom domain to make it live at your own address."
+        ctaLabel="Connect domain" ctaHref={state.settingsHref} />
+    );
+  }
+  return null;
+}
+
+function CTACard({ icon, tone, title, body, ctaLabel, ctaHref }: { icon: React.ReactNode; tone: "amber" | "blue" | "emerald"; title: string; body: string; ctaLabel: string; ctaHref: string }) {
+  const toneClasses = {
+    amber: { border: "border-amber-400/25", bg: "bg-amber-500/10", icon: "bg-amber-400/15 text-amber-300", button: "border-amber-400/30 bg-amber-500/10 text-amber-200 hover:border-amber-300/50 hover:bg-amber-500/20" },
+    blue: { border: "border-blue-400/25", bg: "bg-blue-500/10", icon: "bg-blue-400/15 text-blue-300", button: "border-blue-400/30 bg-blue-500/10 text-blue-200 hover:border-blue-300/50 hover:bg-blue-500/20" },
+    emerald: { border: "border-emerald-400/25", bg: "bg-emerald-500/10", icon: "bg-emerald-400/15 text-emerald-300", button: "border-emerald-400/30 bg-emerald-500/10 text-emerald-200 hover:border-emerald-300/50 hover:bg-emerald-500/20" },
+  }[tone];
+  return (
+    <div className={`mr-6 mt-1 flex items-start gap-3 rounded-2xl border ${toneClasses.border} ${toneClasses.bg} px-4 py-3`}>
+      <span className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg ${toneClasses.icon}`}>{icon}</span>
+      <div className="min-w-0 flex-1">
+        <p className="text-[13px] font-semibold text-white/90">{title}</p>
+        <p className="mt-0.5 text-[12px] leading-5 text-white/55">{body}</p>
+        <Link href={ctaHref} className={`mt-2 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition ${toneClasses.button}`}>
+          {ctaLabel}
+        </Link>
+      </div>
+    </div>
   );
 }
 
