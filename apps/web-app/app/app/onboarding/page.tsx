@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useOnboarding } from "./OnboardingContext";
 
 export default function OnboardingPage() {
-  const { step, refreshFromServer, setStep } = useOnboarding();
+  const { step, refreshFromServer, setStep, initializing, loadError, phoneVerificationRequired } = useOnboarding();
 
   // ⭐ NEW → Store payment success payload
   const [paymentSummary, setPaymentSummary] = useState<null | {
@@ -22,22 +22,42 @@ export default function OnboardingPage() {
     subscriptionId?: string;
   }>(null);
 
-  // After each step completes, always reload server state
-  async function goNext(target: number) {
-    await refreshFromServer();
+  function goNext(target: number) {
     setStep(target);
   }
 
-  async function goBack(target: number) {
-    await refreshFromServer();
+  function goBack(target: number) {
     setStep(target);
+  }
+
+  if (initializing) {
+    return (
+      <OnboardingCard>
+        <div className="flex min-h-64 items-center justify-center text-sm text-slate-600 dark:text-white/65">
+          Loading your progress…
+        </div>
+      </OnboardingCard>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <OnboardingCard>
+        <div className="flex min-h-64 flex-col items-center justify-center gap-4 text-center">
+          <p className="text-sm text-red-500">{loadError}</p>
+          <button type="button" onClick={() => void refreshFromServer()} className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm text-white hover:bg-blue-500">
+            Try again
+          </button>
+        </div>
+      </OnboardingCard>
+    );
   }
 
   return (
     <OnboardingCard>
       {step === 0 && (
         <StepAccountType
-          onNext={() => goNext(1)}
+          onNext={() => goNext(phoneVerificationRequired ? 1 : 2)}
         />
       )}
 
@@ -51,7 +71,7 @@ export default function OnboardingPage() {
       {step === 2 && (
         <StepBusinessDetails
           onNext={() => goNext(3)}
-          onBack={() => goBack(1)}
+          onBack={() => goBack(phoneVerificationRequired ? 1 : 0)}
         />
       )}
 

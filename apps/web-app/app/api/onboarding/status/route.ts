@@ -3,6 +3,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { prisma } from "@buildez/db";
+import { firebasePhoneVerificationConfigured } from "@/lib/firebase/admin";
 
 export async function GET(req: Request) {
   console.log("🚀 [onboarding-status] START");
@@ -33,8 +34,6 @@ export async function GET(req: Request) {
         },
       });
     }
-
-    console.log("📦 [onboarding-status] Onboarding Loaded:", onboarding);
 
     /* ---------------------------------------------------------
        CLEAN VALUES FOR CLIENT
@@ -80,8 +79,43 @@ export async function GET(req: Request) {
        — otherwise this step is treated as satisfied so onboarding
        isn't blocked before the project/service account exist.
     --------------------------------------------------------- */
-    const phoneVerificationRequired = Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+    const phoneVerificationConfigured = firebasePhoneVerificationConfigured();
+    const phoneVerificationRequired = phoneVerificationConfigured;
     const phoneVerified = !phoneVerificationRequired || Boolean(user.isPhoneVerified);
+
+    /* ---------------------------------------------------------
+       PAID PLAN COMPLETENESS
+       A saved plan is not enough for paid onboarding: users must
+       remain on the plan step until Dodo confirms the subscription.
+    --------------------------------------------------------- */
+    let paymentComplete = true;
+    let planRequiresPayment = false;
+
+    if (planCode && billingCycle) {
+      const selectedPlan = await prisma.plan.findUnique({
+        where: { code: planCode },
+        include: {
+          pricing: {
+            where: { billingCycle, isActive: true },
+            take: 1,
+          },
+        },
+      });
+      planRequiresPayment = Number(selectedPlan?.pricing[0]?.amount ?? 0) > 0;
+
+      if (planRequiresPayment) {
+        const paidSubscription = await prisma.subscription.findFirst({
+          where: {
+            userId: user.id,
+            planCode,
+            paymentStatus: "PAID",
+            status: { in: ["ACTIVE", "AWAITING_ACTIVATION"] },
+          },
+          select: { id: true },
+        });
+        paymentComplete = Boolean(paidSubscription);
+      }
+    }
 
     /* ---------------------------------------------------------
        STEP CALCULATION (SERVER IS SOURCE OF TRUTH)
@@ -89,7 +123,7 @@ export async function GET(req: Request) {
        1 Phone verification
        2 Business/profile details
        3 Choose plan
-       4 Domain & launch (trial only)
+       4 Domain & launch
        5 Finish
     --------------------------------------------------------- */
 
@@ -99,14 +133,8 @@ export async function GET(req: Request) {
     if (!accountType) step = 0;
     else if (!phoneVerified) step = 1;
     else if (!profileComplete) step = 2;
-    else if (!planCode) step = 3;
-
-    // ⭐ Paid plan → SKIP domain step
-    else if (planCode !== "trial") step = 5;
-
-    // ⭐ Trial plan → requires domain before finish
-    else if (!domain) step = 4;
-
+    else if (!planCode || !paymentComplete) step = 3;
+    else if (!domain && !onboarding.domainSkipped) step = 4;
     else step = 5;
 
     console.log("➡️ [onboarding-status] Computed step:", step);
@@ -131,6 +159,7 @@ export async function GET(req: Request) {
       phone: user.phone ?? null,
       phoneVerified,
       phoneVerificationRequired,
+      phoneVerificationConfigured,
 
       // BUSINESS INFO
       accountType,
@@ -142,6 +171,9 @@ export async function GET(req: Request) {
       planCode,
       billingCycle,
       domain,
+      domainSkipped: onboarding.domainSkipped,
+      planRequiresPayment,
+      paymentComplete,
     });
   } catch (err: any) {
     console.error("❌ [onboarding-status] ERROR:", err);

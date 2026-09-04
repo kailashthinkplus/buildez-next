@@ -6,7 +6,7 @@ export default function OnboardingCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="max-w-4xl mx-auto glass-strong rounded-3xl px-16 py-8">
+    <div className="mx-auto w-full max-w-6xl rounded-3xl glass-strong px-4 py-6 sm:px-8 sm:py-8 lg:px-10">
       {children}
     </div>
   );

@@ -177,7 +177,7 @@ export async function GET(req: Request) {
     const user = await getCurrentUser(req);
 
     if (!user) {
-      return NextResponse.json({}, { status: 200 }); // return empty but valid JSON
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const onboarding = await prisma.userOnboarding.findUnique({
@@ -187,6 +187,6 @@ export async function GET(req: Request) {
     return NextResponse.json(onboarding || {}, { status: 200 });
   } catch (err) {
     console.error("🔥 GET business-details error:", err);
-    return NextResponse.json({}, { status: 200 }); // return empty JSON
+    return NextResponse.json({ error: "Could not load onboarding details" }, { status: 500 });
   }
 }

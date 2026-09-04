@@ -16,23 +16,28 @@ export default function StepAccountType({
 }) {
   const { accountType, setAccountType } = useOnboarding();
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   async function saveAndContinue() {
     if (!accountType) return;
 
     setSaving(true);
+    setError("");
 
-    // ✅ FIXED: Correct onboarding API endpoint
-    await fetch("/api/onboarding/account-type", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        accountType,
-      }),
-    });
-
-    setSaving(false);
-    onNext();
+    try {
+      const response = await fetch("/api/onboarding/account-type", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accountType }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || "Your selection could not be saved.");
+      onNext();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Your selection could not be saved.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   const isPersonal = accountType === "personal";
@@ -142,6 +147,8 @@ export default function StepAccountType({
           </span>
         </div>
       </div>
+
+      {error ? <p className="mb-5 text-sm text-red-500">{error}</p> : null}
 
       {/* ACTION */}
       <div className="flex justify-end">

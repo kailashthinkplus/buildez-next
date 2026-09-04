@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     if (!domain || domain === "") {
       await prisma.userOnboarding.update({
         where: { userId: user.id },
-        data: { domain: null },
+        data: { domain: null, domainSkipped: true },
       });
 
       return NextResponse.json({
@@ -128,7 +128,7 @@ export async function POST(req: Request) {
     -------------------------------------------------------- */
     await prisma.userOnboarding.update({
       where: { userId: user.id },
-      data: { domain: normalized },
+      data: { domain: normalized, domainSkipped: false },
     });
 
     return NextResponse.json({

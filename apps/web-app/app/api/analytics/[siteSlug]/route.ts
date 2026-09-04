@@ -38,7 +38,11 @@ function trafficSource(referrer: string | null) {
 async function loadEvents(siteId: string, previousSince: Date): Promise<AnalyticsRow[]> {
   try {
     return await prisma.trafficEvent.findMany({
-      where: { siteId, createdAt: { gte: previousSince }, device: { not: "bot" } },
+      where: {
+        siteId,
+        createdAt: { gte: previousSince },
+        OR: [{ device: null }, { device: { not: "bot" } }],
+      },
       select: {
         path: true,
         country: true,

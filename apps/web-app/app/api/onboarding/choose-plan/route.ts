@@ -69,6 +69,7 @@ export async function POST(req: Request) {
       data: {
         planCode,
         billingCycle,
+        domainSkipped: false,
 
         // DO NOT mark completed (only finish step does this)
       },

@@ -23,19 +23,20 @@ export default function OnboardingSidebar({
   mobileMode?: boolean;
   className?: string;
 }) {
-  const { setStep } = useOnboarding();
+  const { setStep, phoneVerificationRequired } = useOnboarding();
 
   const steps = [
-    { label: "Account type", icon: User },
-    { label: "Verify phone", icon: Smartphone },
+    { label: "Account type", icon: User, index: 0 },
+    ...(phoneVerificationRequired ? [{ label: "Verify phone", icon: Smartphone, index: 1 }] : []),
     {
       label:
         accountType === "business" ? "Business details" : "Profile details",
       icon: Building2,
+      index: 2,
     },
-    { label: "Choose plan", icon: CreditCard },
-    { label: "Domain & launch", icon: Globe },
-    { label: "Finish", icon: CheckCircle2 },
+    { label: "Choose plan", icon: CreditCard, index: 3 },
+    { label: "Domain & launch", icon: Globe, index: 4 },
+    { label: "Finish", icon: CheckCircle2, index: 5 },
   ];
 
   function onStepClick(index: number) {
@@ -98,16 +99,16 @@ export default function OnboardingSidebar({
 
       {/* STEP LIST */}
       <nav className="px-3 space-y-1">
-        {steps.map((stepItem, index) => {
+        {steps.map((stepItem) => {
           const Icon = stepItem.icon;
-          const isActive = index === activeStep;
-          const isPast = index < activeStep;
-          const isFuture = index > activeStep;
+          const isActive = stepItem.index === activeStep;
+          const isPast = stepItem.index < activeStep;
+          const isFuture = stepItem.index > activeStep;
 
           return (
             <div
               key={stepItem.label}
-              onClick={() => onStepClick(index)}
+              onClick={() => onStepClick(stepItem.index)}
               className={`
                 flex items-center gap-3 px-4 py-3 text-sm transition
                 ${isActive &&

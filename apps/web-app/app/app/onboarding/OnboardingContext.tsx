@@ -33,10 +33,13 @@ export interface OnboardingContextType {
 
   phoneVerified: boolean;
   phoneVerificationRequired: boolean;
+  phoneVerificationConfigured: boolean;
 
   completed: boolean;
+  initializing: boolean;
+  loadError: string | null;
 
-  refreshFromServer: () => Promise<void>;
+  refreshFromServer: () => Promise<boolean>;
 
   /** UI guard to prevent skipping buttons */
   isStepValid: (n: number) => boolean;
@@ -57,8 +60,11 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
   const [phoneVerified, setPhoneVerified] = useState(false);
   const [phoneVerificationRequired, setPhoneVerificationRequired] = useState(false);
+  const [phoneVerificationConfigured, setPhoneVerificationConfigured] = useState(false);
 
   const [completed, setCompleted] = useState(false);
+  const [initializing, setInitializing] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   /* ----------------------------------------------------------------------
      STEP VALIDATION — prevents skipping from UI
@@ -104,17 +110,19 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   /* ----------------------------------------------------------------------
      REFRESH FROM SERVER — Single Source of Truth
   ---------------------------------------------------------------------- */
-  async function refreshFromServer() {
+  const refreshFromServer = useCallback(async () => {
+    setLoadError(null);
     try {
       const res = await fetch("/api/onboarding/status", {
         cache: "no-store",
       });
 
-      if (!res.ok) return;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setLoadError(data.error || "We couldn't load your onboarding progress.");
+        return false;
+      }
 
-      const data = await res.json();
-
-      // hydrate
       setAccountType(
         ["personal", "business", "agency"].includes(data.accountType)
           ? data.accountType
@@ -135,102 +143,27 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
       setPhoneVerified(Boolean(data.phoneVerified));
       setPhoneVerificationRequired(Boolean(data.phoneVerificationRequired));
+      setPhoneVerificationConfigured(Boolean(data.phoneVerificationConfigured));
 
       setCompleted(data.completed ?? false);
-
-      /* ------------------------------------------------------------------
-         Step calculation formula (server-authoritative)
-
-         Mirrors /api/onboarding/status exactly:
-         0 Account type
-         1 Phone verification
-         2 Business/profile details
-         3 Choose plan
-         4 Domain & launch (trial only)
-         5 Finish
-
-         Profile-completeness mirrors StepBusinessDetails' own
-         validation — a business account already has `businessName`
-         set at signup, so gating on businessName alone skipped
-         StepBusinessDetails for every business account and left
-         city/country/profession/companySize/primaryUseCase
-         permanently unset.
-      ------------------------------------------------------------------ */
-      const hasPersonalFields = Boolean(
-        data.firstName &&
-        data.lastName &&
-        data.city &&
-        data.country &&
-        data.profession
-      );
-      const profileComplete =
-        data.accountType === "business"
-          ? hasPersonalFields &&
-            Boolean(data.businessName) &&
-            Boolean(data.companySize) &&
-            Boolean(data.primaryUseCase)
-          : hasPersonalFields;
-
-      if (!data.accountType) {
-        setStep(0);
-      } else if (!data.phoneVerified) {
-        setStep(1);
-      } else if (!profileComplete) {
-        setStep(2);
-      } else if (!data.planCode) {
-        setStep(3);
-      } else if (data.planCode !== "trial" && !data.domain) {
-        setStep(4);
-      } else {
-        setStep(5);
-      }
+      setStep(Number.isInteger(data.step) && data.step >= 0 && data.step <= 5 ? data.step : 0);
+      return true;
     } catch (err) {
       console.warn("⚠️ onboarding-status load failed", err);
+      setLoadError("We couldn't reach the production server. Check your connection and try again.");
+      return false;
+    } finally {
+      setInitializing(false);
     }
-  }
+  }, []);
 
   /* ----------------------------------------------------------------------
      INITIAL LOAD
   ---------------------------------------------------------------------- */
   useEffect(() => {
-    // Try fetching data from localStorage if available
-    const storedState = localStorage.getItem("onboarding-state");
-    if (storedState) {
-      const parsedState = JSON.parse(storedState);
-      setStep(parsedState.step);
-      setAccountType(parsedState.accountType);
-      setBusinessName(parsedState.businessName);
-      setPlanId(parsedState.planId);
-      setBilling(parsedState.billing);
-      setDomain(parsedState.domain);
-      setCompleted(parsedState.completed);
-    }
-
-    refreshFromServer();
-  }, []);
-
-  /* ----------------------------------------------------------------------
-     LOCAL CACHED STATE (optional)
-  ---------------------------------------------------------------------- */
-  useEffect(() => {
-    try {
-      // Update the local storage whenever there's a change in state
-      localStorage.setItem(
-        "onboarding-state",
-        JSON.stringify({
-          step,
-          accountType,
-          businessName,
-          planId,
-          billing,
-          domain,
-          completed,
-        })
-      );
-    } catch (err) {
-      console.error("Error saving onboarding state to localStorage", err);
-    }
-  }, [step, accountType, businessName, planId, billing, domain, completed]);
+    localStorage.removeItem("onboarding-state");
+    void refreshFromServer();
+  }, [refreshFromServer]);
 
   return (
     <OnboardingContext.Provider
@@ -249,7 +182,10 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         setDomain,
         phoneVerified,
         phoneVerificationRequired,
+        phoneVerificationConfigured,
         completed,
+        initializing,
+        loadError,
         refreshFromServer,
         isStepValid,
       }}

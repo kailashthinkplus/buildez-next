@@ -13,9 +13,9 @@ export async function POST(req: Request) {
 
     const { accountType } = await req.json();
 
-    if (!accountType) {
+    if (!["personal", "business", "agency"].includes(accountType)) {
       return NextResponse.json(
-        { error: "Missing accountType" },
+        { error: "Choose a valid account type." },
         { status: 400 }
       );
     }

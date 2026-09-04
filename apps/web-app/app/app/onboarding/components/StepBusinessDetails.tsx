@@ -41,6 +41,8 @@ export default function StepBusinessDetails({ onNext, onBack }) {
   const isBusiness = accountType === "business";
 
   const [loading, setLoading] = useState(false);
+  const [loadingExisting, setLoadingExisting] = useState(true);
+  const [error, setError] = useState("");
 
   const [form, setForm] = useState({
     firstName: "",
@@ -57,10 +59,10 @@ export default function StepBusinessDetails({ onNext, onBack }) {
   // Fetch the user onboarding data when the component mounts
   useEffect(() => {
     async function fetchOnboardingData() {
-      const res = await fetch("/api/onboarding/business-details");
-      const data = await res.json();
-      
-      if (res.ok && data) {
+      try {
+        const res = await fetch("/api/onboarding/business-details", { cache: "no-store" });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Your saved details could not be loaded.");
         // Populate the form with the existing onboarding data
         setForm({
           firstName: data.firstName || "",
@@ -73,6 +75,10 @@ export default function StepBusinessDetails({ onNext, onBack }) {
           companySize: data.companySize || "",
           primaryUseCase: data.primaryUseCase || "",
         });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Your saved details could not be loaded.");
+      } finally {
+        setLoadingExisting(false);
       }
     }
 
@@ -98,6 +104,7 @@ export default function StepBusinessDetails({ onNext, onBack }) {
     if (!isValid) return;
 
     setLoading(true);
+    setError("");
 
     const payload = {
       accountType,
@@ -125,13 +132,18 @@ export default function StepBusinessDetails({ onNext, onBack }) {
         body: JSON.stringify(payload),
       });
     } catch (err) {
+      setError("We couldn't reach the production server. Please try again.");
       setLoading(false);
       return;
     }
 
     setLoading(false);
 
-    if (!res.ok) return;
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data.error || "Your details could not be saved.");
+      return;
+    }
 
     onNext();
   }
@@ -163,6 +175,9 @@ export default function StepBusinessDetails({ onNext, onBack }) {
           ? "This helps us generate the right layout, copy, and structure for your business site."
           : "This helps us personalise layouts, tone, and content for your personal site."}
       </p>
+
+      {loadingExisting ? <p className="mb-6 text-sm text-slate-500 dark:text-white/55">Loading your saved details…</p> : null}
+      {error ? <p className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-500">{error}</p> : null}
 
       {/* BUSINESS NAME — only for business */}
       {isBusiness && (
@@ -200,7 +215,7 @@ export default function StepBusinessDetails({ onNext, onBack }) {
         />
 
         <select
-          className="glass p-4 rounded-xl text-sm bg-white/10 dark:bg-white/5"
+          className="onboarding-select glass p-4 rounded-xl text-sm bg-white/10 dark:bg-white/5"
           value={form.country}
           onChange={(e) => setForm({ ...form, country: e.target.value })}
         >
@@ -214,7 +229,7 @@ export default function StepBusinessDetails({ onNext, onBack }) {
       {/* PROFESSION + WEBSITE */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         <select
-          className="glass p-4 rounded-xl text-sm bg-white/10 dark:bg-white/5"
+          className="onboarding-select glass p-4 rounded-xl text-sm bg-white/10 dark:bg-white/5"
           value={form.profession}
           onChange={(e) => setForm({ ...form, profession: e.target.value })}
         >
@@ -236,7 +251,7 @@ export default function StepBusinessDetails({ onNext, onBack }) {
       {isBusiness && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           <select
-            className="glass p-4 rounded-xl text-sm w-full bg-white/10 dark:bg-white/5"
+            className="onboarding-select glass p-4 rounded-xl text-sm w-full bg-white/10 dark:bg-white/5"
             value={form.companySize}
             onChange={(e) => setForm({ ...form, companySize: e.target.value })}
           >
@@ -249,7 +264,7 @@ export default function StepBusinessDetails({ onNext, onBack }) {
           </select>
 
           <select
-            className="glass p-4 rounded-xl text-sm w-full bg-white/10 dark:bg-white/5"
+            className="onboarding-select glass p-4 rounded-xl text-sm w-full bg-white/10 dark:bg-white/5"
             value={form.primaryUseCase}
             onChange={(e) =>
               setForm({ ...form, primaryUseCase: e.target.value })
@@ -274,11 +289,11 @@ export default function StepBusinessDetails({ onNext, onBack }) {
         <button
           type="button"
           onClick={submit}
-          disabled={!isValid || loading}
+          disabled={!isValid || loading || loadingExisting}
           className={`
             px-6 py-2.5 rounded-xl text-xs font-medium transition text-white
             ${
-              !isValid || loading
+              !isValid || loading || loadingExisting
                 ? "bg-blue-600/40 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-500"
             }

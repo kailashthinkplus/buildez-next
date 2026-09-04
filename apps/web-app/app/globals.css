@@ -406,6 +406,26 @@ html.dark .app-shell, html.dark .dashboard-shell { background: var(--background)
       radial-gradient(900px circle at 70% 80%, rgba(99,102,241,0.3), transparent 60%);
   }
 
+  .onboarding-select {
+    color: #0f172a;
+    color-scheme: light;
+  }
+
+  .onboarding-select option {
+    background: #ffffff;
+    color: #0f172a;
+  }
+
+  .dark .onboarding-select {
+    color: #f8fafc;
+    color-scheme: dark;
+  }
+
+  .dark .onboarding-select option {
+    background: #0f172a;
+    color: #f8fafc;
+  }
+
   .glass-strong {
     background: linear-gradient(
       180deg,

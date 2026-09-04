@@ -78,9 +78,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "ONBOARDING_NOT_FOUND" }, { status: 400 });
     }
 
+    if (!onboarding.planCode) {
+      return NextResponse.json({ error: "PLAN_NOT_SELECTED" }, { status: 400 });
+    }
+
     const plan = await prisma.plan.findUnique({
   where: {
-    code: onboarding.planCode!,
+    code: onboarding.planCode,
   },
   include: {
     pricing: {
@@ -113,9 +117,11 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
       const subscription = await prisma.subscription.findFirst({
         where: {
           userId: user.id,
-          status: "AWAITING_ACTIVATION",
+          planCode: onboarding.planCode,
+          status: { in: ["ACTIVE", "AWAITING_ACTIVATION"] },
           paymentStatus: "PAID",
         },
+        orderBy: { createdAt: "desc" },
       });
 
       if (!subscription) {

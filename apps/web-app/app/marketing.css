@@ -161,3 +161,24 @@
 .buildezy-marketing .topbar .official-logo{width:138px;height:64px}
 .buildezy-marketing .topbar.is-scrolled .official-logo{width:124px;height:58px}
 @media(max-width:640px){.buildezy-marketing .topbar .official-logo{width:118px;height:56px}}
+
+/* Keep mobile Safari below its compositor-memory ceiling. The active journey
+   card remains fully visible while off-screen 3D layers and costly blur passes
+   are removed on touch-sized devices. */
+@media(max-width:900px),(pointer:coarse){
+  .buildezy-marketing .world,
+  .buildezy-marketing .frame-depth-stage,
+  .buildezy-marketing .craft-scene,
+  .buildezy-marketing .orbit-stage{perspective:none;transform-style:flat}
+  .buildezy-marketing .hero-glow,
+  .buildezy-marketing .world-shadow,
+  .buildezy-marketing .depth-frame:after,
+  .buildezy-marketing .craft-scene:before{display:none}
+  .buildezy-marketing .depth-frame{display:none!important;will-change:auto;transform:translate(-50%,-50%)!important}
+  .buildezy-marketing .depth-frame.active{display:block!important;transform:translate(-50%,-50%)!important}
+  .buildezy-marketing .orbit-card{will-change:auto;transform:none!important}
+  .buildezy-marketing .card-domain{transform:translateX(-50%)!important}
+  .buildezy-marketing .float-card,
+  .buildezy-marketing .topbar.is-scrolled{backdrop-filter:none;-webkit-backdrop-filter:none}
+  .buildezy-marketing .prompt-shell:before{animation:none;filter:none}
+}

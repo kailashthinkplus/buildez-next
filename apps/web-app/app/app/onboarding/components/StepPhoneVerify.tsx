@@ -13,7 +13,7 @@ export default function StepPhoneVerify({
   onNext: () => void;
   onBack: () => void;
 }) {
-  const { phoneVerificationRequired } = useOnboarding();
+  const { phoneVerificationConfigured } = useOnboarding();
 
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
@@ -53,7 +53,13 @@ export default function StepPhoneVerify({
       confirmationRef.current = await signInWithPhoneNumber(auth, phone.trim(), recaptchaRef.current);
       setStage("code");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Unable to send a code to that number.");
+      recaptchaRef.current?.clear();
+      recaptchaRef.current = null;
+      const code = typeof err === "object" && err && "code" in err ? String(err.code) : "";
+      if (code.includes("too-many-requests")) setError("Too many attempts. Please wait a few minutes and try again.");
+      else if (code.includes("invalid-phone-number")) setError("Enter a valid mobile number with its country code.");
+      else if (code.includes("captcha") || code.includes("app-credential")) setError("The security check could not be completed. Refresh the page and try again.");
+      else setError("We couldn't send the verification code. Please try again.");
     } finally {
       setSending(false);
     }
@@ -99,10 +105,9 @@ export default function StepPhoneVerify({
         This secures your account and lets us reach you about your website. We&apos;ll text a one-time code — standard rates may apply.
       </p>
 
-      {!firebasePhoneAuthEnabled ? (
+      {!firebasePhoneAuthEnabled || !phoneVerificationConfigured ? (
         <div className="glass px-5 py-4 rounded-xl text-sm text-slate-600 dark:text-white/65 mb-8">
-          Phone verification isn&apos;t configured for this environment yet.
-          {phoneVerificationRequired ? " Contact support to continue." : " You can skip this for now."}
+          Phone verification is temporarily unavailable. Refresh the page or contact support if this continues.
         </div>
       ) : stage === "phone" ? (
         <div className="max-w-sm mb-8">
@@ -147,14 +152,13 @@ export default function StepPhoneVerify({
       <div className="flex justify-between">
         <button onClick={onBack} className="glass px-6 py-2.5 rounded-xl text-xs">← Back</button>
 
-        {!firebasePhoneAuthEnabled ? (
+        {!firebasePhoneAuthEnabled || !phoneVerificationConfigured ? (
           <button
             type="button"
-            onClick={onNext}
-            disabled={phoneVerificationRequired}
-            className={`px-6 py-2.5 rounded-xl text-xs font-medium transition text-white ${phoneVerificationRequired ? "bg-blue-600/40 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-500"}`}
+            onClick={() => window.location.reload()}
+            className="rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-medium text-white transition hover:bg-blue-500"
           >
-            Skip for now →
+            Refresh
           </button>
         ) : stage === "phone" ? (
           <button

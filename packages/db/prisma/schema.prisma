@@ -226,6 +226,7 @@ model UserOnboarding {
   planCode     String?
   billingCycle String?
   domain       String?
+  domainSkipped Boolean @default(false)
 
   completed Boolean  @default(false)
   createdAt DateTime @default(now())

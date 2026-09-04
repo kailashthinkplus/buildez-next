@@ -13,7 +13,12 @@ export async function GET() {
       select: { id: true, name: true, slug: true, status: true, updatedAt: true, archivedAt: true },
     }),
     prisma.trafficEvent.findMany({
-      where: { tenantId: auth.tenant.id, eventType: "pageview", device: { not: "bot" }, createdAt: { gte: since } },
+      where: {
+        tenantId: auth.tenant.id,
+        eventType: "pageview",
+        OR: [{ device: null }, { device: { not: "bot" } }],
+        createdAt: { gte: since },
+      },
       select: { siteId: true, visitorHash: true },
     }),
     prisma.aiEvent.count({
