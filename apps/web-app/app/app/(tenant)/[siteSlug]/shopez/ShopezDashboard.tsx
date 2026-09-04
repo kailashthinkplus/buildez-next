@@ -26,6 +26,19 @@ import {
   Users,
 } from "lucide-react";
 
+const CURRENCY_OPTIONS = [
+  ["INR", "INR — Indian Rupee"],
+  ["USD", "USD — US Dollar"],
+  ["EUR", "EUR — Euro"],
+  ["GBP", "GBP — British Pound"],
+  ["AED", "AED — UAE Dirham"],
+  ["AUD", "AUD — Australian Dollar"],
+  ["CAD", "CAD — Canadian Dollar"],
+  ["SGD", "SGD — Singapore Dollar"],
+  ["JPY", "JPY — Japanese Yen"],
+  ["CNY", "CNY — Chinese Yuan"],
+] as const;
+
 type Site = { id: string; slug: string; name: string };
 type Product = {
   id: string;
@@ -985,7 +998,6 @@ function ShopSettings({
         {[
           ["name", "Store name"],
           ["supportEmail", "Support email"],
-          ["currency", "Currency (INR, USD…)"],
           ["country", "Country code"],
           ["taxRate", "Tax rate %"],
           ["flatShippingRate", "Flat shipping rate"],
@@ -1000,6 +1012,18 @@ function ShopSettings({
             />
           </label>
         ))}
+        <label className="text-xs dashboard-muted">
+          Currency
+          <select
+            value={CURRENCY_OPTIONS.some(([code]) => code === form.currency) ? form.currency : "INR"}
+            onChange={(e) => setForm({ ...form, currency: e.target.value })}
+            className="dashboard-input mt-1.5 w-full rounded-xl p-3"
+          >
+            {CURRENCY_OPTIONS.map(([code, label]) => (
+              <option key={code} value={code}>{label}</option>
+            ))}
+          </select>
+        </label>
       </div>
       <label className="mt-5 flex items-center gap-3 rounded-xl dashboard-subtle p-4">
         <input
