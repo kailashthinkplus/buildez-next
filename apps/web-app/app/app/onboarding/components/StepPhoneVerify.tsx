@@ -161,6 +161,13 @@ export default function StepPhoneVerify({
       {error && <p className="text-sm text-red-500 mb-6">{error}</p>}
 
       <div id="phone-verify-recaptcha" />
+      <p className="text-[11px] text-slate-500 dark:text-white/40 mb-8 -mt-4">
+        This site is protected by reCAPTCHA and the Google{" "}
+        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline">Privacy Policy</a>{" "}
+        and{" "}
+        <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="underline">Terms of Service</a>{" "}
+        apply.
+      </p>
 
       <div className="glass px-5 py-3 rounded-xl text-[13px] text-slate-600 dark:text-white/60 mb-8">
         <div className="flex items-start gap-2">

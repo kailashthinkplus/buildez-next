@@ -46,6 +46,7 @@ const ONBOARDING_ROUTES = [
   "/api/onboarding/save-domain",
   "/api/onboarding/create-tenant",
   "/api/onboarding/finish",
+  "/api/onboarding/verify-phone",
   "/api/tenant/me",
 ];
 
