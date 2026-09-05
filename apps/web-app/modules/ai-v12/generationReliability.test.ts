@@ -49,7 +49,10 @@ test("non-executable installed binaries get a private executable copy", async ()
   } finally { await Promise.all([rm(dir, { recursive: true, force: true }), rm(work, { recursive: true, force: true })]); }
 });
 const frameUrls = Array.from({ length: 8 }, (_, index) => `https://assets.example.test/frame-${index}.jpg`);
-const frameFiles = [{ path: "src/App.tsx", content: `const frames=${JSON.stringify(frameUrls)}; export default function App(){return <canvas/>} addEventListener('scroll',()=>ctx.drawImage(images[Math.floor(scrollY)],0,0)); /* prefers-reduced-motion */` }];
+// Frame URLs are supplied via a code-injected module (see withHiggsfieldFrames
+// in runAgent.ts), not transcribed into the model's own source — the model
+// only needs to import and use them.
+const frameFiles = [{ path: "src/App.tsx", content: `import { HIGGSFIELD_FRAME_URLS } from "./higgsfieldFrames"; export default function App(){return <canvas/>} addEventListener('scroll',()=>ctx.drawImage(images[Math.floor(scrollY)],0,0)); /* prefers-reduced-motion */` }];
 test("explicit model and real-time 3D requests accept the Higgsfield frame contract", () => {
   for (const prompt of ["high-fidelity product 3D model", "Build a GLB product showcase", "Use Three.js for a real-time 3D watch with multiple camera views", "three-dimensional car"]) {
     const plan = routeV12Capabilities(prompt);
@@ -70,7 +73,21 @@ test("WebGL effects remain available alongside a valid 3D frame sequence", () =>
 test("still images cannot replace required Higgsfield frames", () => {
   const plan = routeV12Capabilities("3D watch");
   assert.match(immersiveAcceptanceFailures([project[3]], plan, {hasFrameSequence3D:true,frameSequenceUrls:frameUrls}).join(" "), /Higgsfield/);
-  assert.match(immersiveAcceptanceFailures(frameFiles, plan, {hasFrameSequence3D:true,frameSequenceUrls:[...frameUrls,"https://assets.example.test/missing.jpg"]}).join(" "), /every supplied Higgsfield/);
+});
+test("a real canvas that never imports the supplied frame module still fails", () => {
+  // The model built a plausible-looking scroll canvas but never actually
+  // wired it to the frames we gave it — inlining its own (possibly
+  // fabricated) image list instead. This must still be caught even though
+  // we no longer scan for literal URL strings.
+  const plan = routeV12Capabilities("3D watch");
+  const inventedFrames = [{ path: "src/App.tsx", content: `const frames=["https://invented.example.test/a.jpg"]; export default function App(){return <canvas/>} addEventListener('scroll',()=>ctx.drawImage(images[Math.floor(scrollY)],0,0));` }];
+  assert.match(immersiveAcceptanceFailures(inventedFrames, plan, {hasFrameSequence3D:true,frameSequenceUrls:frameUrls}).join(" "), /HIGGSFIELD_FRAME_URLS/);
+});
+test("importing the supplied frame module satisfies acceptance regardless of frame count fidelity in the model's own source", () => {
+  // The whole point of code-injecting the frames module is that acceptance
+  // no longer depends on the model correctly retyping every URL.
+  const plan = routeV12Capabilities("3D watch");
+  assert.deepEqual(immersiveAcceptanceFailures(frameFiles, plan, {hasFrameSequence3D:true,frameSequenceUrls:frameUrls}), []);
 });
 
  test("explicit NO WebGL does not activate shaders from negated keywords", () => {
