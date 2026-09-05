@@ -255,6 +255,7 @@ export default function UpgradePlanModal({
                 : plan.priceYearly;
             const checkoutEnabled =
               price !== null && Boolean(plan.checkoutEnabled?.[billing]);
+            const isFree = price === 0;
 
             const isActive = selected === plan.code;
 
@@ -263,7 +264,7 @@ export default function UpgradePlanModal({
                 key={plan.code}
                 className={`
                   min-w-[85%] shrink-0 snap-start p-5 rounded-2xl border glass transition-all cursor-pointer
-                  sm:min-w-[calc((100%_-_1rem)/2)] md:min-w-[calc((100%_-_2rem)/3)]
+                  sm:min-w-[calc((100%_-_2rem)/3)]
                   ${
                     isActive
                       ? "border-blue-500 bg-blue-500/10 shadow-[0_0_20px_rgba(59,130,246,0.18)]"
@@ -321,7 +322,7 @@ export default function UpgradePlanModal({
                       ? window.location.assign("/app/plans")
                       : void startPayment(plan)
                   }
-                  disabled={Boolean(paying) || (!plan.isCustom && !checkoutEnabled)}
+                  disabled={Boolean(paying) || (!plan.isCustom && (isFree || !checkoutEnabled))}
                   className={`
                     w-full py-2 rounded-xl text-sm transition
                     ${
@@ -335,11 +336,13 @@ export default function UpgradePlanModal({
                     ? "Opening secure checkout…"
                     : plan.isCustom
                       ? "View contact options →"
-                      : !checkoutEnabled
-                        ? "Cycle unavailable"
-                        : isActive
-                          ? "Continue to payment →"
-                          : "Select plan"}
+                      : isFree
+                        ? "Free plan"
+                        : !checkoutEnabled
+                          ? "Cycle unavailable"
+                          : isActive
+                            ? "Continue to payment →"
+                            : "Select plan"}
                 </button>
               </div>
             );
