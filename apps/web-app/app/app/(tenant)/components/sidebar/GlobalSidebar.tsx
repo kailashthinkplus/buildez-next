@@ -102,7 +102,7 @@ export function GlobalSidebar({ setMobileOpen }: GlobalSidebarProps) {
         })}
       </nav>
       <div className="mt-auto space-y-3">
-        <Link href="/app/ai" className="block rounded-2xl border dashboard-border bg-[var(--dashboard-surface)] p-4 dashboard-hover">
+        <Link href="/app/workspace/websites" className="block rounded-2xl border dashboard-border bg-[var(--dashboard-surface)] p-4 dashboard-hover">
           <Sparkles className="h-5 w-5" />
           <p className="mt-3 text-sm font-semibold">Build with AI</p>
           <p className="mt-1 text-[11px] leading-4 dashboard-muted">Turn an idea into a polished website in minutes.</p>

@@ -38,6 +38,7 @@ export async function GET(req: NextRequest) {
       designTokens: true,
       createdAt: true,
       updatedAt: true,
+      archivedAt: true,
     },
   });
 

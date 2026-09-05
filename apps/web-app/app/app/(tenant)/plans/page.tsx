@@ -226,7 +226,7 @@ export default function PlansPage() {
               <article
                 key={plan.code}
                 style={isFree ? { background: "linear-gradient(145deg, rgba(59, 130, 246, 0.16), rgba(14, 165, 233, 0.05))" } : plan.popular ? { background: "linear-gradient(145deg, rgba(99, 102, 241, 0.14), rgba(168, 85, 247, 0.05))" } : undefined}
-                className={`dashboard-card relative flex min-w-full snap-start rounded-3xl p-6 md:min-w-[calc((100%_-_1.25rem)/2)] xl:min-w-[calc((100%_-_2.5rem)/3)] ${isCurrent ? "ring-2 ring-emerald-500/50" : plan.popular ? "ring-2 ring-indigo-500/40" : ""}`}
+                className={`dashboard-card relative flex min-w-full snap-start rounded-3xl p-6 sm:min-w-[calc((100%_-_1.25rem)/2)] md:min-w-[calc((100%_-_2.5rem)/3)] ${isCurrent ? "ring-2 ring-emerald-500/50" : plan.popular ? "ring-2 ring-indigo-500/40" : ""}`}
               >
                 {plan.popular && !isCurrent ? (
                   <span className="absolute right-6 top-6 flex items-center gap-1 rounded-full bg-indigo-600 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white">

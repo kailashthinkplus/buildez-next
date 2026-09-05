@@ -85,7 +85,26 @@ export function WebsiteThumbnail({ siteId, siteName, siteSlug, pageId, pageSlug,
     if (inspectionTimer.current) clearTimeout(inspectionTimer.current);
   }, []);
 
+  // Windows renders classic (non-overlay) scrollbars, so this scaled-down
+  // thumbnail iframe visibly shows scrollbars for the live page's own
+  // overflow even though the wrapper clips it — macOS's overlay scrollbars
+  // hide the same issue by default. Same-origin preview content lets us
+  // reach into its document and suppress them directly.
+  function hideIframeScrollbars(frame: HTMLIFrameElement) {
+    try {
+      const doc = frame.contentDocument;
+      if (!doc || doc.getElementById("buildez-thumbnail-no-scrollbar")) return;
+      const style = doc.createElement("style");
+      style.id = "buildez-thumbnail-no-scrollbar";
+      style.textContent = "html,body{scrollbar-width:none;-ms-overflow-style:none;} html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{display:none;width:0;height:0;}";
+      doc.head?.appendChild(style);
+    } catch {
+      // Cross-origin preview content — nothing we can inject.
+    }
+  }
+
   function inspectPreview(frame: HTMLIFrameElement) {
+    hideIframeScrollbars(frame);
     if (inspectionTimer.current) clearTimeout(inspectionTimer.current);
     inspectionTimer.current = setTimeout(() => {
       try {
@@ -120,7 +139,11 @@ export function WebsiteThumbnail({ siteId, siteName, siteSlug, pageId, pageSlug,
         loading="lazy"
         tabIndex={-1}
         aria-hidden="true"
-        onLoad={(event) => details?.inspectable === false ? setPreviewReady(true) : inspectPreview(event.currentTarget)}
+        onLoad={(event) => {
+          hideIframeScrollbars(event.currentTarget);
+          if (details?.inspectable === false) setPreviewReady(true);
+          else inspectPreview(event.currentTarget);
+        }}
         onError={() => setPreviewReady(false)}
         className={`pointer-events-none absolute left-0 top-0 h-[250%] w-[250%] origin-top-left scale-[0.4] border-0 bg-white transition-opacity duration-300 ${previewReady ? "opacity-100" : "opacity-0"}`}
         sandbox="allow-scripts allow-same-origin"

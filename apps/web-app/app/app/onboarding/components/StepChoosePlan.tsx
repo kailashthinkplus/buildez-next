@@ -270,7 +270,7 @@ export default function StepChoosePlan({
             return (
               <article
                 key={plan.code}
-                className={`glass glass-hover relative flex h-full min-w-full shrink-0 snap-start flex-col rounded-2xl border p-5 transition-all sm:min-w-[calc(50%-0.5rem)] xl:min-w-[calc(33.333%-0.667rem)] ${
+                className={`glass glass-hover relative flex h-full min-w-full shrink-0 snap-start flex-col rounded-2xl border p-5 transition-all sm:min-w-[calc(50%-0.5rem)] md:min-w-[calc(33.333%-0.667rem)] ${
                   isActive
                     ? "border-blue-500 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,0.5)]"
                     : plan.popular
