@@ -243,11 +243,13 @@ const MOTION_KEYFRAMES = `
 interface PublishedPageRendererProps {
   blueprint: BuilderBlueprint;
   siteLayout?: SiteThemeLayout | null;
+  showBranding?: boolean;
 }
 
 export function PublishedPageRenderer({
   blueprint,
   siteLayout,
+  showBranding = true,
 }: PublishedPageRendererProps) {
   const root = blueprint.nodes[blueprint.root];
   const themeTokens = getThemeTokens(blueprint);
@@ -279,7 +281,7 @@ export function PublishedPageRenderer({
       <style dangerouslySetInnerHTML={{ __html: collectMotionCss(blueprint) }} />
       <style dangerouslySetInnerHTML={{ __html: collectResponsiveCss(blueprint) }} />
       <style dangerouslySetInnerHTML={{ __html: collectRenderCustomCss(blueprint) }} />
-      <SiteThemeFrame layout={siteLayout} tokens={themeTokens}>
+      <SiteThemeFrame layout={siteLayout} tokens={themeTokens} showBranding={showBranding}>
         <PublishedNode node={root} blueprint={blueprint} />
       </SiteThemeFrame>
     </div>

@@ -9,10 +9,14 @@ function isPaidAmount(amount: number | null | undefined) {
   return typeof amount === "number" && amount > 0;
 }
 
-export async function shouldShowBuildezBranding(input: {
-  siteId: string;
-  tenantId: string;
-}) {
+function isPaidPricingRow(pricing: { amount: number | null; billingCycle?: string | null }) {
+  // A "custom" pricing row (Enterprise) has a display amount of 0 but is
+  // never a free plan — treat it as paid so Enterprise tenants aren't
+  // mistaken for free-tier when deciding badge visibility.
+  return pricing.billingCycle === "custom" || isPaidAmount(pricing.amount);
+}
+
+async function isPaidAndConfirmed(input: { siteId: string; tenantId: string }) {
   /*
    * Site-specific paid subscription takes priority.
    */
@@ -31,8 +35,6 @@ export async function shouldShowBuildezBranding(input: {
       },
 
       select: {
-        planCode: true,
-
         plan: {
           select: {
             pricing: {
@@ -42,6 +44,7 @@ export async function shouldShowBuildezBranding(input: {
 
               select: {
                 amount: true,
+                billingCycle: true,
               },
             },
           },
@@ -51,11 +54,11 @@ export async function shouldShowBuildezBranding(input: {
 
   const hasPaidSitePlan =
     siteSubscription?.plan.pricing.some(
-      (pricing) => isPaidAmount(pricing.amount)
+      (pricing) => isPaidPricingRow(pricing)
     ) ?? false;
 
   if (hasPaidSitePlan) {
-    return false;
+    return true;
   }
 
   /*
@@ -103,6 +106,7 @@ export async function shouldShowBuildezBranding(input: {
 
               select: {
                 amount: true,
+                billingCycle: true,
               },
             },
           },
@@ -111,12 +115,12 @@ export async function shouldShowBuildezBranding(input: {
     });
 
   if (!tenantSubscription) {
-    return true;
+    return false;
   }
 
   const paidPlanPrice =
     tenantSubscription.Plan?.pricing.some(
-      (pricing) => isPaidAmount(pricing.amount)
+      (pricing) => isPaidPricingRow(pricing)
     ) ?? false;
 
   const paymentConfirmed =
@@ -125,9 +129,33 @@ export async function shouldShowBuildezBranding(input: {
     Boolean(tenantSubscription.paidAt) ||
     isPaidAmount(tenantSubscription.amountPaid);
 
-  /*
-   * Branding disappears ONLY when this is demonstrably a paid,
-   * currently valid subscription.
-   */
-  return !(paidPlanPrice && paymentConfirmed);
+  return paidPlanPrice && paymentConfirmed;
+}
+
+/**
+ * The "Powered by BuildEZ" badge is compulsory on free/trial sites — the
+ * tenant's `Site.settings.showPoweredBy` toggle only has any effect once
+ * the tenant is on a demonstrably paid, currently valid subscription.
+ * (See SiteSettings.tsx / app/api/sites/[siteId]/settings for the toggle
+ * itself, which is intentionally not plan-gated on write — this function
+ * is the actual enforcement point.)
+ */
+export async function shouldShowBuildezBranding(input: {
+  siteId: string;
+  tenantId: string;
+}) {
+  const paid = await isPaidAndConfirmed(input);
+  if (!paid) return true;
+
+  const site = await prisma.site.findUnique({
+    where: { id: input.siteId },
+    select: { settings: true },
+  });
+  const settings =
+    site?.settings && typeof site.settings === "object" && !Array.isArray(site.settings)
+      ? (site.settings as Record<string, unknown>)
+      : {};
+  const showPoweredBy = settings.showPoweredBy !== false;
+
+  return showPoweredBy;
 }

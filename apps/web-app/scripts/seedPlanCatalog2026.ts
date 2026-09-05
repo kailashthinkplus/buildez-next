@@ -69,7 +69,7 @@ const PLANS: PlanSeed[] = [
     badge: null,
     eyebrow: "Experience BuildEZ",
     summary:
-      "Create your first AI-powered website and experience BuildEZ's generation, visual editing and immersive design capabilities. Ideal for exploring the platform before moving to a production plan.",
+      "Create your first AI website and try the full toolkit free for 30 days.",
     commercialFeatures: [
       ["ai_builder", "true"],
       ["custom_domain", "false"],
@@ -89,7 +89,7 @@ const PLANS: PlanSeed[] = [
     badge: null,
     eyebrow: "Build and publish professionally",
     summary:
-      "For creators, entrepreneurs and professionals who need more than a basic AI site builder. Generate polished multi-page websites, refine them visually, work from design references and publish real production websites with your own domain.",
+      "Publish real, multi-page websites with your own domain and AI-generated content.",
     commercialFeatures: [
       ["ai_builder", "true"],
       ["custom_domain", "true"],
@@ -115,7 +115,7 @@ const PLANS: PlanSeed[] = [
     badge: "MOST POPULAR",
     eyebrow: "Your AI website production workspace",
     summary:
-      "Built for freelance web developers, designers and digital professionals delivering websites for paying clients. Generate, refine, optimise and publish multiple client projects with larger AI capacity, advanced workflows and higher production limits.",
+      "Generate and manage multiple client websites with more AI capacity and priority workflows.",
     commercialFeatures: [
       ["ai_builder", "true"],
       ["custom_domain", "true"],
@@ -143,7 +143,7 @@ const PLANS: PlanSeed[] = [
     badge: null,
     eyebrow: "Run your web business on BuildEZ",
     summary:
-      "For studios and growing web agencies managing multiple clients and production workflows. Combine high-volume AI website creation with team collaboration, leads, forms, CRM, analytics and project-management capabilities in one workspace.",
+      "Run high-volume website production with team collaboration, leads and analytics.",
     commercialFeatures: [
       ["ai_builder", "true"],
       ["custom_domain", "true"],
@@ -174,7 +174,7 @@ const PLANS: PlanSeed[] = [
     badge: null,
     eyebrow: "Scale website production",
     summary:
-      "For established agencies producing websites at scale across clients and teams. Run high-volume AI generation, manage client work, collaborate across a larger team and use BuildEZ as an agency-level website production environment.",
+      "Scale website production across clients with a larger team and higher limits.",
     commercialFeatures: [
       ["ai_builder", "true"],
       ["custom_domain", "true"],
@@ -209,7 +209,7 @@ const PLANS: PlanSeed[] = [
     badge: null,
     eyebrow: "BuildEZ at organisational scale",
     summary:
-      "For organisations that need BuildEZ integrated into larger digital-production operations. Configure AI capacity, infrastructure, security, integrations, model/tool policies and support around your organisation's requirements.",
+      "Custom AI capacity, infrastructure and support for organisation-scale deployments.",
     commercialFeatures: [
       ["everything", "true"],
       ["custom_limits", "true"],

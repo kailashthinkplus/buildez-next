@@ -8,6 +8,7 @@ import EnterpriseContactModal from "@/components/billing/EnterpriseContactModal"
 import CurrencySwitcher from "@/components/billing/CurrencySwitcher";
 import PlanComparisonModal from "@/components/billing/PlanComparisonModal";
 import { useDisplayCurrency } from "@/lib/useDisplayCurrency";
+import { formatPlanCodeLabel } from "@/lib/billing/formatPlanLabel";
 
 const VISIBLE_FEATURE_COUNT = 5;
 
@@ -17,6 +18,9 @@ type Plan = {
   code: string;
   name: string;
   description: string;
+  eyebrow?: string | null;
+  isTrial?: boolean;
+  trialDays?: number | null;
   maxSites: number;
   maxPages: number;
   aiCredits: number;
@@ -230,7 +234,7 @@ export default function PlansPage() {
                 ) : null}
                 <div className="flex w-full flex-col">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-xs font-semibold uppercase tracking-[.13em] text-blue-600 dark:text-blue-300">{plan.code}</p>
+                    <p className="text-xs font-semibold uppercase tracking-[.13em] text-blue-600 dark:text-blue-300">{plan.eyebrow || formatPlanCodeLabel(plan.code)}</p>
                     {isCurrent && <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-300">Active plan</span>}
                   </div>
                   <h2 className="mt-2 text-2xl font-semibold">{plan.name}</h2>
@@ -241,7 +245,7 @@ export default function PlansPage() {
                   </div>
                   <ul className="mt-6 space-y-2 text-sm dashboard-muted">
                     {visibleFeatures.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2"><Check size={15} className="mt-0.5 shrink-0 text-emerald-500" />{feature}</li>
+                      <li key={feature} className="flex items-start gap-2"><Check size={15} className="mt-0.5 shrink-0 text-emerald-500" /><span className="min-w-0 break-words">{feature}</span></li>
                     ))}
                   </ul>
                   <button type="button" onClick={() => setComparisonOpen(true)} className="mt-2 text-left text-xs font-semibold text-blue-600 hover:underline dark:text-blue-300">
