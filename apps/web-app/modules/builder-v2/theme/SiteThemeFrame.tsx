@@ -9,6 +9,8 @@ type SiteThemeFrameProps = {
   tokens?: Partial<BuilderThemeTokens> | Record<string, unknown> | null;
   children: React.ReactNode;
   mode?: "canvas" | "published";
+  /** Whether the "Powered by BuildEZ" credit renders in the footer copyright line. Defaults to true. */
+  showBranding?: boolean;
 };
 
 export function SiteThemeFrame({
@@ -16,6 +18,7 @@ export function SiteThemeFrame({
   tokens,
   children,
   mode = "published",
+  showBranding = true,
 }: SiteThemeFrameProps) {
   const safeTokens = normalizeThemeTokens(tokens);
 
@@ -33,7 +36,7 @@ export function SiteThemeFrame({
       )}
       {children}
       {layout?.footer?.enabled && (
-        <ThemeFooter footer={layout.footer} tokens={safeTokens} mode={mode} />
+        <ThemeFooter footer={layout.footer} tokens={safeTokens} mode={mode} showBranding={showBranding} />
       )}
     </div>
   );
@@ -159,10 +162,12 @@ export function ThemeHeader({
 export function ThemeFooter({
   footer,
   tokens,
+  showBranding = true,
 }: {
   footer: SiteFooterLayout;
   tokens: BuilderThemeTokens;
   mode?: "canvas" | "published";
+  showBranding?: boolean;
 }) {
   const safeTokens = normalizeThemeTokens(tokens);
   const styles = getShellStyles(footer.variant, safeTokens, "footer");
@@ -222,9 +227,23 @@ export function ThemeFooter({
               color: safeTokens.colors.textSecondary,
               fontSize: 12,
               margin: "22px 0 0",
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              gap: 8,
             }}
           >
-            {footer.copyright}
+            <span>{footer.copyright}</span>
+            {showBranding ? (
+              <a
+                href="https://getbuildezy.com?utm_source=powered-by&utm_medium=footer"
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                style={{ color: "inherit", opacity: 0.75, textDecoration: "none", borderLeft: `1px solid currentColor`, paddingLeft: 8 }}
+              >
+                Powered by BuildEZ
+              </a>
+            ) : null}
           </p>
         </div>
 

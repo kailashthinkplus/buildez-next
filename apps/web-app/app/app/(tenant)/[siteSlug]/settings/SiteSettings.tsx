@@ -22,6 +22,7 @@ import {
 import { R2ImageUpload } from "@/components/media/R2ImageUpload";
 import { useWorkspace } from "../../components/WorkspaceContext";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
+import { isFreePlanCode } from "@/lib/plan/freePlanCode";
 
 type Site = { id: string; name: string; slug: string; status: string };
 type Domain = {
@@ -250,6 +251,8 @@ function General({
   pages: PageOption[];
   save: (next?: Partial<Form>) => Promise<void>;
 }) {
+  const { plan } = useWorkspace();
+  const isFreePlan = isFreePlanCode(plan?.planCode);
   const pageOptions: [string, string][] = [
     ["", "Automatic (home or first published page)"],
     ...pages.map(
@@ -329,10 +332,11 @@ function General({
         />
         <div className="grid gap-3 sm:grid-cols-3">
           <Toggle
-            checked={form.showPoweredBy}
+            checked={isFreePlan ? true : form.showPoweredBy}
             set={(showPoweredBy) => set({ ...form, showPoweredBy })}
             title="BuildEZ badge"
-            hint="Show the platform credit."
+            hint={isFreePlan ? "Included on free plans. Upgrade to remove it." : "Show the platform credit."}
+            disabled={isFreePlan}
           />
           <Toggle
             checked={form.trailingSlash}
@@ -1132,17 +1136,20 @@ function Toggle({
   set,
   title,
   hint,
+  disabled,
 }: {
   checked: boolean;
   set: (v: boolean) => void;
   title: string;
   hint: string;
+  disabled?: boolean;
 }) {
   return (
-    <label className="flex items-center gap-4 rounded-xl dashboard-subtle p-4">
+    <label className={`flex items-center gap-4 rounded-xl dashboard-subtle p-4 ${disabled ? "opacity-60" : ""}`}>
       <input
         type="checkbox"
         checked={checked}
+        disabled={disabled}
         onChange={(e) => set(e.target.checked)}
         className="h-4 w-4"
       />

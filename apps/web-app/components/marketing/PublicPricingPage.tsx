@@ -7,6 +7,7 @@ import { MarketingFooter } from "./MarketingFooter";
 import { MarketingHeader } from "./MarketingHeader";
 import { useDisplayCurrency } from "@/lib/useDisplayCurrency";
 import CurrencySwitcher from "@/components/billing/CurrencySwitcher";
+import { formatPlanCodeLabel } from "@/lib/billing/formatPlanLabel";
 
 type BillingCycle = "monthly" | "yearly";
 
@@ -75,7 +76,7 @@ export function PublicPricingPage() {
             <h1>Build now.<br /><em>Scale cleanly.</em></h1>
           </div>
           <div className="public-pricing-intro">
-            <p>Every public plan below is loaded live from the BuildEzy plan catalogue managed by Super Admin. Limits, features, and prices update here when the catalogue changes.</p>
+            <p>Simple, transparent pricing that scales with your work.</p>
             <div className="pricing-controls-row">
               <div className="pricing-cycle" aria-label="Billing cycle">
                 <button className={billing === "monthly" ? "active" : ""} onClick={() => setBilling("monthly")}>Monthly</button>
@@ -111,7 +112,7 @@ export function PublicPricingPage() {
             return (
               <article key={plan.code} className={`public-plan-card${featured ? " featured" : ""}`}>
                 <div className="plan-card-top">
-                  <span>{String(index + 1).padStart(2, "0")} / {plan.code}</span>
+                  <span>{String(index + 1).padStart(2, "0")} / {formatPlanCodeLabel(plan.code)}</span>
                   {plan.tag ? <b>{plan.tag}</b> : null}
                 </div>
                 {plan.eyebrow ? <p className="plan-eyebrow">{plan.eyebrow}</p> : null}

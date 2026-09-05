@@ -290,7 +290,7 @@ export default function StepChoosePlan({
                   {!plan.isCustom && price !== null && price !== undefined ? <span className="ml-1 text-sm text-slate-500 dark:text-white/60">/ {billing === "monthly" ? "month" : "year"}</span> : null}
                 </div>
                 <ul className="mb-2 space-y-1.5 text-sm text-slate-600 dark:text-white/70">
-                  {visibleFeatures.map((feature) => <li key={feature} className="flex items-start gap-2"><Check size={14} className="mt-0.5 shrink-0 text-blue-500 dark:text-blue-400" /><span>{feature}</span></li>)}
+                  {visibleFeatures.map((feature) => <li key={feature} className="flex items-start gap-2"><Check size={14} className="mt-0.5 shrink-0 text-blue-500 dark:text-blue-400" /><span className="min-w-0 break-words">{feature}</span></li>)}
                 </ul>
                 <button type="button" onClick={() => setComparisonOpen(true)} className="mb-5 text-left text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
                   {hiddenFeatureCount > 0 ? `+${hiddenFeatureCount} more · compare all plans` : "Compare all plans"}

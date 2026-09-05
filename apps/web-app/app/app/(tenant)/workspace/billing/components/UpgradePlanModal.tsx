@@ -271,10 +271,10 @@ export default function UpgradePlanModal({
                 `}
                 onClick={() => { if (plan.code !== selected) { setSelected(plan.code); setAppliedCoupon(null); setCouponError(""); } }}
               >
-                <h3 className="text-lg font-medium mb-1">
+                <h3 className="text-lg font-medium mb-1 break-words">
                   {plan.name}
                 </h3>
-                <p className="text-sm dashboard-muted mb-3">
+                <p className="text-sm dashboard-muted mb-3 break-words">
                   {plan.description}
                 </p>
 
@@ -299,8 +299,8 @@ export default function UpgradePlanModal({
                 <ul className="space-y-1.5 text-sm dashboard-muted mb-6">
                   {plan.features.map((f: string) => (
                     <li key={f} className="flex gap-2">
-                      <Check className="h-4 w-4 text-blue-400 mt-[2px]" />
-                      <span>{f}</span>
+                      <Check className="h-4 w-4 shrink-0 text-blue-400 mt-[2px]" />
+                      <span className="min-w-0 break-words">{f}</span>
                     </li>
                   ))}
                 </ul>
