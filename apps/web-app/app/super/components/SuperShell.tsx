@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   Activity, Building2, CircleGauge, CreditCard, Globe2,
-  Headphones, LogOut, Megaphone, Menu, Search, Users, UserRoundSearch, X,
+  Headphones, LogOut, Megaphone, Menu, Search, Users, X,
 } from "lucide-react";
 import ThemeToggle from "@/app/app/components/ThemeToggle";
 
@@ -19,7 +19,6 @@ const navigation = [
   { href: "/super/transactions", label: "Transactions", icon: CreditCard },
   { href: "/super/changelog", label: "Changelog", icon: Megaphone },
   { href: "/super/support", label: "Support", icon: Headphones },
-  { href: "/super/crm", label: "CRM", icon: UserRoundSearch },
   { href: "/super/security/auth-logs", label: "Security logs", icon: Activity },
 ];
 
