@@ -1709,7 +1709,7 @@ ${currentPrompt}`
     conversationId: conversation.id,
     role: "user",
     content: {
-      text: input.prompt,
+      text: currentPrompt,
       creativeDirection: input.creativeDirection,
       attachments: input.attachments.map((file) => ({
         name: file.name,

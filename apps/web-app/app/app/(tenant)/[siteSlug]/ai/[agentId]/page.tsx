@@ -215,7 +215,13 @@ export default function AgentDetailPage() {
     if (runId) {
       const entry = history.find((item) => item.id === runId);
       if (entry) void reopenRun(entry);
+    } else if (searchParams.get("autoRun") === "1" && composerText.trim()) {
+      // Arrived here from a dashboard chatbox that classified the prompt as
+      // belonging to this agent — run it immediately instead of leaving the
+      // prompt sitting in the composer waiting for a manual click.
+      void handleSend(composerText.trim());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agent, history, searchParams, reopenRun]);
 
   useEffect(() => {
