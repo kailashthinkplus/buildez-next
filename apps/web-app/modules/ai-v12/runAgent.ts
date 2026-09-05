@@ -12,7 +12,7 @@ import {
   patchElementSources,
   type ElementPatch,
 } from "../builder-v3/visual-editor";
-import { validatePreviewProjectPaths } from "../builder-v3/preview";
+import { parseProjectResponse as parseResult, TruncatedResponseError } from "./projectResponse";
 import { fetchWithRetry } from "@/lib/net/fetchWithRetry";
 import { IMAGE_CLARIFICATION_MESSAGE, imageRequestNeedsClarification } from "./imageIntent";
 import { buildShopezPrompt } from "./shopezPrompt";
@@ -44,10 +44,10 @@ import {
   resolveV12ExecutionPolicy,
   type V12PlanFeatureInput,
 } from "./executionPolicy";
-import { creativeMcpResultUrls, creativeMcpTools, hasConfiguredCreativeCapability } from "./creativeMcp";
+import { creativeMcpResultUrls, creativeMcpTools } from "./creativeMcp";
 import { persistCreativeAsset } from "./persistCreativeAsset";
 import { generateImmersiveFrameSequence } from "./immersiveFrameSequence";
-import { allowsUntextured3DGeometry, immersiveAcceptanceFailures, requiresExternal3DModel, requiresMultipleCameraViews } from "./experienceAcceptance";
+import { allowsUntextured3DGeometry, immersiveAcceptanceFailures, requiresMultipleCameraViews } from "./experienceAcceptance";
 import { requestsFullPageGeneration } from "./generationIntent";
 import { Prisma, prisma } from "@buildez/db";
 import { prepareAgentReferences } from "./prepareReferences";
@@ -61,6 +61,7 @@ import {
 import {
   buildSamplePlaceholderProducts,
   catalogMissingInputs,
+  detectCommerceIntent,
   ensureShopezProductImages,
   getOrCreateAgentConversation,
   persistCommerceAttachments,
@@ -80,12 +81,48 @@ import {
  */
 const BRAND_DIFFERENT_SENTINEL = "__BUILDEZ_BRAND_DIFFERENT__";
 
+/** Pill values for the two-candidate brand clarification (see PendingBrandClarification below). */
+const BRAND_USE_TENANT_SENTINEL = "__BUILDEZ_BRAND_USE_TENANT__";
+const BRAND_USE_SITE_SENTINEL = "__BUILDEZ_BRAND_USE_SITE__";
+
+/** Pill values for the upfront static-vs-ecommerce clarification. */
+const SITE_TYPE_STATIC_SENTINEL = "__BUILDEZ_SITE_TYPE_STATIC__";
+const SITE_TYPE_ECOMMERCE_SENTINEL = "__BUILDEZ_SITE_TYPE_ECOMMERCE__";
+
+type PendingSiteTypeClarification = { originalPrompt: string };
+
+function readSiteTypeClarification(value: unknown): PendingSiteTypeClarification | null {
+  const root = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+  const raw = root.siteTypeClarification;
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const candidate = raw as Record<string, unknown>;
+  if (typeof candidate.originalPrompt !== "string") return null;
+  return { originalPrompt: candidate.originalPrompt };
+}
+
+async function saveSiteTypeClarification(input: {
+  conversationId: string;
+  existingContext: unknown;
+  siteTypeClarification: PendingSiteTypeClarification | null;
+}) {
+  const root = input.existingContext && typeof input.existingContext === "object" && !Array.isArray(input.existingContext)
+    ? input.existingContext as Record<string, unknown>
+    : {};
+  return prisma.aIConversation.update({
+    where: { id: input.conversationId },
+    data: { context: { ...root, siteTypeClarification: input.siteTypeClarification } as Prisma.InputJsonValue },
+  });
+}
+
 /** The "Generate sample products for me" pill's value — never a real user prompt. */
 const COMMERCE_GENERATE_SAMPLES_SENTINEL = "__BUILDEZ_COMMERCE_GENERATE_SAMPLES__";
 
 type PendingBrandClarification = {
   originalPrompt: string;
-  candidateName: string;
+  /** The account's overall business name (from onboarding), when offered as a candidate. */
+  tenantName?: string;
+  /** This specific website's own name, when offered as a distinct candidate. */
+  siteName?: string;
 };
 
 function readBrandClarification(value: unknown): PendingBrandClarification | null {
@@ -93,8 +130,12 @@ function readBrandClarification(value: unknown): PendingBrandClarification | nul
   const raw = root.brandClarification;
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
   const candidate = raw as Record<string, unknown>;
-  if (typeof candidate.originalPrompt !== "string" || typeof candidate.candidateName !== "string") return null;
-  return { originalPrompt: candidate.originalPrompt, candidateName: candidate.candidateName };
+  if (typeof candidate.originalPrompt !== "string") return null;
+  return {
+    originalPrompt: candidate.originalPrompt,
+    tenantName: typeof candidate.tenantName === "string" ? candidate.tenantName : undefined,
+    siteName: typeof candidate.siteName === "string" ? candidate.siteName : undefined,
+  };
 }
 
 async function saveBrandClarification(input: {
@@ -113,6 +154,26 @@ async function saveBrandClarification(input: {
 
 type AgentFile = { path: string; content: string };
 type ProjectFile = { path: string; content: string };
+
+/**
+ * A long list of Higgsfield frame URLs is data, not something an LLM should
+ * be relied on to transcribe byte-for-byte into its own generated source —
+ * that was the root cause of spurious "did not pass acceptance" failures
+ * even when the model built a correct scroll-scrubbed canvas. Instead of
+ * asking the model to inline the array, we hand it a fixed module to import
+ * from and write that module ourselves after every generation/repair pass,
+ * so the frame list is always exactly correct regardless of model fidelity.
+ */
+export const HIGGSFIELD_FRAMES_MODULE_PATH = "src/higgsfieldFrames.ts";
+
+export function withHiggsfieldFrames(files: readonly AgentFile[], frameSequence: { frameUrls: string[] } | null): AgentFile[] {
+  if (!frameSequence) return [...files];
+  const module: AgentFile = {
+    path: HIGGSFIELD_FRAMES_MODULE_PATH,
+    content: `// Generated by BuildEZ — playback-ordered Higgsfield frame URLs. Do not hand-edit.\nexport const HIGGSFIELD_FRAME_URLS: string[] = ${JSON.stringify(frameSequence.frameUrls, null, 2)};\n`,
+  };
+  return [...files.filter((file) => file.path !== module.path), module];
+}
 
 export type V12SelectedElementTarget = {
   elementId: string;
@@ -562,6 +623,7 @@ function object(value: unknown): Record<string, unknown> {
  * generation always takes precedence over any of it.
  */
 function buildBusinessContextBlock(input: {
+  siteName?: string | null;
   onboarding: {
     businessName: string | null;
     profession: string | null;
@@ -575,8 +637,18 @@ function buildBusinessContextBlock(input: {
   const settings = object(input.settings);
   const lines: string[] = [];
 
+  // onboarding.businessName is one row per USER account, shared across every
+  // site that account owns — it names the owner's overall business/tenant.
+  // site.name is the specific website being generated right now, and a
+  // tenant can own several sites with different names/purposes. Both are
+  // real signal and neither substitutes for the other.
+  const siteName = input.siteName?.trim();
+  if (siteName) lines.push(`- This specific website's name: ${siteName}`);
+
   const businessName = input.onboarding?.businessName?.trim();
-  if (businessName) lines.push(`- Business/brand name: ${businessName}`);
+  if (businessName && businessName.toLowerCase() !== siteName?.toLowerCase()) {
+    lines.push(`- Owner's overall business/brand name: ${businessName}`);
+  }
 
   const profession = input.onboarding?.profession?.trim();
   const useCase = input.onboarding?.primaryUseCase?.trim();
@@ -621,33 +693,6 @@ function outputText(payload: unknown) {
   return (Array.isArray(root.output) ? root.output : []).flatMap(item => Array.isArray(object(item).content) ? object(item).content as unknown[] : [])
     .map(item => typeof object(item).text === "string" ? String(object(item).text) : "").filter(Boolean).join("\n").trim();
 }
-
-/**
- * The model's response can be cut off before it finishes (hitting
- * max_output_tokens, or a provider-side interruption) even with a
- * strict json_schema response format — schema conformance is only
- * enforced on completed output, not on a response that stops mid
- * stream. That leaves `text` syntactically invalid JSON, and the raw
- * `JSON.parse` SyntaxError ("Unexpected end of JSON input") is not
- * actionable for a caller deciding whether to retry. Re-throw it as
- * a distinctly labeled, retryable error instead.
- */
-function parseResult(text: string, requireFiles: boolean) {
-  let value: Record<string, unknown>;
-  try {
-    value = object(JSON.parse(text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim()));
-  } catch {
-    throw new TruncatedResponseError(
-      "The generated project response was cut off before it finished."
-    );
-  }
-  const files: AgentFile[] = Array.isArray(value.files) ? value.files.map(object).map(item => ({ path: String(item.path || ""), content: String(item.content || "") })) : [];
-  if ((requireFiles && !files.length) || files.some(file => !file.path || !file.content)) throw new Error("The agent returned an invalid project file set.");
-  if (files.length) validatePreviewProjectPaths(files.map(file => file.path));
-  return { message: typeof value.message === "string" ? value.message : "Your page is ready to review.", files };
-}
-
-class TruncatedResponseError extends Error {}
 
 /** OpenAI's Responses API sets this when generation stopped early — most commonly for hitting max_output_tokens. */
 function isIncompleteResponse(payload: unknown): boolean {
@@ -1552,15 +1597,55 @@ export async function runV12AgentPlan(input: V12AgentInput): Promise<V12PlanOutc
 
   if (pendingBrandClarification) {
     const isDifferentBrand = currentPrompt === BRAND_DIFFERENT_SENTINEL;
+    // Two named candidates means the pill values are the sentinels below;
+    // a single-candidate clarification (the common case) still accepts any
+    // non-sentinel reply — including a pill whose label doubles as its
+    // value, or free-typed text — as confirming that one candidate.
+    const chosenName = isDifferentBrand
+      ? null
+      : currentPrompt === BRAND_USE_TENANT_SENTINEL
+        ? pendingBrandClarification.tenantName || null
+        : currentPrompt === BRAND_USE_SITE_SENTINEL
+          ? pendingBrandClarification.siteName || null
+          : pendingBrandClarification.tenantName || pendingBrandClarification.siteName || null;
     suppressAccountBusinessContext = isDifferentBrand;
-    currentPrompt = isDifferentBrand
-      ? pendingBrandClarification.originalPrompt
-      : `${pendingBrandClarification.originalPrompt}\n\nBRAND/BUSINESS NAME TO USE THROUGHOUT THIS WEBSITE: ${pendingBrandClarification.candidateName}`;
+    currentPrompt = chosenName
+      ? `${pendingBrandClarification.originalPrompt}\n\nBRAND/BUSINESS NAME TO USE THROUGHOUT THIS WEBSITE: ${chosenName}`
+      : pendingBrandClarification.originalPrompt;
 
     await saveBrandClarification({
       conversationId: conversation.id,
       existingContext: conversation.context,
       brandClarification: null,
+    });
+  }
+
+  // ----------------------------------------------------------
+  // STATIC VS ECOMMERCE CLARIFICATION (resolution)
+  //
+  // Only the resolution half lives here, for the same reason as the brand
+  // clarification above — the decision to ASK needs isFreshFullPageGeneration,
+  // computed further down. forcedCommerceMode overrides every other signal
+  // (Design Architect's own guess, reference-image analysis) once the user
+  // has explicitly answered, so an ambiguous request never gets silently
+  // routed to the wrong pipeline after the user already resolved it.
+  // ----------------------------------------------------------
+
+  const pendingSiteTypeClarification = readSiteTypeClarification(conversation.context);
+  let forcedCommerceMode: "STATIC" | "ECOMMERCE" | null = null;
+
+  if (pendingSiteTypeClarification) {
+    forcedCommerceMode = currentPrompt === SITE_TYPE_ECOMMERCE_SENTINEL
+      ? "ECOMMERCE"
+      : currentPrompt === SITE_TYPE_STATIC_SENTINEL
+        ? "STATIC"
+        : null;
+    currentPrompt = pendingSiteTypeClarification.originalPrompt;
+
+    await saveSiteTypeClarification({
+      conversationId: conversation.id,
+      existingContext: conversation.context,
+      siteTypeClarification: null,
     });
   }
 
@@ -1716,7 +1801,7 @@ ${currentPrompt}`
     conversationId: conversation.id,
     role: "user",
     content: {
-      text: input.prompt,
+      text: currentPrompt,
       creativeDirection: input.creativeDirection,
       attachments: input.attachments.map((file) => ({
         name: file.name,
@@ -1862,19 +1947,29 @@ ${currentPrompt}`
   ) {
     const onboardingName = onboarding?.businessName?.trim() || "";
     const siteNameIsPlaceholder = /^(untitled|new site|new website|website|my website|my site|home)$/i.test(site.name.trim());
-    const candidateName = onboardingName || (siteNameIsPlaceholder ? "" : site.name.trim());
+    const siteNameCandidate = siteNameIsPlaceholder ? "" : site.name.trim();
+    // The account's overall business name and this specific website's own
+    // name are two independently meaningful signals — a tenant can build
+    // several sites for different clients/ventures under one account. Only
+    // offer both as distinct choices when they're both real and actually
+    // different; otherwise this collapses to the original single-candidate
+    // ask so the common case doesn't get a needlessly bigger question.
+    const namesDiffer = Boolean(onboardingName) && Boolean(siteNameCandidate) &&
+      onboardingName.toLowerCase() !== siteNameCandidate.toLowerCase();
+    const candidateName = onboardingName || siteNameCandidate;
 
-    if (candidateName) {
-      const question = `Quick check before I start — is this website for "${candidateName}", or a different brand/name?`;
+    if (namesDiffer) {
+      const question = `Quick check before I start — should this website use your account's brand "${onboardingName}", this website's own name "${siteNameCandidate}", or a different brand entirely?`;
       const actions: V12AgentAction[] = [
-        { id: "brand-confirm", label: `Yes, build it for ${candidateName}`, value: `Yes, build it for ${candidateName}.` },
-        { id: "brand-different", label: "It's a different brand", value: BRAND_DIFFERENT_SENTINEL },
+        { id: "brand-use-tenant", label: `Use ${onboardingName}`, value: BRAND_USE_TENANT_SENTINEL },
+        { id: "brand-use-site", label: `Use ${siteNameCandidate}`, value: BRAND_USE_SITE_SENTINEL },
+        { id: "brand-different", label: "A different brand", value: BRAND_DIFFERENT_SENTINEL },
       ];
 
       await saveBrandClarification({
         conversationId: conversation.id,
         existingContext: conversation.context,
-        brandClarification: { originalPrompt: currentPrompt, candidateName },
+        brandClarification: { originalPrompt: currentPrompt, tenantName: onboardingName, siteName: siteNameCandidate },
       });
 
       await recordAgentMessage({
@@ -1895,6 +1990,123 @@ ${currentPrompt}`
       });
 
       input.onProgress?.("One quick check", "Confirm the brand before generation starts");
+
+      return {
+        kind: "done",
+        result: {
+          message: question,
+          actions,
+          files: [],
+          revision: project.currentRevision,
+          fileCount: 0,
+          model: "clarification",
+          status: "needs_input" as const,
+        },
+      };
+    }
+
+    if (candidateName) {
+      const question = `Quick check before I start — is this website for "${candidateName}", or a different brand/name?`;
+      const actions: V12AgentAction[] = [
+        { id: "brand-confirm", label: `Yes, build it for ${candidateName}`, value: `Yes, build it for ${candidateName}.` },
+        { id: "brand-different", label: "It's a different brand", value: BRAND_DIFFERENT_SENTINEL },
+      ];
+
+      await saveBrandClarification({
+        conversationId: conversation.id,
+        existingContext: conversation.context,
+        brandClarification: onboardingName
+          ? { originalPrompt: currentPrompt, tenantName: candidateName }
+          : { originalPrompt: currentPrompt, siteName: candidateName },
+      });
+
+      await recordAgentMessage({
+        conversationId: conversation.id,
+        role: "user",
+        content: {
+          text: input.prompt,
+          creativeDirection: input.creativeDirection,
+          attachments: input.attachments.map((file) => ({ name: file.name, type: file.type, size: file.size })),
+        },
+        userId: input.userId,
+      });
+
+      await recordAgentMessage({
+        conversationId: conversation.id,
+        role: "assistant",
+        content: { text: question, status: "needs_input", actions },
+      });
+
+      input.onProgress?.("One quick check", "Confirm the brand before generation starts");
+
+      return {
+        kind: "done",
+        result: {
+          message: question,
+          actions,
+          files: [],
+          revision: project.currentRevision,
+          fileCount: 0,
+          model: "clarification",
+          status: "needs_input" as const,
+        },
+      };
+    }
+  }
+
+  // ----------------------------------------------------------
+  // STATIC VS ECOMMERCE CLARIFICATION (ask)
+  //
+  // Whether a request wants a content website or a transactional storefront
+  // was previously decided only downstream, after a full Design Architect
+  // plan already ran — real compute spent before the ambiguity was even
+  // surfaced, and a wrong guess meant either an unwanted ShopEZ storefront
+  // or a static site missing the checkout the user actually wanted. Ask
+  // upfront, only when the prompt is genuinely ambiguous (detectCommerceIntent
+  // isn't confidently one way or the other) — a clearly static request or a
+  // clearly transactional one should never be interrupted by this.
+  // ----------------------------------------------------------
+
+  if (
+    input.context === "Website" &&
+    isFreshFullPageGeneration &&
+    !pendingSiteTypeClarification &&
+    existingProductCount === 0
+  ) {
+    const commerceIntent = detectCommerceIntent(effectivePrompt || currentPrompt);
+    const isAmbiguous = commerceIntent.confidence > 0.12 && commerceIntent.confidence < 0.5;
+
+    if (isAmbiguous) {
+      const question = "Quick check before I start — should this be a static content website, or does it need an online store (product catalog, cart, checkout)?";
+      const actions: V12AgentAction[] = [
+        { id: "site-type-static", label: "Static website", value: SITE_TYPE_STATIC_SENTINEL },
+        { id: "site-type-ecommerce", label: "Online store", value: SITE_TYPE_ECOMMERCE_SENTINEL },
+      ];
+
+      await saveSiteTypeClarification({
+        conversationId: conversation.id,
+        existingContext: conversation.context,
+        siteTypeClarification: { originalPrompt: currentPrompt },
+      });
+
+      await recordAgentMessage({
+        conversationId: conversation.id,
+        role: "user",
+        content: {
+          text: input.prompt,
+          creativeDirection: input.creativeDirection,
+          attachments: input.attachments.map((file) => ({ name: file.name, type: file.type, size: file.size })),
+        },
+        userId: input.userId,
+      });
+
+      await recordAgentMessage({
+        conversationId: conversation.id,
+        role: "assistant",
+        content: { text: question, status: "needs_input", actions },
+      });
+
+      input.onProgress?.("One quick check", "Confirm the site type before generation starts");
 
       return {
         kind: "done",
@@ -1964,7 +2176,7 @@ ${currentPrompt}`
 
   const businessContextBlock = suppressAccountBusinessContext
     ? ""
-    : buildBusinessContextBlock({ onboarding, settings: site.settings });
+    : buildBusinessContextBlock({ siteName: site.name, onboarding, settings: site.settings });
 
   // ----------------------------------------------------------
   // CAPABILITY ROUTER
@@ -2635,6 +2847,9 @@ ${businessContextBlock}
 
   /*
    * Commerce authority:
+   * 0. An explicit answer to the upfront static-vs-ecommerce clarification
+   *    (forcedCommerceMode) — the user resolved the ambiguity directly, so
+   *    it overrules every guess below in either direction.
    * 1. Existing real ShopEZ catalogue
    * 2. Persisted commerce for an already-built website
    * 3. Semantic Design Architect (fresh generation)
@@ -2647,10 +2862,15 @@ ${businessContextBlock}
     commerceContext.intent;
 
   const isEcommerce =
-    existingProductCount > 0 ||
-    persistedCommerceForExistingSite ||
-    architectCommerceRequired ||
-    referenceCommerce.isEcommerce;
+    forcedCommerceMode === "STATIC"
+      ? existingProductCount > 0
+      : (
+        forcedCommerceMode === "ECOMMERCE" ||
+        existingProductCount > 0 ||
+        persistedCommerceForExistingSite ||
+        architectCommerceRequired ||
+        referenceCommerce.isEcommerce
+      );
   let commercePrompt = isEcommerce ? buildShopezPrompt(site.slug) : "";
   if (isEcommerce) {
     input.onProgress?.(
@@ -2890,64 +3110,38 @@ BuildEZ project structure.`
       : "INCREMENTAL_EDIT",
   );
 
-  // action / projectSchema / externalCreativeTools are cheap pure
-  // functions of persisted state + the fresh per-request input, so the
-  // generate stage recomputes them itself rather than persisting them.
-  const external3DModelRequired = requiresExternal3DModel(
-    effectivePrompt || generationPrompt || "",
-    capabilityPlan,
-  );
-
-  // ----------------------------------------------------------
-  // IMMERSIVE 3D → FRAME SEQUENCE (replaces live Three.js/R3F, and an
-  // external 3D-model provider)
-  //
-  // Hand-authored WebGL scenes reliably come out primitive and
-  // unpolished, and a real accurate product model (a specific
-  // motorcycle, car, etc.) can't be coded convincingly either — that's
-  // what external3DModelRequired flags. Rather than requiring a true 3D
-  // asset provider (Meshy/Spline) for that case, animate the generated
-  // hero image into a short cinematic clip and extract a frame sequence
-  // instead — the generate stage renders it on a scroll-scrubbed canvas.
-  // This covers BOTH the generic requires3D case and the
-  // external3DModelRequired case; only when neither this nor a
-  // configured Meshy/Spline provider is available do we still refuse
-  // rather than substitute flat imagery or primitive geometry.
-  // ----------------------------------------------------------
-
+  // Every 3D subject uses Higgsfield video -> extracted frames, including
+  // prompts asking for live geometry or a model. WebGL remains an effects layer.
   let frameSequence: { frameUrls: string[] } | null = null;
-
   if (capabilityPlan.requires3D) {
-    const heroImage = generatedMedia.find((media) => /hero|keyframe|primary|opening/i.test(media.role));
-
-    if (heroImage) {
-      input.onProgress?.(
-        "Animating the 3D scene",
-        "Generating a cinematic camera move and extracting a frame sequence",
-      );
-
-      frameSequence = await generateImmersiveFrameSequence({
-        siteId: input.siteId,
-        tenantId: input.tenantId,
-        userId: input.userId,
-        heroImageUrl: heroImage.url,
-        subjectPrompt: heroImage.prompt || effectivePrompt,
+    let heroImage = generatedMedia.find((media) => /hero|keyframe|primary|opening/i.test(media.role))
+      || generatedMedia[0];
+    // Edits and reference-driven requests may have no design/media plan.
+    // They still need a keyframe to enter the same Higgsfield pipeline.
+    if (!heroImage) {
+      input.onProgress?.("Creating the 3D opening frame", "Preparing the subject for cinematic video generation");
+      const keyframe = await generateSiteMedia({
+        apiKey, siteId: input.siteId, tenantId: input.tenantId, userId: input.userId,
+        requirements: [{
+          id: "immersive-hero-keyframe", role: "cinematic hero keyframe",
+          purpose: "Opening frame for the Higgsfield 3D video and scroll-driven frame sequence",
+          prompt: `Create a detailed cinematic opening frame for: ${effectivePrompt}. ${designArchitectPlan?.designDirection.concept || ""}. Preserve subject identity and materials. No text or watermark.`,
+          aspect: "landscape", medium: "cinematic physically based 3D render", useRequestedMedium: true,
+        }],
         signal: input.signal,
       });
-
-      if (frameSequence) {
-        input.onProgress?.(
-          "3D frame sequence ready",
-          `${frameSequence.frameUrls.length} frames generated for scroll-driven playback`,
-        );
-      }
+      generatedMedia.push(...keyframe.media);
+      heroImage = keyframe.media[0];
     }
-  }
-
-  if (external3DModelRequired && !frameSequence && !hasConfiguredCreativeCapability("threeD")) {
-    throw new Error(
-      "BuildEZ cannot create this high-fidelity 3D experience yet because no Builder 3D provider is configured. Configure MESHY_MCP_URL, SPLINE_MCP_URL, or HIGGSFIELD_API_KEY_ID/HIGGSFIELD_API_KEY_SECRET, then retry. The project was not changed and BuildEZ will not substitute flat imagery or primitive geometry.",
-    );
+    if (!heroImage) throw new Error("The opening image for the 3D video could not be created. Please retry generation.");
+    input.onProgress?.("Animating the 3D scene", "Generating a Higgsfield video and extracting frames for scroll-driven motion");
+    frameSequence = await generateImmersiveFrameSequence({
+      siteId: input.siteId, tenantId: input.tenantId, userId: input.userId,
+      heroImageUrl: heroImage.url, subjectPrompt: heroImage.prompt || effectivePrompt, signal: input.signal,
+    });
+    if (input.signal.aborted) throw input.signal.reason || new Error("Generation cancelled.");
+    if (!frameSequence) throw new Error("The cinematic video frames could not be prepared. Please retry generation.");
+    input.onProgress?.("3D frame sequence ready", `${frameSequence.frameUrls.length} frames ready for scroll-driven playback`);
   }
 
   input.onProgress?.(
@@ -3081,15 +3275,14 @@ export async function runV12AgentGenerate(
   const externalCreativeTools = immersiveToolchainEnabled
     ? creativeMcpTools({
         images: Boolean(assetToolPlan?.needsGeneratedImages),
-        video: Boolean(assetToolPlan?.needsVideo),
-        threeD: Boolean(assetToolPlan?.needs3DAssets),
+        video: false,
+        threeD: false,
         design: hasReferenceInputs,
       })
     : [];
-  const external3DModelRequired = requiresExternal3DModel(
-    effectivePrompt || generationPrompt || "",
-    capabilityPlan,
-  );
+  if (capabilityPlan.requires3D && !frameSequence) {
+    throw new Error("The cinematic video frames are missing from this build. Please restart generation to prepare them.");
+  }
 
   const generationText = `You are BuildEZ, an autonomous creative director, senior website designer, motion designer, and frontend engineer. ${action}
 
@@ -3186,16 +3379,21 @@ IMMERSIVE 3D VIA PRE-RENDERED FRAME SEQUENCE:
 
 A cinematic camera move around this experience's primary subject has already been rendered and split into ${frameSequence.frameUrls.length} sequential frames (listed below, in playback order). Use these frames as the 3D/immersive visual INSTEAD OF writing live Three.js/React Three Fiber geometry — the frame sequence already IS the 3D experience, and the live-3D bullets under IMMERSIVE ACCEPTANCE CONTRACT below do not apply to this subject.
 
+The frame URLs are already provided for you in a generated module — DO NOT type, copy, or invent the URLs yourself anywhere in your code:
+
+\`\`\`
+import { HIGGSFIELD_FRAME_URLS } from "./higgsfieldFrames";
+\`\`\`
+
+That module exports \`HIGGSFIELD_FRAME_URLS: string[]\`, exactly ${frameSequence.frameUrls.length} URLs in playback order. Do not redeclare, hardcode, or partially retype this array anywhere — always import and use it by reference.
+
 Implement a scroll-scrubbed frame-sequence component:
-- Preload every frame image.
+- Import HIGGSFIELD_FRAME_URLS from "./higgsfieldFrames" and preload every frame image it contains.
 - Render them onto a single <canvas> element sized to fill its section.
-- Map scroll progress within that section (0 to 1) to a frame index (0 to ${frameSequence.frameUrls.length - 1}) and draw the corresponding frame via drawImage(), replacing the previous draw — never stack, cross-fade, or animate multiple <img> elements instead.
+- Map scroll progress within that section (0 to 1) to a frame index (0 to HIGGSFIELD_FRAME_URLS.length - 1) and draw the corresponding frame via drawImage(), replacing the previous draw — never stack, cross-fade, or animate multiple <img> elements instead.
 - The mapping must feel like scrubbing through the camera move: smooth, monotonic, and updated every frame the user scrolls (requestAnimationFrame or a scroll listener), not a fixed-duration CSS/video autoplay.
 - Respect prefers-reduced-motion by holding on one representative frame instead of scrubbing.
 - Do NOT add @react-three/fiber, three, an R3F <Canvas>, or hand-authored WebGL geometry for this subject.
-
-FRAME SEQUENCE (playback order):
-${JSON.stringify(frameSequence.frameUrls)}
 ` : ""}
 IMMERSIVE ACCEPTANCE CONTRACT:
 ${frameSequence ? "\nThe live-3D bullets below do not apply to the subject covered by the pre-rendered frame sequence above; they still apply to any OTHER 3D/WebGL capability the Capability Plan requires.\n" : ""}
@@ -3341,7 +3539,10 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
   shouldRebuildFromScratch
     ? "For this FULL REBUILD, create a new canonical site theme from the Design Architect specification and implement that new theme as CSS custom properties in one shared theme stylesheet. Do not reproduce the previous visual system."
     : "Treat the canonical site theme as the source of truth: implement it as CSS custom properties in one shared theme stylesheet and consume those variables everywhere."
-} Every route must render the same reusable SiteShell, Header, and Footer rather than restyling them per page. Never use Unsplash, remote stock-photo URLs, or random image services. Use only supplied media, generated media URLs, ShopEZ product images, or deliberate CSS art. Keep dependencies purposeful rather than artificially minimal. The generated project's package.json MUST include every library actually used by its source code. When the Experience Architect calls for advanced capabilities, install the appropriate dependencies in the GENERATED PROJECT rather than pretending to implement them with generic CSS. Examples include three + @react-three/fiber + @react-three/drei for true interactive 3D, gsap for sophisticated scroll choreography, and suitable visualization libraries for genuine data-driven experiences. Do not add these dependencies when the requested experience does not need them. Prefer reusable component/data architecture, but never simplify away required visual richness, imagery, backgrounds, motion, interaction, iconography, 3D, shaders, parallax or composition merely to reduce code size. Produce polished responsive UI and keep repeated markup concise.`;
+} Every route must render the same reusable SiteShell, Header, and Footer rather than restyling them per page. Never use Unsplash, remote stock-photo URLs, or random image services. Use only supplied media, generated media URLs, ShopEZ product images, or deliberate CSS art. Keep dependencies purposeful rather than artificially minimal. The generated project's package.json MUST include every library actually used by its source code. When the Experience Architect calls for advanced capabilities, install the appropriate dependencies in the GENERATED PROJECT rather than pretending to implement them with generic CSS. Examples include a 2D canvas drawing supplied Higgsfield video frames for 3D subjects, optional three for supporting WebGL effects, gsap for sophisticated scroll choreography, and suitable visualization libraries for genuine data-driven experiences. Do not add these dependencies when the requested experience does not need them. Prefer reusable component/data architecture, but never simplify away required visual richness, imagery, backgrounds, motion, interaction, iconography, 3D, shaders, parallax or composition merely to reduce code size. Produce polished responsive UI and keep repeated markup concise.
+
+BUILDEZ 3D DELIVERY POLICY (applies even when the user asks for a 3D model, GLB/GLTF, Three.js or real-time 3D):
+All 3D subject experiences use a Higgsfield-generated video extracted into frames, rendered on a scroll-scrubbed 2D canvas. Never generate a live subject mesh or request Meshy/Spline/model assets. WebGL/shaders/particles remain allowed for basic supporting animations and effects; they must not replace the supplied frame sequence. The verified frame canvas satisfies the subject, camera-view and spatial-depth requirements above. Use the supplied sequence whenever present, preserve prefers-reduced-motion, and keep a representative supplied hero image as a loading/error poster.`;
   const generationContent = [
     ...directReferenceInputs,
     { type: "input_text", text: generationText },
@@ -3371,9 +3572,7 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
     ...(externalCreativeTools.length
       ? {
           tools: externalCreativeTools,
-          tool_choice: assetToolPlan?.needsVideo || assetToolPlan?.needs3DAssets
-            ? "required"
-            : "auto",
+          tool_choice: "auto",
         }
       : {}),
   });
@@ -3451,16 +3650,19 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
     }
     parsedResult = parseResult(outputText(payload), input.mode === "auto");
   }
+  parsedResult = { ...parsedResult, files: withHiggsfieldFrames(parsedResult.files, frameSequence) };
   const photorealisticPrimaryMediaUrls = input.creativeDirection.imageStyle === "Photorealistic"
     ? generatedMedia
         .filter((media) => /hero|keyframe|primary|opening/i.test(media.role))
         .map((media) => media.url)
     : [];
   let acceptanceFailures = immersiveAcceptanceFailures(parsedResult.files, capabilityPlan, {
-    requiresExternalModel: external3DModelRequired,
+    requiresExternalModel: false,
     requiresMultipleCameraViews: requiresMultipleCameraViews(effectivePrompt),
     photorealisticPrimaryMediaUrls,
     allowUntexturedGeometry: allowsUntextured3DGeometry(effectivePrompt),
+    hasFrameSequence3D: Boolean(frameSequence),
+    frameSequenceUrls: frameSequence?.frameUrls,
     requiresCinematicNarrative:
       input.creativeDirection.experienceType === "Immersive 3D / cinematic" ||
       designArchitectPlan?.experience === "CINEMATIC" ||
@@ -3483,6 +3685,8 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
 The following project was just generated but failed acceptance checks. Treat it as the current state of the project.
 
 ${parsedResult.files.map((file) => `--- ${file.path} ---\n${file.content}`).join("\n\n")}
+
+${frameSequence ? `The 3D subject MUST use a scroll-scrubbed 2D canvas drawing frames imported from "./higgsfieldFrames" (\`import { HIGGSFIELD_FRAME_URLS } from "./higgsfieldFrames"\` — that module already exists with the correct ${frameSequence.frameUrls.length} URLs; do not type, copy, or invent the URLs yourself). No live model integration is required or permitted for the subject. WebGL is allowed only for supporting effects.` : ""}
 
 ACCEPTANCE FAILURES TO FIX:
 ${acceptanceFailures.map((failure) => `- ${failure}`).join("\n")}
@@ -3509,17 +3713,11 @@ Return JSON only: {"message":"specific fix summary","files":[{"path":"...","cont
       signal: input.signal,
       timeoutMs: 165_000,
     });
-    const repairResult = parseResult(outputText(payload), input.mode === "auto");
-    const mergedFilesByPath = new Map(parsedResult.files.map((file) => [file.path, file] as const));
-    for (const file of repairResult.files) {
-      mergedFilesByPath.set(file.path, file);
-    }
-    parsedResult = {
-      message: repairResult.message || parsedResult.message,
-      files: [...mergedFilesByPath.values()],
-    };
+    if (isIncompleteResponse(payload)) throw new TruncatedResponseError("The project repair response was cut off before it finished.");
+    parsedResult = parseResult(outputText(payload), true, parsedResult.files);
+    parsedResult = { ...parsedResult, files: withHiggsfieldFrames(parsedResult.files, frameSequence) };
     acceptanceFailures = immersiveAcceptanceFailures(parsedResult.files, capabilityPlan, {
-      requiresExternalModel: external3DModelRequired,
+      requiresExternalModel: false,
       requiresMultipleCameraViews: requiresMultipleCameraViews(effectivePrompt),
       photorealisticPrimaryMediaUrls,
       allowUntexturedGeometry: allowsUntextured3DGeometry(effectivePrompt),
@@ -3528,6 +3726,7 @@ Return JSON only: {"message":"specific fix summary","files":[{"path":"...","cont
         designArchitectPlan?.experience === "CINEMATIC" ||
         capabilityPlan.capabilities.includes("PARALLAX"),
       hasFrameSequence3D: Boolean(frameSequence),
+      frameSequenceUrls: frameSequence?.frameUrls,
     });
     if (acceptanceFailures.length) {
       throw new Error(`Immersive generation did not pass acceptance: ${acceptanceFailures.join(" ")}`);

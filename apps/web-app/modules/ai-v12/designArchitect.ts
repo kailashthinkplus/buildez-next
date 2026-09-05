@@ -516,6 +516,15 @@ export function enforceImmersiveMediaPlan(
     || plan.experience === "IMMERSIVE_3D"
     || plan.experience === "CINEMATIC";
 
+  // A 3D subject is produced by Higgsfield and frame extraction, never a model provider.
+  if (plan.experience === "IMMERSIVE_3D" || plan.capabilities.includes("IMMERSIVE_3D")) {
+    plan.mediaPlan.needs3DAssets = false;
+    plan.mediaPlan.needsVideo = true;
+    plan.libraries = plan.libraries.filter(library =>
+      !["@react-three/fiber", "@react-three/drei"].includes(library) &&
+      (library !== "three" || plan.capabilities.includes("SHADER_WEBGL"))
+    );
+  }
   if (!immersive || explicitlyNoImages) return plan;
 
   const medium = imageStyle === "3D"
@@ -532,7 +541,7 @@ export function enforceImmersiveMediaPlan(
   const candidates: V12DesignArchitectResult["mediaPlan"]["images"] = [
     {
       role: "cinematic hero keyframe",
-      purpose: "Anchor the opening scene and provide a substantial visual layer behind the live 3D subject",
+      purpose: "Anchor the opening scene and seed the Higgsfield video used for frame-sequence playback",
       prompt: `Create the opening cinematic keyframe for this website: ${plan.expandedBrief}. Concept: ${plan.designDirection.concept}. Composition: ${plan.designDirection.composition}. ${subjectFidelity} Preserve generous negative space for interface typography. No text, logo, or watermark.`,
       aspect: "landscape",
       medium,

@@ -91,8 +91,7 @@ type HiggsfieldRequestStatus = {
  *
  * Returns null (never throws) when Higgsfield isn't configured or the
  * generation fails for any reason — callers are expected to fall back
- * to the existing live-3D code-gen path when this returns null, not
- * fail the whole website generation over an optional enhancement.
+ * report a video-preparation failure without switching to another 3D provider.
  */
 export async function generateHeroVideo(input: {
   imageUrl: string;

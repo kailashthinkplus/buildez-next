@@ -20,6 +20,7 @@ export function immersiveAcceptanceFailures(
      * below in place of the live-3D evidence they normally require.
      */
     hasFrameSequence3D?: boolean;
+    frameSequenceUrls?: readonly string[];
   } = {},
 ) {
   const source = files
@@ -53,6 +54,20 @@ export function immersiveAcceptanceFailures(
     && /<canvas\b/i.test(source)
     && /drawImage\s*\(/.test(source)
     && /(?:scrollY|scrollProgress|ScrollTrigger|addEventListener\s*\(\s*["']scroll|requestAnimationFrame)/i.test(source);
+
+  if (options.hasFrameSequence3D) {
+    if (!frameSequenceScene) failures.push("Missing the required scroll-scrubbed canvas for the supplied Higgsfield video frames.");
+    // The frame URLs themselves are injected verbatim into a dedicated,
+    // code-controlled file (see HIGGSFIELD_FRAMES_MODULE_PATH in runAgent.ts)
+    // rather than trusted to a model transcribing 8+ long URLs into its own
+    // generated source byte-for-byte — that was unreliable and caused
+    // spurious acceptance failures even on otherwise-correct builds. What
+    // still needs verifying here is that the generated code actually
+    // imports and uses that module, not that it manually reproduces the URLs.
+    if (options.frameSequenceUrls && options.frameSequenceUrls.length >= 8 && !/higgsfieldFrames/i.test(source)) {
+      failures.push("Import the supplied HIGGSFIELD_FRAME_URLS from ./higgsfieldFrames and draw them in playback order; do not substitute still imagery or invented frames.");
+    }
+  }
 
   if (plan.requires3D) {
     const r3fScene = /@react-three\/fiber/.test(source)
@@ -115,7 +130,7 @@ export function immersiveAcceptanceFailures(
     const primaryMediaVisible = primaryMediaUrls.some((url) => files.some((file) =>
       /(?:^|\/)(?:App|Home|Hero|Landing|pages?\/[^/]+)\.[jt]sx?$/i.test(file.path)
       && file.content.includes(url)));
-    if (!primaryMediaVisible) {
+    if (!primaryMediaVisible && !frameSequenceScene) {
       failures.push("Photorealistic hero media is not visibly integrated into the primary page composition; it may not exist only in a WebGL fallback or low-opacity decoration.");
     }
 
@@ -126,7 +141,7 @@ export function immersiveAcceptanceFailures(
     }
   }
 
-  if (options.requiresExternalModel && !/(?:GLTFLoader|useGLTF|\.glb\b|\.gltf\b|model\/gltf|spline-viewer|@splinetool)/i.test(source)) {
+  if (options.requiresExternalModel && !frameSequenceScene && !/(?:GLTFLoader|useGLTF|\.glb\b|\.gltf\b|model\/gltf|spline-viewer|@splinetool)/i.test(source)) {
     failures.push("Missing the required external high-fidelity 3D model integration.");
   }
 

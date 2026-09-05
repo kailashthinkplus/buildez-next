@@ -35,6 +35,7 @@ export function routeV12Capabilities(
   }>,
 ): V12CapabilityPlan {
   const text = prompt.toLowerCase();
+  const forbidsWebGL = /\b(?:no|without|avoid|do not use|don't use)\s+(?:webgl|three\.js|threejs|real[- ]time 3d|browser[- ]rendered 3d)\b/i.test(prompt);
 
   const capabilities = new Set<V12Capability>();
 
@@ -69,14 +70,18 @@ export function routeV12Capabilities(
       "interactive product",
       "exploded view",
       "3d product",
-      "3d scene"
+      "3d scene",
+      "gltf",
+      "glb",
+      "three-dimensional",
+      "3-d"
     )
   ) {
     capabilities.add("IMMERSIVE_3D");
   }
 
   if (
-    has(
+    !forbidsWebGL && has(
       "shader",
       "webgl",
       "glsl",
@@ -161,11 +166,6 @@ export function routeV12Capabilities(
     recommendedLibraries.add("gsap");
   }
 
-  if (requires3D) {
-    recommendedLibraries.add("three");
-    recommendedLibraries.add("@react-three/fiber");
-    recommendedLibraries.add("@react-three/drei");
-  }
 
   if (requiresWebGL) {
     recommendedLibraries.add("three");
@@ -218,7 +218,7 @@ ${
     : "React / CSS / platform-native capabilities"
 }
 
-Requires 3D:
+Requires Higgsfield video frame sequence for the 3D subject:
 ${plan.requires3D}
 
 Requires WebGL/shaders:
@@ -232,6 +232,8 @@ ${plan.requiresDataViz}
 
 RULES:
 
+- Every 3D subject uses Higgsfield video -> extracted frames -> scroll-scrubbed 2D canvas, even for explicit model or live-3D requests. Do not use external model providers.
+- WebGL remains available for basic supporting animation/effects; it must not replace the subject frame sequence.
 - Do not downgrade an explicitly immersive request into a generic
   corporate layout.
 - Do not add heavy 3D/WebGL merely because the tools exist.

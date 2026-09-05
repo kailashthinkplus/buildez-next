@@ -20,13 +20,18 @@ export function validatePreviewMessage(value: unknown, sessionId: string): value
     PREVIEW_MESSAGE_TYPES.includes(message.type as PreviewMessageType);
 }
 
-export function validatePreviewProjectPaths(paths: readonly string[]) {
+export function validatePreviewFilePaths(paths: readonly string[]) {
   const normalized = paths.map(normalizeProjectPath);
   for (const path of normalized) {
     if (path === ".env" || path.startsWith(".env.") || path.startsWith("node_modules/") || path.startsWith(".git/")) {
       throw new Error(`Preview project contains a forbidden path: ${path}`);
     }
   }
+  return normalized;
+}
+
+export function validatePreviewProjectPaths(paths: readonly string[]) {
+  const normalized = validatePreviewFilePaths(paths);
   for (const required of ["package.json", "index.html", "src/main.tsx"]) {
     if (!normalized.includes(required)) throw new Error(`Preview project is missing ${required}`);
   }

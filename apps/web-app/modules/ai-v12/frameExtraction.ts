@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
-import { chmod, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import ffmpegPath from "@ffmpeg-installer/ffmpeg";
@@ -8,25 +8,7 @@ import ffprobePath from "@ffprobe-installer/ffprobe";
 import { fetchWithRetry } from "@/lib/net/fetchWithRetry";
 import { uploadToR2 } from "@/lib/storage/uploadToR2";
 
-/*
- * @ffmpeg-installer/@ffprobe-installer bundle a prebuilt binary per
- * platform and mark it executable via a postinstall script — but a
- * package manager can be configured to skip build scripts for
- * unrecognized packages (a security default; see pnpm's
- * allowBuilds/onlyBuiltDependencies), silently leaving the binary
- * without its executable bit. chmod defensively before every spawn
- * rather than depending on install-time config being correct on every
- * environment this runs on.
- */
-let binariesMadeExecutable = false;
-async function ensureBinariesExecutable() {
-  if (binariesMadeExecutable) return;
-  binariesMadeExecutable = true;
-  await Promise.all([
-    chmod(ffmpegPath.path, 0o755).catch(() => {}),
-    chmod(ffprobePath.path, 0o755).catch(() => {}),
-  ]);
-}
+import { executableBinary } from "./executableBinary";
 
 /*
  * Extracts evenly-spaced still frames from a generated video.
@@ -87,7 +69,10 @@ async function extractFramesWithFfmpeg(input: {
 }): Promise<string[]> {
   const workDir = await mkdtemp(path.join(tmpdir(), "buildez-frames-"));
   try {
-    await ensureBinariesExecutable();
+    const [ffmpegBinary, ffprobeBinary] = await Promise.all([
+      executableBinary(ffmpegPath.path, workDir),
+      executableBinary(ffprobePath.path, workDir),
+    ]);
     const videoResponse = await fetchWithRetry(
       input.videoUrl,
       { cache: "no-store" },
@@ -98,7 +83,7 @@ async function extractFramesWithFfmpeg(input: {
     await writeFile(videoPath, Buffer.from(await videoResponse.arrayBuffer()));
 
     const probeOutput = await runFfmpegBinary(
-      ffprobePath.path,
+      ffprobeBinary,
       ["-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", videoPath],
       15_000,
     );
@@ -110,10 +95,12 @@ async function extractFramesWithFfmpeg(input: {
     // black/blank boundary frame.
     const margin = duration * 0.04;
     const usableDuration = Math.max(duration - margin * 2, 0.5);
-    const fps = (frameCount - 1) / usableDuration;
+    // ffmpeg rounds output frame timestamps; using N-1 can emit only seven
+    // frames for the minimum eight-frame sequence and reject a valid video.
+    const fps = frameCount / usableDuration;
 
     await runFfmpegBinary(
-      ffmpegPath.path,
+      ffmpegBinary,
       [
         "-ss", margin.toFixed(3),
         "-i", videoPath,
