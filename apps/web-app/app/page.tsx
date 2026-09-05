@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { CookieConsentBanner } from "@/modules/legal/CookieConsentBanner";
 import { MarketingAnalytics, notifyAnalyticsConsentGranted } from "@/modules/legal/MarketingAnalytics";
@@ -13,6 +14,7 @@ const FRAME_CDN = "/marketing/home-v3";
 export default function Home() {
   const stageRef = useRef<HTMLElement>(null);
   const [headerScrolled, setHeaderScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [sitePrompt, setSitePrompt] = useState("");
   const [activeJourney, setActiveJourney] = useState(0);
   useEffect(() => {
@@ -78,10 +80,36 @@ export default function Home() {
   return (
     <main className="buildezy-marketing site-shell" ref={stageRef}>
       <nav className={`topbar${headerScrolled ? " is-scrolled" : ""}`} aria-label="Main navigation">
+        <button
+          type="button"
+          className="marketing-mobile-menu-toggle"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((value) => !value)}
+        >
+          <span /><span /><span />
+        </button>
         <a href="#top" className="brand" aria-label="BuildEzy home"><img className="official-logo" src="/buildez-logo-dark.svg" alt="BuildEzy" /></a>
         <div className="nav-links"><a href="#platform">Platform</a><a href="/pricing">Pricing</a><a href="#difference">Why Build Ezy</a><a href="#workflow">How it works</a></div>
         <div className="nav-actions"><a href="/app/login" className="login-link">Log In</a><a href="/app/signup" className="mini-cta">Signup <Arrow /></a></div>
       </nav>
+      {menuOpen && typeof document !== "undefined"
+        ? createPortal(
+            <>
+              <div className="marketing-mobile-menu-backdrop" onClick={() => setMenuOpen(false)} />
+              <nav aria-label="Mobile navigation" className="marketing-mobile-menu">
+                <a href="#platform" onClick={() => setMenuOpen(false)}>Platform</a>
+                <a href="/pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
+                <a href="#difference" onClick={() => setMenuOpen(false)}>Why Build Ezy</a>
+                <a href="#workflow" onClick={() => setMenuOpen(false)}>How it works</a>
+                <div className="marketing-mobile-menu-divider" />
+                <a href="/app/login" onClick={() => setMenuOpen(false)}>Log in</a>
+                <a href="/app/signup" className="marketing-mobile-menu-cta" onClick={() => setMenuOpen(false)}>Signup</a>
+              </nav>
+            </>,
+            document.body,
+          )
+        : null}
       <section className="hero" id="top">
         <div className="hero-glow" /><div className="orb orb-one" /><div className="orb orb-two" />
         <div className="hero-copy">
