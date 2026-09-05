@@ -15,7 +15,9 @@ async function seedPlans() {
       teamMembers: 1,
       uploadRateLimitPerHour: 10,
       maxDailyUploads: 20,
-      isPublic: true,
+      // Grandfathered: hidden from the public catalog (see
+      // seedPlanCatalog2026.ts) but unchanged for existing subscribers.
+      isPublic: false,
       pricing: [
         {
           billingCycle: "monthly",
@@ -40,7 +42,9 @@ async function seedPlans() {
       teamMembers: 3,
       uploadRateLimitPerHour: 20,
       maxDailyUploads: 50,
-      isPublic: true,
+      // Grandfathered: hidden from the public catalog (see
+      // seedPlanCatalog2026.ts) but unchanged for existing subscribers.
+      isPublic: false,
       pricing: [
         {
           billingCycle: "monthly",
@@ -71,7 +75,9 @@ async function seedPlans() {
       teamMembers: 10,
       uploadRateLimitPerHour: 40,
       maxDailyUploads: 150,
-      isPublic: true,
+      // Grandfathered: hidden from the public catalog (see
+      // seedPlanCatalog2026.ts) but unchanged for existing subscribers.
+      isPublic: false,
       pricing: [
         {
           billingCycle: "monthly",
@@ -105,7 +111,9 @@ async function seedPlans() {
       teamMembers: 50,
       uploadRateLimitPerHour: 80,
       maxDailyUploads: 400,
-      isPublic: true,
+      // Grandfathered: hidden from the public catalog (see
+      // seedPlanCatalog2026.ts) but unchanged for existing subscribers.
+      isPublic: false,
       pricing: [
         {
           billingCycle: "monthly",
@@ -142,7 +150,9 @@ async function seedPlans() {
       teamMembers: 100,
       uploadRateLimitPerHour: 150,
       maxDailyUploads: 1000,
-      isPublic: true,
+      // Grandfathered: hidden from the public catalog (see
+      // seedPlanCatalog2026.ts) but unchanged for existing subscribers.
+      isPublic: false,
       pricing: [
         {
           billingCycle: "monthly",
@@ -173,7 +183,9 @@ async function seedPlans() {
       teamMembers: 250,
       uploadRateLimitPerHour: 300,
       maxDailyUploads: 5000,
-      isPublic: true,
+      // Grandfathered: hidden from the public catalog (see
+      // seedPlanCatalog2026.ts) but unchanged for existing subscribers.
+      isPublic: false,
       pricing: [
         {
           billingCycle: "custom",

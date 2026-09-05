@@ -223,9 +223,10 @@ model UserOnboarding {
 
   businessName String?
 
-  planCode     String?
-  billingCycle String?
-  domain       String?
+  planCode      String?
+  billingCycle  String?
+  domain        String?
+  domainSkipped Boolean @default(false)
 
   completed Boolean  @default(false)
   createdAt DateTime @default(now())
@@ -1065,6 +1066,19 @@ model BlogPost {
   @@index([status, publishedAt])
 }
 
+model ChangelogEntry {
+  id          String    @id @default(cuid())
+  title       String
+  summary     String    @db.Text
+  bullets     String[]  @default([])
+  status      String    @default("DRAFT")
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, publishedAt])
+}
+
 model CrmLead {
   id              String    @id @default(cuid())
   siteId          String
@@ -1366,6 +1380,19 @@ model Plan {
 
   isPublic Boolean @default(true)
 
+  // Marketing/catalog presentation — optional, so existing (legacy) plan
+  // rows are unaffected until a superadmin/seed fills them in.
+  catalogVersion String? // e.g. "2026". Null for legacy/pre-catalog plans.
+  displayOrder   Int     @default(0) // lower sorts first in customer-facing surfaces.
+  badge          String? // e.g. "MOST POPULAR". Null = no badge.
+  eyebrow        String? // short positioning line shown above the plan name.
+  summary        String? // 2-3 sentence marketing summary for pricing cards.
+
+  // A plan with trialDays set grants full access for that many days from
+  // Subscription.startedAt, after which the tenant must upgrade to a paid
+  // plan to keep using the product. Null = no trial expiry (normal plan).
+  trialDays Int?
+
   createdAt DateTime @default(now())
 
   pricing           PlanPricing[]
@@ -1539,10 +1566,18 @@ model Subscription {
   cancelAtPeriodEnd     Boolean   @default(false)
   expiryAlertSentAt     DateTime?
 
+  // Set at creation time when the chosen Plan has `trialDays` (e.g. the
+  // FREE_2026 30-day trial). Null for plans without a trial. Once passed,
+  // the tenant must upgrade to a paid plan — see lib/plan/trial.ts.
+  trialEndsAt DateTime?
+
   amountPaid Int?
   currency   String?
   startedAt  DateTime?
   paidAt     DateTime?
+
+  couponCode     String?
+  discountAmount Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1552,6 +1587,65 @@ model Subscription {
   @@index([tenantHistoryId])
   @@index([userId])
   @@index([dodoCustomerId])
+}
+
+model Coupon {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  description String?
+
+  /// "PERCENTAGE" | "FLAT"
+  type     String
+  /// Percentage: basis points (2000 = 20%). Flat: minor units of `currency`.
+  amount   Int
+  currency String?
+
+  /// Empty = valid for every plan / cycle.
+  planCodes     String[]
+  billingCycles String[]
+
+  /// Minor units; order must be at least this much before the coupon applies.
+  minAmount Int?
+
+  usageLimit    Int?
+  timesUsed     Int     @default(0)
+  perUserLimit  Int?    @default(1)
+  firstTimeOnly Boolean @default(false)
+
+  startsAt  DateTime?
+  expiresAt DateTime?
+  isActive  Boolean   @default(true)
+
+  /// Mirrored discount object in Dodo Payments, created alongside this row so
+  /// Dodo independently enforces the same limits at charge time.
+  dodoDiscountId String?
+
+  createdByUserId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  redemptions CouponRedemption[]
+
+  @@index([isActive])
+}
+
+model CouponRedemption {
+  id       String @id @default(cuid())
+  couponId String
+  coupon   Coupon @relation(fields: [couponId], references: [id])
+
+  userId         String
+  tenantId       String?
+  subscriptionId String? @unique
+
+  amountDiscounted Int
+  currency         String
+
+  createdAt DateTime @default(now())
+
+  @@index([couponId])
+  @@index([userId])
 }
 
 model BillingTransaction {

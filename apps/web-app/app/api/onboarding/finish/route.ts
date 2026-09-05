@@ -95,6 +95,8 @@ export async function POST(req: Request) {
   },
 });
 
+const trialEndsAt = plan?.trialDays ? new Date(Date.now() + plan.trialDays * 86_400_000) : null;
+
 if (!plan) {
   return NextResponse.json(
     { error: "PLAN_NOT_FOUND" },
@@ -279,9 +281,9 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
       console.log("🔄 Subscription already exists:", existingSubscription.id);
       subscription = existingSubscription;
 
-      // Ensure it's active, and backfill planId for rows created before
-      // this field was set here (see the create branch below).
-      if (existingSubscription.status !== "ACTIVE" || !existingSubscription.planId) {
+      // Ensure it's active, and backfill planId/trialEndsAt for rows created
+      // before those fields were set here (see the create branch below).
+      if (existingSubscription.status !== "ACTIVE" || !existingSubscription.planId || (trialEndsAt && !existingSubscription.trialEndsAt)) {
         subscription = await prisma.subscription.update({
           where: { id: existingSubscription.id },
           data: {
@@ -289,6 +291,7 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
             paymentStatus: "FREE",
             startedAt: existingSubscription.startedAt || new Date(),
             planId: existingSubscription.planId || plan.id,
+            trialEndsAt: existingSubscription.trialEndsAt || trialEndsAt,
           },
         });
       }
@@ -304,6 +307,7 @@ const requiresPayment = plan.pricing.some((p) => p.amount > 0);
           status: "ACTIVE",
           paymentStatus: "FREE",
           startedAt: new Date(),
+          trialEndsAt,
         },
       });
 

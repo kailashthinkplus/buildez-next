@@ -39,7 +39,7 @@ export default function StepDomainLaunch({
 
         setPlanCode(data.planCode || null);
 
-        const isFree = data.planCode === "trial" || data.planCode === "FREE";
+        const isFree = ["trial", "FREE", "FREE_2026"].includes(data.planCode);
         setIsFreePlan(isFree);
 
         if (!isFree && data.domain) {

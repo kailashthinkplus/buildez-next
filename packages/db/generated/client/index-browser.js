@@ -166,6 +166,7 @@ exports.Prisma.UserOnboardingScalarFieldEnum = {
   planCode: 'planCode',
   billingCycle: 'billingCycle',
   domain: 'domain',
+  domainSkipped: 'domainSkipped',
   completed: 'completed',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -642,6 +643,17 @@ exports.Prisma.BlogPostScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ChangelogEntryScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  summary: 'summary',
+  bullets: 'bullets',
+  status: 'status',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.CrmLeadScalarFieldEnum = {
   id: 'id',
   siteId: 'siteId',
@@ -830,6 +842,12 @@ exports.Prisma.PlanScalarFieldEnum = {
   uploadRateLimitPerHour: 'uploadRateLimitPerHour',
   maxDailyUploads: 'maxDailyUploads',
   isPublic: 'isPublic',
+  catalogVersion: 'catalogVersion',
+  displayOrder: 'displayOrder',
+  badge: 'badge',
+  eyebrow: 'eyebrow',
+  summary: 'summary',
+  trialDays: 'trialDays',
   createdAt: 'createdAt'
 };
 
@@ -922,13 +940,50 @@ exports.Prisma.SubscriptionScalarFieldEnum = {
   currentPeriodEnd: 'currentPeriodEnd',
   cancelAtPeriodEnd: 'cancelAtPeriodEnd',
   expiryAlertSentAt: 'expiryAlertSentAt',
+  trialEndsAt: 'trialEndsAt',
   amountPaid: 'amountPaid',
   currency: 'currency',
   startedAt: 'startedAt',
   paidAt: 'paidAt',
+  couponCode: 'couponCode',
+  discountAmount: 'discountAmount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   planId: 'planId'
+};
+
+exports.Prisma.CouponScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  description: 'description',
+  type: 'type',
+  amount: 'amount',
+  currency: 'currency',
+  planCodes: 'planCodes',
+  billingCycles: 'billingCycles',
+  minAmount: 'minAmount',
+  usageLimit: 'usageLimit',
+  timesUsed: 'timesUsed',
+  perUserLimit: 'perUserLimit',
+  firstTimeOnly: 'firstTimeOnly',
+  startsAt: 'startsAt',
+  expiresAt: 'expiresAt',
+  isActive: 'isActive',
+  dodoDiscountId: 'dodoDiscountId',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CouponRedemptionScalarFieldEnum = {
+  id: 'id',
+  couponId: 'couponId',
+  userId: 'userId',
+  tenantId: 'tenantId',
+  subscriptionId: 'subscriptionId',
+  amountDiscounted: 'amountDiscounted',
+  currency: 'currency',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.BillingTransactionScalarFieldEnum = {
@@ -1373,6 +1428,7 @@ exports.Prisma.ModelName = {
   ShopPaymentIntegration: 'ShopPaymentIntegration',
   SupportRequest: 'SupportRequest',
   BlogPost: 'BlogPost',
+  ChangelogEntry: 'ChangelogEntry',
   CrmLead: 'CrmLead',
   CrmCommunication: 'CrmCommunication',
   AgentRun: 'AgentRun',
@@ -1395,6 +1451,8 @@ exports.Prisma.ModelName = {
   AiCreditReservation: 'AiCreditReservation',
   AiCreditLedgerEntry: 'AiCreditLedgerEntry',
   Subscription: 'Subscription',
+  Coupon: 'Coupon',
+  CouponRedemption: 'CouponRedemption',
   BillingTransaction: 'BillingTransaction',
   SiteSubscription: 'SiteSubscription',
   ComplianceAudit: 'ComplianceAudit',

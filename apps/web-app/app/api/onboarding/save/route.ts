@@ -3,6 +3,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { getSessionUser } from "@/lib/auth/session";
+import { isFreePlanCode } from "@/lib/plan/freePlanCode";
 
 export async function POST(req: Request) {
   console.log("🚀 [onboarding/save] START");
@@ -68,14 +69,14 @@ export async function POST(req: Request) {
     if (planCode !== undefined) {
       updateData.planCode = planCode;
 
-      // Auto-correct: trial plans ALWAYS monthly billing
-      if (planCode === "trial") {
+      // Auto-correct: free/trial plans ALWAYS monthly billing
+      if (isFreePlanCode(planCode)) {
         updateData.billingCycle = "monthly";
       }
     }
 
     if (billingCycle !== undefined) {
-      if (onboarding.planCode === "trial") {
+      if (isFreePlanCode(onboarding.planCode)) {
         updateData.billingCycle = "monthly"; // force trial billing
       } else {
         updateData.billingCycle = billingCycle;

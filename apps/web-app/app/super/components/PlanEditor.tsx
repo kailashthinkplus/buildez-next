@@ -47,6 +47,12 @@ type Plan = {
   aiCredits: number;
   teamMembers: number;
   isPublic: boolean;
+  displayOrder: number;
+  badge: string | null;
+  eyebrow: string | null;
+  summary: string | null;
+  catalogVersion: string | null;
+  trialDays: number | null;
   aiAgentRunLimitPerHour: number;
   aiAgentFollowupLimitPerHour: number;
   builderAgentLimitPerHour: number;
@@ -104,6 +110,13 @@ type FormState = {
   priceYearly: number;
   currency: string;
 
+  displayOrder: number;
+  badge: string;
+  eyebrow: string;
+  summary: string;
+  catalogVersion: string;
+  trialDays: number;
+
   aiAgentRunLimitPerHour: number;
   aiAgentFollowupLimitPerHour: number;
   builderAgentLimitPerHour: number;
@@ -135,6 +148,13 @@ const DEFAULT_FORM: FormState = {
   priceMonthly: 0,
   priceYearly: 0,
   currency: "INR",
+
+  displayOrder: 0,
+  badge: "",
+  eyebrow: "",
+  summary: "",
+  catalogVersion: "",
+  trialDays: 0,
 
   aiAgentRunLimitPerHour: 20,
   aiAgentFollowupLimitPerHour: 40,
@@ -226,6 +246,13 @@ function planToForm(plan: Plan): FormState {
     priceMonthly: monthly?.amount ?? 0,
     priceYearly: yearly?.amount ?? 0,
     currency: monthly?.currency ?? yearly?.currency ?? "INR",
+
+    displayOrder: plan.displayOrder ?? 0,
+    badge: plan.badge ?? "",
+    eyebrow: plan.eyebrow ?? "",
+    summary: plan.summary ?? "",
+    catalogVersion: plan.catalogVersion ?? "",
+    trialDays: plan.trialDays ?? 0,
 
     aiAgentRunLimitPerHour: plan.aiAgentRunLimitPerHour,
     aiAgentFollowupLimitPerHour: plan.aiAgentFollowupLimitPerHour,
@@ -458,6 +485,12 @@ export default function PlanEditor({
             aiCredits: form.aiCredits,
             teamMembers: form.teamMembers,
             isPublic: form.isPublic,
+            displayOrder: form.displayOrder,
+            badge: form.badge || null,
+            eyebrow: form.eyebrow || null,
+            summary: form.summary || null,
+            catalogVersion: form.catalogVersion || null,
+            trialDays: form.trialDays > 0 ? form.trialDays : null,
             aiAgentRunLimitPerHour: form.aiAgentRunLimitPerHour,
             aiAgentFollowupLimitPerHour: form.aiAgentFollowupLimitPerHour,
             builderAgentLimitPerHour: form.builderAgentLimitPerHour,
@@ -726,6 +759,70 @@ export default function PlanEditor({
                   }))
                 }
               />
+            </div>
+          </Section>
+
+          <Section
+            icon={<Sparkles size={18} />}
+            eyebrow="Catalog"
+            title="Marketing & catalog"
+            description="How this plan is positioned and ordered on customer-facing pricing surfaces."
+          >
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Eyebrow">
+                <input
+                  value={form.eyebrow}
+                  placeholder="e.g. Your AI website production workspace"
+                  onChange={(event) => setForm((current) => ({ ...current, eyebrow: event.target.value }))}
+                  className="dashboard-input w-full rounded-xl px-3 py-2.5 text-sm"
+                />
+              </Field>
+
+              <Field label="Badge">
+                <input
+                  value={form.badge}
+                  placeholder="e.g. MOST POPULAR"
+                  onChange={(event) => setForm((current) => ({ ...current, badge: event.target.value }))}
+                  className="dashboard-input w-full rounded-xl px-3 py-2.5 text-sm"
+                />
+              </Field>
+
+              <NumberField
+                label="Display order"
+                icon={<Layers3 size={15} />}
+                value={form.displayOrder}
+                minimum={0}
+                onChange={(value) => setForm((current) => ({ ...current, displayOrder: value }))}
+              />
+
+              <NumberField
+                label="Trial days (0 = no trial)"
+                icon={<Timer size={15} />}
+                value={form.trialDays}
+                minimum={0}
+                onChange={(value) => setForm((current) => ({ ...current, trialDays: value }))}
+              />
+
+              <Field label="Catalog version">
+                <input
+                  value={form.catalogVersion}
+                  placeholder="e.g. 2026"
+                  onChange={(event) => setForm((current) => ({ ...current, catalogVersion: event.target.value }))}
+                  className="dashboard-input w-full rounded-xl px-3 py-2.5 text-sm"
+                />
+              </Field>
+            </div>
+
+            <div className="mt-4">
+              <Field label="Summary">
+                <textarea
+                  value={form.summary}
+                  rows={3}
+                  placeholder="2-3 sentence marketing summary shown on pricing cards."
+                  onChange={(event) => setForm((current) => ({ ...current, summary: event.target.value }))}
+                  className="dashboard-input w-full rounded-xl px-3 py-2.5 text-sm"
+                />
+              </Field>
             </div>
           </Section>
 

@@ -14,6 +14,12 @@ type PublicPlan = {
   code: string;
   name: string;
   description: string;
+  eyebrow: string | null;
+  summary: string | null;
+  tag: string | null;
+  popular: boolean;
+  isTrial: boolean;
+  trialDays: number | null;
   maxSites: number;
   maxPages: number;
   aiCredits: number;
@@ -101,19 +107,26 @@ export function PublicPricingPage() {
           {plans.map((plan, index) => {
             const amount = billing === "monthly" ? plan.priceMonthly : plan.priceYearly;
             const unavailable = !plan.isCustom && amount === null;
-            const featured = plan.code.toUpperCase() === "PRO" || (plans.length > 2 && index === 2);
+            const featured = plan.popular;
             return (
               <article key={plan.code} className={`public-plan-card${featured ? " featured" : ""}`}>
                 <div className="plan-card-top">
                   <span>{String(index + 1).padStart(2, "0")} / {plan.code}</span>
-                  {featured ? <b>Most popular</b> : null}
+                  {plan.tag ? <b>{plan.tag}</b> : null}
                 </div>
+                {plan.eyebrow ? <p className="plan-eyebrow">{plan.eyebrow}</p> : null}
                 <h2>{plan.name}</h2>
-                <p>{plan.description}</p>
+                <p>{plan.summary || plan.description}</p>
                 <div className="plan-price">
                   {plan.isCustom ? <strong>Let&apos;s talk</strong> : unavailable ? <strong>Unavailable</strong> : <><strong>{priceFor(amount ?? 0, plan.currency)}</strong><span>/{billing === "monthly" ? "month" : "year"}</span></>}
                 </div>
-                {!plan.isCustom && (amount ?? 0) > 0 ? <small>Final total is shown before checkout.</small> : <small>{plan.isCustom ? "Commercial terms are tailored to your organisation." : "No subscription charge."}</small>}
+                {plan.isTrial ? (
+                  <small>{plan.trialDays}-day free trial, then upgrade to keep building.</small>
+                ) : !plan.isCustom && (amount ?? 0) > 0 ? (
+                  <small>Final total is shown before checkout.</small>
+                ) : (
+                  <small>{plan.isCustom ? "Commercial terms are tailored to your organisation." : "No subscription charge."}</small>
+                )}
                 <ul>
                   <li>{plan.maxSites.toLocaleString()} website{plan.maxSites === 1 ? "" : "s"}</li>
                   <li>{plan.maxPages.toLocaleString()} pages</li>

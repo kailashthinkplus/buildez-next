@@ -3,6 +3,7 @@
 import { PlanError } from "../api/errors";
 import { getTenantPlan } from "./getPlan";
 import { getTenantUsage } from "./getUsage";
+import { computeTrialStatus, assertTrialNotExpired } from "./trial";
 import { prisma } from "@buildez/db";
 
 /* ============================================================
@@ -12,7 +13,9 @@ export async function enforceSiteLimit(tenantId: string) {
   const planData = await getTenantPlan(tenantId);
   if (!planData) return; // free-tier? unlimited or restricted elsewhere
 
-  const { plan } = planData;
+  const { plan, subscription } = planData;
+  assertTrialNotExpired(computeTrialStatus(plan, subscription));
+
   const usage = await getTenantUsage(tenantId);
 
   if (usage.sitesUsed >= plan.maxSites) {
@@ -27,7 +30,8 @@ export async function enforcePageLimit(siteId: string, tenantId: string) {
   const planData = await getTenantPlan(tenantId);
   if (!planData) return;
 
-  const { plan } = planData;
+  const { plan, subscription } = planData;
+  assertTrialNotExpired(computeTrialStatus(plan, subscription));
 
   const pageCount = await prisma.page.count({
     where: { siteId },
@@ -36,91 +40,4 @@ export async function enforcePageLimit(siteId: string, tenantId: string) {
   if (pageCount >= plan.maxPages) {
     throw new PlanError("You have reached the maximum number of pages for your plan.");
   }
-}
-
-/* ============================================================
-   ENFORCE TEAM MEMBER LIMIT
-============================================================ */
-export async function enforceTeamLimit(tenantId: string) {
-  const planData = await getTenantPlan(tenantId);
-  if (!planData) return;
-
-  const { plan } = planData;
-
-  const teamData = await prisma.team.count({
-    where: { tenantId },
-  });
-
-  if (teamData >= plan.teamMembers) {
-    throw new PlanError("Team member limit exceeded for this plan.");
-  }
-}
-
-/* ============================================================
-   ENFORCE AI CREDITS
-============================================================ */
-export async function enforceAICredits(tenantId: string) {
-  const planData = await getTenantPlan(tenantId);
-  if (!planData) return;
-
-  const { plan } = planData;
-  const usage = await getTenantUsage(tenantId);
-
-  if (plan.aiCredits != null && usage.aiCreditsUsed >= plan.aiCredits) {
-    throw new PlanError("AI credits exhausted for this billing cycle.");
-  }
-}
-
-/* ============================================================
-   INCREMENT AI CREDIT USAGE
-============================================================ */
-export async function incrementAICredits(
-  tenantId: string,
-  creditsUsed = 1,
-) {
-  if (!Number.isFinite(creditsUsed) || creditsUsed <= 0) {
-    return;
-  }
-
-  const amount = Math.max(1, Math.ceil(creditsUsed));
-
-  const usage = await prisma.planUsage.findFirst({
-    where: {
-      tenantId,
-      key: "ai_credits",
-    },
-    orderBy: {
-      periodStart: "desc",
-    },
-  });
-
-  if (usage) {
-    await prisma.planUsage.update({
-      where: {
-        id: usage.id,
-      },
-      data: {
-        used: {
-          increment: amount,
-        },
-      },
-    });
-
-    return;
-  }
-
-  await prisma.planUsage.create({
-    data: {
-      tenantId,
-      key: "ai_credits",
-      used: amount,
-    },
-  });
-}
-
-/* ============================================================
-   INCREMENT SITE COUNT
-============================================================ */
-export async function incrementSiteCount(tenantId: string) {
-  void tenantId;
 }
