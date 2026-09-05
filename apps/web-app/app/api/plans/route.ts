@@ -5,16 +5,7 @@ import {
   dodoProductId,
   type BillingCycle,
 } from "@/lib/billing/dodo";
-
-function featureLabel(key: string, value: string, type: string | null) {
-  const label = key
-    .replace(/^v12\./, "")
-    .replace(/[._-]+/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
-
-  if (type === "boolean") return label;
-  return `${label}: ${value}`;
-}
+import { formatPlanFeatures } from "@/lib/billing/planFeatures";
 
 export async function GET(req: Request) {
   try {
@@ -46,12 +37,15 @@ export async function GET(req: Request) {
         const yearly = pricing.find((planPrice) => planPrice.billingCycle === "yearly");
         const isCustom = pricing.some((planPrice) => planPrice.billingCycle === "custom");
 
+        const formattedFeatures = formatPlanFeatures(plan.features);
+
         return {
           id: plan.id,
           code: plan.code,
           name: plan.name,
           description: `${plan.maxSites} website${plan.maxSites === 1 ? "" : "s"}, ${plan.maxPages} pages and ${plan.aiCredits.toLocaleString()} AI credits`,
           tag: plan.code.toUpperCase() === "FREE" ? "FREE" : null,
+          popular: plan.code.toUpperCase() === "PRO",
           maxSites: plan.maxSites,
           maxPages: plan.maxPages,
           aiCredits: plan.aiCredits,
@@ -65,9 +59,18 @@ export async function GET(req: Request) {
             monthly: monthly?.checkoutEnabled ?? false,
             yearly: yearly?.checkoutEnabled ?? false,
           },
-          features: plan.features
-            .filter((feature) => feature.type !== "boolean" || feature.value === "true")
-            .map((feature) => featureLabel(feature.key, feature.value, feature.type)),
+          // The short, card-friendly list — only capabilities this plan
+          // actually includes, most differentiating first.
+          features: formattedFeatures.filter((feature) => feature.included).map((feature) => feature.value),
+          // The full picture, included and excluded alike, for a
+          // side-by-side comparison table — never truncated.
+          featureTable: formattedFeatures.map((feature) => ({
+            key: feature.groupKey,
+            label: feature.groupLabel,
+            value: feature.value,
+            included: feature.included,
+            priority: feature.priority,
+          })),
         };
       })
       .sort((left, right) => {

@@ -49,7 +49,7 @@ export default function OnboardingSidebar({
   return (
     <aside
       className={`
-        glass glass-flat
+        glass glass-flat rounded-none
         w-[280px] shrink-0 border-r border-black/10 dark:border-white/10
         backdrop-blur-2xl
         bg-[rgba(230,240,255,0.7)]
@@ -112,9 +112,9 @@ export default function OnboardingSidebar({
               className={`
                 flex items-center gap-3 px-4 py-3 text-sm transition
                 ${isActive &&
-                  "rounded-[18px] bg-[rgba(47,125,246,0.25)] shadow-[inset_0_0_0_1px_rgba(47,125,246,0.45)]"}
+                  "bg-[rgba(47,125,246,0.25)] shadow-[inset_0_0_0_1px_rgba(47,125,246,0.45)]"}
                 ${isPast &&
-                  "cursor-pointer opacity-90 hover:bg-black/5 dark:hover:bg-white/5 rounded-[18px]"}
+                  "cursor-pointer opacity-90 hover:bg-black/5 dark:hover:bg-white/5"}
                 ${isFuture && "opacity-40 cursor-not-allowed"}
               `}
             >

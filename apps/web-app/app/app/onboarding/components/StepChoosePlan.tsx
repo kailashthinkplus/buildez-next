@@ -1,25 +1,30 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Check, ChevronLeft, ChevronRight, CreditCard } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, CreditCard, Sparkles } from "lucide-react";
 
 import PayNowModal from "./PayNowModal";
 import EnterpriseContactModal from "@/components/billing/EnterpriseContactModal";
 import CurrencySwitcher from "@/components/billing/CurrencySwitcher";
+import PlanComparisonModal from "@/components/billing/PlanComparisonModal";
 import { useDisplayCurrency } from "@/lib/useDisplayCurrency";
 import { useOnboarding } from "../OnboardingContext";
+
+const VISIBLE_FEATURE_COUNT = 5;
 
 type Plan = {
   code: string;
   name: string;
   description: string;
   tag?: string | null;
+  popular?: boolean;
   priceMonthly?: number | null;
   priceYearly?: number | null;
   currency: string;
   checkoutEnabled: Record<"monthly" | "yearly", boolean>;
   isCustom: boolean;
   features: string[];
+  featureTable: Array<{ key: string; label: string; value: string; included: boolean; priority: number }>;
 };
 
 export default function StepChoosePlan({
@@ -35,13 +40,12 @@ export default function StepChoosePlan({
   const [billing, setBilling] = useState<"monthly" | "yearly">(savedBilling === "yearly" ? "yearly" : "monthly");
   const [loading, setLoading] = useState(false);
   const [plansLoading, setPlansLoading] = useState(true);
-  const [activeCard, setActiveCard] = useState(0);
   const { currency: displayCurrency, setCurrency, availableCurrencies, priceFor } = useDisplayCurrency();
 
   const [showPayNow, setShowPayNow] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [enterpriseOpen, setEnterpriseOpen] = useState(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
+  const [comparisonOpen, setComparisonOpen] = useState(false);
   const onNextRef = useRef(onNext);
 
   useEffect(() => {
@@ -111,34 +115,13 @@ export default function StepChoosePlan({
     return () => { cancelled = true; };
   }, [savedPlanId, setPlanId]);
 
-  const scrollToCard = useCallback((index: number) => {
-    const carousel = carouselRef.current;
-    if (!carousel || plans.length === 0) return;
-    const nextIndex = Math.max(0, Math.min(index, plans.length - 1));
-    const card = carousel.children.item(nextIndex) as HTMLElement | null;
-    if (!card) return;
-    carousel.scrollTo({ left: card.offsetLeft - carousel.offsetLeft, behavior: "smooth" });
-    setActiveCard(nextIndex);
-  }, [plans.length]);
-
-  function syncActiveCard() {
-    const carousel = carouselRef.current;
-    if (!carousel) return;
-    const cards = Array.from(carousel.children) as HTMLElement[];
-    if (!cards.length) return;
-    const nearest = cards.reduce((best, card, index) => {
-      const distance = Math.abs(card.offsetLeft - carousel.offsetLeft - carousel.scrollLeft);
-      return distance < best.distance ? { index, distance } : best;
-    }, { index: 0, distance: Number.POSITIVE_INFINITY });
-    setActiveCard(nearest.index);
-  }
-
-  function choosePlan(plan: Plan, index: number) {
+  function choosePlan(planCode: string) {
+    const plan = plans.find((candidate) => candidate.code === planCode);
+    if (!plan) return;
     setSelected(plan.code);
     setPlanId(plan.code);
     if (billing === "yearly" && plan.priceYearly === null) setBilling("monthly");
     if (billing === "monthly" && plan.priceMonthly === null && plan.priceYearly !== null) setBilling("yearly");
-    scrollToCard(index);
   }
 
   async function submitFreePlan() {
@@ -177,7 +160,7 @@ export default function StepChoosePlan({
   const checkoutEnabled = selectedPlan?.checkoutEnabled[billing] ?? false;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-4 pb-5 pt-1 text-slate-900 dark:text-white">
+    <div className="w-full space-y-4 pb-5 pt-1 text-slate-900 dark:text-white">
       <PayNowModal
         open={showPayNow}
         onClose={() => setShowPayNow(false)}
@@ -230,34 +213,55 @@ export default function StepChoosePlan({
 
       {checkoutError ? <p className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-200">{checkoutError}</p> : null}
 
-      <div className="flex items-center justify-between pt-1">
-        <p className="text-xs font-medium text-slate-500 dark:text-white/50">Swipe or use the arrows to compare plans</p>
-        <div className="flex gap-2">
-          <button type="button" aria-label="Previous plan" onClick={() => scrollToCard(activeCard - 1)} disabled={activeCard === 0} className="rounded-lg border border-slate-200 p-2 text-slate-700 disabled:opacity-35 dark:border-white/10 dark:text-white"><ChevronLeft size={16} /></button>
-          <button type="button" aria-label="Next plan" onClick={() => scrollToCard(activeCard + 1)} disabled={activeCard >= plans.length - 1} className="rounded-lg border border-slate-200 p-2 text-slate-700 disabled:opacity-35 dark:border-white/10 dark:text-white"><ChevronRight size={16} /></button>
-        </div>
-      </div>
+      <PlanComparisonModal
+        open={comparisonOpen}
+        onClose={() => setComparisonOpen(false)}
+        plans={plans}
+        billing={billing}
+        selectedCode={selected}
+        priceFor={priceFor}
+        onSelect={choosePlan}
+      />
 
       {plansLoading ? (
         <div className="flex min-h-72 items-center justify-center text-sm text-slate-500 dark:text-white/55">Loading plans…</div>
       ) : (
-        <div ref={carouselRef} onScroll={syncActiveCard} className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {plans.map((plan, index) => {
+        <div className="grid grid-cols-1 gap-4 pt-1 sm:grid-cols-2 xl:grid-cols-3">
+          {plans.map((plan) => {
             const isActive = selected === plan.code;
             const price = billing === "monthly" ? plan.priceMonthly : plan.priceYearly;
+            const visibleFeatures = plan.features.slice(0, VISIBLE_FEATURE_COUNT);
+            const hiddenFeatureCount = plan.features.length - visibleFeatures.length;
             return (
-              <article key={plan.code} className={`glass glass-hover relative min-w-[88%] snap-start rounded-2xl border p-5 transition-all sm:min-w-[calc(50%-0.5rem)] xl:min-w-[calc(33.333%-0.667rem)] ${isActive ? "border-blue-500 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,0.5)]" : "border-slate-200/70 dark:border-white/10"}`}>
+              <article
+                key={plan.code}
+                className={`glass glass-hover relative flex h-full flex-col rounded-2xl border p-5 transition-all ${
+                  isActive
+                    ? "border-blue-500 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,0.5)]"
+                    : plan.popular
+                      ? "border-indigo-400/60 bg-indigo-500/5 dark:border-indigo-400/40"
+                      : "border-slate-200/70 dark:border-white/10"
+                }`}
+              >
                 {plan.tag ? <span className="absolute right-4 top-4 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] text-white">{plan.tag}</span> : null}
-                <h3 className="mb-1 pr-16 text-lg font-medium">{plan.name}</h3>
+                {!plan.tag && plan.popular ? (
+                  <span className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold text-white">
+                    <Sparkles size={10} /> Most popular
+                  </span>
+                ) : null}
+                <h3 className="mb-1 pr-24 text-lg font-medium">{plan.name}</h3>
                 <p className="mb-3 min-h-10 text-sm text-slate-600 dark:text-white/60">{plan.description}</p>
                 <div className="mb-4 text-2xl font-semibold">
                   {plan.isCustom ? "Custom" : price === null || price === undefined ? "Not offered" : priceFor(price, plan.currency)}
                   {!plan.isCustom && price !== null && price !== undefined ? <span className="ml-1 text-sm text-slate-500 dark:text-white/60">/ {billing === "monthly" ? "month" : "year"}</span> : null}
                 </div>
-                <ul className="mb-5 min-h-28 space-y-1.5 text-sm text-slate-600 dark:text-white/70">
-                  {plan.features.map((feature) => <li key={feature} className="flex items-start gap-2"><Check size={14} className="mt-0.5 shrink-0 text-blue-500 dark:text-blue-400" /><span>{feature}</span></li>)}
+                <ul className="mb-2 space-y-1.5 text-sm text-slate-600 dark:text-white/70">
+                  {visibleFeatures.map((feature) => <li key={feature} className="flex items-start gap-2"><Check size={14} className="mt-0.5 shrink-0 text-blue-500 dark:text-blue-400" /><span>{feature}</span></li>)}
                 </ul>
-                <button type="button" onClick={() => choosePlan(plan, index)} className={`w-full rounded-xl py-2 text-sm transition ${isActive ? "bg-blue-600 text-white hover:bg-blue-500" : "bg-slate-900/5 text-slate-900 hover:bg-slate-900/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"}`}>{isActive ? "Selected ✓" : "Select plan"}</button>
+                <button type="button" onClick={() => setComparisonOpen(true)} className="mb-5 text-left text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
+                  {hiddenFeatureCount > 0 ? `+${hiddenFeatureCount} more · compare all plans` : "Compare all plans"}
+                </button>
+                <button type="button" onClick={() => choosePlan(plan.code)} className={`mt-auto w-full rounded-xl py-2 text-sm transition ${isActive ? "bg-blue-600 text-white hover:bg-blue-500" : "bg-slate-900/5 text-slate-900 hover:bg-slate-900/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"}`}>{isActive ? "Selected ✓" : "Select plan"}</button>
               </article>
             );
           })}

@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Activity, Building2, CreditCard, Globe2, Loader2, ShieldCheck, Users } from "lucide-react";
+import { Activity, Building2, CreditCard, Globe2, Loader2, Users } from "lucide-react";
 
 type Overview = {
   stats: Record<string, number>;
@@ -19,15 +18,7 @@ export default function SuperDashboard() {
   if (error) return <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-600 dark:text-rose-300">{error}</div>;
   if (!data) return <div className="dashboard-card flex h-64 items-center justify-center rounded-3xl"><Loader2 className="animate-spin dashboard-muted"/></div>;
   return <>
-    <section className="relative overflow-hidden rounded-[30px] border dashboard-border bg-[#07101d] text-white shadow-xl">
-      <Image src="/dashboard/buildez-workspace-aurora.svg" alt="" fill priority className="object-cover"/>
-      <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent"/>
-      <div className="relative flex min-h-[290px] flex-col justify-between gap-8 p-7 sm:p-9 lg:flex-row lg:items-end lg:p-11">
-        <div className="max-w-2xl"><div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/15 px-3 py-1.5 text-xs font-medium text-white/80 backdrop-blur-md"><ShieldCheck size={13}/> BuildEZ Platform</div><h1 className="mt-5 max-w-xl text-3xl font-semibold tracking-[-.035em] sm:text-4xl lg:text-5xl">Operate every BuildEZ workspace from one place.</h1><p className="mt-4 max-w-xl text-sm leading-6 text-white/70 sm:text-base">Manage users, tenants, websites, billing, support and customer relationships across the entire platform.</p></div>
-        <Link href="/super/support" className="inline-flex w-fit items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-white/90"><Activity size={16}/> Review operations</Link>
-      </div>
-    </section>
-    <section className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <Metric href="/super/users" icon={Users} label="Users" value={data.stats.users} helper={`${data.stats.activeUsers} active`} tone="indigo"/>
       <Metric href="/super/tenants" icon={Building2} label="Tenants" value={data.stats.tenants} helper={`${data.stats.activeTenants} operational`} tone="cyan"/>
       <Metric href="/super/websites" icon={Globe2} label="Websites" value={data.stats.sites} helper={`${data.stats.publishedSites} published`} tone="emerald"/>

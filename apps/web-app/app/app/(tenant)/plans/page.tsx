@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, ChevronLeft, ChevronRight, CreditCard, Loader2 } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, CreditCard, Loader2, Sparkles } from "lucide-react";
 
 import EnterpriseContactModal from "@/components/billing/EnterpriseContactModal";
 import CurrencySwitcher from "@/components/billing/CurrencySwitcher";
+import PlanComparisonModal from "@/components/billing/PlanComparisonModal";
 import { useDisplayCurrency } from "@/lib/useDisplayCurrency";
+
+const VISIBLE_FEATURE_COUNT = 5;
 
 type BillingCycle = "monthly" | "yearly";
 
@@ -22,8 +25,10 @@ type Plan = {
   priceYearly: number | null;
   currency: string;
   isCustom: boolean;
+  popular?: boolean;
   checkoutEnabled: Record<BillingCycle, boolean>;
   features: string[];
+  featureTable: Array<{ key: string; label: string; value: string; included: boolean; priority: number }>;
 };
 
 type CurrentSubscription = {
@@ -43,6 +48,7 @@ export default function PlansPage() {
   const [notice, setNotice] = useState("");
   const [currentSubscription, setCurrentSubscription] = useState<CurrentSubscription | null>(null);
   const [enterpriseOpen, setEnterpriseOpen] = useState(false);
+  const [comparisonOpen, setComparisonOpen] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -143,6 +149,20 @@ export default function PlansPage() {
   return (
     <div className="mx-auto max-w-7xl pb-12">
       <EnterpriseContactModal open={enterpriseOpen} onClose={() => setEnterpriseOpen(false)} />
+      <PlanComparisonModal
+        open={comparisonOpen}
+        onClose={() => setComparisonOpen(false)}
+        plans={plans}
+        billing={billing}
+        selectedCode={currentSubscription?.planCode ?? null}
+        priceFor={priceFor}
+        onSelect={(planCode) => {
+          const plan = plans.find((candidate) => candidate.code === planCode);
+          if (!plan) return;
+          if (plan.isCustom) setEnterpriseOpen(true);
+          else void checkout(plan);
+        }}
+      />
       <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
         <div>
           <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.14em] dashboard-faint">
@@ -192,12 +212,22 @@ export default function PlansPage() {
             const isFree = amount === 0;
             const checkoutEnabled = plan.checkoutEnabled[billing];
             const isCurrent = (currentSubscription?.planCode || "FREE").toUpperCase() === plan.code.toUpperCase();
+            const curatedStats = plan.isCustom
+              ? ["Custom website limits", "Custom page limits", "Flexible AI credits", "Dedicated support"]
+              : [`${plan.maxSites} website${plan.maxSites === 1 ? "" : "s"}`, `${plan.maxPages.toLocaleString()} pages`, `${plan.aiCredits.toLocaleString()} AI credits`, `${plan.teamMembers} team member${plan.teamMembers === 1 ? "" : "s"}`];
+            const visibleFeatures = [...curatedStats, ...plan.features].slice(0, VISIBLE_FEATURE_COUNT);
+            const hiddenFeatureCount = curatedStats.length + plan.features.length - visibleFeatures.length;
             return (
               <article
                 key={plan.code}
-                style={isFree ? { background: "linear-gradient(145deg, rgba(59, 130, 246, 0.16), rgba(14, 165, 233, 0.05))" } : undefined}
-                className={`dashboard-card flex min-w-full snap-start rounded-3xl p-6 md:min-w-[calc((100%_-_1.25rem)/2)] xl:min-w-[calc((100%_-_2.5rem)/3)] ${isCurrent ? "ring-2 ring-emerald-500/50" : ""}`}
+                style={isFree ? { background: "linear-gradient(145deg, rgba(59, 130, 246, 0.16), rgba(14, 165, 233, 0.05))" } : plan.popular ? { background: "linear-gradient(145deg, rgba(99, 102, 241, 0.14), rgba(168, 85, 247, 0.05))" } : undefined}
+                className={`dashboard-card relative flex min-w-full snap-start rounded-3xl p-6 md:min-w-[calc((100%_-_1.25rem)/2)] xl:min-w-[calc((100%_-_2.5rem)/3)] ${isCurrent ? "ring-2 ring-emerald-500/50" : plan.popular ? "ring-2 ring-indigo-500/40" : ""}`}
               >
+                {plan.popular && !isCurrent ? (
+                  <span className="absolute right-6 top-6 flex items-center gap-1 rounded-full bg-indigo-600 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white">
+                    <Sparkles size={10} /> Most popular
+                  </span>
+                ) : null}
                 <div className="flex w-full flex-col">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-xs font-semibold uppercase tracking-[.13em] text-blue-600 dark:text-blue-300">{plan.code}</p>
@@ -210,13 +240,13 @@ export default function PlansPage() {
                     {!plan.isCustom && amount !== null && <span className="ml-1 text-sm font-normal dashboard-muted">/{billing === "monthly" ? "month" : "year"}</span>}
                   </div>
                   <ul className="mt-6 space-y-2 text-sm dashboard-muted">
-                    {(plan.isCustom
-                      ? ["Custom website limits", "Custom page limits", "Flexible AI credits", "Dedicated support", ...plan.features]
-                      : [`${plan.maxSites} websites`, `${plan.maxPages} pages`, `${plan.aiCredits.toLocaleString()} AI credits`, `${plan.teamMembers} team members`, ...plan.features]
-                    ).slice(0, 8).map((feature) => (
+                    {visibleFeatures.map((feature) => (
                       <li key={feature} className="flex items-start gap-2"><Check size={15} className="mt-0.5 shrink-0 text-emerald-500" />{feature}</li>
                     ))}
                   </ul>
+                  <button type="button" onClick={() => setComparisonOpen(true)} className="mt-2 text-left text-xs font-semibold text-blue-600 hover:underline dark:text-blue-300">
+                    {hiddenFeatureCount > 0 ? `+${hiddenFeatureCount} more · compare all plans` : "Compare all plans"}
+                  </button>
                   <div className="mt-auto pt-7">
                     <button
                       disabled={!plan.isCustom && (busy !== "" || amount === null || isFree || !checkoutEnabled || isCurrent)}

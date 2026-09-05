@@ -464,6 +464,13 @@ html.dark .app-shell, html.dark .dashboard-shell { background: var(--background)
   .bez-bg {
     min-height: 100vh;
     background:
+      radial-gradient(900px circle at 20% 10%, rgba(47,125,246,0.14), transparent 55%),
+      radial-gradient(800px circle at 80% 80%, rgba(47,125,246,0.10), transparent 60%),
+      linear-gradient(180deg, #f3f6fc, #eaeff9 70%);
+  }
+
+  .dark .bez-bg {
+    background:
       radial-gradient(900px circle at 20% 10%, rgba(47,125,246,0.35), transparent 55%),
       radial-gradient(800px circle at 80% 80%, rgba(47,125,246,0.25), transparent 60%),
       linear-gradient(180deg, #050914, #030712 70%);
