@@ -15,6 +15,7 @@ export default function Home() {
   const stageRef = useRef<HTMLElement>(null);
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuMounted, setMenuMounted] = useState(false);
   const [sitePrompt, setSitePrompt] = useState("");
   const [activeJourney, setActiveJourney] = useState(0);
   useEffect(() => {
@@ -77,12 +78,24 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    setMenuMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
   return (
     <main className="buildezy-marketing site-shell" ref={stageRef}>
       <nav className={`topbar${headerScrolled ? " is-scrolled" : ""}`} aria-label="Main navigation">
         <button
           type="button"
-          className="marketing-mobile-menu-toggle"
+          className={`marketing-mobile-menu-toggle${menuOpen ? " is-open" : ""}`}
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((value) => !value)}
@@ -93,18 +106,28 @@ export default function Home() {
         <div className="nav-links"><a href="#platform">Platform</a><a href="/pricing">Pricing</a><a href="#difference">Why Build Ezy</a><a href="#workflow">How it works</a></div>
         <div className="nav-actions"><a href="/app/login" className="login-link">Log In</a><a href="/app/signup" className="mini-cta">Signup <Arrow /></a></div>
       </nav>
-      {menuOpen && typeof document !== "undefined"
+      {menuMounted
         ? createPortal(
             <>
-              <div className="marketing-mobile-menu-backdrop" onClick={() => setMenuOpen(false)} />
-              <nav aria-label="Mobile navigation" className="marketing-mobile-menu">
-                <a href="#platform" onClick={() => setMenuOpen(false)}>Platform</a>
-                <a href="/pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
-                <a href="#difference" onClick={() => setMenuOpen(false)}>Why Build Ezy</a>
-                <a href="#workflow" onClick={() => setMenuOpen(false)}>How it works</a>
+              <div
+                className={`marketing-mobile-menu-backdrop${menuOpen ? " is-open" : ""}`}
+                onClick={() => setMenuOpen(false)}
+              />
+              <nav
+                aria-label="Mobile navigation"
+                className={`marketing-mobile-menu${menuOpen ? " is-open" : ""}`}
+                aria-hidden={!menuOpen}
+              >
+                <a href="#top" className="marketing-mobile-menu-brand" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>
+                  <img src="/buildez-logo-dark.svg" alt="BuildEzy" />
+                </a>
+                <a href="#platform" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Platform</a>
+                <a href="/pricing" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Pricing</a>
+                <a href="#difference" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Why Build Ezy</a>
+                <a href="#workflow" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>How it works</a>
                 <div className="marketing-mobile-menu-divider" />
-                <a href="/app/login" onClick={() => setMenuOpen(false)}>Log in</a>
-                <a href="/app/signup" className="marketing-mobile-menu-cta" onClick={() => setMenuOpen(false)}>Signup</a>
+                <a href="/app/login" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Log in</a>
+                <a href="/app/signup" className="marketing-mobile-menu-cta" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Signup</a>
               </nav>
             </>,
             document.body,
