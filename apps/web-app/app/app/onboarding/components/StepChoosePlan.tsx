@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Check, ChevronLeft, ChevronRight, CreditCard, Sparkles } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, CreditCard, Sparkles, X } from "lucide-react";
 
 import PayNowModal from "./PayNowModal";
 import EnterpriseContactModal from "@/components/billing/EnterpriseContactModal";
@@ -10,7 +10,7 @@ import PlanComparisonModal from "@/components/billing/PlanComparisonModal";
 import { useDisplayCurrency } from "@/lib/useDisplayCurrency";
 import { useOnboarding } from "../OnboardingContext";
 
-const VISIBLE_FEATURE_COUNT = 5;
+const VISIBLE_FEATURE_COUNT = 6;
 
 type Plan = {
   code: string;
@@ -266,6 +266,7 @@ export default function StepChoosePlan({
             const price = billing === "monthly" ? plan.priceMonthly : plan.priceYearly;
             const visibleFeatures = plan.features.slice(0, VISIBLE_FEATURE_COUNT);
             const hiddenFeatureCount = plan.features.length - visibleFeatures.length;
+            const excludedFeatures = plan.featureTable.filter((row) => !row.included).slice(0, 2);
             return (
               <article
                 key={plan.code}
@@ -291,6 +292,7 @@ export default function StepChoosePlan({
                 </div>
                 <ul className="mb-2 space-y-1.5 text-sm text-slate-600 dark:text-white/70">
                   {visibleFeatures.map((feature) => <li key={feature} className="flex items-start gap-2"><Check size={14} className="mt-0.5 shrink-0 text-blue-500 dark:text-blue-400" /><span className="min-w-0 break-words">{feature}</span></li>)}
+                  {excludedFeatures.map((row) => <li key={row.key} className="flex items-start gap-2 opacity-50"><X size={14} className="mt-0.5 shrink-0" /><span className="min-w-0 break-words">{row.label}</span></li>)}
                 </ul>
                 <button type="button" onClick={() => setComparisonOpen(true)} className="mb-5 text-left text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
                   {hiddenFeatureCount > 0 ? `+${hiddenFeatureCount} more · compare all plans` : "Compare all plans"}

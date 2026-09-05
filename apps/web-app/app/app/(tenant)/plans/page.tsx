@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, ChevronLeft, ChevronRight, CreditCard, Loader2, Sparkles } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, CreditCard, Loader2, Sparkles, X } from "lucide-react";
 
 import EnterpriseContactModal from "@/components/billing/EnterpriseContactModal";
 import CurrencySwitcher from "@/components/billing/CurrencySwitcher";
@@ -10,7 +10,7 @@ import PlanComparisonModal from "@/components/billing/PlanComparisonModal";
 import { useDisplayCurrency } from "@/lib/useDisplayCurrency";
 import { formatPlanCodeLabel } from "@/lib/billing/formatPlanLabel";
 
-const VISIBLE_FEATURE_COUNT = 5;
+const VISIBLE_FEATURE_COUNT = 7;
 
 type BillingCycle = "monthly" | "yearly";
 
@@ -221,6 +221,7 @@ export default function PlansPage() {
               : [`${plan.maxSites} website${plan.maxSites === 1 ? "" : "s"}`, `${plan.maxPages.toLocaleString()} pages`, `${plan.aiCredits.toLocaleString()} AI credits`, `${plan.teamMembers} team member${plan.teamMembers === 1 ? "" : "s"}`];
             const visibleFeatures = [...curatedStats, ...plan.features].slice(0, VISIBLE_FEATURE_COUNT);
             const hiddenFeatureCount = curatedStats.length + plan.features.length - visibleFeatures.length;
+            const excludedFeatures = plan.featureTable.filter((row) => !row.included).slice(0, 2);
             return (
               <article
                 key={plan.code}
@@ -246,6 +247,9 @@ export default function PlansPage() {
                   <ul className="mt-6 space-y-2 text-sm dashboard-muted">
                     {visibleFeatures.map((feature) => (
                       <li key={feature} className="flex items-start gap-2"><Check size={15} className="mt-0.5 shrink-0 text-emerald-500" /><span className="min-w-0 break-words">{feature}</span></li>
+                    ))}
+                    {excludedFeatures.map((row) => (
+                      <li key={row.key} className="flex items-start gap-2 opacity-50"><X size={15} className="mt-0.5 shrink-0" /><span className="min-w-0 break-words">{row.label}</span></li>
                     ))}
                   </ul>
                   <button type="button" onClick={() => setComparisonOpen(true)} className="mt-2 text-left text-xs font-semibold text-blue-600 hover:underline dark:text-blue-300">
