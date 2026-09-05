@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Check, CreditCard, Sparkles } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Check, ChevronLeft, ChevronRight, CreditCard, Sparkles } from "lucide-react";
 
 import PayNowModal from "./PayNowModal";
 import EnterpriseContactModal from "@/components/billing/EnterpriseContactModal";
@@ -46,6 +46,8 @@ export default function StepChoosePlan({
   const [checkoutError, setCheckoutError] = useState("");
   const [enterpriseOpen, setEnterpriseOpen] = useState(false);
   const [comparisonOpen, setComparisonOpen] = useState(false);
+  const [activeCard, setActiveCard] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
   const onNextRef = useRef(onNext);
 
   useEffect(() => {
@@ -114,6 +116,28 @@ export default function StepChoosePlan({
       });
     return () => { cancelled = true; };
   }, [savedPlanId, setPlanId]);
+
+  const scrollToCard = useCallback((index: number) => {
+    const carousel = carouselRef.current;
+    if (!carousel || plans.length === 0) return;
+    const nextIndex = Math.max(0, Math.min(index, plans.length - 1));
+    const card = carousel.children.item(nextIndex) as HTMLElement | null;
+    if (!card) return;
+    carousel.scrollTo({ left: card.offsetLeft - carousel.offsetLeft, behavior: "smooth" });
+    setActiveCard(nextIndex);
+  }, [plans.length]);
+
+  function syncActiveCard() {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    const cards = Array.from(carousel.children) as HTMLElement[];
+    if (!cards.length) return;
+    const nearest = cards.reduce((best, card, index) => {
+      const distance = Math.abs(card.offsetLeft - carousel.offsetLeft - carousel.scrollLeft);
+      return distance < best.distance ? { index, distance } : best;
+    }, { index: 0, distance: Number.POSITIVE_INFINITY });
+    setActiveCard(nearest.index);
+  }
 
   function choosePlan(planCode: string) {
     const plan = plans.find((candidate) => candidate.code === planCode);
@@ -223,10 +247,20 @@ export default function StepChoosePlan({
         onSelect={choosePlan}
       />
 
+      {!plansLoading && plans.length > 1 ? (
+        <div className="flex items-center justify-between pt-1">
+          <p className="text-xs font-medium text-slate-500 dark:text-white/50">Swipe or use the arrows to compare plans</p>
+          <div className="flex gap-2">
+            <button type="button" aria-label="Previous plan" onClick={() => scrollToCard(activeCard - 1)} disabled={activeCard === 0} className="rounded-lg border border-slate-200 p-2 text-slate-700 disabled:opacity-35 dark:border-white/10 dark:text-white"><ChevronLeft size={16} /></button>
+            <button type="button" aria-label="Next plan" onClick={() => scrollToCard(activeCard + 1)} disabled={activeCard >= plans.length - 1} className="rounded-lg border border-slate-200 p-2 text-slate-700 disabled:opacity-35 dark:border-white/10 dark:text-white"><ChevronRight size={16} /></button>
+          </div>
+        </div>
+      ) : null}
+
       {plansLoading ? (
         <div className="flex min-h-72 items-center justify-center text-sm text-slate-500 dark:text-white/55">Loading plans…</div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 pt-1 sm:grid-cols-2 xl:grid-cols-3">
+        <div ref={carouselRef} onScroll={syncActiveCard} className="flex snap-x snap-mandatory items-stretch gap-4 overflow-x-auto scroll-smooth pb-3 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {plans.map((plan) => {
             const isActive = selected === plan.code;
             const price = billing === "monthly" ? plan.priceMonthly : plan.priceYearly;
@@ -235,7 +269,7 @@ export default function StepChoosePlan({
             return (
               <article
                 key={plan.code}
-                className={`glass glass-hover relative flex h-full flex-col rounded-2xl border p-5 transition-all ${
+                className={`glass glass-hover relative flex h-full min-w-full shrink-0 snap-start flex-col rounded-2xl border p-5 transition-all sm:min-w-[calc(50%-0.5rem)] xl:min-w-[calc(33.333%-0.667rem)] ${
                   isActive
                     ? "border-blue-500 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,0.5)]"
                     : plan.popular
