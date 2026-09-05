@@ -95,7 +95,9 @@ async function extractFramesWithFfmpeg(input: {
     // black/blank boundary frame.
     const margin = duration * 0.04;
     const usableDuration = Math.max(duration - margin * 2, 0.5);
-    const fps = (frameCount - 1) / usableDuration;
+    // ffmpeg rounds output frame timestamps; using N-1 can emit only seven
+    // frames for the minimum eight-frame sequence and reject a valid video.
+    const fps = frameCount / usableDuration;
 
     await runFfmpegBinary(
       ffmpegBinary,
