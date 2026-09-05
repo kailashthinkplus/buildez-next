@@ -1,15 +1,47 @@
 import { createHash } from "node:crypto";
+import { spawn } from "node:child_process";
+import { chmod, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import ffmpegPath from "@ffmpeg-installer/ffmpeg";
+import ffprobePath from "@ffprobe-installer/ffprobe";
 import { fetchWithRetry } from "@/lib/net/fetchWithRetry";
+import { uploadToR2 } from "@/lib/storage/uploadToR2";
 
 /*
- * Extracts evenly-spaced still frames from a generated video, entirely
- * via Cloudinary URL transformations — no ffmpeg/video processing in
- * our own runtime. We upload the (remote) video by URL once, then
- * build one delivery URL per frame using Cloudinary's `so_<seconds>`
- * (start-offset) transformation; Cloudinary renders each frame lazily
- * on first fetch.
+ * @ffmpeg-installer/@ffprobe-installer bundle a prebuilt binary per
+ * platform and mark it executable via a postinstall script — but a
+ * package manager can be configured to skip build scripts for
+ * unrecognized packages (a security default; see pnpm's
+ * allowBuilds/onlyBuiltDependencies), silently leaving the binary
+ * without its executable bit. chmod defensively before every spawn
+ * rather than depending on install-time config being correct on every
+ * environment this runs on.
+ */
+let binariesMadeExecutable = false;
+async function ensureBinariesExecutable() {
+  if (binariesMadeExecutable) return;
+  binariesMadeExecutable = true;
+  await Promise.all([
+    chmod(ffmpegPath.path, 0o755).catch(() => {}),
+    chmod(ffprobePath.path, 0o755).catch(() => {}),
+  ]);
+}
+
+/*
+ * Extracts evenly-spaced still frames from a generated video.
  *
- * Docs: https://cloudinary.com/documentation/video_manipulation_and_delivery
+ * Primary path: a local ffmpeg/ffprobe pair (bundled as prebuilt static
+ * binaries via @ffmpeg-installer/ffmpeg + @ffprobe-installer/ffprobe —
+ * no system package manager involved, so it works the same regardless
+ * of host OS/package availability) run against a short-lived temp
+ * directory that is always cleaned up. Free beyond the compute already
+ * paid for, unlike Cloudinary's metered video add-on.
+ *
+ * Optional secondary path: Cloudinary's `so_<seconds>` delivery-URL
+ * transformation, used only as a fallback if ffmpeg itself fails
+ * (missing/broken binary, unsupported codec) and Cloudinary happens to
+ * already be configured — never required.
  */
 
 const CLOUD_NAME = () => process.env.CLOUDINARY_CLOUD_NAME?.trim();
@@ -20,6 +52,105 @@ export function hasCloudinaryConfigured() {
   return Boolean(CLOUD_NAME() && API_KEY() && API_SECRET());
 }
 
+function runFfmpegBinary(binaryPath: string, args: string[], timeoutMs: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(binaryPath, args, { stdio: ["ignore", "pipe", "pipe"] });
+    let stdout = "";
+    let stderr = "";
+    const timer = setTimeout(() => {
+      child.kill("SIGKILL");
+      reject(new Error(`Timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+    child.stdout?.on("data", (chunk) => { stdout += String(chunk); });
+    child.stderr?.on("data", (chunk) => { stderr += String(chunk); });
+    child.once("error", (error) => { clearTimeout(timer); reject(error); });
+    child.once("exit", (code) => {
+      clearTimeout(timer);
+      if (code === 0) resolve(stdout);
+      else reject(new Error(`Exited with code ${code}: ${stderr.slice(-2000)}`));
+    });
+  });
+}
+
+/**
+ * Downloads the video, extracts `frameCount` evenly-spaced JPEG frames
+ * via a local ffmpeg binary, and persists each one to R2.
+ *
+ * Never throws — returns [] on any failure so the caller can fall back
+ * (to Cloudinary, or to skipping the frame sequence entirely).
+ */
+async function extractFramesWithFfmpeg(input: {
+  videoUrl: string;
+  frameCount: number;
+  siteId: string;
+  signal: AbortSignal;
+}): Promise<string[]> {
+  const workDir = await mkdtemp(path.join(tmpdir(), "buildez-frames-"));
+  try {
+    await ensureBinariesExecutable();
+    const videoResponse = await fetchWithRetry(
+      input.videoUrl,
+      { cache: "no-store" },
+      { timeoutMs: 60_000, signal: input.signal, maxAttempts: 2 },
+    );
+    if (!videoResponse.ok) return [];
+    const videoPath = path.join(workDir, "source.mp4");
+    await writeFile(videoPath, Buffer.from(await videoResponse.arrayBuffer()));
+
+    const probeOutput = await runFfmpegBinary(
+      ffprobePath.path,
+      ["-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", videoPath],
+      15_000,
+    );
+    const duration = Number.parseFloat(probeOutput.trim());
+    if (!Number.isFinite(duration) || duration <= 0) return [];
+
+    const frameCount = Math.max(2, Math.min(input.frameCount, 60));
+    // Keep a small margin off both ends so frames never land on a
+    // black/blank boundary frame.
+    const margin = duration * 0.04;
+    const usableDuration = Math.max(duration - margin * 2, 0.5);
+    const fps = (frameCount - 1) / usableDuration;
+
+    await runFfmpegBinary(
+      ffmpegPath.path,
+      [
+        "-ss", margin.toFixed(3),
+        "-i", videoPath,
+        "-frames:v", String(frameCount),
+        "-vf", `fps=${fps.toFixed(6)}`,
+        "-q:v", "3",
+        path.join(workDir, "frame-%03d.jpg"),
+      ],
+      60_000,
+    );
+
+    const frameUrls: string[] = [];
+    for (let index = 1; index <= frameCount; index += 1) {
+      const framePath = path.join(workDir, `frame-${String(index).padStart(3, "0")}.jpg`);
+      let buffer: Buffer;
+      try {
+        buffer = await readFile(framePath);
+      } catch {
+        continue;
+      }
+      const fingerprint = createHash("sha256").update(buffer).digest("hex").slice(0, 24);
+      const url = await uploadToR2({
+        buffer,
+        key: `sites/${input.siteId}/frame-sequence/${fingerprint}.jpg`,
+        contentType: "image/jpeg",
+      });
+      frameUrls.push(url);
+    }
+    return frameUrls.length >= 2 ? frameUrls : [];
+  } catch (error) {
+    console.warn("[ffmpeg] frame extraction error", error instanceof Error ? error.message : error);
+    return [];
+  } finally {
+    await rm(workDir, { recursive: true, force: true }).catch(() => {});
+  }
+}
+
 function signParams(params: Record<string, string>, apiSecret: string) {
   const toSign = Object.keys(params)
     .sort()
@@ -28,15 +159,8 @@ function signParams(params: Record<string, string>, apiSecret: string) {
   return createHash("sha1").update(`${toSign}${apiSecret}`).digest("hex");
 }
 
-/**
- * Uploads a remote video (by URL) to Cloudinary and returns evenly
- * spaced frame image URLs across its duration.
- *
- * Returns an empty array (never throws) when Cloudinary isn't
- * configured or the upload/extraction fails — callers should treat
- * this the same as "no frames available" and fall back accordingly.
- */
-export async function extractVideoFrames(input: {
+/** Cloudinary fallback — only reached when the local ffmpeg path fails and Cloudinary happens to already be configured. */
+async function extractFramesWithCloudinary(input: {
   videoUrl: string;
   frameCount: number;
   signal: AbortSignal;
@@ -82,8 +206,6 @@ export async function extractVideoFrames(input: {
     if (!uploaded.public_id || !uploaded.duration || uploaded.duration <= 0) return [];
 
     const frameCount = Math.max(2, Math.min(input.frameCount, 60));
-    // Keep a small margin off both ends so frames never land on a
-    // black/blank boundary frame.
     const margin = uploaded.duration * 0.04;
     const usableDuration = Math.max(uploaded.duration - margin * 2, 0.5);
 
@@ -95,4 +217,22 @@ export async function extractVideoFrames(input: {
     console.warn("[Cloudinary] frame extraction error", error instanceof Error ? error.message : error);
     return [];
   }
+}
+
+/**
+ * Returns evenly spaced frame image URLs across a video's duration.
+ *
+ * Never throws — returns [] when every available path fails; callers
+ * should treat that the same as "no frames available" and fall back
+ * accordingly.
+ */
+export async function extractVideoFrames(input: {
+  videoUrl: string;
+  frameCount: number;
+  siteId: string;
+  signal: AbortSignal;
+}): Promise<string[]> {
+  const viaFfmpeg = await extractFramesWithFfmpeg(input);
+  if (viaFfmpeg.length) return viaFfmpeg;
+  return extractFramesWithCloudinary(input);
 }

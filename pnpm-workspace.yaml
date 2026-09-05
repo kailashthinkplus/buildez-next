@@ -3,6 +3,8 @@ packages:
   - packages/*
 
 allowBuilds:
+  '@ffmpeg-installer/darwin-arm64': false
+  '@ffprobe-installer/darwin-arm64': false
   '@firebase/util': true
   '@prisma/client': true
   '@prisma/engines': true

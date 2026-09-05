@@ -1,11 +1,16 @@
 import { generateHeroVideo, hasHiggsfieldVideo } from "./videoGeneration";
-import { extractVideoFrames, hasCloudinaryConfigured } from "./frameExtraction";
+import { extractVideoFrames } from "./frameExtraction";
 import { persistCreativeAsset } from "./persistCreativeAsset";
 
 const FRAME_COUNT = Math.max(8, Math.min(Number(process.env.BUILDEZ_3D_FRAME_COUNT || 36), 60));
 
+/**
+ * Frame extraction runs on a bundled local ffmpeg binary (no external
+ * config needed — see frameExtraction.ts), so the only real dependency
+ * left is Higgsfield actually producing the source video.
+ */
 export function immersiveFrameSequenceAvailable() {
-  return hasHiggsfieldVideo() && hasCloudinaryConfigured();
+  return hasHiggsfieldVideo();
 }
 
 /**
@@ -39,6 +44,7 @@ export async function generateImmersiveFrameSequence(input: {
   const rawFrameUrls = await extractVideoFrames({
     videoUrl,
     frameCount: FRAME_COUNT,
+    siteId: input.siteId,
     signal: input.signal,
   });
   if (rawFrameUrls.length < 8) return null;

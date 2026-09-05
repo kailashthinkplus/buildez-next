@@ -2871,29 +2871,27 @@ BuildEZ project structure.`
     effectivePrompt || generationPrompt || "",
     capabilityPlan,
   );
-  if (external3DModelRequired && !hasConfiguredCreativeCapability("threeD")) {
-    throw new Error(
-      "BuildEZ cannot create this high-fidelity 3D experience yet because no Builder 3D provider is configured. Configure MESHY_MCP_URL or SPLINE_MCP_URL, then retry. The project was not changed and BuildEZ will not substitute flat imagery or primitive geometry.",
-    );
-  }
 
   // ----------------------------------------------------------
-  // IMMERSIVE 3D → FRAME SEQUENCE (replaces live Three.js/R3F)
+  // IMMERSIVE 3D → FRAME SEQUENCE (replaces live Three.js/R3F, and an
+  // external 3D-model provider)
   //
   // Hand-authored WebGL scenes reliably come out primitive and
-  // unpolished. When a hero image exists and a video+frame-extraction
-  // provider chain is configured, animate that image into a short
-  // cinematic clip and extract a frame sequence instead — the
-  // generate stage renders it on a scroll-scrubbed canvas rather than
-  // writing live geometry. This never touches anything outside the
-  // requires3D path: when it's not applicable, not configured, or
-  // fails, frameSequence stays null and generation proceeds exactly
-  // as it does today.
+  // unpolished, and a real accurate product model (a specific
+  // motorcycle, car, etc.) can't be coded convincingly either — that's
+  // what external3DModelRequired flags. Rather than requiring a true 3D
+  // asset provider (Meshy/Spline) for that case, animate the generated
+  // hero image into a short cinematic clip and extract a frame sequence
+  // instead — the generate stage renders it on a scroll-scrubbed canvas.
+  // This covers BOTH the generic requires3D case and the
+  // external3DModelRequired case; only when neither this nor a
+  // configured Meshy/Spline provider is available do we still refuse
+  // rather than substitute flat imagery or primitive geometry.
   // ----------------------------------------------------------
 
   let frameSequence: { frameUrls: string[] } | null = null;
 
-  if (capabilityPlan.requires3D && !external3DModelRequired) {
+  if (capabilityPlan.requires3D) {
     const heroImage = generatedMedia.find((media) => /hero|keyframe|primary|opening/i.test(media.role));
 
     if (heroImage) {
@@ -2918,6 +2916,12 @@ BuildEZ project structure.`
         );
       }
     }
+  }
+
+  if (external3DModelRequired && !frameSequence && !hasConfiguredCreativeCapability("threeD")) {
+    throw new Error(
+      "BuildEZ cannot create this high-fidelity 3D experience yet because no Builder 3D provider is configured. Configure MESHY_MCP_URL, SPLINE_MCP_URL, or HIGGSFIELD_API_KEY_ID/HIGGSFIELD_API_KEY_SECRET, then retry. The project was not changed and BuildEZ will not substitute flat imagery or primitive geometry.",
+    );
   }
 
   input.onProgress?.(
