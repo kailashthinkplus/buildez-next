@@ -19,6 +19,7 @@ type UpgradePlan = {
   isCustom: boolean;
   checkoutEnabled: Record<BillingCycle, boolean>;
   features: string[];
+  featureTable?: Array<{ key: string; label: string; value: string; included: boolean; priority: number }>;
   maxSites: number;
   maxPages: number;
   aiCredits: number;
@@ -262,7 +263,7 @@ export default function UpgradePlanModal({
                 key={plan.code}
                 className={`
                   min-w-[85%] shrink-0 snap-start p-5 rounded-2xl border glass transition-all cursor-pointer
-                  sm:min-w-[calc((100%_-_2rem)/2.2)] lg:min-w-[calc((100%_-_2rem)/3)]
+                  sm:min-w-[calc((100%_-_1rem)/2)] md:min-w-[calc((100%_-_2rem)/3)]
                   ${
                     isActive
                       ? "border-blue-500 bg-blue-500/10 shadow-[0_0_20px_rgba(59,130,246,0.18)]"
@@ -297,12 +298,21 @@ export default function UpgradePlanModal({
                 </div>
 
                 <ul className="space-y-1.5 text-sm dashboard-muted mb-6">
-                  {plan.features.map((f: string) => (
+                  {plan.features.slice(0, 7).map((f: string) => (
                     <li key={f} className="flex gap-2">
                       <Check className="h-4 w-4 shrink-0 text-blue-400 mt-[2px]" />
                       <span className="min-w-0 break-words">{f}</span>
                     </li>
                   ))}
+                  {(plan.featureTable || [])
+                    .filter((row) => !row.included)
+                    .slice(0, 3)
+                    .map((row) => (
+                      <li key={row.key} className="flex gap-2 opacity-60">
+                        <X className="h-4 w-4 shrink-0 mt-[2px]" />
+                        <span className="min-w-0 break-words">{row.label}</span>
+                      </li>
+                    ))}
                 </ul>
 
                 <button

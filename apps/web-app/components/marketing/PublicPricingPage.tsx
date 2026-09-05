@@ -30,6 +30,7 @@ type PublicPlan = {
   currency: string;
   isCustom: boolean;
   features: string[];
+  featureTable?: Array<{ key: string; label: string; value: string; included: boolean; priority: number }>;
 };
 
 export function PublicPricingPage() {
@@ -133,7 +134,8 @@ export function PublicPricingPage() {
                   <li>{plan.maxPages.toLocaleString()} pages</li>
                   <li>{plan.aiCredits.toLocaleString()} AI credits</li>
                   <li>{plan.teamMembers.toLocaleString()} team member{plan.teamMembers === 1 ? "" : "s"}</li>
-                  {plan.features.slice(0, 5).map((feature) => <li key={feature}>{feature}</li>)}
+                  {plan.features.slice(0, 6).map((feature) => <li key={feature}>{feature}</li>)}
+                  {(plan.featureTable || []).filter((row) => !row.included).slice(0, 2).map((row) => <li key={row.key} className="plan-excluded">{row.label}</li>)}
                 </ul>
                 <Link className="plan-cta" href={plan.isCustom ? "/faq" : `/app/signup?plan=${encodeURIComponent(plan.code)}`}>
                   {plan.isCustom ? "Contact enterprise" : amount === 0 ? "Start free" : unavailable ? "Join BuildEzy" : `Choose ${plan.name}`}
