@@ -12,7 +12,7 @@ export function DashboardLogo({ compact = false }: { compact?: boolean }) {
     return (
       <Image
         src="/shopez-logo.webp"
-        alt="Shopez"
+        alt="Shopezy"
         width={799}
         height={272}
         priority

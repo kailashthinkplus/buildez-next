@@ -59,7 +59,7 @@ export function SiteSidebar({
         // Themes marketplace is hidden for the production launch; the
         // route and UI still exist at `${base}/themes` for a later re-enable.
         { name: "Apps", href: `${base}/apps`, icon: Puzzle },
-        { name: "Shopez", href: `${base}/shopez`, icon: ShoppingBag, children: [
+        { name: "Shopezy", href: `${base}/shopez`, icon: ShoppingBag, children: [
           { name: "Overview", href: `${base}/shopez?view=overview`, icon: LayoutDashboard },
           { name: "Products", href: `${base}/shopez?view=products`, icon: Package },
           { name: "Orders", href: `${base}/shopez?view=orders`, icon: ReceiptText },

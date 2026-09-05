@@ -463,7 +463,7 @@ export default function ProductEditor({
           </Card>
           <div className="rounded-2xl border border-orange-500/20 bg-orange-500/10 p-5">
             <Box className="text-orange-500" />
-            <h3 className="mt-3 font-semibold">ShopEZ product experience</h3>
+            <h3 className="mt-3 font-semibold">Shopezy product experience</h3>
             <p className="mt-2 text-xs leading-5 dashboard-muted">
               Gallery thumbnails, variants, inventory, SEO, publishing, and
               CMS-style storytelling sections feed the live storefront.

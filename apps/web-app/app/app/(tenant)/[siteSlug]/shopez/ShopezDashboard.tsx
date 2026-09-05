@@ -83,10 +83,10 @@ function SetupError({ reload }: { reload: () => void }) {
         <ShoppingBag />
       </span>
       <h2 className="mt-4 text-lg font-semibold">
-        Shopez could not be initialized
+        Shopezy could not be initialized
       </h2>
       <p className="mt-2 max-w-md text-sm dashboard-muted">
-        The commerce service did not return a store. Confirm the Shopez database
+        The commerce service did not return a store. Confirm the Shopezy database
         migration is applied, then try again.
       </p>
       <button
@@ -138,7 +138,7 @@ export default function ShopezDashboard({ site }: { site: Site }) {
       setProducts(p.products);
       setOrders(r.orders);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not load Shopez");
+      setError(e instanceof Error ? e.message : "Could not load Shopezy");
     } finally {
       setLoading(false);
     }
@@ -151,7 +151,7 @@ export default function ShopezDashboard({ site }: { site: Site }) {
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-sm font-semibold text-orange-500">
-            <Sparkles size={15} /> SHOPEZ COMMERCE
+            <Sparkles size={15} /> SHOPEZY COMMERCE
           </div>
           <h1 className="mt-1 text-3xl font-semibold tracking-[-.04em]">
             Commerce intelligence.
@@ -163,7 +163,7 @@ export default function ShopezDashboard({ site }: { site: Site }) {
         </div>
         <div className="flex items-center gap-3">
           <label className="flex cursor-pointer items-center gap-3 rounded-xl border dashboard-border px-3 py-2 text-xs font-semibold">
-            <span>Turn on Shopez</span>
+            <span>Turn on Shopezy</span>
             <input
               type="checkbox"
               className="peer sr-only"
@@ -207,7 +207,7 @@ export default function ShopezDashboard({ site }: { site: Site }) {
             <AlertTriangle size={17} className="shrink-0 text-amber-500" />
             <p className="flex-1 dashboard-muted">
               <strong className="text-amber-600 dark:text-amber-400">No payment gateway connected.</strong>{" "}
-              Shopez is live but customers can&apos;t pay yet. Add Razorpay, PayPal, or Cash on Delivery to start accepting orders.
+              Shopezy is live but customers can&apos;t pay yet. Add Razorpay, PayPal, or Cash on Delivery to start accepting orders.
             </p>
             <button
               onClick={() => setTab("payments")}

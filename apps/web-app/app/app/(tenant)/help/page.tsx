@@ -88,7 +88,7 @@ export default function HelpCenterPage() {
         <div>
           <div className="dashboard-card rounded-2xl p-5 sm:p-6">
             <h2 className="flex items-center gap-2 font-semibold"><BookOpen size={17} className="text-blue-500" /> Support documentation</h2>
-            <label className="mt-4 flex items-center gap-2 rounded-xl border dashboard-border px-3"><Search size={16} className="dashboard-faint" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search pages, domains, AI agents, ShopEZ…" className="min-w-0 flex-1 bg-transparent py-3 text-sm outline-none" /></label>
+            <label className="mt-4 flex items-center gap-2 rounded-xl border dashboard-border px-3"><Search size={16} className="dashboard-faint" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search pages, domains, AI agents, Shopezy…" className="min-w-0 flex-1 bg-transparent py-3 text-sm outline-none" /></label>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               {articles.map((item) => <button key={item.id} onClick={() => setArticle(item)} className="group rounded-xl border dashboard-border p-4 text-left dashboard-hover"><span className="text-[9px] font-bold uppercase tracking-wider text-blue-500">{item.category}</span><div className="mt-1 flex items-start gap-2"><h3 className="flex-1 text-sm font-semibold">{item.title}</h3><ChevronRight size={15} className="dashboard-faint transition group-hover:translate-x-0.5" /></div><p className="mt-2 line-clamp-2 text-xs leading-5 dashboard-muted">{item.summary}</p></button>)}
             </div>
