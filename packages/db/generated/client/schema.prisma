@@ -1920,6 +1920,7 @@ model TrafficEvent {
 
   @@index([siteId, bucket])
   @@index([siteId, eventType, createdAt])
+  @@index([siteId, createdAt])
   @@index([sessionId])
   @@index([tenantId, bucket])
   @@index([bucket])
