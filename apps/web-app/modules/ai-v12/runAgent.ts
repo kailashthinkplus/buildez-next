@@ -1533,85 +1533,35 @@ export async function runV12AgentPlan(input: V12AgentInput): Promise<V12PlanOutc
   let currentPrompt = input.prompt.trim();
 
   // ----------------------------------------------------------
-  // BRAND / NAME CLARIFICATION
+  // BRAND / NAME CLARIFICATION (resolution)
   //
-  // A site's very first generation has two candidate identities to
-  // build around: the business name captured during onboarding, and
-  // the site's own internal name (often left as a generic placeholder
-  // like "New site"). Silently assuming one when the prompt doesn't
-  // say is how a whole generated website ends up built around the
-  // wrong brand. Ask once, up front, with a quick pill choice — never
-  // on a follow-up edit (currentRevision > 0), and never when there's
-  // no candidate name to disambiguate against or the prompt already
-  // names it.
+  // Only the resolution half lives here — it must run before
+  // effectivePrompt is built below. The decision to ASK is made further
+  // down, once isFreshFullPageGeneration is known (see that section):
+  // whether this specific request is a fresh full build, not merely
+  // whether the site has ever been generated before, is what actually
+  // determines whether assuming a brand is safe. A confirmed "different
+  // brand" answer also suppresses the account's own business context
+  // (see businessContextBlock below) for this generation, so a client
+  // site or unrelated brand never gets the account owner's name/contact
+  // details/socials silently forced into it.
   // ----------------------------------------------------------
 
   const pendingBrandClarification = readBrandClarification(conversation.context);
+  let suppressAccountBusinessContext = false;
 
   if (pendingBrandClarification) {
-    currentPrompt =
-      currentPrompt === BRAND_DIFFERENT_SENTINEL
-        ? pendingBrandClarification.originalPrompt
-        : `${pendingBrandClarification.originalPrompt}\n\nBRAND/BUSINESS NAME TO USE THROUGHOUT THIS WEBSITE: ${pendingBrandClarification.candidateName}`;
+    const isDifferentBrand = currentPrompt === BRAND_DIFFERENT_SENTINEL;
+    suppressAccountBusinessContext = isDifferentBrand;
+    currentPrompt = isDifferentBrand
+      ? pendingBrandClarification.originalPrompt
+      : `${pendingBrandClarification.originalPrompt}\n\nBRAND/BUSINESS NAME TO USE THROUGHOUT THIS WEBSITE: ${pendingBrandClarification.candidateName}`;
 
     await saveBrandClarification({
       conversationId: conversation.id,
       existingContext: conversation.context,
       brandClarification: null,
     });
-  } else if (input.context === "Website" && project.currentRevision === 0 && currentPrompt) {
-    const onboardingName = onboarding?.businessName?.trim() || "";
-    const siteNameIsPlaceholder = /^(untitled|new site|new website|website|my website|my site|home)$/i.test(site.name.trim());
-    const candidateName = onboardingName || (siteNameIsPlaceholder ? "" : site.name.trim());
-    const promptMentionsCandidate =
-      candidateName.length > 1 &&
-      currentPrompt.toLowerCase().includes(candidateName.toLowerCase());
-
-    if (candidateName && !promptMentionsCandidate) {
-      const question = `Quick check before I start — is this website for "${candidateName}", or a different brand/name?`;
-      const actions: V12AgentAction[] = [
-        { id: "brand-confirm", label: `Yes, build it for ${candidateName}`, value: `Yes, build it for ${candidateName}.` },
-        { id: "brand-different", label: "It's a different brand", value: BRAND_DIFFERENT_SENTINEL },
-      ];
-
-      await saveBrandClarification({
-        conversationId: conversation.id,
-        existingContext: conversation.context,
-        brandClarification: { originalPrompt: currentPrompt, candidateName },
-      });
-
-      await recordAgentMessage({
-        conversationId: conversation.id,
-        role: "user",
-        content: {
-          text: input.prompt,
-          creativeDirection: input.creativeDirection,
-          attachments: input.attachments.map((file) => ({ name: file.name, type: file.type, size: file.size })),
-        },
-        userId: input.userId,
-      });
-
-      await recordAgentMessage({
-        conversationId: conversation.id,
-        role: "assistant",
-        content: { text: question, status: "needs_input", actions },
-      });
-
-      input.onProgress?.("One quick check", "Confirm the brand before generation starts");
-
-      return {
-        kind: "done",
-        result: {
-          message: question,
-          actions,
-          files: [],
-          revision: project.currentRevision,
-          fileCount: 0,
-          model: "clarification",
-          status: "needs_input" as const,
-        },
-      };
-    }
   }
 
   // ----------------------------------------------------------
@@ -1887,6 +1837,80 @@ ${currentPrompt}`
       requestsCompletePageGeneration
     );
 
+  // ----------------------------------------------------------
+  // BRAND / NAME CLARIFICATION (ask)
+  //
+  // Every fresh full build has two candidate identities to build
+  // around: the business name captured during onboarding, and the
+  // site's own internal name (often left as a generic placeholder like
+  // "New site"). Gating this on "has this site ever been generated
+  // before" (rather than "is THIS request a fresh full build") meant a
+  // later from-scratch rebuild for a completely different, unrelated
+  // brand — a client site, a different venture — silently forced the
+  // account owner's own name/contact details/socials into it, because
+  // the one-time question had already been asked and answered for a
+  // previous, different build. Ask every time a fresh full build is
+  // about to run, not once ever per site — and never infer the prompt
+  // "already answers it" from a name substring match; only an explicit
+  // pill answer counts.
+  // ----------------------------------------------------------
+
+  if (
+    input.context === "Website" &&
+    isFreshFullPageGeneration &&
+    !pendingBrandClarification
+  ) {
+    const onboardingName = onboarding?.businessName?.trim() || "";
+    const siteNameIsPlaceholder = /^(untitled|new site|new website|website|my website|my site|home)$/i.test(site.name.trim());
+    const candidateName = onboardingName || (siteNameIsPlaceholder ? "" : site.name.trim());
+
+    if (candidateName) {
+      const question = `Quick check before I start — is this website for "${candidateName}", or a different brand/name?`;
+      const actions: V12AgentAction[] = [
+        { id: "brand-confirm", label: `Yes, build it for ${candidateName}`, value: `Yes, build it for ${candidateName}.` },
+        { id: "brand-different", label: "It's a different brand", value: BRAND_DIFFERENT_SENTINEL },
+      ];
+
+      await saveBrandClarification({
+        conversationId: conversation.id,
+        existingContext: conversation.context,
+        brandClarification: { originalPrompt: currentPrompt, candidateName },
+      });
+
+      await recordAgentMessage({
+        conversationId: conversation.id,
+        role: "user",
+        content: {
+          text: input.prompt,
+          creativeDirection: input.creativeDirection,
+          attachments: input.attachments.map((file) => ({ name: file.name, type: file.type, size: file.size })),
+        },
+        userId: input.userId,
+      });
+
+      await recordAgentMessage({
+        conversationId: conversation.id,
+        role: "assistant",
+        content: { text: question, status: "needs_input", actions },
+      });
+
+      input.onProgress?.("One quick check", "Confirm the brand before generation starts");
+
+      return {
+        kind: "done",
+        result: {
+          message: question,
+          actions,
+          files: [],
+          revision: project.currentRevision,
+          fileCount: 0,
+          model: "clarification",
+          status: "needs_input" as const,
+        },
+      };
+    }
+  }
+
   /*
    * Execution policy is centralized so plans never directly select
    * concrete provider model IDs.
@@ -1938,7 +1962,9 @@ ${currentPrompt}`
 
   let generationPrompt = effectivePrompt;
 
-  const businessContextBlock = buildBusinessContextBlock({ onboarding, settings: site.settings });
+  const businessContextBlock = suppressAccountBusinessContext
+    ? ""
+    : buildBusinessContextBlock({ onboarding, settings: site.settings });
 
   // ----------------------------------------------------------
   // CAPABILITY ROUTER
