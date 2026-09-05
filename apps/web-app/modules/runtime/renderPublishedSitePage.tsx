@@ -30,7 +30,7 @@ export async function renderPublishedSitePage(siteSlug: string, pageSlug?: strin
     ? null
     : <CookieConsentBanner storageKey={`buildez_cookie_consent_site_${route.siteId}`} brandName={route.siteName} message={cookieMessage} />;
   if (route.maintenanceMode) {
-    return <main className="grid min-h-screen place-items-center bg-slate-950 p-6 text-white"><div className="max-w-lg text-center"><p className="text-sm font-semibold uppercase tracking-[.18em] text-blue-300">{route.siteName}</p><h1 className="mt-4 text-4xl font-semibold tracking-tight">We’ll be right back.</h1><p className="mt-4 leading-7 text-white/55">This website is being updated. Please check again shortly.</p></div></main>;
+    return <SiteTemporarilyDown siteName={route.siteName} />;
   }
   if (route.renderMode === "REACT" && route.hasV12Project) {
     const iframePath = `/api/runtime/v12/${encodeURIComponent(route.siteId)}/${route.pageSlug === "home" ? "" : route.pageSlug.split("/").map(encodeURIComponent).join("/")}`;
@@ -116,21 +116,43 @@ function PageCustomCode({ css, js }: { css: string | null; js: string | null }) 
 }
 
 export async function resolvePublishedSiteRoute(siteSlug: string, requestedPageSlug?: string, siteId?: string) {
+  // Deliberately not filtered by status: "PUBLISHED" here — an
+  // unpublished (DRAFT) site must still resolve so it can show the
+  // "temporarily down" page below, the same as an explicit
+  // maintenanceMode toggle. A site that truly doesn't exist (wrong
+  // slug/domain, or soft-deleted) is the only case that falls through
+  // to null and a real 404.
   const candidates = await cachedOrStale(`route:${siteSlug}:${siteId ?? ""}`, ROUTE_CACHE_TTL_MS, () => prisma.site.findMany({
-    where: { slug: siteSlug, ...(siteId ? { id: siteId } : {}), status: "PUBLISHED", deletedAt: null },
+    where: { slug: siteSlug, ...(siteId ? { id: siteId } : {}), deletedAt: null },
     select: {
       id: true,
       tenantId: true,
       name: true,
+      status: true,
       settings: true,
       v12Project: { select: { id: true } },
       pages: { where: { deletedAt: null, deleted: false, status: "PUBLISHED" }, orderBy: { createdAt: "asc" }, select: { id: true, slug: true, status: true, renderMode: true } },
     },
     take: siteId ? 1 : 2,
   }));
-  const site = candidates.length === 1 ? candidates[0] : null;
+  const site = candidates.length === 1 ? candidates[0] : candidates.find((candidate) => candidate.status === "PUBLISHED") ?? null;
   if (!site) return null;
   const settings = site.settings && typeof site.settings === "object" && !Array.isArray(site.settings) ? site.settings as Record<string, unknown> : {};
+  const down = site.status !== "PUBLISHED" || settings.maintenanceMode === true;
+
+  if (down) {
+    return {
+      siteId: site.id,
+      tenantId: site.tenantId,
+      siteName: site.name,
+      pageSlug: requestedPageSlug || "home",
+      renderMode: "REACT" as const,
+      hasV12Project: Boolean(site.v12Project),
+      maintenanceMode: true,
+      settings,
+    };
+  }
+
   const frontPageId = typeof settings.frontPageId === "string" ? settings.frontPageId : "";
   const frontPage = site.pages.find((page) => page.id === frontPageId)
     || site.pages.find((page) => page.slug === "home")
@@ -154,7 +176,36 @@ export async function resolvePublishedSiteRoute(siteSlug: string, requestedPageS
     pageSlug: requestedPageSlug || frontPage!.slug,
     renderMode: (requestedPageSlug ? site.pages.find((page) => page.slug === requestedPageSlug) : frontPage)!.renderMode,
     hasV12Project: Boolean(site.v12Project),
-    maintenanceMode: settings.maintenanceMode === true,
+    maintenanceMode: false,
     settings,
   };
+}
+
+/**
+ * Shown for a site that's unpublished (the dashboard's publish switch)
+ * or explicitly in maintenance mode (the settings toggle) — visitors get
+ * this instead of a blank page or a bare 404, since from a visitor's
+ * perspective both mean the same thing: come back later.
+ */
+function SiteTemporarilyDown({ siteName }: { siteName: string }) {
+  return (
+    <main className="grid min-h-screen place-items-center bg-slate-950 p-6 text-white">
+      <div className="max-w-lg text-center">
+        <svg viewBox="0 0 200 160" className="mx-auto h-40 w-48 text-blue-400" fill="none" aria-hidden="true">
+          <rect x="20" y="16" width="160" height="108" rx="10" stroke="currentColor" strokeOpacity="0.35" strokeWidth="3" />
+          <rect x="20" y="16" width="160" height="24" rx="10" fill="currentColor" fillOpacity="0.12" />
+          <circle cx="34" cy="28" r="3" fill="currentColor" fillOpacity="0.5" />
+          <circle cx="44" cy="28" r="3" fill="currentColor" fillOpacity="0.5" />
+          <circle cx="54" cy="28" r="3" fill="currentColor" fillOpacity="0.5" />
+          <path d="M70 78 L92 100 L130 62" stroke="currentColor" strokeOpacity="0.25" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="100" cy="82" r="34" stroke="currentColor" strokeWidth="3" strokeDasharray="4 7" strokeOpacity="0.55" />
+          <path d="M85 82 h30 M100 67 v30" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeOpacity="0.85" transform="rotate(45 100 82)" />
+          <rect x="60" y="134" width="80" height="8" rx="4" fill="currentColor" fillOpacity="0.15" />
+        </svg>
+        <p className="mt-2 text-sm font-semibold uppercase tracking-[.18em] text-blue-300">{siteName}</p>
+        <h1 className="mt-4 text-4xl font-semibold tracking-tight">We’ll be right back.</h1>
+        <p className="mt-4 leading-7 text-white/55">This website is temporarily down. It will be back online soon — please check again shortly.</p>
+      </div>
+    </main>
+  );
 }

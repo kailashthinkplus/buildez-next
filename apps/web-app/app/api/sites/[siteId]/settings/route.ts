@@ -3,6 +3,7 @@ import { prisma } from "@buildez/db";
 
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 import { isReservedPublicSiteSlug } from "@/lib/sites/public-slug";
+import { invalidateRouteCache } from "@/lib/runtime/routeCache";
 
 const text = (value: unknown, max = 500) =>
   typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -106,6 +107,7 @@ export async function PATCH(
         status: body.archived && site.status === "PUBLISHED" ? "DRAFT" : site.status,
       },
     });
+    invalidateRouteCache(updated.slug, updated.id);
     return NextResponse.json({ site: updated });
   }
 
@@ -129,6 +131,7 @@ export async function PATCH(
       where: { id: site.id },
       data: { status: body.status },
     });
+    invalidateRouteCache(updated.slug, updated.id);
     return NextResponse.json({ site: updated });
   }
 
@@ -235,6 +238,8 @@ export async function PATCH(
       status,
     },
   });
+  // Covers both a slug change and the old slug, since either could be cached.
+  invalidateRouteCache(updated.slug, updated.id, site.slug);
   return NextResponse.json({ site: updated });
 }
 

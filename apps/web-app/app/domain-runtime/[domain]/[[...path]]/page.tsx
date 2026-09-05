@@ -11,8 +11,11 @@ export const dynamic = "force-dynamic";
 const ROUTE_CACHE_TTL_MS = 30_000;
 
 function resolveDomainConnection(domain: string) {
+  // Not filtered by site.status: "PUBLISHED" — an unpublished or
+  // maintenance-mode site must still resolve so renderPublishedSitePage
+  // can show the "temporarily down" page, same as the platform-slug path.
   return cachedOrStale(`domain:${domain}`, ROUTE_CACHE_TTL_MS, () => prisma.siteDomain.findFirst({
-    where: { domain: domain.toLowerCase(), status: "VERIFIED", site: { status: "PUBLISHED", deletedAt: null } },
+    where: { domain: domain.toLowerCase(), status: "VERIFIED", site: { deletedAt: null } },
     include: { site: true },
   }));
 }

@@ -31,8 +31,17 @@ export async function cachedOrStale<T>(key: string, ttlMs: number, load: () => P
   }
 }
 
-export function invalidateRouteCache(prefix: string) {
+/**
+ * Every cache key here is written as "<category>:<identifier>:...", e.g.
+ * "route:my-slug:siteId123" or "v12site:siteId123" — never the bare
+ * slug/id alone. Matching by identifier substring (rather than prefix)
+ * clears every category's entry for a given site in one call regardless
+ * of which identifier (slug or id) that category happens to key on.
+ */
+export function invalidateRouteCache(...identifiers: Array<string | null | undefined>) {
+  const tokens = identifiers.filter((token): token is string => Boolean(token));
+  if (!tokens.length) return;
   for (const key of store.keys()) {
-    if (key.startsWith(prefix)) store.delete(key);
+    if (tokens.some((token) => key.includes(token))) store.delete(key);
   }
 }
