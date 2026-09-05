@@ -115,7 +115,7 @@ export async function syncPlanPricingToDodo(pricing: {
   amount: number;
   currency: string;
   dodoProductId: string | null;
-}, planName: string) {
+}, planName: string, productNameOverride?: string) {
   if (pricing.billingCycle !== "monthly" && pricing.billingCycle !== "yearly") return null;
 
   const client = dodoClient();
@@ -133,7 +133,7 @@ export async function syncPlanPricingToDodo(pricing: {
   }
 
   const product = await client.products.create({
-    name: `${planName} (${pricing.billingCycle})`,
+    name: productNameOverride || `${planName} (${pricing.billingCycle})`,
     price,
     tax_category: "saas",
   });

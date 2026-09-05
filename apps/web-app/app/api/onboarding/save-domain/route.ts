@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { prisma } from "@buildez/db";
 import { validDomain } from "@/lib/domain-provisioning";
+import { isFreePlanCode } from "@/lib/plan/freePlanCode";
 
 export async function POST(req: Request) {
   try {
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const isFreePlan = onboarding.planCode === "trial" || onboarding.planCode?.toUpperCase() === "FREE";
+    const isFreePlan = isFreePlanCode(onboarding.planCode);
 
     /* --------------------------------------------------------
        CASE 1 — SKIP DOMAIN

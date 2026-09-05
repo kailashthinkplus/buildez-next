@@ -6,6 +6,7 @@ import { apiHandler } from "@/lib/api/apiHandler";
 import { verifyTenantAccess } from "@/lib/auth/verifyTenant";
 import { createInsightReport } from "@/modules/insights/server";
 import { ApiError } from "@/lib/api/errors";
+import { enforcePageLimit } from "@/lib/plan/enforce";
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -285,6 +286,8 @@ export const POST = async (request: NextRequest) => {
       console.warn("🔴 [PAGES][POST] Site not found:", siteSlug);
       throw new ApiError("Site not found", 404, "SITE_NOT_FOUND");
     }
+
+    await enforcePageLimit(site.id, tenant.id);
 
     const baseSlug = title
       .toLowerCase()

@@ -1325,7 +1325,7 @@ function PostGenerationCTACard({ siteId }: { siteId: string }) {
       setState({
         loading: false,
         creditsRemaining: typeof credits?.balance?.totalRemaining === "number" ? credits.balance.totalRemaining : null,
-        isFreePlan: planCode === "FREE" || planCode === "TRIAL" || planCode === "",
+        isFreePlan: planCode === "FREE" || planCode === "FREE_2026" || planCode === "TRIAL" || planCode === "",
         canUseCustomDomain: domains?.canUseCustomDomain === true,
         hasConnectedDomain: Array.isArray(domains?.domains) && domains.domains.some((d: { status?: string }) => d.status === "VERIFIED"),
         settingsHref: slug ? `/app/${slug}/settings?tab=domains` : "/app/workspace/websites",

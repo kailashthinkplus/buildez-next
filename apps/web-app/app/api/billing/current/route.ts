@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import { getUser } from "@/lib/auth/getUser";
 import { syncLatestDodoSubscriptionPayment } from "@/lib/billing/dodo";
+import { computeTrialStatus } from "@/lib/plan/trial";
 
 export async function GET() {
   try {
@@ -34,8 +35,18 @@ export async function GET() {
         paymentStatus: true,
         status: true,
         paidAt: true,
+        startedAt: true,
+        trialEndsAt: true,
       },
     });
+
+    const plan = subscription?.planCode
+      ? await prisma.plan.findUnique({
+          where: { code: subscription.planCode },
+          select: { isPublic: true, catalogVersion: true, trialDays: true },
+        })
+      : null;
+    const trial = computeTrialStatus(plan, subscription);
 
     let latestPayment = await prisma.billingTransaction.findFirst({
       where: { tenantId: auth.tenant.id, status: "SUCCEEDED", type: "SUBSCRIPTION" },
@@ -86,6 +97,14 @@ export async function GET() {
         paymentStatus: subscription.paymentStatus,
         status: subscription.status,
         paidAt: subscription.paidAt,
+        // A plan with no catalogVersion predates the versioned catalog —
+        // this tenant is grandfathered on legacy pricing/limits.
+        isLegacyPlan: Boolean(plan) && !plan?.catalogVersion,
+        trial: trial.isTrial ? {
+          endsAt: trial.trialEndsAt,
+          expired: trial.expired,
+          daysRemaining: trial.daysRemaining,
+        } : null,
       } : null,
       latestPayment: latestPayment ? {
         amountMinor: latestPayment.amountMinor,

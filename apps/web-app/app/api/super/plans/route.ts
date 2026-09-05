@@ -71,6 +71,21 @@ function currency(value: unknown) {
   return normalized;
 }
 
+function optionalString(value: unknown): string | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  const trimmed = String(value).trim();
+  return trimmed || null;
+}
+
+function optionalInt(value: unknown, minimum = 0): number | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null || value === "") return null;
+  const parsed = Number.parseInt(String(value), 10);
+  if (!Number.isFinite(parsed)) throw new Error("Invalid number");
+  return Math.max(minimum, parsed);
+}
+
 function normalizeFeatureValue(
   key: V12FeatureKey,
   value: unknown,
@@ -142,6 +157,12 @@ export async function POST(req: Request) {
           aiCredits: integer(body.aiCredits, 100, 0),
           teamMembers: integer(body.teamMembers, 1, 1),
           isPublic: body.isPublic !== false,
+          displayOrder: integer(body.displayOrder, 0, 0),
+          badge: optionalString(body.badge) ?? null,
+          eyebrow: optionalString(body.eyebrow) ?? null,
+          summary: optionalString(body.summary) ?? null,
+          catalogVersion: optionalString(body.catalogVersion) ?? null,
+          trialDays: optionalInt(body.trialDays, 1) ?? null,
         },
       });
 
@@ -366,6 +387,30 @@ export async function PATCH(req: Request) {
 
     if (typeof body.isPublic === "boolean") {
       data.isPublic = body.isPublic;
+    }
+
+    if (body.displayOrder !== undefined) {
+      data.displayOrder = integer(body.displayOrder, existing.displayOrder, 0);
+    }
+
+    if (body.badge !== undefined) {
+      data.badge = optionalString(body.badge);
+    }
+
+    if (body.eyebrow !== undefined) {
+      data.eyebrow = optionalString(body.eyebrow);
+    }
+
+    if (body.summary !== undefined) {
+      data.summary = optionalString(body.summary);
+    }
+
+    if (body.catalogVersion !== undefined) {
+      data.catalogVersion = optionalString(body.catalogVersion);
+    }
+
+    if (body.trialDays !== undefined) {
+      data.trialDays = optionalInt(body.trialDays, 1);
     }
 
     if (body.aiAgentRunLimitPerHour !== undefined) {

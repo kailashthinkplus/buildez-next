@@ -5,7 +5,8 @@ import {
   type Prisma,
 } from "@buildez/db";
 
-import { ApiError } from "@/lib/api/errors";
+import { ApiError, PlanError } from "@/lib/api/errors";
+import { computeTrialStatus } from "@/lib/plan/trial";
 
 export type V12CreditReservation = {
   id: string;
@@ -283,8 +284,24 @@ async function getTenantCreditPeriod(
         billingCycle: true,
         startedAt: true,
         currentPeriodEnd: true,
+        trialEndsAt: true,
+        Plan: { select: { trialDays: true } },
       },
     });
+
+  /*
+   * A trial plan's credits (e.g. FREE_2026's 500 welcome credits) are a
+   * one-time grant, not a monthly allowance — they must never refill mid
+   * trial the way a real billing cycle would. Legacy free plans have no
+   * `trialDays` and keep their existing (monthly-reset) behavior unchanged.
+   */
+  if (subscription?.Plan?.trialDays && subscription.startedAt) {
+    return {
+      periodStart: subscription.startedAt,
+      periodEnd: null,
+      billingCycle: "trial",
+    };
+  }
 
   return resolveCreditPeriod({
     billingCycle:
@@ -523,6 +540,14 @@ export async function reserveV12Credits(input: {
       0,
       Math.ceil(input.amount),
     );
+
+  const trialSubscription = await prisma.subscription.findFirst({
+    where: { tenantActiveId: input.tenantId, status: "ACTIVE" },
+    select: { startedAt: true, trialEndsAt: true, Plan: { select: { trialDays: true } } },
+  });
+  if (computeTrialStatus(trialSubscription?.Plan, trialSubscription).expired) {
+    throw new PlanError("Your 30-day trial has ended. Upgrade to a paid plan to keep generating.");
+  }
 
   const enforced =
     enforcementEnabled();

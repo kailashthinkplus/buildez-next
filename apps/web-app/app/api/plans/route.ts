@@ -43,9 +43,14 @@ export async function GET(req: Request) {
           id: plan.id,
           code: plan.code,
           name: plan.name,
-          description: `${plan.maxSites} website${plan.maxSites === 1 ? "" : "s"}, ${plan.maxPages} pages and ${plan.aiCredits.toLocaleString()} AI credits`,
-          tag: plan.code.toUpperCase() === "FREE" ? "FREE" : null,
-          popular: plan.code.toUpperCase() === "PRO",
+          eyebrow: plan.eyebrow,
+          summary: plan.summary,
+          description: plan.summary || `${plan.maxSites} website${plan.maxSites === 1 ? "" : "s"}, ${plan.maxPages} pages and ${plan.aiCredits.toLocaleString()} AI credits`,
+          tag: plan.badge,
+          popular: Boolean(plan.badge),
+          displayOrder: plan.displayOrder,
+          isTrial: Boolean(plan.trialDays),
+          trialDays: plan.trialDays,
           maxSites: plan.maxSites,
           maxPages: plan.maxPages,
           aiCredits: plan.aiCredits,
@@ -74,6 +79,7 @@ export async function GET(req: Request) {
         };
       })
       .sort((left, right) => {
+        if (left.displayOrder !== right.displayOrder) return left.displayOrder - right.displayOrder;
         const leftPrice = left.priceMonthly ?? left.priceYearly ?? Number.MAX_SAFE_INTEGER;
         const rightPrice = right.priceMonthly ?? right.priceYearly ?? Number.MAX_SAFE_INTEGER;
         return leftPrice - rightPrice;

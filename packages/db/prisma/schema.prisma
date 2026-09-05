@@ -1380,6 +1380,19 @@ model Plan {
 
   isPublic Boolean @default(true)
 
+  // Marketing/catalog presentation — optional, so existing (legacy) plan
+  // rows are unaffected until a superadmin/seed fills them in.
+  catalogVersion String? // e.g. "2026". Null for legacy/pre-catalog plans.
+  displayOrder   Int     @default(0) // lower sorts first in customer-facing surfaces.
+  badge          String? // e.g. "MOST POPULAR". Null = no badge.
+  eyebrow        String? // short positioning line shown above the plan name.
+  summary        String? // 2-3 sentence marketing summary for pricing cards.
+
+  // A plan with trialDays set grants full access for that many days from
+  // Subscription.startedAt, after which the tenant must upgrade to a paid
+  // plan to keep using the product. Null = no trial expiry (normal plan).
+  trialDays Int?
+
   createdAt DateTime @default(now())
 
   pricing           PlanPricing[]
@@ -1552,6 +1565,11 @@ model Subscription {
   currentPeriodEnd      DateTime?
   cancelAtPeriodEnd     Boolean   @default(false)
   expiryAlertSentAt     DateTime?
+
+  // Set at creation time when the chosen Plan has `trialDays` (e.g. the
+  // FREE_2026 30-day trial). Null for plans without a trial. Once passed,
+  // the tenant must upgrade to a paid plan — see lib/plan/trial.ts.
+  trialEndsAt DateTime?
 
   amountPaid Int?
   currency   String?

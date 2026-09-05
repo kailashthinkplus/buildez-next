@@ -47,6 +47,8 @@ type Subscription = {
   cancelAtPeriodEnd?: boolean;
   paidAt?: string;
   Plan?: Plan;
+  isLegacyPlan?: boolean;
+  trial?: { endsAt: string | null; expired: boolean; daysRemaining: number | null } | null;
 };
 type TenantData = {
   sites: Array<{ id: string }>;
@@ -404,6 +406,23 @@ export default function BillingPage() {
         {subscription?.cancelAtPeriodEnd ? (
           <p className="mt-5 rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
             Your plan will end{subscription.currentPeriodEnd ? ` on ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}` : ""}. You&apos;ll keep access until then and won&apos;t be charged again.
+          </p>
+        ) : null}
+        {subscription?.trial ? (
+          <p
+            className={`mt-5 rounded-xl border px-4 py-3 text-sm ${
+              subscription.trial.expired
+                ? "border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-300"
+                : "border-blue-500/20 bg-blue-500/10 text-blue-700 dark:text-blue-300"
+            }`}
+          >
+            {subscription.trial.expired
+              ? "Your 30-day trial has ended. Upgrade to a paid plan to keep creating and publishing."
+              : `${subscription.trial.daysRemaining ?? 0} day${subscription.trial.daysRemaining === 1 ? "" : "s"} left in your free trial.`}
+          </p>
+        ) : subscription?.isLegacyPlan ? (
+          <p className="mt-5 rounded-xl border dashboard-border bg-[var(--dashboard-surface)] px-4 py-3 text-sm dashboard-muted">
+            Legacy plan — you&apos;re grandfathered on your original pricing and limits.
           </p>
         ) : null}
         <section className="relative mt-6 overflow-hidden rounded-3xl border dashboard-border bg-[#07182c] p-6 text-white shadow-xl sm:p-8">

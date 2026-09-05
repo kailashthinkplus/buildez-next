@@ -74,6 +74,8 @@ apps/web-app/.next/
 
 # Local forensic and compiler snapshots (canonical V12 backups are already tracked)
 /backups/v11-*/
+# Local database dumps — real customer data, never belongs in git history.
+/backups/*.dump
 /tmp/
 apps/web-app/tmp/
 *.backup
