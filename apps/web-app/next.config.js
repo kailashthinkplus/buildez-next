@@ -33,7 +33,13 @@ const nextConfig = {
   // same problem: it reads its default stylesheet via a relative fs path
   // that only resolves from its own package directory, not from inside a
   // webpack chunk.
-  serverExternalPackages: ["geoip-lite", "jsdom", "isomorphic-dompurify"],
+  // @ffmpeg-installer/ffmpeg and @ffprobe-installer/ffprobe resolve their
+  // platform-specific binary package via a dynamic require() keyed off
+  // process.platform/arch — webpack can't statically analyze that and
+  // tries to bundle every file it can find in the package directory
+  // (including tsconfig.json), which fails the build outright. Keep them
+  // as native require()s instead.
+  serverExternalPackages: ["geoip-lite", "jsdom", "isomorphic-dompurify", "@ffmpeg-installer/ffmpeg", "@ffprobe-installer/ffprobe"],
 
   // The authenticated tenant dashboard and super-admin console must not be
   // embeddable in a third-party iframe: without this, a page can iframe
