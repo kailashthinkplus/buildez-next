@@ -61,6 +61,7 @@ import {
 import {
   buildSamplePlaceholderProducts,
   catalogMissingInputs,
+  detectCommerceIntent,
   ensureShopezProductImages,
   getOrCreateAgentConversation,
   persistCommerceAttachments,
@@ -80,12 +81,48 @@ import {
  */
 const BRAND_DIFFERENT_SENTINEL = "__BUILDEZ_BRAND_DIFFERENT__";
 
+/** Pill values for the two-candidate brand clarification (see PendingBrandClarification below). */
+const BRAND_USE_TENANT_SENTINEL = "__BUILDEZ_BRAND_USE_TENANT__";
+const BRAND_USE_SITE_SENTINEL = "__BUILDEZ_BRAND_USE_SITE__";
+
+/** Pill values for the upfront static-vs-ecommerce clarification. */
+const SITE_TYPE_STATIC_SENTINEL = "__BUILDEZ_SITE_TYPE_STATIC__";
+const SITE_TYPE_ECOMMERCE_SENTINEL = "__BUILDEZ_SITE_TYPE_ECOMMERCE__";
+
+type PendingSiteTypeClarification = { originalPrompt: string };
+
+function readSiteTypeClarification(value: unknown): PendingSiteTypeClarification | null {
+  const root = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+  const raw = root.siteTypeClarification;
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const candidate = raw as Record<string, unknown>;
+  if (typeof candidate.originalPrompt !== "string") return null;
+  return { originalPrompt: candidate.originalPrompt };
+}
+
+async function saveSiteTypeClarification(input: {
+  conversationId: string;
+  existingContext: unknown;
+  siteTypeClarification: PendingSiteTypeClarification | null;
+}) {
+  const root = input.existingContext && typeof input.existingContext === "object" && !Array.isArray(input.existingContext)
+    ? input.existingContext as Record<string, unknown>
+    : {};
+  return prisma.aIConversation.update({
+    where: { id: input.conversationId },
+    data: { context: { ...root, siteTypeClarification: input.siteTypeClarification } as Prisma.InputJsonValue },
+  });
+}
+
 /** The "Generate sample products for me" pill's value — never a real user prompt. */
 const COMMERCE_GENERATE_SAMPLES_SENTINEL = "__BUILDEZ_COMMERCE_GENERATE_SAMPLES__";
 
 type PendingBrandClarification = {
   originalPrompt: string;
-  candidateName: string;
+  /** The account's overall business name (from onboarding), when offered as a candidate. */
+  tenantName?: string;
+  /** This specific website's own name, when offered as a distinct candidate. */
+  siteName?: string;
 };
 
 function readBrandClarification(value: unknown): PendingBrandClarification | null {
@@ -93,8 +130,12 @@ function readBrandClarification(value: unknown): PendingBrandClarification | nul
   const raw = root.brandClarification;
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
   const candidate = raw as Record<string, unknown>;
-  if (typeof candidate.originalPrompt !== "string" || typeof candidate.candidateName !== "string") return null;
-  return { originalPrompt: candidate.originalPrompt, candidateName: candidate.candidateName };
+  if (typeof candidate.originalPrompt !== "string") return null;
+  return {
+    originalPrompt: candidate.originalPrompt,
+    tenantName: typeof candidate.tenantName === "string" ? candidate.tenantName : undefined,
+    siteName: typeof candidate.siteName === "string" ? candidate.siteName : undefined,
+  };
 }
 
 async function saveBrandClarification(input: {
@@ -1556,15 +1597,55 @@ export async function runV12AgentPlan(input: V12AgentInput): Promise<V12PlanOutc
 
   if (pendingBrandClarification) {
     const isDifferentBrand = currentPrompt === BRAND_DIFFERENT_SENTINEL;
+    // Two named candidates means the pill values are the sentinels below;
+    // a single-candidate clarification (the common case) still accepts any
+    // non-sentinel reply — including a pill whose label doubles as its
+    // value, or free-typed text — as confirming that one candidate.
+    const chosenName = isDifferentBrand
+      ? null
+      : currentPrompt === BRAND_USE_TENANT_SENTINEL
+        ? pendingBrandClarification.tenantName || null
+        : currentPrompt === BRAND_USE_SITE_SENTINEL
+          ? pendingBrandClarification.siteName || null
+          : pendingBrandClarification.tenantName || pendingBrandClarification.siteName || null;
     suppressAccountBusinessContext = isDifferentBrand;
-    currentPrompt = isDifferentBrand
-      ? pendingBrandClarification.originalPrompt
-      : `${pendingBrandClarification.originalPrompt}\n\nBRAND/BUSINESS NAME TO USE THROUGHOUT THIS WEBSITE: ${pendingBrandClarification.candidateName}`;
+    currentPrompt = chosenName
+      ? `${pendingBrandClarification.originalPrompt}\n\nBRAND/BUSINESS NAME TO USE THROUGHOUT THIS WEBSITE: ${chosenName}`
+      : pendingBrandClarification.originalPrompt;
 
     await saveBrandClarification({
       conversationId: conversation.id,
       existingContext: conversation.context,
       brandClarification: null,
+    });
+  }
+
+  // ----------------------------------------------------------
+  // STATIC VS ECOMMERCE CLARIFICATION (resolution)
+  //
+  // Only the resolution half lives here, for the same reason as the brand
+  // clarification above — the decision to ASK needs isFreshFullPageGeneration,
+  // computed further down. forcedCommerceMode overrides every other signal
+  // (Design Architect's own guess, reference-image analysis) once the user
+  // has explicitly answered, so an ambiguous request never gets silently
+  // routed to the wrong pipeline after the user already resolved it.
+  // ----------------------------------------------------------
+
+  const pendingSiteTypeClarification = readSiteTypeClarification(conversation.context);
+  let forcedCommerceMode: "STATIC" | "ECOMMERCE" | null = null;
+
+  if (pendingSiteTypeClarification) {
+    forcedCommerceMode = currentPrompt === SITE_TYPE_ECOMMERCE_SENTINEL
+      ? "ECOMMERCE"
+      : currentPrompt === SITE_TYPE_STATIC_SENTINEL
+        ? "STATIC"
+        : null;
+    currentPrompt = pendingSiteTypeClarification.originalPrompt;
+
+    await saveSiteTypeClarification({
+      conversationId: conversation.id,
+      existingContext: conversation.context,
+      siteTypeClarification: null,
     });
   }
 
@@ -1866,19 +1947,29 @@ ${currentPrompt}`
   ) {
     const onboardingName = onboarding?.businessName?.trim() || "";
     const siteNameIsPlaceholder = /^(untitled|new site|new website|website|my website|my site|home)$/i.test(site.name.trim());
-    const candidateName = onboardingName || (siteNameIsPlaceholder ? "" : site.name.trim());
+    const siteNameCandidate = siteNameIsPlaceholder ? "" : site.name.trim();
+    // The account's overall business name and this specific website's own
+    // name are two independently meaningful signals — a tenant can build
+    // several sites for different clients/ventures under one account. Only
+    // offer both as distinct choices when they're both real and actually
+    // different; otherwise this collapses to the original single-candidate
+    // ask so the common case doesn't get a needlessly bigger question.
+    const namesDiffer = Boolean(onboardingName) && Boolean(siteNameCandidate) &&
+      onboardingName.toLowerCase() !== siteNameCandidate.toLowerCase();
+    const candidateName = onboardingName || siteNameCandidate;
 
-    if (candidateName) {
-      const question = `Quick check before I start — is this website for "${candidateName}", or a different brand/name?`;
+    if (namesDiffer) {
+      const question = `Quick check before I start — should this website use your account's brand "${onboardingName}", this website's own name "${siteNameCandidate}", or a different brand entirely?`;
       const actions: V12AgentAction[] = [
-        { id: "brand-confirm", label: `Yes, build it for ${candidateName}`, value: `Yes, build it for ${candidateName}.` },
-        { id: "brand-different", label: "It's a different brand", value: BRAND_DIFFERENT_SENTINEL },
+        { id: "brand-use-tenant", label: `Use ${onboardingName}`, value: BRAND_USE_TENANT_SENTINEL },
+        { id: "brand-use-site", label: `Use ${siteNameCandidate}`, value: BRAND_USE_SITE_SENTINEL },
+        { id: "brand-different", label: "A different brand", value: BRAND_DIFFERENT_SENTINEL },
       ];
 
       await saveBrandClarification({
         conversationId: conversation.id,
         existingContext: conversation.context,
-        brandClarification: { originalPrompt: currentPrompt, candidateName },
+        brandClarification: { originalPrompt: currentPrompt, tenantName: onboardingName, siteName: siteNameCandidate },
       });
 
       await recordAgentMessage({
@@ -1899,6 +1990,123 @@ ${currentPrompt}`
       });
 
       input.onProgress?.("One quick check", "Confirm the brand before generation starts");
+
+      return {
+        kind: "done",
+        result: {
+          message: question,
+          actions,
+          files: [],
+          revision: project.currentRevision,
+          fileCount: 0,
+          model: "clarification",
+          status: "needs_input" as const,
+        },
+      };
+    }
+
+    if (candidateName) {
+      const question = `Quick check before I start — is this website for "${candidateName}", or a different brand/name?`;
+      const actions: V12AgentAction[] = [
+        { id: "brand-confirm", label: `Yes, build it for ${candidateName}`, value: `Yes, build it for ${candidateName}.` },
+        { id: "brand-different", label: "It's a different brand", value: BRAND_DIFFERENT_SENTINEL },
+      ];
+
+      await saveBrandClarification({
+        conversationId: conversation.id,
+        existingContext: conversation.context,
+        brandClarification: onboardingName
+          ? { originalPrompt: currentPrompt, tenantName: candidateName }
+          : { originalPrompt: currentPrompt, siteName: candidateName },
+      });
+
+      await recordAgentMessage({
+        conversationId: conversation.id,
+        role: "user",
+        content: {
+          text: input.prompt,
+          creativeDirection: input.creativeDirection,
+          attachments: input.attachments.map((file) => ({ name: file.name, type: file.type, size: file.size })),
+        },
+        userId: input.userId,
+      });
+
+      await recordAgentMessage({
+        conversationId: conversation.id,
+        role: "assistant",
+        content: { text: question, status: "needs_input", actions },
+      });
+
+      input.onProgress?.("One quick check", "Confirm the brand before generation starts");
+
+      return {
+        kind: "done",
+        result: {
+          message: question,
+          actions,
+          files: [],
+          revision: project.currentRevision,
+          fileCount: 0,
+          model: "clarification",
+          status: "needs_input" as const,
+        },
+      };
+    }
+  }
+
+  // ----------------------------------------------------------
+  // STATIC VS ECOMMERCE CLARIFICATION (ask)
+  //
+  // Whether a request wants a content website or a transactional storefront
+  // was previously decided only downstream, after a full Design Architect
+  // plan already ran — real compute spent before the ambiguity was even
+  // surfaced, and a wrong guess meant either an unwanted ShopEZ storefront
+  // or a static site missing the checkout the user actually wanted. Ask
+  // upfront, only when the prompt is genuinely ambiguous (detectCommerceIntent
+  // isn't confidently one way or the other) — a clearly static request or a
+  // clearly transactional one should never be interrupted by this.
+  // ----------------------------------------------------------
+
+  if (
+    input.context === "Website" &&
+    isFreshFullPageGeneration &&
+    !pendingSiteTypeClarification &&
+    existingProductCount === 0
+  ) {
+    const commerceIntent = detectCommerceIntent(effectivePrompt || currentPrompt);
+    const isAmbiguous = commerceIntent.confidence > 0.12 && commerceIntent.confidence < 0.5;
+
+    if (isAmbiguous) {
+      const question = "Quick check before I start — should this be a static content website, or does it need an online store (product catalog, cart, checkout)?";
+      const actions: V12AgentAction[] = [
+        { id: "site-type-static", label: "Static website", value: SITE_TYPE_STATIC_SENTINEL },
+        { id: "site-type-ecommerce", label: "Online store", value: SITE_TYPE_ECOMMERCE_SENTINEL },
+      ];
+
+      await saveSiteTypeClarification({
+        conversationId: conversation.id,
+        existingContext: conversation.context,
+        siteTypeClarification: { originalPrompt: currentPrompt },
+      });
+
+      await recordAgentMessage({
+        conversationId: conversation.id,
+        role: "user",
+        content: {
+          text: input.prompt,
+          creativeDirection: input.creativeDirection,
+          attachments: input.attachments.map((file) => ({ name: file.name, type: file.type, size: file.size })),
+        },
+        userId: input.userId,
+      });
+
+      await recordAgentMessage({
+        conversationId: conversation.id,
+        role: "assistant",
+        content: { text: question, status: "needs_input", actions },
+      });
+
+      input.onProgress?.("One quick check", "Confirm the site type before generation starts");
 
       return {
         kind: "done",
@@ -2639,6 +2847,9 @@ ${businessContextBlock}
 
   /*
    * Commerce authority:
+   * 0. An explicit answer to the upfront static-vs-ecommerce clarification
+   *    (forcedCommerceMode) — the user resolved the ambiguity directly, so
+   *    it overrules every guess below in either direction.
    * 1. Existing real ShopEZ catalogue
    * 2. Persisted commerce for an already-built website
    * 3. Semantic Design Architect (fresh generation)
@@ -2651,10 +2862,15 @@ ${businessContextBlock}
     commerceContext.intent;
 
   const isEcommerce =
-    existingProductCount > 0 ||
-    persistedCommerceForExistingSite ||
-    architectCommerceRequired ||
-    referenceCommerce.isEcommerce;
+    forcedCommerceMode === "STATIC"
+      ? existingProductCount > 0
+      : (
+        forcedCommerceMode === "ECOMMERCE" ||
+        existingProductCount > 0 ||
+        persistedCommerceForExistingSite ||
+        architectCommerceRequired ||
+        referenceCommerce.isEcommerce
+      );
   let commercePrompt = isEcommerce ? buildShopezPrompt(site.slug) : "";
   if (isEcommerce) {
     input.onProgress?.(
