@@ -20,6 +20,7 @@ export function immersiveAcceptanceFailures(
      * below in place of the live-3D evidence they normally require.
      */
     hasFrameSequence3D?: boolean;
+    frameSequenceUrls?: readonly string[];
   } = {},
 ) {
   const source = files
@@ -53,6 +54,13 @@ export function immersiveAcceptanceFailures(
     && /<canvas\b/i.test(source)
     && /drawImage\s*\(/.test(source)
     && /(?:scrollY|scrollProgress|ScrollTrigger|addEventListener\s*\(\s*["']scroll|requestAnimationFrame)/i.test(source);
+
+  if (options.hasFrameSequence3D) {
+    if (!frameSequenceScene) failures.push("Missing the required scroll-scrubbed canvas for the supplied Higgsfield video frames.");
+    if (options.frameSequenceUrls && (options.frameSequenceUrls.length < 8 || options.frameSequenceUrls.some(url => !source.includes(url)))) {
+      failures.push("Integrate every supplied Higgsfield frame URL in playback order; do not substitute still imagery or invented frames.");
+    }
+  }
 
   if (plan.requires3D) {
     const r3fScene = /@react-three\/fiber/.test(source)
@@ -115,7 +123,7 @@ export function immersiveAcceptanceFailures(
     const primaryMediaVisible = primaryMediaUrls.some((url) => files.some((file) =>
       /(?:^|\/)(?:App|Home|Hero|Landing|pages?\/[^/]+)\.[jt]sx?$/i.test(file.path)
       && file.content.includes(url)));
-    if (!primaryMediaVisible) {
+    if (!primaryMediaVisible && !frameSequenceScene) {
       failures.push("Photorealistic hero media is not visibly integrated into the primary page composition; it may not exist only in a WebGL fallback or low-opacity decoration.");
     }
 
@@ -126,7 +134,7 @@ export function immersiveAcceptanceFailures(
     }
   }
 
-  if (options.requiresExternalModel && !/(?:GLTFLoader|useGLTF|\.glb\b|\.gltf\b|model\/gltf|spline-viewer|@splinetool)/i.test(source)) {
+  if (options.requiresExternalModel && !frameSequenceScene && !/(?:GLTFLoader|useGLTF|\.glb\b|\.gltf\b|model\/gltf|spline-viewer|@splinetool)/i.test(source)) {
     failures.push("Missing the required external high-fidelity 3D model integration.");
   }
 

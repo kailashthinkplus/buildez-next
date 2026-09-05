@@ -12,7 +12,7 @@ import {
   patchElementSources,
   type ElementPatch,
 } from "../builder-v3/visual-editor";
-import { validatePreviewProjectPaths } from "../builder-v3/preview";
+import { parseProjectResponse as parseResult, TruncatedResponseError } from "./projectResponse";
 import { fetchWithRetry } from "@/lib/net/fetchWithRetry";
 import { IMAGE_CLARIFICATION_MESSAGE, imageRequestNeedsClarification } from "./imageIntent";
 import { buildShopezPrompt } from "./shopezPrompt";
@@ -44,10 +44,10 @@ import {
   resolveV12ExecutionPolicy,
   type V12PlanFeatureInput,
 } from "./executionPolicy";
-import { creativeMcpResultUrls, creativeMcpTools, hasConfiguredCreativeCapability } from "./creativeMcp";
+import { creativeMcpResultUrls, creativeMcpTools } from "./creativeMcp";
 import { persistCreativeAsset } from "./persistCreativeAsset";
 import { generateImmersiveFrameSequence } from "./immersiveFrameSequence";
-import { allowsUntextured3DGeometry, immersiveAcceptanceFailures, requiresExternal3DModel, requiresMultipleCameraViews } from "./experienceAcceptance";
+import { allowsUntextured3DGeometry, immersiveAcceptanceFailures, requiresMultipleCameraViews } from "./experienceAcceptance";
 import { requestsFullPageGeneration } from "./generationIntent";
 import { Prisma, prisma } from "@buildez/db";
 import { prepareAgentReferences } from "./prepareReferences";
@@ -621,33 +621,6 @@ function outputText(payload: unknown) {
   return (Array.isArray(root.output) ? root.output : []).flatMap(item => Array.isArray(object(item).content) ? object(item).content as unknown[] : [])
     .map(item => typeof object(item).text === "string" ? String(object(item).text) : "").filter(Boolean).join("\n").trim();
 }
-
-/**
- * The model's response can be cut off before it finishes (hitting
- * max_output_tokens, or a provider-side interruption) even with a
- * strict json_schema response format — schema conformance is only
- * enforced on completed output, not on a response that stops mid
- * stream. That leaves `text` syntactically invalid JSON, and the raw
- * `JSON.parse` SyntaxError ("Unexpected end of JSON input") is not
- * actionable for a caller deciding whether to retry. Re-throw it as
- * a distinctly labeled, retryable error instead.
- */
-function parseResult(text: string, requireFiles: boolean) {
-  let value: Record<string, unknown>;
-  try {
-    value = object(JSON.parse(text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim()));
-  } catch {
-    throw new TruncatedResponseError(
-      "The generated project response was cut off before it finished."
-    );
-  }
-  const files: AgentFile[] = Array.isArray(value.files) ? value.files.map(object).map(item => ({ path: String(item.path || ""), content: String(item.content || "") })) : [];
-  if ((requireFiles && !files.length) || files.some(file => !file.path || !file.content)) throw new Error("The agent returned an invalid project file set.");
-  if (files.length) validatePreviewProjectPaths(files.map(file => file.path));
-  return { message: typeof value.message === "string" ? value.message : "Your page is ready to review.", files };
-}
-
-class TruncatedResponseError extends Error {}
 
 /** OpenAI's Responses API sets this when generation stopped early — most commonly for hitting max_output_tokens. */
 function isIncompleteResponse(payload: unknown): boolean {
@@ -2890,64 +2863,38 @@ BuildEZ project structure.`
       : "INCREMENTAL_EDIT",
   );
 
-  // action / projectSchema / externalCreativeTools are cheap pure
-  // functions of persisted state + the fresh per-request input, so the
-  // generate stage recomputes them itself rather than persisting them.
-  const external3DModelRequired = requiresExternal3DModel(
-    effectivePrompt || generationPrompt || "",
-    capabilityPlan,
-  );
-
-  // ----------------------------------------------------------
-  // IMMERSIVE 3D → FRAME SEQUENCE (replaces live Three.js/R3F, and an
-  // external 3D-model provider)
-  //
-  // Hand-authored WebGL scenes reliably come out primitive and
-  // unpolished, and a real accurate product model (a specific
-  // motorcycle, car, etc.) can't be coded convincingly either — that's
-  // what external3DModelRequired flags. Rather than requiring a true 3D
-  // asset provider (Meshy/Spline) for that case, animate the generated
-  // hero image into a short cinematic clip and extract a frame sequence
-  // instead — the generate stage renders it on a scroll-scrubbed canvas.
-  // This covers BOTH the generic requires3D case and the
-  // external3DModelRequired case; only when neither this nor a
-  // configured Meshy/Spline provider is available do we still refuse
-  // rather than substitute flat imagery or primitive geometry.
-  // ----------------------------------------------------------
-
+  // Every 3D subject uses Higgsfield video -> extracted frames, including
+  // prompts asking for live geometry or a model. WebGL remains an effects layer.
   let frameSequence: { frameUrls: string[] } | null = null;
-
   if (capabilityPlan.requires3D) {
-    const heroImage = generatedMedia.find((media) => /hero|keyframe|primary|opening/i.test(media.role));
-
-    if (heroImage) {
-      input.onProgress?.(
-        "Animating the 3D scene",
-        "Generating a cinematic camera move and extracting a frame sequence",
-      );
-
-      frameSequence = await generateImmersiveFrameSequence({
-        siteId: input.siteId,
-        tenantId: input.tenantId,
-        userId: input.userId,
-        heroImageUrl: heroImage.url,
-        subjectPrompt: heroImage.prompt || effectivePrompt,
+    let heroImage = generatedMedia.find((media) => /hero|keyframe|primary|opening/i.test(media.role))
+      || generatedMedia[0];
+    // Edits and reference-driven requests may have no design/media plan.
+    // They still need a keyframe to enter the same Higgsfield pipeline.
+    if (!heroImage) {
+      input.onProgress?.("Creating the 3D opening frame", "Preparing the subject for cinematic video generation");
+      const keyframe = await generateSiteMedia({
+        apiKey, siteId: input.siteId, tenantId: input.tenantId, userId: input.userId,
+        requirements: [{
+          id: "immersive-hero-keyframe", role: "cinematic hero keyframe",
+          purpose: "Opening frame for the Higgsfield 3D video and scroll-driven frame sequence",
+          prompt: `Create a detailed cinematic opening frame for: ${effectivePrompt}. ${designArchitectPlan?.designDirection.concept || ""}. Preserve subject identity and materials. No text or watermark.`,
+          aspect: "landscape", medium: "cinematic physically based 3D render", useRequestedMedium: true,
+        }],
         signal: input.signal,
       });
-
-      if (frameSequence) {
-        input.onProgress?.(
-          "3D frame sequence ready",
-          `${frameSequence.frameUrls.length} frames generated for scroll-driven playback`,
-        );
-      }
+      generatedMedia.push(...keyframe.media);
+      heroImage = keyframe.media[0];
     }
-  }
-
-  if (external3DModelRequired && !frameSequence && !hasConfiguredCreativeCapability("threeD")) {
-    throw new Error(
-      "BuildEZ cannot create this high-fidelity 3D experience yet because no Builder 3D provider is configured. Configure MESHY_MCP_URL, SPLINE_MCP_URL, or HIGGSFIELD_API_KEY_ID/HIGGSFIELD_API_KEY_SECRET, then retry. The project was not changed and BuildEZ will not substitute flat imagery or primitive geometry.",
-    );
+    if (!heroImage) throw new Error("The opening image for the 3D video could not be created. Please retry generation.");
+    input.onProgress?.("Animating the 3D scene", "Generating a Higgsfield video and extracting frames for scroll-driven motion");
+    frameSequence = await generateImmersiveFrameSequence({
+      siteId: input.siteId, tenantId: input.tenantId, userId: input.userId,
+      heroImageUrl: heroImage.url, subjectPrompt: heroImage.prompt || effectivePrompt, signal: input.signal,
+    });
+    if (input.signal.aborted) throw input.signal.reason || new Error("Generation cancelled.");
+    if (!frameSequence) throw new Error("The cinematic video frames could not be prepared. Please retry generation.");
+    input.onProgress?.("3D frame sequence ready", `${frameSequence.frameUrls.length} frames ready for scroll-driven playback`);
   }
 
   input.onProgress?.(
@@ -3081,15 +3028,14 @@ export async function runV12AgentGenerate(
   const externalCreativeTools = immersiveToolchainEnabled
     ? creativeMcpTools({
         images: Boolean(assetToolPlan?.needsGeneratedImages),
-        video: Boolean(assetToolPlan?.needsVideo),
-        threeD: Boolean(assetToolPlan?.needs3DAssets),
+        video: false,
+        threeD: false,
         design: hasReferenceInputs,
       })
     : [];
-  const external3DModelRequired = requiresExternal3DModel(
-    effectivePrompt || generationPrompt || "",
-    capabilityPlan,
-  );
+  if (capabilityPlan.requires3D && !frameSequence) {
+    throw new Error("The cinematic video frames are missing from this build. Please restart generation to prepare them.");
+  }
 
   const generationText = `You are BuildEZ, an autonomous creative director, senior website designer, motion designer, and frontend engineer. ${action}
 
@@ -3341,7 +3287,10 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
   shouldRebuildFromScratch
     ? "For this FULL REBUILD, create a new canonical site theme from the Design Architect specification and implement that new theme as CSS custom properties in one shared theme stylesheet. Do not reproduce the previous visual system."
     : "Treat the canonical site theme as the source of truth: implement it as CSS custom properties in one shared theme stylesheet and consume those variables everywhere."
-} Every route must render the same reusable SiteShell, Header, and Footer rather than restyling them per page. Never use Unsplash, remote stock-photo URLs, or random image services. Use only supplied media, generated media URLs, ShopEZ product images, or deliberate CSS art. Keep dependencies purposeful rather than artificially minimal. The generated project's package.json MUST include every library actually used by its source code. When the Experience Architect calls for advanced capabilities, install the appropriate dependencies in the GENERATED PROJECT rather than pretending to implement them with generic CSS. Examples include three + @react-three/fiber + @react-three/drei for true interactive 3D, gsap for sophisticated scroll choreography, and suitable visualization libraries for genuine data-driven experiences. Do not add these dependencies when the requested experience does not need them. Prefer reusable component/data architecture, but never simplify away required visual richness, imagery, backgrounds, motion, interaction, iconography, 3D, shaders, parallax or composition merely to reduce code size. Produce polished responsive UI and keep repeated markup concise.`;
+} Every route must render the same reusable SiteShell, Header, and Footer rather than restyling them per page. Never use Unsplash, remote stock-photo URLs, or random image services. Use only supplied media, generated media URLs, ShopEZ product images, or deliberate CSS art. Keep dependencies purposeful rather than artificially minimal. The generated project's package.json MUST include every library actually used by its source code. When the Experience Architect calls for advanced capabilities, install the appropriate dependencies in the GENERATED PROJECT rather than pretending to implement them with generic CSS. Examples include a 2D canvas drawing supplied Higgsfield video frames for 3D subjects, optional three for supporting WebGL effects, gsap for sophisticated scroll choreography, and suitable visualization libraries for genuine data-driven experiences. Do not add these dependencies when the requested experience does not need them. Prefer reusable component/data architecture, but never simplify away required visual richness, imagery, backgrounds, motion, interaction, iconography, 3D, shaders, parallax or composition merely to reduce code size. Produce polished responsive UI and keep repeated markup concise.
+
+BUILDEZ 3D DELIVERY POLICY (applies even when the user asks for a 3D model, GLB/GLTF, Three.js or real-time 3D):
+All 3D subject experiences use a Higgsfield-generated video extracted into frames, rendered on a scroll-scrubbed 2D canvas. Never generate a live subject mesh or request Meshy/Spline/model assets. WebGL/shaders/particles remain allowed for basic supporting animations and effects; they must not replace the supplied frame sequence. The verified frame canvas satisfies the subject, camera-view and spatial-depth requirements above. Use the supplied sequence whenever present, preserve prefers-reduced-motion, and keep a representative supplied hero image as a loading/error poster.`;
   const generationContent = [
     ...directReferenceInputs,
     { type: "input_text", text: generationText },
@@ -3371,9 +3320,7 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
     ...(externalCreativeTools.length
       ? {
           tools: externalCreativeTools,
-          tool_choice: assetToolPlan?.needsVideo || assetToolPlan?.needs3DAssets
-            ? "required"
-            : "auto",
+          tool_choice: "auto",
         }
       : {}),
   });
@@ -3457,10 +3404,12 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
         .map((media) => media.url)
     : [];
   let acceptanceFailures = immersiveAcceptanceFailures(parsedResult.files, capabilityPlan, {
-    requiresExternalModel: external3DModelRequired,
+    requiresExternalModel: false,
     requiresMultipleCameraViews: requiresMultipleCameraViews(effectivePrompt),
     photorealisticPrimaryMediaUrls,
     allowUntexturedGeometry: allowsUntextured3DGeometry(effectivePrompt),
+    hasFrameSequence3D: Boolean(frameSequence),
+    frameSequenceUrls: frameSequence?.frameUrls,
     requiresCinematicNarrative:
       input.creativeDirection.experienceType === "Immersive 3D / cinematic" ||
       designArchitectPlan?.experience === "CINEMATIC" ||
@@ -3483,6 +3432,8 @@ Return JSON only: {"message":"specific completion summary","files":[{"path":"pac
 The following project was just generated but failed acceptance checks. Treat it as the current state of the project.
 
 ${parsedResult.files.map((file) => `--- ${file.path} ---\n${file.content}`).join("\n\n")}
+
+${frameSequence ? `The 3D subject MUST use a scroll-scrubbed 2D canvas drawing these supplied Higgsfield video frames: ${JSON.stringify(frameSequence.frameUrls)}. No live model integration is required or permitted for the subject. WebGL is allowed only for supporting effects.` : ""}
 
 ACCEPTANCE FAILURES TO FIX:
 ${acceptanceFailures.map((failure) => `- ${failure}`).join("\n")}
@@ -3509,17 +3460,10 @@ Return JSON only: {"message":"specific fix summary","files":[{"path":"...","cont
       signal: input.signal,
       timeoutMs: 165_000,
     });
-    const repairResult = parseResult(outputText(payload), input.mode === "auto");
-    const mergedFilesByPath = new Map(parsedResult.files.map((file) => [file.path, file] as const));
-    for (const file of repairResult.files) {
-      mergedFilesByPath.set(file.path, file);
-    }
-    parsedResult = {
-      message: repairResult.message || parsedResult.message,
-      files: [...mergedFilesByPath.values()],
-    };
+    if (isIncompleteResponse(payload)) throw new TruncatedResponseError("The project repair response was cut off before it finished.");
+    parsedResult = parseResult(outputText(payload), true, parsedResult.files);
     acceptanceFailures = immersiveAcceptanceFailures(parsedResult.files, capabilityPlan, {
-      requiresExternalModel: external3DModelRequired,
+      requiresExternalModel: false,
       requiresMultipleCameraViews: requiresMultipleCameraViews(effectivePrompt),
       photorealisticPrimaryMediaUrls,
       allowUntexturedGeometry: allowsUntextured3DGeometry(effectivePrompt),
@@ -3528,6 +3472,7 @@ Return JSON only: {"message":"specific fix summary","files":[{"path":"...","cont
         designArchitectPlan?.experience === "CINEMATIC" ||
         capabilityPlan.capabilities.includes("PARALLAX"),
       hasFrameSequence3D: Boolean(frameSequence),
+      frameSequenceUrls: frameSequence?.frameUrls,
     });
     if (acceptanceFailures.length) {
       throw new Error(`Immersive generation did not pass acceptance: ${acceptanceFailures.join(" ")}`);

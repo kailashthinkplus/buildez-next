@@ -21,8 +21,7 @@ export function immersiveFrameSequenceAvailable() {
  *
  * Returns null (never throws) whenever the provider chain isn't
  * configured or any step fails — callers must fall back to the
- * existing live-3D code-gen path in that case, exactly as it behaves
- * today.
+ * video/frame preparation error without switching to live geometry.
  */
 export async function generateImmersiveFrameSequence(input: {
   siteId: string;

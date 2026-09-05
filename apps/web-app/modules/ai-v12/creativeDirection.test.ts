@@ -60,14 +60,14 @@ test("immersive experience pill defaults to media-led cinematic motion", () => {
   assert.equal(plan.recommendedLibraries.includes("@react-three/fiber"), false);
 });
 
-test("explicit 3D media still activates the real-time 3D stack", () => {
+test("explicit 3D media requires frame playback without the real-time subject stack", () => {
   const plan = routeV12Capabilities("Create a premium product website", {
     experienceType: "Immersive 3D / cinematic",
     imageStyle: "3D",
   });
   assert.equal(plan.requires3D, true);
   assert.equal(plan.requiresWebGL, false);
-  assert.ok(plan.recommendedLibraries.includes("@react-three/fiber"));
+  assert.equal(plan.recommendedLibraries.includes("@react-three/fiber"), false);
 });
 
 test("traditional experience remains lightweight unless the prompt explicitly requests advanced work", () => {
