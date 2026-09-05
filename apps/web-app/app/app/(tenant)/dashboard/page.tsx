@@ -32,6 +32,7 @@ import WebsiteActionsMenu from "../components/WebsiteActionsMenu";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
 import { withVerifiedDomainOverride } from "@/lib/runtime/site-live-url";
 import { stashPendingAttachments } from "@/modules/ai-v12/pendingAttachments";
+import { resolveAgentDestination } from "@/lib/ai/resolveAgentDestination";
 
 const PLATFORM_DOMAIN = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || "getbuildezy.com";
 
@@ -143,6 +144,19 @@ export default function GlobalDashboardPage() {
   }
 
   function openExistingWebsite(siteId: string) {
+    setAiDestinationOpen(false);
+
+    const agentId = resolveAgentDestination(pendingAiPrompt);
+    if (agentId) {
+      const site = data?.sites.find((item) => item.id === siteId);
+      if (site) {
+        const agentQuery = new URLSearchParams({ autoRun: "1" });
+        if (pendingAiPrompt) agentQuery.set("prompt", pendingAiPrompt.slice(0, 4000));
+        router.push(`/app/${site.slug}/ai/${agentId}?${agentQuery.toString()}`);
+        return;
+      }
+    }
+
     const query = new URLSearchParams({
       panel: "ai",
       context: "Website",
@@ -152,7 +166,6 @@ export default function GlobalDashboardPage() {
       query.set("prompt", pendingAiPrompt.slice(0, 4000));
     }
 
-    setAiDestinationOpen(false);
     router.push(`/app/builder-v3/${siteId}?${query.toString()}`);
   }
 

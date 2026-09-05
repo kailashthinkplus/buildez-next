@@ -110,7 +110,7 @@ export default function OnboardingSidebar({
               key={stepItem.label}
               onClick={() => onStepClick(stepItem.index)}
               className={`
-                flex items-center gap-3 px-4 py-3 text-sm transition
+                flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition
                 ${isActive &&
                   "bg-[rgba(47,125,246,0.25)] shadow-[inset_0_0_0_1px_rgba(47,125,246,0.45)]"}
                 ${isPast &&

@@ -5,6 +5,7 @@ import { FilePlus2, ImageOff, Loader2, Newspaper, Save, Trash2, Upload, X } from
 import { useWorkspace } from "../../components/WorkspaceContext";
 import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
 import { useMedia } from "@/modules/builder-v2/media/hooks/useMedia";
+import DashboardRichTextEditor from "../../components/DashboardRichTextEditor";
 
 const BLOG_COLLECTION_SLUG = "blog";
 
@@ -252,7 +253,9 @@ function PostEditor({
               </label>
               <label className="block text-xs font-medium dashboard-muted">
                 Content
-                <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={8} className="mt-1.5 w-full rounded-xl border dashboard-border bg-transparent px-3 py-2.5 text-sm outline-none" />
+                <div className="mt-1.5">
+                  <DashboardRichTextEditor value={content} onChange={setContent} />
+                </div>
               </label>
               <label className="block text-xs font-medium dashboard-muted">
                 Tags (comma separated)

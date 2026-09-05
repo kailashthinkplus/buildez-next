@@ -215,7 +215,13 @@ export default function AgentDetailPage() {
     if (runId) {
       const entry = history.find((item) => item.id === runId);
       if (entry) void reopenRun(entry);
+    } else if (searchParams.get("autoRun") === "1" && composerText.trim()) {
+      // Arrived here from a dashboard chatbox that classified the prompt as
+      // belonging to this agent — run it immediately instead of leaving the
+      // prompt sitting in the composer waiting for a manual click.
+      void handleSend(composerText.trim());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agent, history, searchParams, reopenRun]);
 
   useEffect(() => {
@@ -426,8 +432,27 @@ export default function AgentDetailPage() {
           <ArrowLeft size={14} /> Your AI team
         </Link>
 
+        {error && (
+          <div className="mt-3 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-600 dark:text-rose-300">
+            <p>{error}</p>
+            {creditsExceeded && (
+              <Link
+                href="/app/workspace/billing#ai-credits"
+                className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-[11px] font-medium text-amber-700 transition hover:bg-amber-500/20 dark:text-amber-300"
+              >
+                <Sparkles size={11} /> Upgrade plan
+              </Link>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="mt-3 flex-1 overflow-y-auto pr-1">
+        {/* The agent hero lives inside the scrollable chat area (as its
+            first element) rather than pinned above it, so it scrolls away
+            with the rest of the conversation instead of staying sticky. */}
         <header
-          className="relative mt-3 overflow-hidden rounded-2xl p-4 text-white sm:p-6"
+          className="relative mb-4 overflow-hidden rounded-2xl p-4 text-white sm:p-6"
           style={{ background: agentGradientCss(agent.id) }}
         >
           <div className="pointer-events-none absolute -right-8 -top-10 h-44 w-44 rounded-full bg-white/10 blur-2xl" />
@@ -456,22 +481,6 @@ export default function AgentDetailPage() {
           </div>
         </header>
 
-        {error && (
-          <div className="mt-3 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-600 dark:text-rose-300">
-            <p>{error}</p>
-            {creditsExceeded && (
-              <Link
-                href="/app/workspace/billing#ai-credits"
-                className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-[11px] font-medium text-amber-700 transition hover:bg-amber-500/20 dark:text-amber-300"
-              >
-                <Sparkles size={11} /> Upgrade plan
-              </Link>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="mt-4 flex-1 overflow-y-auto pr-1">
         {transcript.length === 0 ? (
           <div>
             <p className="flex items-center gap-1.5 text-xs font-semibold dashboard-muted">

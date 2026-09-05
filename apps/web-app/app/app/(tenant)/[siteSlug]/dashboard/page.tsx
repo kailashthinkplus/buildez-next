@@ -12,6 +12,7 @@ import type { InsightFinding, InsightReport } from "@/modules/insights/types";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
 import { withVerifiedDomainOverride } from "@/lib/runtime/site-live-url";
 import { stashPendingAttachments } from "@/modules/ai-v12/pendingAttachments";
+import { resolveAgentDestination } from "@/lib/ai/resolveAgentDestination";
 
 type Analytics = {
   totals: { pageViews: number; visitors: number; conversions: number; pageViewsChange: number; visitorsChange: number; bounceRate: number };
@@ -200,7 +201,7 @@ export default function SiteDashboardPage() {
         <WebsitePreview siteId={websiteId} siteSlug={siteSlug} siteName={website?.name || siteSlug} siteStatus={website?.status} verifiedDomain={website?.verifiedDomain} />
         <AiCreditsCard balance={creditBalance} loading={creditsLoading} />
         <div className="xl:col-start-2 xl:row-start-1 [&>*]:h-full">
-          <CopilotPromptCard contextLabel={`${website?.name || siteSlug} website`} onSubmit={(prompt,attachments)=>{if(!websiteId)return;stashPendingAttachments(attachments ?? []);const query=new URLSearchParams({panel:'ai',context:'Website',prompt:prompt.slice(0,4000)});router.push(`/app/builder-v3/${websiteId}?${query.toString()}`)}} />
+          <CopilotPromptCard contextLabel={`${website?.name || siteSlug} website`} onSubmit={(prompt,attachments)=>{if(!websiteId)return;stashPendingAttachments(attachments ?? []);const agentId=resolveAgentDestination(prompt);if(agentId){const agentQuery=new URLSearchParams({autoRun:'1',prompt:prompt.slice(0,4000)});router.push(`/app/${siteSlug}/ai/${agentId}?${agentQuery.toString()}`);return;}const query=new URLSearchParams({panel:'ai',context:'Website',prompt:prompt.slice(0,4000)});router.push(`/app/builder-v3/${websiteId}?${query.toString()}`)}} />
         </div>
         <Link href={`/app/${siteSlug}/crm`} className="dashboard-card group flex items-center gap-4 rounded-2xl p-5 dashboard-hover xl:col-start-2 xl:row-start-2"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-500"><ContactRound size={18} /></span><div><h2 className="font-semibold">CRM pipeline</h2><p className="mt-1 text-xs dashboard-muted">{crm.total} leads · {crm.new} new · {crm.qualified} qualified</p></div><ArrowUpRight className="ml-auto dashboard-faint transition group-hover:translate-x-1" size={17} /></Link>
       </section>

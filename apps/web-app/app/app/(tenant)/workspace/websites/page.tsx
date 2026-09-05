@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Globe2, MoreVertical, Plus, Sparkles } from "lucide-react";
+import { ArrowRight, Globe2, Plus, Sparkles } from "lucide-react";
 
 import CreateSiteModal from "@/app/app/(tenant)/components/CreateSiteModal";
 import { WebsiteThumbnail } from "@/app/app/(tenant)/components/WebsiteThumbnail";
+import WebsiteActionsMenu from "@/app/app/(tenant)/components/WebsiteActionsMenu";
 
 /* ============================================================
    TYPES
@@ -16,6 +17,7 @@ interface Site {
   name: string;
   slug: string;
   status: string;
+  archivedAt?: string | null;
 }
 
 /* ============================================================
@@ -139,13 +141,16 @@ export default function WebsitesPage() {
                 <WebsiteThumbnail siteId={site.id} siteName={site.name} siteStatus={site.status} className="h-40 w-full" />
               </button>
 
-              {/* KEBAB MENU (UI ONLY FOR NOW) */}
-              <button
-                className="absolute top-3 right-3 dashboard-muted hover:text-[var(--dashboard-text)]"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MoreVertical size={16} />
-              </button>
+              <div className="absolute top-3 right-3" onClick={(e) => e.stopPropagation()}>
+                <WebsiteActionsMenu
+                  site={{ id: site.id, name: site.name, slug: site.slug, status: site.status, archived: Boolean(site.archivedAt) }}
+                  onChanged={(patch) =>
+                    setSites((current) =>
+                      current.map((item) => (item.id === patch.id ? { ...item, status: patch.status, archivedAt: patch.archived ? new Date().toISOString() : null } : item)),
+                    )
+                  }
+                />
+              </div>
 
               {/* CONTENT */}
               <div className="space-y-1">

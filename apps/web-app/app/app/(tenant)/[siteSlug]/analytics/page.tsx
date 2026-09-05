@@ -37,8 +37,32 @@ type GlobeLocation = { name: string; country: string; lat: number; lon: number; 
 const ranges = { "Last 7 days": 7, "Last 30 days": 30, "Last 90 days": 90 } as const;
 type RangeChoice = keyof typeof ranges | "Custom range";
 const palette = ["#3b82f6", "#72f6ff", "#ffcf4a", "#a67cff", "#6dff9b", "#ff756d", "#f472b6", "#22d3ee"];
-const countryCenters: Record<string, [number, number]> = {
-  "United States": [39.8, -98.6], "United Kingdom": [54.7, -3.4], India: [22.6, 79.0], Singapore: [1.35, 103.82], Australia: [-25.3, 133.8], Brazil: [-10.8, -52.9], Canada: [56.1, -106.3], Germany: [51.2, 10.4], France: [46.2, 2.2], Japan: [36.2, 138.3], China: [35.9, 104.2], Netherlands: [52.1, 5.3], Spain: [40.5, -3.7], Italy: [42.8, 12.8], "United Arab Emirates": [23.4, 53.8], Indonesia: [-0.8, 113.9], Philippines: [12.9, 121.8], Malaysia: [4.2, 101.98], "South Africa": [-30.6, 22.9], Mexico: [23.6, -102.5],
+// Keyed by the 2-letter ISO country code the analytics pipeline actually
+// stores (from the cf-ipcountry / x-vercel-ip-country edge headers — see
+// app/api/public/analytics/events/route.ts) — this was previously keyed by
+// full country name, which a code never matched, so the globe silently had
+// zero locations regardless of how much real traffic existed.
+const countryCenters: Record<string, { name: string; lat: number; lon: number }> = {
+  US: { name: "United States", lat: 39.8, lon: -98.6 },
+  GB: { name: "United Kingdom", lat: 54.7, lon: -3.4 },
+  IN: { name: "India", lat: 22.6, lon: 79.0 },
+  SG: { name: "Singapore", lat: 1.35, lon: 103.82 },
+  AU: { name: "Australia", lat: -25.3, lon: 133.8 },
+  BR: { name: "Brazil", lat: -10.8, lon: -52.9 },
+  CA: { name: "Canada", lat: 56.1, lon: -106.3 },
+  DE: { name: "Germany", lat: 51.2, lon: 10.4 },
+  FR: { name: "France", lat: 46.2, lon: 2.2 },
+  JP: { name: "Japan", lat: 36.2, lon: 138.3 },
+  CN: { name: "China", lat: 35.9, lon: 104.2 },
+  NL: { name: "Netherlands", lat: 52.1, lon: 5.3 },
+  ES: { name: "Spain", lat: 40.5, lon: -3.7 },
+  IT: { name: "Italy", lat: 42.8, lon: 12.8 },
+  AE: { name: "United Arab Emirates", lat: 23.4, lon: 53.8 },
+  ID: { name: "Indonesia", lat: -0.8, lon: 113.9 },
+  PH: { name: "Philippines", lat: 12.9, lon: 121.8 },
+  MY: { name: "Malaysia", lat: 4.2, lon: 101.98 },
+  ZA: { name: "South Africa", lat: -30.6, lon: 22.9 },
+  MX: { name: "Mexico", lat: 23.6, lon: -102.5 },
 };
 
 export default function AnalyticsPage() {
@@ -81,7 +105,7 @@ export default function AnalyticsPage() {
   return <div className="analytics-engine mx-auto max-w-[1560px] pb-12">
     <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div><div className="flex items-center gap-2 text-sm dashboard-muted"><span className="analytics-live-dot"/> AI Analytics <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-300">TRACKING</span></div><h1 className="mt-1 text-2xl font-semibold tracking-[-.04em]">See your website in motion.</h1><p className="mt-1 text-sm dashboard-muted">Live traffic, audience and behavior intelligence for {data?.site.name || "your website"}.</p></div>
-      <div className="flex flex-wrap gap-2"><label className="dashboard-control flex items-center gap-2 border dashboard-border px-3 text-sm"><CalendarDays size={15}/><select value={range} onChange={event=>setRange(event.target.value as RangeChoice)} className="bg-transparent outline-none">{Object.keys(ranges).map(value=><option key={value}>{value}</option>)}<option>Custom range</option></select></label>{range === "Custom range" ? <div className="dashboard-control flex items-center gap-2 border dashboard-border px-3 text-xs"><label className="flex items-center gap-1.5"><span className="dashboard-faint">From</span><input type="date" value={from} max={to} onChange={event=>setFrom(event.target.value)} className="bg-transparent outline-none"/></label><span className="dashboard-faint">—</span><label className="flex items-center gap-1.5"><span className="dashboard-faint">To</span><input type="date" value={to} min={from} max={today} onChange={event=>setTo(event.target.value)} className="bg-transparent outline-none"/></label></div> : null}<button className="dashboard-control flex items-center gap-2 border dashboard-border px-3 text-sm" disabled={!data} onClick={exportCsv}><Download size={15}/> Export CSV</button><button className="dashboard-control border dashboard-border p-2" onClick={()=>void load()} aria-label="Refresh analytics"><RefreshCw size={15}/></button></div>
+      <div className="flex flex-wrap gap-2"><label className="dashboard-control flex items-center gap-2 border dashboard-border px-3 text-sm"><CalendarDays size={15}/><select value={range} onChange={event=>setRange(event.target.value as RangeChoice)} className="dashboard-select bg-transparent outline-none">{Object.keys(ranges).map(value=><option key={value}>{value}</option>)}<option>Custom range</option></select></label>{range === "Custom range" ? <div className="dashboard-control flex items-center gap-2 border dashboard-border px-3 text-xs"><label className="flex items-center gap-1.5"><span className="dashboard-faint">From</span><input type="date" value={from} max={to} onChange={event=>setFrom(event.target.value)} className="bg-transparent outline-none"/></label><span className="dashboard-faint">—</span><label className="flex items-center gap-1.5"><span className="dashboard-faint">To</span><input type="date" value={to} min={from} max={today} onChange={event=>setTo(event.target.value)} className="bg-transparent outline-none"/></label></div> : null}<button className="dashboard-control flex items-center gap-2 border dashboard-border px-3 text-sm" disabled={!data} onClick={exportCsv}><Download size={15}/> Export CSV</button><button className="dashboard-control border dashboard-border p-2" onClick={()=>void load()} aria-label="Refresh analytics"><RefreshCw size={15}/></button></div>
     </header>
 
     <nav className="analytics-tabs mb-5 inline-flex rounded-xl border dashboard-border p-1" aria-label="Analytics views">
@@ -151,7 +175,7 @@ function Heatmap({device,setDevice,clicks,totalClicks,pages}:{device:"Desktop"|"
   const points=pageClicks.map(click=>click.metadata).filter((value):value is Record<string,unknown>=>Boolean(value)&&typeof value==="object").map(value=>({x:Number(value.xPercent),y:Number(value.yPercent)})).filter(point=>Number.isFinite(point.x)&&Number.isFinite(point.y));
   return <section className="grid gap-5 xl:grid-cols-[1fr_290px]">
     <article className="dashboard-card rounded-2xl p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="flex items-center gap-2 font-semibold"><MousePointer2 size={17} className="text-blue-500"/>Click heatmap</h2><p className="mt-1 text-xs dashboard-muted">Real published-page imagery with recorded click positions</p></div><div className="flex items-center gap-2">{pages.length ? <select value={selectedPage?.id||""} onChange={event=>setPageId(event.target.value)} className="dashboard-input rounded-lg px-2 py-1.5 text-xs">{pages.map(page=><option key={page.id} value={page.id}>{page.title}</option>)}</select> : null}<div className="flex rounded-lg bg-black/[.04] p-1 dark:bg-white/[.04]">{(['Desktop','Mobile'] as const).map(d=><button key={d} onClick={()=>setDevice(d)} className={`heat-device ${device===d?'active':''}`}>{d}</button>)}</div></div></div>
+      <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="flex items-center gap-2 font-semibold"><MousePointer2 size={17} className="text-blue-500"/>Click heatmap</h2><p className="mt-1 text-xs dashboard-muted">Real published-page imagery with recorded click positions</p></div><div className="flex items-center gap-2">{pages.length ? <select value={selectedPage?.id||""} onChange={event=>setPageId(event.target.value)} className="dashboard-select dashboard-input rounded-lg px-2 py-1.5 text-xs">{pages.map(page=><option key={page.id} value={page.id}>{page.title}</option>)}</select> : null}<div className="flex rounded-lg bg-black/[.04] p-1 dark:bg-white/[.04]">{(['Desktop','Mobile'] as const).map(d=><button key={d} onClick={()=>setDevice(d)} className={`heat-device ${device===d?'active':''}`}>{d}</button>)}</div></div></div>
       <div className={`heatmap-browser relative mx-auto mt-6 overflow-hidden rounded-xl border dashboard-border ${device==='Mobile'?'mobile':''}`}>
         <div className="flex h-9 items-center gap-1.5 border-b dashboard-border px-3"><i/><i/><i/><span className="truncate">{selectedPage?.title || "Published website"}</span></div>
         <div className="relative aspect-[3/4] overflow-hidden bg-white sm:aspect-[16/10]">
@@ -167,7 +191,7 @@ function Heatmap({device,setDevice,clicks,totalClicks,pages}:{device:"Desktop"|"
 }
 function Signal({label,value,hot,down}:{label:string;value:string;hot?:boolean;down?:boolean}){return <div className="mt-4 flex items-center text-xs"><span className="dashboard-muted">{label}</span><span className={`ml-auto flex items-center font-semibold ${hot?'text-blue-500':down?'text-amber-500':''}`}>{down?<ArrowDownRight size={12}/>:null}{value}</span></div>}
 
-function toGlobeLocations(countries: AnalyticsData["countries"]): GlobeLocation[] { return countries.flatMap((item,index)=>{const center=countryCenters[item.country];return center?[{name:item.country,country:item.country,lat:center[0],lon:center[1],visitors:item.visitors,color:palette[index%palette.length]}]:[];}); }
+function toGlobeLocations(countries: AnalyticsData["countries"]): GlobeLocation[] { return countries.flatMap((item,index)=>{const center=countryCenters[item.country.toUpperCase()];return center?[{name:center.name,country:item.country,lat:center.lat,lon:center.lon,visitors:item.visitors,color:palette[index%palette.length]}]:[];}); }
 function formatNumber(value:number){return new Intl.NumberFormat("en",{notation:value>=10000?"compact":"standard",maximumFractionDigits:1}).format(value)}
 function formatDuration(seconds:number){const minutes=Math.floor(seconds/60),remaining=seconds%60;return minutes?`${minutes}m ${remaining}s`:`${remaining}s`}
 function formatDate(value:string){return new Intl.DateTimeFormat("en",{month:"short",day:"numeric"}).format(new Date(`${value}T00:00:00`))}
