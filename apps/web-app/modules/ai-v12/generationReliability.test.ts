@@ -72,3 +72,11 @@ test("still images cannot replace required Higgsfield frames", () => {
   assert.match(immersiveAcceptanceFailures([project[3]], plan, {hasFrameSequence3D:true,frameSequenceUrls:frameUrls}).join(" "), /Higgsfield/);
   assert.match(immersiveAcceptanceFailures(frameFiles, plan, {hasFrameSequence3D:true,frameSequenceUrls:[...frameUrls,"https://assets.example.test/missing.jpg"]}).join(" "), /every supplied Higgsfield/);
 });
+
+ test("explicit NO WebGL does not activate shaders from negated keywords", () => {
+  const plan = routeV12Capabilities("Create a cinematic 3D-feeling architecture journey. NO WebGL. NO Three.js. Use frame progression and parallax.");
+  assert.equal(plan.requires3D, true);
+  assert.equal(plan.requiresWebGL, false);
+  assert.equal(plan.capabilities.includes("SHADER_WEBGL"), false);
+  assert.equal(plan.recommendedLibraries.includes("three"), false);
+ });

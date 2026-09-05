@@ -35,6 +35,7 @@ export function routeV12Capabilities(
   }>,
 ): V12CapabilityPlan {
   const text = prompt.toLowerCase();
+  const forbidsWebGL = /\b(?:no|without|avoid|do not use|don't use)\s+(?:webgl|three\.js|threejs|real[- ]time 3d|browser[- ]rendered 3d)\b/i.test(prompt);
 
   const capabilities = new Set<V12Capability>();
 
@@ -80,7 +81,7 @@ export function routeV12Capabilities(
   }
 
   if (
-    has(
+    !forbidsWebGL && has(
       "shader",
       "webgl",
       "glsl",
