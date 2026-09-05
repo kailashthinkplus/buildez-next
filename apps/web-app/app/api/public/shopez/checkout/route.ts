@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@buildez/db";
 import Stripe from "stripe";
-import DodoPayments from "dodopayments";
 import { decryptSecret, money } from "@/lib/shopez";
 import { sendShopOrderEmails } from "@/lib/shopez-order-emails";
 import { isActivePreviewSession } from "@/modules/builder-v3/preview/PreviewSessionManager";
-import type { TaxCategory } from "dodopayments/resources/misc";
 
 type CartLine = { variantId: string; quantity: number };
 export async function POST(req: NextRequest) {
@@ -27,7 +25,7 @@ export async function POST(req: NextRequest) {
   let discountAmount = 0, discountId: string | undefined; let freeShipping = false;
   if (b.discountCode) { const d = await prisma.shopDiscount.findUnique({ where: { shopId_code: { shopId: shop.id, code: String(b.discountCode).trim().toUpperCase() } } }); if (d && d.active && d.startsAt <= new Date() && (!d.endsAt || d.endsAt > new Date()) && (!d.usageLimit || d.usageCount < d.usageLimit) && (!d.minimumAmount || subtotal >= Number(d.minimumAmount))) { discountId = d.id; if (d.type === "PERCENTAGE") discountAmount = subtotal * Math.min(100, Number(d.value)) / 100; else if (d.type === "FIXED_AMOUNT") discountAmount = Math.min(subtotal, Number(d.value)); else freeShipping = true; } }
   const shipping = freeShipping || (shop.freeShippingOver && subtotal >= Number(shop.freeShippingOver)) ? 0 : Number(shop.flatShippingRate); const taxable = Math.max(0, subtotal - discountAmount); const tax = shop.taxInclusive ? 0 : taxable * Number(shop.taxRate) / 100; const total = money(taxable + shipping + tax);
-  const provider = String(b.provider || "COD").toUpperCase() as "RAZORPAY" | "PAYPAL" | "STRIPE" | "DODO" | "COD"; const integration = shop.payments.find(x => x.provider === provider && x.enabled);
+  const provider = String(b.provider || "COD").toUpperCase() as "RAZORPAY" | "PAYPAL" | "STRIPE" | "COD"; const integration = shop.payments.find(x => x.provider === provider && x.enabled);
   if (provider !== "COD" && !integration) return NextResponse.json({ error: `${provider} is not enabled` }, { status: 400 });
   const customer = await prisma.shopCustomer.upsert({ where: { shopId_email: { shopId: shop.id, email: String(b.email).toLowerCase() } }, create: { shopId: shop.id, email: String(b.email).toLowerCase(), firstName: b.firstName, lastName: b.lastName, phone: b.phone, addresses: [b.shippingAddress] }, update: { firstName: b.firstName, lastName: b.lastName, phone: b.phone, addresses: [b.shippingAddress] } });
   const last = await prisma.shopOrder.aggregate({ where: { shopId: shop.id }, _max: { orderNumber: true } });
@@ -48,14 +46,6 @@ export async function POST(req: NextRequest) {
     });
     await prisma.shopOrder.update({ where: { id: order.id }, data: { providerOrderId: session.id } });
     return NextResponse.json({ orderId: order.id, orderNumber: order.orderNumber, provider, approvalUrl: session.url });
-  }
-  if (provider === "DODO") {
-    const client = new DodoPayments({ bearerToken: decryptSecret(integration!.encryptedSecret!), environment: integration!.mode === "live" ? "live_mode" : "test_mode" });
-    const taxCategory = ((integration!.metadata as Record<string, unknown> | null)?.taxCategory as TaxCategory) || "saas";
-    const product = await client.products.create({ name: `Order #${order.orderNumber} · ${shop.name}`, tax_category: taxCategory, price: { type: "one_time_price", currency: shop.currency as never, price: Math.round(total * 100), discount: 0, tax_inclusive: shop.taxInclusive } });
-    const session = await client.checkoutSessions.create({ product_cart: [{ product_id: product.product_id, quantity: 1 }], customer: { email: customer.email, name: `${b.firstName || ""} ${b.lastName || ""}`.trim() || customer.email }, return_url: b.returnUrl, metadata: { shopezOrderId: order.id, shopezProductId: product.product_id } });
-    await prisma.shopOrder.update({ where: { id: order.id }, data: { providerOrderId: session.session_id } });
-    return NextResponse.json({ orderId: order.id, orderNumber: order.orderNumber, provider, approvalUrl: session.checkout_url });
   }
   return NextResponse.json({ error: "Unsupported payment method" }, { status: 400 });
 }

@@ -251,7 +251,7 @@ export default function PagesView({ siteSlug }: Props) {
             placeholder={showTrash ? "Search trash…" : "Search pages…"}
             className="w-full rounded-xl border dashboard-border bg-transparent py-2.5 pl-9 pr-3 text-sm outline-none focus:border-[#3B82F6]"
           />
-        </div>{!showTrash && <select value={`${sortKey}:${sortDir}`} onChange={(event) => { const [key, dir] = event.target.value.split(":") as [SortKey, SortDir]; setSortKey(key); setSortDir(dir); }} aria-label="Sort pages" className="rounded-xl border dashboard-border bg-transparent px-3 py-2.5 text-xs font-medium outline-none"><option value="updatedAt:desc">Recently updated</option><option value="updatedAt:asc">Oldest updated</option><option value="title:asc">Title A–Z</option><option value="title:desc">Title Z–A</option><option value="aiScore:desc">Best AI page score</option></select>}<div className="flex items-center gap-2 ml-auto">
+        </div>{!showTrash && <select value={`${sortKey}:${sortDir}`} onChange={(event) => { const [key, dir] = event.target.value.split(":") as [SortKey, SortDir]; setSortKey(key); setSortDir(dir); }} aria-label="Sort pages" className="dashboard-select rounded-xl border dashboard-border bg-transparent px-3 py-2.5 text-xs font-medium outline-none"><option value="updatedAt:desc">Recently updated</option><option value="updatedAt:asc">Oldest updated</option><option value="title:asc">Title A–Z</option><option value="title:desc">Title Z–A</option><option value="aiScore:desc">Best AI page score</option></select>}<div className="flex items-center gap-2 ml-auto">
           <button
             onClick={() => {
               setShowTrash(false);

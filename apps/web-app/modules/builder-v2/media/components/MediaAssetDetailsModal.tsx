@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Check,
   Copy,
@@ -18,14 +20,43 @@ interface MediaAssetDetailsModalProps {
   onUse?(asset: MediaAsset): void;
 }
 
-export default function MediaAssetDetailsModal({
+/**
+ * Rendered via a body-level portal rather than inline: the dashboard shell
+ * (.dashboard-workspace) applies backdrop-filter/overflow-hidden, which
+ * creates a new containing block for `position: fixed` descendants and
+ * clips this modal to the shell's box instead of the real viewport.
+ */
+export default function MediaAssetDetailsModal(props: MediaAssetDetailsModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    if (!props.asset) return;
+    queueMicrotask(() => setMounted(true));
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") props.onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+      setMounted(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.asset]);
+
+  if (!props.asset || !mounted) return null;
+
+  return createPortal(<MediaAssetDetailsModalContent {...props} asset={props.asset} />, document.body);
+}
+
+function MediaAssetDetailsModalContent({
   asset,
   onClose,
   onDelete,
   onUse,
-}: MediaAssetDetailsModalProps) {
-  if (!asset) return null;
-
+}: MediaAssetDetailsModalProps & { asset: MediaAsset }) {
   const title = asset.title || asset.filename;
   const dimensions =
     asset.width && asset.height ? `${asset.width} x ${asset.height}` : "Unknown";
@@ -35,16 +66,17 @@ export default function MediaAssetDetailsModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[100001] bg-black/45 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100001] flex items-center justify-center bg-black/60 p-4 backdrop-blur-md text-slate-950 dark:text-slate-50">
       <div
         className="
-          absolute
-          inset-0
           flex
-          h-screen
-          w-screen
+          h-full
+          max-h-[900px]
+          w-full
+          max-w-6xl
           flex-col
           overflow-hidden
+          rounded-2xl
           dashboard-card-strong
           shadow-2xl
           lg:flex-row
@@ -72,7 +104,7 @@ export default function MediaAssetDetailsModal({
               <img
                 src={asset.url}
                 alt={asset.alt || title}
-                className="block h-auto max-h-full w-auto max-w-full rounded-lg object-contain"
+                className="block max-h-full max-w-full rounded-lg object-contain"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center rounded-xl border dashboard-border dashboard-subtle">

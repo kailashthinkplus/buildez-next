@@ -1,23 +1,31 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/exhaustive-deps */
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { DashboardModalPortal } from "../../components/ui/DashboardModalPortal";
 import {
   AlertTriangle,
   BadgeIndianRupee,
   BarChart3,
   Box,
+  Copy,
   CreditCard,
   ExternalLink,
   Globe2,
   LayoutDashboard,
   Loader2,
+  MoreHorizontal,
   Package,
+  Pencil,
   Percent,
   Plus,
+  Power,
   RefreshCw,
   Search,
+  Trash2,
+  X,
   Settings,
   ShoppingBag,
   Sparkles,
@@ -588,65 +596,414 @@ function Orders({
     </section>
   );
 }
+type Discount = {
+  id: string;
+  code: string;
+  type: "PERCENTAGE" | "FIXED_AMOUNT" | "FREE_SHIPPING";
+  value: string | number;
+  minimumAmount: string | number | null;
+  usageLimit: number | null;
+  usageCount: number;
+  startsAt: string;
+  endsAt: string | null;
+  active: boolean;
+};
+
+function discountLabel(discount: Discount): string {
+  if (discount.type === "FREE_SHIPPING") return "Free shipping";
+  if (discount.type === "FIXED_AMOUNT") return `₹${Number(discount.value)} off`;
+  return `${Number(discount.value)}% off`;
+}
+
+function discountStatus(discount: Discount): { label: string; tone: "active" | "expired" | "used-up" | "inactive" } {
+  const now = Date.now();
+  if (!discount.active) return { label: "Disabled", tone: "inactive" };
+  if (discount.endsAt && new Date(discount.endsAt).getTime() < now) return { label: "Expired", tone: "expired" };
+  if (discount.usageLimit && discount.usageCount >= discount.usageLimit) return { label: "Used up", tone: "used-up" };
+  return { label: "Active", tone: "active" };
+}
+
 function Discounts({ site }: { site: Site }) {
-  const [items, setItems] = useState<any[]>([]),
-    [code, setCode] = useState(""),
-    [value, setValue] = useState("10");
-  const load = () =>
+  const [items, setItems] = useState<Discount[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<Discount | null>(null);
+
+  const load = useCallback(() => {
+    setLoading(true);
     fetch(`/api/shopez/discounts?siteId=${site.id}`)
       .then((r) => r.json())
-      .then((b) => setItems(b.discounts || []));
+      .then((b) => setItems(b.discounts || []))
+      .finally(() => setLoading(false));
+  }, [site.id]);
+
   useEffect(() => {
     void load();
-  }, []);
-  async function add() {
-    await fetch("/api/shopez/discounts", {
-      method: "POST",
+  }, [load]);
+
+  async function toggleActive(discount: Discount) {
+    await fetch(`/api/shopez/discounts/${discount.id}`, {
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        siteId: site.id,
-        code,
-        value,
-        type: "PERCENTAGE",
-      }),
+      body: JSON.stringify({ siteId: site.id, active: !discount.active }),
     });
-    setCode("");
     load();
   }
+
+  async function remove(discount: Discount) {
+    if (!confirm(`Delete discount code ${discount.code}? This can't be undone.`)) return;
+    await fetch(`/api/shopez/discounts/${discount.id}?siteId=${site.id}`, { method: "DELETE" });
+    load();
+  }
+
   return (
-    <section className="dashboard-card rounded-2xl p-5">
-      <h2 className="font-semibold">Discount codes</h2>
-      <div className="mt-4 flex gap-2">
-        <input
-          value={code}
-          onChange={(e) => setCode(e.target.value.toUpperCase())}
-          placeholder="SUMMER20"
-          className="dashboard-input flex-1 rounded-xl px-3"
-        />
-        <input
-          type="number"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="dashboard-input w-24 rounded-xl px-3"
-        />
+    <section>
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <h2 className="font-semibold">Discount codes</h2>
+          <p className="text-xs dashboard-muted">Coupon codes customers can apply at checkout.</p>
+        </div>
         <button
-          onClick={() => void add()}
-          className="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white"
+          type="button"
+          onClick={() => {
+            setEditing(null);
+            setFormOpen(true);
+          }}
+          className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-600"
         >
-          Create % off
+          <Plus size={16} /> Add discount
         </button>
       </div>
-      <div className="mt-5 space-y-2">
-        {items.map((x) => (
-          <div key={x.id} className="flex rounded-xl dashboard-subtle p-4">
-            <span className="font-mono font-semibold">{x.code}</span>
-            <span className="ml-auto">
-              {Number(x.value)}% off · {x.usageCount} uses
-            </span>
-          </div>
-        ))}
-      </div>
+
+      {loading ? (
+        <div className="flex h-40 items-center justify-center dashboard-card rounded-2xl">
+          <Loader2 className="animate-spin dashboard-muted" />
+        </div>
+      ) : items.length === 0 ? (
+        <div className="dashboard-card rounded-2xl p-10 text-center dashboard-muted">
+          No discount codes yet. Create one to offer customers a deal at checkout.
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {items.map((discount) => {
+            const status = discountStatus(discount);
+            return (
+              <div key={discount.id} className="dashboard-coupon-card relative rounded-2xl p-5">
+                <div className="dashboard-coupon-notch dashboard-coupon-notch-left" />
+                <div className="dashboard-coupon-notch dashboard-coupon-notch-right" />
+
+                <div className="flex items-start justify-between gap-2">
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${
+                      status.tone === "active"
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300"
+                        : status.tone === "inactive"
+                          ? "dashboard-subtle dashboard-muted"
+                          : "bg-amber-500/10 text-amber-600 dark:text-amber-300"
+                    }`}
+                  >
+                    {status.label}
+                  </span>
+                  <DiscountActionsMenu
+                    onEdit={() => {
+                      setEditing(discount);
+                      setFormOpen(true);
+                    }}
+                    onToggleActive={() => void toggleActive(discount)}
+                    onDelete={() => void remove(discount)}
+                    active={discount.active}
+                  />
+                </div>
+
+                <div className="mt-4 flex items-center justify-between gap-2 border-y border-dashed dashboard-border py-3">
+                  <span className="font-mono text-lg font-bold tracking-wide">{discount.code}</span>
+                  <button
+                    type="button"
+                    onClick={() => void navigator.clipboard.writeText(discount.code)}
+                    aria-label="Copy code"
+                    className="rounded-lg p-1.5 dashboard-hover dashboard-muted"
+                  >
+                    <Copy size={14} />
+                  </button>
+                </div>
+
+                <p className="mt-3 text-xl font-semibold">{discountLabel(discount)}</p>
+                <div className="mt-2 space-y-1 text-xs dashboard-muted">
+                  {discount.minimumAmount ? <p>Min. order ₹{Number(discount.minimumAmount)}</p> : null}
+                  <p>
+                    {discount.usageCount} used{discount.usageLimit ? ` of ${discount.usageLimit}` : ""}
+                  </p>
+                  <p>{discount.endsAt ? `Expires ${new Date(discount.endsAt).toLocaleDateString()}` : "No expiry"}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {formOpen && (
+        <DiscountFormModal
+          site={site}
+          discount={editing}
+          onClose={() => setFormOpen(false)}
+          onSaved={() => {
+            setFormOpen(false);
+            load();
+          }}
+        />
+      )}
     </section>
+  );
+}
+
+function DiscountActionsMenu({
+  onEdit,
+  onToggleActive,
+  onDelete,
+  active,
+}: {
+  onEdit(): void;
+  onToggleActive(): void;
+  onDelete(): void;
+  active: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        menuRef.current && !menuRef.current.contains(event.target as Node) &&
+        buttonRef.current && !buttonRef.current.contains(event.target as Node)
+      ) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  function toggleMenu(event: React.MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    const rect = buttonRef.current?.getBoundingClientRect();
+    if (rect) {
+      const menuWidth = 190;
+      setPosition({
+        top: rect.bottom + 6,
+        left: Math.max(8, Math.min(window.innerWidth - menuWidth - 8, rect.right - menuWidth)),
+      });
+    }
+    setOpen((value) => !value);
+  }
+
+  const menu = open && typeof document !== "undefined"
+    ? createPortal(
+        <div
+          ref={menuRef}
+          style={{ top: position.top, left: position.left }}
+          className="dashboard-card-strong fixed z-[50000] w-[190px] overflow-hidden rounded-xl shadow-xl"
+        >
+          <button type="button" onClick={() => { setOpen(false); onEdit(); }} className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm dashboard-hover">
+            <Pencil className="h-4 w-4" /> Edit
+          </button>
+          <button type="button" onClick={() => { setOpen(false); onToggleActive(); }} className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm dashboard-hover">
+            <Power className="h-4 w-4" /> {active ? "Disable" : "Enable"}
+          </button>
+          <div className="border-t dashboard-border" />
+          <button type="button" onClick={() => { setOpen(false); onDelete(); }} className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10">
+            <Trash2 className="h-4 w-4" /> Delete
+          </button>
+        </div>,
+        document.body,
+      )
+    : null;
+
+  return (
+    <div className="relative">
+      <button ref={buttonRef} type="button" onClick={toggleMenu} aria-label="Discount actions" className="rounded-lg p-1.5 dashboard-hover dashboard-muted">
+        <MoreHorizontal size={16} />
+      </button>
+      {menu}
+    </div>
+  );
+}
+
+function DiscountFormModal({
+  site,
+  discount,
+  onClose,
+  onSaved,
+}: {
+  site: Site;
+  discount: Discount | null;
+  onClose(): void;
+  onSaved(): void;
+}) {
+  const [code, setCode] = useState(discount?.code || "");
+  const [type, setType] = useState<Discount["type"]>(discount?.type || "PERCENTAGE");
+  const [value, setValue] = useState(discount ? String(discount.value) : "10");
+  const [minimumAmount, setMinimumAmount] = useState(discount?.minimumAmount ? String(discount.minimumAmount) : "");
+  const [usageLimit, setUsageLimit] = useState(discount?.usageLimit ? String(discount.usageLimit) : "");
+  const [startsAt, setStartsAt] = useState(discount?.startsAt ? discount.startsAt.slice(0, 10) : "");
+  const [endsAt, setEndsAt] = useState(discount?.endsAt ? discount.endsAt.slice(0, 10) : "");
+  const [active, setActive] = useState(discount?.active ?? true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  async function save() {
+    if (!code.trim()) {
+      setError("Discount code is required");
+      return;
+    }
+    setSaving(true);
+    setError("");
+    const body = {
+      siteId: site.id,
+      code,
+      type,
+      value: type === "FREE_SHIPPING" ? 0 : Number(value) || 0,
+      minimumAmount: minimumAmount ? Number(minimumAmount) : null,
+      usageLimit: usageLimit ? Number(usageLimit) : null,
+      startsAt: startsAt || undefined,
+      endsAt: endsAt || null,
+      active,
+    };
+    try {
+      const response = await fetch(
+        discount ? `/api/shopez/discounts/${discount.id}` : "/api/shopez/discounts",
+        {
+          method: discount ? "PATCH" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        },
+      );
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        throw new Error(payload?.error || "Discount could not be saved");
+      }
+      onSaved();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Discount could not be saved");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <DashboardModalPortal onClose={onClose}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+        <div className="w-full max-w-md rounded-2xl dashboard-card-strong p-6 shadow-2xl">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-lg font-semibold">{discount ? "Edit discount" : "Add discount"}</h2>
+            <button type="button" onClick={onClose} className="rounded-lg p-1.5 dashboard-hover dashboard-muted" aria-label="Close">
+              <X size={18} />
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <label className="block text-xs font-medium dashboard-muted">
+              Code
+              <input
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                placeholder="SUMMER20"
+                className="dashboard-input mt-1.5 w-full rounded-xl px-3 py-2.5 font-mono text-sm"
+              />
+            </label>
+
+            <label className="block text-xs font-medium dashboard-muted">
+              Discount type
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value as Discount["type"])}
+                className="dashboard-select dashboard-input mt-1.5 w-full rounded-xl px-3 py-2.5 text-sm"
+              >
+                <option value="PERCENTAGE">Percentage off</option>
+                <option value="FIXED_AMOUNT">Fixed amount off</option>
+                <option value="FREE_SHIPPING">Free shipping</option>
+              </select>
+            </label>
+
+            {type !== "FREE_SHIPPING" && (
+              <label className="block text-xs font-medium dashboard-muted">
+                {type === "PERCENTAGE" ? "Percentage (%)" : "Amount (₹)"}
+                <input
+                  type="number"
+                  min={0}
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  className="dashboard-input mt-1.5 w-full rounded-xl px-3 py-2.5 text-sm"
+                />
+              </label>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block text-xs font-medium dashboard-muted">
+                Minimum order (₹)
+                <input
+                  type="number"
+                  min={0}
+                  value={minimumAmount}
+                  onChange={(e) => setMinimumAmount(e.target.value)}
+                  placeholder="None"
+                  className="dashboard-input mt-1.5 w-full rounded-xl px-3 py-2.5 text-sm"
+                />
+              </label>
+              <label className="block text-xs font-medium dashboard-muted">
+                Usage limit
+                <input
+                  type="number"
+                  min={0}
+                  value={usageLimit}
+                  onChange={(e) => setUsageLimit(e.target.value)}
+                  placeholder="Unlimited"
+                  className="dashboard-input mt-1.5 w-full rounded-xl px-3 py-2.5 text-sm"
+                />
+              </label>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block text-xs font-medium dashboard-muted">
+                Starts
+                <input
+                  type="date"
+                  value={startsAt}
+                  onChange={(e) => setStartsAt(e.target.value)}
+                  className="dashboard-select dashboard-input mt-1.5 w-full rounded-xl px-3 py-2.5 text-sm"
+                />
+              </label>
+              <label className="block text-xs font-medium dashboard-muted">
+                Expires
+                <input
+                  type="date"
+                  value={endsAt}
+                  onChange={(e) => setEndsAt(e.target.value)}
+                  className="dashboard-select dashboard-input mt-1.5 w-full rounded-xl px-3 py-2.5 text-sm"
+                />
+              </label>
+            </div>
+
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} className="h-4 w-4" />
+              Enabled
+            </label>
+
+            {error && <p className="text-xs text-red-500">{error}</p>}
+
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => void save()}
+              className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-500 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60"
+            >
+              {saving ? <Loader2 size={16} className="animate-spin" /> : null}
+              {discount ? "Save changes" : "Create discount"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </DashboardModalPortal>
   );
 }
 const PAYMENT_WEBHOOK_ORIGIN =
@@ -691,18 +1048,6 @@ function Payments({ site }: { site: Site }) {
             done={load}
           />
           <PaymentCard
-            provider="DODO"
-            title="Dodo Payments"
-            hint="Merchant-of-record checkout via Dodo"
-            secretLabel="API key"
-            showWebhook
-            showTaxCategory
-            existing={payments.find((x: any) => x.provider === "DODO")}
-            site={site}
-            shopId={shop.id}
-            done={load}
-          />
-          <PaymentCard
             provider="COD"
             title="Cash on delivery"
             hint="Accept payment when the order arrives"
@@ -714,6 +1059,32 @@ function Payments({ site }: { site: Site }) {
         </div>
       )}
     </SettingsLoader>
+  );
+}
+/** Brand-colored badge per provider, distinct from the generic card icon used elsewhere. */
+function PaymentProviderMark({ provider }: { provider: string }) {
+  const marks: Record<string, { bg: string; fg: string; label: string }> = {
+    RAZORPAY: { bg: "#0C2451", fg: "#3395FF", label: "R" },
+    PAYPAL: { bg: "#003087", fg: "#00A0DC", label: "P" },
+    STRIPE: { bg: "#635BFF", fg: "#FFFFFF", label: "S" },
+    COD: { bg: "#EA580C1A", fg: "#EA580C", label: "" },
+  };
+  const mark = marks[provider] || { bg: "#EA580C1A", fg: "#EA580C", label: "" };
+  if (!mark.label) {
+    return (
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl" style={{ background: mark.bg, color: mark.fg }}>
+        <CreditCard />
+      </span>
+    );
+  }
+  return (
+    <span
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg font-bold"
+      style={{ background: mark.bg, color: mark.fg }}
+      aria-hidden
+    >
+      {mark.label}
+    </span>
   );
 }
 function PaymentCard({
@@ -774,9 +1145,7 @@ function PaymentCard({
   return (
     <article className="dashboard-card rounded-2xl p-5">
       <div className="flex items-start">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500">
-          <CreditCard />
-        </span>
+        <PaymentProviderMark provider={provider} />
         <div className="ml-3">
           <h3 className="font-semibold">{title}</h3>
           <p className="text-xs dashboard-muted">{hint}</p>

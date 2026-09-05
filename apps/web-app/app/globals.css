@@ -272,6 +272,62 @@ html.dark .app-shell, html.dark .dashboard-shell { background: var(--background)
     background: var(--dashboard-surface-hover);
   }
 
+  .dashboard-coupon-card {
+    background:
+      linear-gradient(145deg, rgba(249,115,22,0.08), rgba(249,115,22,0.02)),
+      var(--dashboard-surface);
+    border: 1px solid var(--dashboard-border);
+    overflow: hidden;
+  }
+
+  .dashboard-coupon-notch {
+    position: absolute;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--background, canvas);
+    transform: translateY(-50%);
+  }
+
+  .dashboard-coupon-notch-left { left: -10px; }
+  .dashboard-coupon-notch-right { right: -10px; }
+
+  .dashboard-rich-text {
+    color: var(--dashboard-text);
+  }
+
+  .dashboard-rich-text :is(h1, h2, h3) {
+    font-weight: 600;
+    line-height: 1.3;
+    margin: 0.9em 0 0.4em;
+  }
+
+  .dashboard-rich-text h2 { font-size: 1.25em; }
+  .dashboard-rich-text h3 { font-size: 1.1em; }
+
+  .dashboard-rich-text p { margin: 0.6em 0; }
+
+  .dashboard-rich-text :is(ul, ol) {
+    margin: 0.6em 0;
+    padding-left: 1.4em;
+  }
+
+  .dashboard-rich-text ul { list-style: disc; }
+  .dashboard-rich-text ol { list-style: decimal; }
+
+  .dashboard-rich-text blockquote {
+    border-left: 3px solid var(--dashboard-border);
+    margin: 0.8em 0;
+    padding-left: 1em;
+    color: var(--dashboard-muted);
+  }
+
+  .dashboard-rich-text a {
+    color: #2563eb;
+    text-decoration: underline;
+  }
+
   .dashboard-input {
     background:
       linear-gradient(145deg, rgba(255,255,255,0.7), rgba(238,246,255,0.38)),
@@ -432,6 +488,30 @@ html.dark .app-shell, html.dark .dashboard-shell { background: var(--background)
   }
 
   .dark .onboarding-select option {
+    background: #0f172a;
+    color: #f8fafc;
+  }
+
+  /* Any dashboard <select> using dashboard-border/bg-transparent needs this
+     too — otherwise the native option popup keeps its default light
+     rendering while the closed control's text inherits the dark-mode
+     foreground color, making the closed value unreadable in dark mode. */
+  .dashboard-select {
+    color: var(--dashboard-text);
+    color-scheme: light;
+  }
+
+  .dashboard-select option {
+    background: #ffffff;
+    color: #0f172a;
+  }
+
+  .dark .dashboard-select {
+    color: var(--dashboard-text);
+    color-scheme: dark;
+  }
+
+  .dark .dashboard-select option {
     background: #0f172a;
     color: #f8fafc;
   }

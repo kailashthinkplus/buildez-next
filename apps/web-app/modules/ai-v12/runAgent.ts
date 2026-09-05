@@ -582,6 +582,7 @@ function object(value: unknown): Record<string, unknown> {
  * generation always takes precedence over any of it.
  */
 function buildBusinessContextBlock(input: {
+  siteName?: string | null;
   onboarding: {
     businessName: string | null;
     profession: string | null;
@@ -595,8 +596,18 @@ function buildBusinessContextBlock(input: {
   const settings = object(input.settings);
   const lines: string[] = [];
 
+  // onboarding.businessName is one row per USER account, shared across every
+  // site that account owns — it names the owner's overall business/tenant.
+  // site.name is the specific website being generated right now, and a
+  // tenant can own several sites with different names/purposes. Both are
+  // real signal and neither substitutes for the other.
+  const siteName = input.siteName?.trim();
+  if (siteName) lines.push(`- This specific website's name: ${siteName}`);
+
   const businessName = input.onboarding?.businessName?.trim();
-  if (businessName) lines.push(`- Business/brand name: ${businessName}`);
+  if (businessName && businessName.toLowerCase() !== siteName?.toLowerCase()) {
+    lines.push(`- Owner's overall business/brand name: ${businessName}`);
+  }
 
   const profession = input.onboarding?.profession?.trim();
   const useCase = input.onboarding?.primaryUseCase?.trim();
@@ -1957,7 +1968,7 @@ ${currentPrompt}`
 
   const businessContextBlock = suppressAccountBusinessContext
     ? ""
-    : buildBusinessContextBlock({ onboarding, settings: site.settings });
+    : buildBusinessContextBlock({ siteName: site.name, onboarding, settings: site.settings });
 
   // ----------------------------------------------------------
   // CAPABILITY ROUTER
