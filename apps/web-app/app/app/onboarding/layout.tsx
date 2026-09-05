@@ -15,8 +15,9 @@ function OnboardingInnerLayout({ children }: { children: React.ReactNode }) {
       className="
         bez-bg
         min-h-screen
-        flex 
+        flex
         flex-col md:flex-row        /* mobile stacks, desktop side-by-side */
+        overflow-x-hidden
       "
     >
       {/* DESKTOP SIDEBAR (FULL HEIGHT AUTOMATICALLY) */}
@@ -27,12 +28,21 @@ function OnboardingInnerLayout({ children }: { children: React.ReactNode }) {
       />
 
       {/* MAIN PANEL */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      {/*
+        min-w-0 overrides the flex default of min-width: auto — without
+        it, this flex item refuses to shrink below its content's
+        intrinsic width, so any inner content even a pixel too wide
+        (a carousel row, a long label) pushes the whole panel — and the
+        viewport itself — wider instead of being contained/scrolled
+        internally. This is what "gutters on all sides"/"viewport is
+        still off" was actually describing.
+      */}
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col overflow-x-hidden">
         <OnboardingHeader />
 
         <main
           className="
-            flex-1
+            min-w-0 flex-1
             px-4 py-6               /* mobile */
             sm:px-6 sm:py-8
             md:px-12 md:py-10       /* desktop */
