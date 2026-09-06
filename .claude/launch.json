@@ -14,6 +14,13 @@
       "runtimeArgs": ["next", "dev", "-p", "3211"],
       "port": 3211,
       "autoPort": false
+    },
+    {
+      "name": "web-app-preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "apps/web-app", "--", "-p", "3105"],
+      "port": 3105,
+      "autoPort": false
     }
   ]
 }

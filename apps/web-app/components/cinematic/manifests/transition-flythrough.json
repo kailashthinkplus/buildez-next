@@ -1,0 +1,11 @@
+{
+  "id": "transition-flythrough",
+  "frameCount": 76,
+  "width": 1920,
+  "height": 1080,
+  "desktop": "https://assets.getbuildez.com/marketing/homepage/transition-flythrough/desktop/frame-{frame}.avif",
+  "desktopFallback": "https://assets.getbuildez.com/marketing/homepage/transition-flythrough/desktop/frame-{frame}.webp",
+  "mobile": "https://assets.getbuildez.com/marketing/homepage/transition-flythrough/mobile/frame-{frame}.avif",
+  "mobileFallback": "https://assets.getbuildez.com/marketing/homepage/transition-flythrough/mobile/frame-{frame}.webp",
+  "poster": "https://assets.getbuildez.com/marketing/homepage/transition-flythrough/poster.jpg"
+}
