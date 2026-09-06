@@ -196,7 +196,7 @@ export async function GET(req: Request) {
       user.role === UserRole.SUPER_ADMIN
         ? "/super/dashboard"
         : onboarding?.completed === true
-        ? "/app/dashboard"
+        ? "/app/dashboard?welcome=1"
         : "/app/onboarding";
 
     if (isNewUser) {

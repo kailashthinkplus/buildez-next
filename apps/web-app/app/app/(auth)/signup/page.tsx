@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthSplitShell from "../AuthSplitShell";
@@ -57,11 +58,11 @@ export default function SignupPage() {
           {accountType === "business" && <div className="auth-field"><label htmlFor="signup-business">Business name</label><input id="signup-business" autoComplete="organization" placeholder="Your company or studio" value={businessName} onChange={(event) => setBusinessName(event.target.value)} required /></div>}
           <div className="auth-field"><label htmlFor="signup-email">Email address</label><input id="signup-email" type="email" autoComplete="email" placeholder={accountType === "business" ? "you@company.com" : "you@example.com"} value={email} onChange={(event) => setEmail(event.target.value)} required /></div>
           <div className="auth-name-grid"><div className="auth-field"><label htmlFor="signup-password">Password</label><input id="signup-password" type="password" autoComplete="new-password" placeholder="At least 8 characters" value={password} onChange={(event) => setPassword(event.target.value)} minLength={8} required /></div><div className="auth-field"><label htmlFor="signup-confirm">Confirm password</label><input id="signup-confirm" type="password" autoComplete="new-password" placeholder="Repeat password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} minLength={8} required /></div></div>
-          <label className="auth-terms"><input type="checkbox" checked={accepted} onChange={(event) => setAccepted(event.target.checked)} required /><span>I agree to the <a href="/terms">Terms &amp; Conditions</a> and <a href="/privacy">Privacy Policy</a>.</span></label>
+          <label className="auth-terms"><input type="checkbox" checked={accepted} onChange={(event) => setAccepted(event.target.checked)} required /><span>I agree to the <Link href="/terms">Terms &amp; Conditions</Link> and <Link href="/privacy">Privacy Policy</Link>.</span></label>
           {error && <p className="auth-error" role="alert">{error}</p>}
           <button className="auth-submit" type="submit" disabled={!formReady || loading}>{loading ? "Creating account…" : accountType === "business" ? "Create business workspace" : "Create individual account"}</button>
         </form>
-        <p className="auth-switch">Already have an account? <a href="/app/login">Sign in</a></p>
+        <p className="auth-switch">Already have an account? <Link href="/app/login">Sign in</Link></p>
       </div>
     </AuthSplitShell>
   );

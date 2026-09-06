@@ -7,7 +7,7 @@ import { useGlobalScrollFx } from "@/components/motion/primitives";
 import { logMarketingCtaClick } from "@/modules/legal/MarketingAnalytics";
 import { Arrow } from "./Arrow";
 
-export function HomeNav() {
+export function HomeNav({ internal = false }: { internal?: boolean }) {
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuMounted = useSyncExternalStore(
@@ -20,6 +20,11 @@ export function HomeNav() {
   // (ambient orbit/craft drift) and the .reveal fade-in IntersectionObserver
   // that every section below relies on.
   useGlobalScrollFx();
+
+  const topHref = internal ? "/" : "#top";
+  const platformHref = internal ? "/#platform" : "#platform";
+  const differenceHref = internal ? "/#difference" : "#difference";
+  const workflowHref = internal ? "/#workflow" : "#workflow";
 
   useEffect(() => {
     const onScroll = () => setHeaderScrolled(window.scrollY > 32);
@@ -55,13 +60,13 @@ export function HomeNav() {
             <path d="M4 4L16 16M16 4L4 16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
           </svg>
         </button>
-        <a href="#top" className="brand" aria-label="BuildEzy home">
+        <Link href={topHref} className="brand" aria-label="BuildEzy home">
           <img className="official-logo" src="/buildez-logo-dark.svg" alt="BuildEzy" />
-        </a>
+        </Link>
         <div className="nav-links">
-          <a href="#platform">Platform</a>
-          <a href="#difference">Why Build Ezy</a>
-          <a href="#workflow">How it works</a>
+          <Link href={platformHref}>Platform</Link>
+          <Link href={differenceHref}>Why Build Ezy</Link>
+          <Link href={workflowHref}>How it works</Link>
           <Link href="/pricing">Pricing</Link>
         </div>
         <div className="nav-actions">
@@ -86,9 +91,9 @@ export function HomeNav() {
                 aria-hidden={!menuOpen}
               >
                 <div className="marketing-mobile-menu-header">
-                  <a href="#top" className="marketing-mobile-menu-brand" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>
+                  <Link href={topHref} className="marketing-mobile-menu-brand" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>
                     <img src="/buildez-logo-dark.svg" alt="BuildEzy" />
-                  </a>
+                  </Link>
                   <button
                     type="button"
                     className="marketing-mobile-menu-close"
@@ -102,9 +107,9 @@ export function HomeNav() {
                   </button>
                 </div>
                 <span className="marketing-mobile-menu-label">Explore Build Ezy</span>
-                <a href="#platform" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Platform</a>
-                <a href="#difference" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Why Build Ezy</a>
-                <a href="#workflow" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>How it works</a>
+                <Link href={platformHref} onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Platform</Link>
+                <Link href={differenceHref} onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Why Build Ezy</Link>
+                <Link href={workflowHref} onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>How it works</Link>
                 <Link href="/pricing" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Pricing</Link>
                 <div className="marketing-mobile-menu-divider" />
                 <div className="marketing-mobile-menu-actions">

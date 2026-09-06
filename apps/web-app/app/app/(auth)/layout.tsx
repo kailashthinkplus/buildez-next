@@ -14,16 +14,6 @@ export default function AuthLayout({
         <ThemeToggle />
       </div>
       {children}
-      <footer className="fixed bottom-4 right-7 z-40 text-xs opacity-60">
-        © {new Date().getFullYear()} BuildEZ ·
-        <a href="/terms" className="ml-1 hover:underline">
-          Terms
-        </a>{" "}
-        ·
-        <a href="/privacy" className="ml-1 hover:underline">
-          Privacy
-        </a>
-      </footer>
     </div>
   );
 }
