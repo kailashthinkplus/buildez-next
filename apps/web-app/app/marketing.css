@@ -331,7 +331,7 @@
 .platform-section,.craft-section,.audience-section,.difference-section,.answer-section,.final-cta,.site-footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 
 /* Deterministic cross-platform icons and refreshed hero/craft treatments. */
-.primary-cta{border-radius:12px}
+.primary-cta,.text-cta{border-radius:12px}
 .text-cta svg{flex-shrink:0;color:#5e87bd}
 .tool-pill{display:flex;align-items:center;gap:7px}
 .flow-visual b{display:grid;place-items:center}
