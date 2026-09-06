@@ -2,6 +2,8 @@
 
 import { useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { ArrowDown } from "lucide-react";
 import { usePointerParallax } from "@/components/motion/primitives";
 import { logMarketingCtaClick } from "@/modules/legal/MarketingAnalytics";
 import { Arrow } from "./Arrow";
@@ -36,14 +38,14 @@ export function Hero() {
             Build Your First Site <Arrow />
           </Link>
           <a href="#platform" className="text-cta">
-            Explore the Platform <span>↓</span>
+            Explore the Platform <ArrowDown size={15} aria-hidden="true" />
           </a>
         </div>
         <div className="trust-line">
           <span className="avatar-stack">
-            <i>AR</i>
-            <i>MK</i>
-            <i>SL</i>
+            <Image src="/marketing/home-v3/avatars/designer.webp" alt="" width={76} height={76} />
+            <Image src="/marketing/home-v3/avatars/agency-owner.webp" alt="" width={76} height={76} />
+            <Image src="/marketing/home-v3/avatars/business-owner.webp" alt="" width={76} height={76} />
           </span>
           <span>
             <b>Loved by designers,</b>

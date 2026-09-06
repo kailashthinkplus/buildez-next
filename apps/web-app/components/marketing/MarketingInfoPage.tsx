@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 import { MarketingFooter } from "./MarketingFooter";
 import { MarketingHeader } from "./MarketingHeader";
@@ -46,7 +47,7 @@ export function MarketingInfoPage({ page, contentOverride }: { page: MarketingPa
         {content.cta ? (
           <section className="marketing-info-cta">
             <div><h2>Ready for the next step?</h2><p>{content.cta.note}</p></div>
-            <Link href={content.cta.href}>{content.cta.label}<span aria-hidden="true">→</span></Link>
+            <Link href={content.cta.href}>{content.cta.label}<ArrowRight size={16} aria-hidden="true" /></Link>
           </section>
         ) : null}
       </main>

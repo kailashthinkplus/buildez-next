@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 
 export function MarketingHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -46,8 +46,8 @@ export function MarketingHeader() {
 
       <nav aria-label="Primary navigation" className="marketing-desktop-nav">
         <Link href="/#platform">Platform</Link>
-        <Link href="/pricing">Pricing</Link>
         <Link href="/faq">Support</Link>
+        <Link href="/pricing">Pricing</Link>
       </nav>
 
       <div className="marketing-standard-actions">
@@ -72,8 +72,8 @@ export function MarketingHeader() {
                   <img src="/buildez-logo-dark.svg" alt="" className="hidden dark:block" />
                 </Link>
                 <Link href="/#platform" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Platform</Link>
-                <Link href="/pricing" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Pricing</Link>
                 <Link href="/faq" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Support</Link>
+                <Link href="/pricing" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Pricing</Link>
                 <div className="marketing-mobile-menu-divider" />
                 <Link href="/app/login" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Log in</Link>
                 <Link href="/app/signup" className="marketing-mobile-menu-cta" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Signup</Link>

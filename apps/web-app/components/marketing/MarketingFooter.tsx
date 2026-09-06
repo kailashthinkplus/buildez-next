@@ -9,6 +9,18 @@ function SocialIcon({ name }: { name: SocialName }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.13-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.37.51A3.02 3.02 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3.02 3.02 0 0 0 2.13 2.14c1.87.51 9.37.51 9.37.51s7.5 0 9.37-.51a3.02 3.02 0 0 0 2.13-2.14A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8ZM9.6 15.62V8.38L15.86 12 9.6 15.62Z" /></svg>;
 }
 
+function IndiaFlagIcon() {
+  return (
+    <svg viewBox="0 0 30 20" width="18" height="12" role="img" aria-label="Indian flag">
+      <rect width="30" height="20" rx="1.5" fill="#fff" />
+      <path d="M0 0h30v6.67H0z" fill="#ff9933" />
+      <path d="M0 13.33h30V20H0z" fill="#138808" />
+      <circle cx="15" cy="10" r="2.5" fill="none" stroke="#000080" strokeWidth=".65" />
+      <path d="M15 7.5v5M12.5 10h5M13.23 8.23l3.54 3.54M16.77 8.23l-3.54 3.54" stroke="#000080" strokeWidth=".4" />
+    </svg>
+  );
+}
+
 export function MarketingFooter({ forceDark = false }: { forceDark?: boolean }) {
   return (
     <footer className="site-footer">
@@ -33,7 +45,7 @@ export function MarketingFooter({ forceDark = false }: { forceDark?: boolean }) 
       <div className="footer-column"><h3>Product</h3><Link href="/#platform">Platform</Link><Link href="/pricing">Pricing</Link><Link href="/changelog">Changelog</Link><Link href="/blog">Blogs</Link><Link href="/affiliates">Affiliate Page</Link></div>
       <div className="footer-column"><h3>Support</h3><Link href="/faq">Help Center</Link><Link href="/report-bugs">Report Bugs</Link><Link href="/report-abuse">Report Abuse Contact</Link></div>
       <div className="footer-column"><h3>Legal</h3><Link href="/privacy">Privacy Policy</Link><Link href="/terms">Terms &amp; Conditions</Link><Link href="/refunds">Cancellations &amp; Refunds</Link><Link href="/cookies">Cookies</Link><Link href="/dpa">DPA</Link></div>
-      <div className="footer-bottom"><span>© 2026 BuildEzy. A product of Appwire LLP.</span><span>Made in India 🇮🇳</span></div>
+      <div className="footer-bottom"><span>© 2026 BuildEzy. A product of Appwire LLP.</span><span className="made-in-india">Made in India <IndiaFlagIcon /></span></div>
     </footer>
   );
 }

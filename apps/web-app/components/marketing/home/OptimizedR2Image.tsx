@@ -8,7 +8,7 @@ type OptimizedR2ImageProps = {
   fetchPriority?: "high" | "low" | "auto";
 };
 
-const ASSET_VERSION = "20260906-3";
+const ASSET_VERSION = "20260906-4";
 
 export function OptimizedR2Image({
   basePath,

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 
 export default function AuthSplitShell({
   children,
@@ -44,7 +45,7 @@ export default function AuthSplitShell({
           <span>{eyebrow}</span>
           <h2>{title}</h2>
           <p>{description}</p>
-          <div className="auth-proof"><i /> Design <b>→</b> Launch <b>→</b> Grow</div>
+          <div className="auth-proof"><i /> Design <b><ArrowRight size={14} aria-hidden="true" /></b> Launch <b><ArrowRight size={14} aria-hidden="true" /></b> Grow</div>
         </div>
       </section>
       <section className="auth-form-side auth-blue-bg">

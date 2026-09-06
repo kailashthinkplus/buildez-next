@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+import { ArrowLeft } from "lucide-react";
 import { prisma } from "@buildez/db";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
@@ -35,7 +36,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <MarketingHeader />
       <main className="mx-auto w-[min(760px,calc(100%-40px))] py-24">
         <Link href="/blog" className="text-sm font-semibold text-[#1349a3] hover:underline dark:text-[#7cb5f4]">
-          ← Back to blog
+          <ArrowLeft size={15} className="mr-1 inline-block" aria-hidden="true" /> Back to blog
         </Link>
 
         <header className="mt-8">

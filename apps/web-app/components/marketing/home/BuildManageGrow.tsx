@@ -1,3 +1,5 @@
+import { ArrowRight } from "lucide-react";
+
 export function BuildManageGrow() {
   return (
     <section className="difference-section" id="difference">
@@ -14,9 +16,9 @@ export function BuildManageGrow() {
           <span className="card-index">01</span>
           <div className="flow-visual">
             <i>Design</i>
-            <b>→</b>
+            <b><ArrowRight size={18} aria-hidden="true" /></b>
             <i>Publish</i>
-            <b>→</b>
+            <b><ArrowRight size={18} aria-hidden="true" /></b>
             <i>Grow</i>
           </div>
           <h3>One flow, end to end.</h3>

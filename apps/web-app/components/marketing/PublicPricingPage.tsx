@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
 
 import { MarketingFooter } from "./MarketingFooter";
 import { MarketingHeader } from "./MarketingHeader";
 import { useDisplayCurrency } from "@/lib/useDisplayCurrency";
-import CurrencySwitcher from "@/components/billing/CurrencySwitcher";
 import { formatPlanCodeLabel } from "@/lib/billing/formatPlanLabel";
 
 type BillingCycle = "monthly" | "yearly";
@@ -33,11 +33,23 @@ type PublicPlan = {
   featureTable?: Array<{ key: string; label: string; value: string; included: boolean; priority: number }>;
 };
 
+function currencySymbol(code: string) {
+  try {
+    return new Intl.NumberFormat("en", { style: "currency", currency: code, currencyDisplay: "symbol" })
+      .formatToParts(0)
+      .find((part) => part.type === "currency")?.value || code;
+  } catch {
+    return code;
+  }
+}
+
 export function PublicPricingPage() {
   const [plans, setPlans] = useState<PublicPlan[]>([]);
   const [billing, setBilling] = useState<BillingCycle>("monthly");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [currencyMenuOpen, setCurrencyMenuOpen] = useState(false);
+  const currencyMenuRef = useRef<HTMLDivElement>(null);
   const { currency: displayCurrency, setCurrency, availableCurrencies, priceFor } = useDisplayCurrency();
 
   useEffect(() => {
@@ -55,6 +67,21 @@ export function PublicPricingPage() {
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const closeOnOutsidePress = (event: PointerEvent) => {
+      if (!currencyMenuRef.current?.contains(event.target as Node)) setCurrencyMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setCurrencyMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOnOutsidePress);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePress);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
   }, []);
 
   const hasYearly = useMemo(() => plans.some((plan) => plan.priceYearly !== null), [plans]);
@@ -83,11 +110,44 @@ export function PublicPricingPage() {
                 <button className={billing === "monthly" ? "active" : ""} onClick={() => setBilling("monthly")}>Monthly</button>
                 <button disabled={!hasYearly} className={billing === "yearly" ? "active" : ""} onClick={() => setBilling("yearly")}>Yearly</button>
               </div>
-              <CurrencySwitcher symbolOnly stacked currency={displayCurrency} currencies={availableCurrencies} onChange={setCurrency} />
+              <div className="pricing-currency-picker" ref={currencyMenuRef}>
+                <span>Currency</span>
+                <button
+                  type="button"
+                  className="pricing-currency-trigger"
+                  aria-haspopup="listbox"
+                  aria-expanded={currencyMenuOpen}
+                  onClick={() => setCurrencyMenuOpen((open) => !open)}
+                >
+                  <b>{currencySymbol(displayCurrency)}</b>
+                  <span>{displayCurrency}</span>
+                  <ChevronDown size={14} aria-hidden="true" />
+                </button>
+                {currencyMenuOpen ? (
+                  <div className="pricing-currency-menu" role="listbox" aria-label="Display currency">
+                    {availableCurrencies.map((code) => (
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={code === displayCurrency}
+                        className={code === displayCurrency ? "active" : ""}
+                        key={code}
+                        onClick={() => {
+                          setCurrency(code);
+                          setCurrencyMenuOpen(false);
+                        }}
+                      >
+                        <span>{currencySymbol(code)}</span>
+                        <b>{code}</b>
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             </div>
             {displayCurrency !== "INR" ? (
               <p className="pricing-currency-note">
-                Showing estimated prices in {displayCurrency}, converted from INR at today's rate.
+                Showing estimated prices in {displayCurrency}, converted from INR at today&apos;s rate.
                 Your exact price and billing currency are confirmed at checkout.
               </p>
             ) : null}
@@ -101,8 +161,8 @@ export function PublicPricingPage() {
         <div className="public-pricing-carousel">
           {plans.length > 1 ? (
             <div className="pricing-carousel-nav">
-              <button type="button" aria-label="Scroll to previous plan" onClick={() => scrollByCard(-1)}>←</button>
-              <button type="button" aria-label="Scroll to next plan" onClick={() => scrollByCard(1)}>→</button>
+              <button type="button" aria-label="Scroll to previous plan" onClick={() => scrollByCard(-1)}><ArrowLeft size={17} aria-hidden="true" /></button>
+              <button type="button" aria-label="Scroll to next plan" onClick={() => scrollByCard(1)}><ArrowRight size={17} aria-hidden="true" /></button>
             </div>
           ) : null}
           <section className="public-pricing-grid" aria-label="BuildEzy plans" ref={trackRef}>
@@ -139,7 +199,7 @@ export function PublicPricingPage() {
                 </ul>
                 <Link className="plan-cta" href={plan.isCustom ? "/faq" : `/app/signup?plan=${encodeURIComponent(plan.code)}`}>
                   {plan.isCustom ? "Contact enterprise" : amount === 0 ? "Start free" : unavailable ? "Join BuildEzy" : `Choose ${plan.name}`}
-                  <span aria-hidden="true">→</span>
+                  <ArrowRight size={16} aria-hidden="true" />
                 </Link>
               </article>
             );

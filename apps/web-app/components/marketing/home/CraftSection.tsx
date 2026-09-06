@@ -1,4 +1,5 @@
 import { OptimizedR2Image } from "./OptimizedR2Image";
+import { Check, MoveHorizontal } from "lucide-react";
 
 const CRAFT_IMAGE = "https://assets.getbuildez.com/marketing/homepage/craft/live-preview";
 const CRAFT_FRONT_IMAGE = "https://assets.getbuildez.com/marketing/homepage/craft/front-canvas";
@@ -24,20 +25,12 @@ export function CraftSection() {
             className="craft-front-image"
             basePath={CRAFT_FRONT_IMAGE}
             alt="A designer editing a live website with the Build Ezy visual builder"
+            width={1200}
+            height={855}
           />
-          <span className="selection-tag">Live canvas</span>
-          <div className="portfolio-copy">
-            <small>NEW COLLECTION</small>
-            <strong>
-              Objects for
-              <br />
-              quiet living.
-            </strong>
-            <button>Discover the edit</button>
-          </div>
         </div>
-        <div className="tool-pill tool-one">↔ Responsive by default</div>
-        <div className="tool-pill tool-two">✓ Ready to publish</div>
+        <div className="tool-pill tool-one"><MoveHorizontal size={13} aria-hidden="true" />Responsive by default</div>
+        <div className="tool-pill tool-two"><Check size={13} aria-hidden="true" />Ready to publish</div>
       </div>
       <div className="craft-copy reveal">
         <span className="section-no">02 / FROM IDEA TO LIVE</span>
