@@ -1198,7 +1198,7 @@ export default function Builder3Canvas({
             }
           }}
           onClose={() => setLeftPanel(null)}
-          onSubmit={async (prompt, agentMode, attachments, creativeDirection, agentContext) => {
+          onSubmit={async (prompt, agentMode, attachments, creativeDirection, agentContext, displayText) => {
             if (prompt.startsWith(RESUME_JOB_PREFIX)) {
               await resumeStuckJob(prompt.slice(RESUME_JOB_PREFIX.length));
               return;
@@ -1245,7 +1245,7 @@ export default function Builder3Canvas({
                 id: crypto.randomUUID(),
                 type: "message",
                 role: "user",
-                title: prompt || "Replicate the attached design",
+                title: displayText || prompt || "Replicate the attached design",
                 detail: messageDetail || undefined,
                 timestamp: new Date().toISOString(),
               },
