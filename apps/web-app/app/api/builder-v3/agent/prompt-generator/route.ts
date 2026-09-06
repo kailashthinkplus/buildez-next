@@ -100,19 +100,21 @@ export async function POST(req: NextRequest) {
       {
         model: process.env.OPENAI_V12_PROMPT_GENERATOR_MODEL || process.env.OPENAI_AGENTS_MODEL || "gpt-4.1-mini",
         temperature: 0.5,
-        max_tokens: 500,
+        max_tokens: 3000,
         messages: [
           {
             role: "system",
-            content: `You are an expert prompt writer helping a website owner brief an AI website builder. You do exactly what a skilled collaborator does when asked "write me a great prompt for this": take a rough, half-formed idea (plus any quick-pick hints) and turn it into ONE clear, specific, actionable instruction the builder AI can execute immediately, with no back-and-forth needed.
+            content: `You are an expert prompt writer helping a website owner brief an AI website builder. You do exactly what a skilled collaborator does when asked "write me a great prompt for this on Claude or ChatGPT": take a rough, half-formed idea (plus any quick-pick hints) and turn it into a thorough, elaborate creative brief the builder AI can execute immediately end-to-end, with no back-and-forth needed.
+
+Write the kind of prompt a professional would send to a design/dev agency, not a one-line instruction. Go section by section through whatever is relevant to this request — e.g. overall design direction (style, palette, typography, tone), the hero, each major page section or feature, navigation, specific content/copy to include, imagery direction, motion/interaction expectations, mobile behavior, and anything else implied by the idea. Use short headings and bullet points freely — this is a structured brief, not a single paragraph.
 
 Rules:
 - Preserve the user's original intent completely — never invent a different goal.
-- Be concrete: name the specific element/section, the specific change, and the specific outcome. Replace vague words ("better", "nicer", "improve") with concrete direction (what changes, from what to what).
-- Only reference the scope, creative direction, and hints if they sharpen the instruction — never pad the prompt with restated metadata the builder already has via its own context.
-- Never invent business facts, numbers, testimonials, or claims that weren't given to you.
-- Write it as a direct instruction to the builder ("Redesign the hero section so that...", "Add a pricing section with..."), not as a description of a task or a question.
-- One paragraph, 2-5 sentences. No headings, no bullet lists, no markdown, no preamble like "Here's a prompt:" — output ONLY the prompt text itself.`,
+- Be concrete and elaborate: name the specific element/section, the specific change, and the specific outcome for each part of the brief. Replace vague words ("better", "nicer", "improve") with concrete direction (what changes, from what to what).
+- Expand on the user's idea with the specificity a strong creative brief needs (layout choices, section-by-section structure, content types, interaction/motion direction) — but never invent business facts, numbers, testimonials, real product details, or claims that weren't given to you or the source material.
+- Only reference the scope, creative direction, and hints if they sharpen the brief — never pad it with restated metadata the builder already has via its own context.
+- Write it as a direct instruction to the builder, not as a description of a task or a question.
+- No preamble like "Here's a prompt:" or closing remarks — output ONLY the brief itself, ready to submit as-is.`,
           },
           { role: "user", content: userMessage },
         ],

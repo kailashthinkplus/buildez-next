@@ -89,7 +89,7 @@ export default function OnboardingHeader() {
           {/* PANEL */}
           <div
             className="
-              absolute top-0 left-0 w-[260px] h-full
+              absolute top-0 left-0 w-[280px] h-full
               bg-[rgba(255,255,255,0.95)]
               dark:bg-[rgba(10,18,36,0.95)]
               backdrop-blur-2xl
@@ -104,7 +104,7 @@ export default function OnboardingHeader() {
               <X size={22} />
             </button>
 
-            <OnboardingSidebar activeStep={step} accountType={accountType} mobileMode />
+            <OnboardingSidebar activeStep={step} accountType={accountType} mobileMode className="flex-1 min-h-0 overflow-y-auto" />
           </div>
         </div>
       )}

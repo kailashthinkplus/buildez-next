@@ -50,7 +50,7 @@ export default function OnboardingSidebar({
     <aside
       className={`
         glass glass-flat rounded-none
-        w-[280px] shrink-0 border-r border-black/10 dark:border-white/10
+        w-full border-r border-black/10 dark:border-white/10
         backdrop-blur-2xl
         bg-[rgba(230,240,255,0.7)]
         dark:bg-[rgba(10,18,36,0.6)]
