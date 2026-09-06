@@ -9,6 +9,7 @@ import { listProjectFiles, normalizeGeneratedProjectFile, readProjectFile } from
 const globalBuilds = globalThis as typeof globalThis & { __buildezV12PublishedBuilds?: Map<string, Promise<string>> };
 const activeBuilds = globalBuilds.__buildezV12PublishedBuilds ?? new Map<string, Promise<string>>();
 globalBuilds.__buildezV12PublishedBuilds = activeBuilds;
+const PUBLISHED_BOOTSTRAP_VERSION = "2";
 
 function publishedBase(siteId: string) {
   return `/api/runtime/v12/${encodeURIComponent(siteId)}/`;
@@ -35,14 +36,32 @@ async function injectCustomCodeBootstrap(outputRoot: string, siteId: string) {
   } catch {
     return;
   }
-  if (html.includes("data-buildez-custom-code")) return;
+  const bootstrapMarker = `data-buildez-custom-code="${PUBLISHED_BOOTSTRAP_VERSION}"`;
+  if (html.includes(bootstrapMarker)) return;
+
+  // Upgrade the runtime bootstrap for already-published bundles when the
+  // platform ships a routing fix; customers should not need to republish.
+  html = html.replace(/<script\s+data-buildez-custom-code(?:=(?:"[^"]*"|'[^']*'|[^\s>]+))?[^>]*>[\s\S]*?<\/script>/i, "");
 
   const basename = publishedBase(siteId).replace(/\/$/, "");
   const api = `/api/runtime/v12-custom-code/${encodeURIComponent(siteId)}`;
-  const script = `<script data-buildez-custom-code>(function(){
+  const script = `<script ${bootstrapMarker}>(function(){
 try{
 var base=${JSON.stringify(basename)};
 var api=${JSON.stringify(api)};
+function normalizeInternalLinks(root){
+try{
+var links=[];
+if(root&&root.matches&&root.matches("a[href]"))links.push(root);
+if(root&&root.querySelectorAll)links=links.concat(Array.prototype.slice.call(root.querySelectorAll("a[href]")));
+links.forEach(function(link){
+var href=link.getAttribute("href");
+if(!href||href.charAt(0)!=="/"||href.indexOf("//")===0||href.indexOf(base)===0)return;
+if(/^\\/(?:api|_next|app)(?:\\/|$)/.test(href))return;
+link.setAttribute("href",base+(href==="/"?"":href));
+});
+}catch(e){}
+}
 function slugFor(pathname){
 var trimmed=pathname.indexOf(base)===0?pathname.slice(base.length):pathname;
 trimmed=trimmed.replace(/^\\/+|\\/+$/g,"");
@@ -82,6 +101,8 @@ var replaceState=history.replaceState;
 history.replaceState=function(){replaceState.apply(this,arguments);setTimeout(apply,0);};
 window.addEventListener("popstate",apply);
 window.addEventListener("load",apply);
+normalizeInternalLinks(document);
+if(typeof MutationObserver!=="undefined")new MutationObserver(function(records){records.forEach(function(record){Array.prototype.forEach.call(record.addedNodes,function(node){if(node&&node.nodeType===1)normalizeInternalLinks(node);});});}).observe(document.documentElement,{childList:true,subtree:true});
 if(document.readyState==="complete")apply();
 }catch(e){}
 })();</script>`;
@@ -100,7 +121,10 @@ async function buildPublishedProject(siteId: string, tenantId: string) {
   const markerPath = path.join(root, "revision.txt");
   try {
     const [marker] = await Promise.all([readFile(markerPath, "utf8"), stat(path.join(outputRoot, "index.html"))]);
-    if (marker.trim() === String(project.publishedRevision)) return outputRoot;
+    if (marker.trim() === String(project.publishedRevision)) {
+      await injectCustomCodeBootstrap(outputRoot, siteId);
+      return outputRoot;
+    }
   } catch {
     // Missing or stale output is rebuilt below.
   }

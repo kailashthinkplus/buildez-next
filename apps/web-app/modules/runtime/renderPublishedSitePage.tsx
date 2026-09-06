@@ -33,7 +33,10 @@ export async function renderPublishedSitePage(siteSlug: string, pageSlug?: strin
     return <SiteTemporarilyDown siteName={route.siteName} />;
   }
   if (route.renderMode === "REACT" && route.hasV12Project) {
-    const iframePath = `/api/runtime/v12/${encodeURIComponent(route.siteId)}/${route.pageSlug === "home" ? "" : route.pageSlug.split("/").map(encodeURIComponent).join("/")}`;
+    const iframeBase = `/api/runtime/v12/${encodeURIComponent(route.siteId)}`;
+    const iframePath = route.pageSlug === "home"
+      ? iframeBase
+      : `${iframeBase}/${route.pageSlug.split("/").map(encodeURIComponent).join("/")}`;
     const showBranding = await shouldShowBuildezBranding({ siteId: route.siteId, tenantId: route.tenantId });
     return <main className="relative h-screen w-full overflow-hidden bg-white">{options?.preview ? null : <StructuredData siteName={route.siteName} settings={route.settings}/>}<AnalyticsTracker siteId={route.siteId}/><SiteIntegrationsScripts siteId={route.siteId}/><PublishedV12Frame title={`${route.siteName} website`} iframePath={iframePath} currentPageSlug={route.pageSlug}/>{showBranding ? <PoweredByBuildez/> : null}{siteCookieBanner}</main>;
   }
@@ -159,22 +162,28 @@ export async function resolvePublishedSiteRoute(siteSlug: string, requestedPageS
     || site.pages.find((page) => page.status === "PUBLISHED")
     || site.pages[0];
 
-  // Never fall back to a stale/deleted "home" page when the site
-  // currently has no active published pages.
-  if (!requestedPageSlug && !frontPage) return null;
+  const requestedPage = requestedPageSlug
+    ? site.pages.find((page) => page.slug === requestedPageSlug)
+    : undefined;
 
-  // An explicitly requested slug must also belong to an active
-  // published page for this site.
-  if (requestedPageSlug && !site.pages.some((page) => page.slug === requestedPageSlug)) {
-    return null;
-  }
+  // V12 websites are client-routed applications. Their internal routes can
+  // exist in the published React project without separate Page records, so a
+  // direct visit or shared URL must still reach the SPA shell. Legacy/native
+  // sites retain the stricter page-record check.
+  if (requestedPageSlug && !requestedPage && !site.v12Project) return null;
+
+  // Never fall back to a stale/deleted "home" page when a legacy/native site
+  // has no active published pages. A published V12 bundle owns its own root.
+  if (!requestedPageSlug && !frontPage && !site.v12Project) return null;
+
+  const resolvedPage = requestedPage || frontPage;
 
   return {
     siteId: site.id,
     tenantId: site.tenantId,
     siteName: site.name,
-    pageSlug: requestedPageSlug || frontPage!.slug,
-    renderMode: (requestedPageSlug ? site.pages.find((page) => page.slug === requestedPageSlug) : frontPage)!.renderMode,
+    pageSlug: requestedPageSlug || resolvedPage?.slug || "home",
+    renderMode: resolvedPage?.renderMode || "REACT",
     hasV12Project: Boolean(site.v12Project),
     maintenanceMode: false,
     settings,
