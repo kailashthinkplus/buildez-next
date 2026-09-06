@@ -13,11 +13,10 @@ type WelcomeModalProps = {
   onCreateWebsite: () => void;
 };
 
-const previewImages = [
-  { src: "/marketing/home-v3/design.webp", alt: "BuildEZ visual website design workspace" },
-  { src: "/marketing/home-v3/launch.webp", alt: "A website prepared for launch with BuildEZ" },
-  { src: "/marketing/home-v3/grow.webp", alt: "BuildEZ website performance and growth tools" },
-] as const;
+const bannerImage = {
+  src: "https://assets.getbuildez.com/marketing/homepage/get-started-banner.webp",
+  alt: "BuildEZ workspace: describe an idea, build the site, and track its traffic",
+};
 
 export function WelcomeModal({
   open,
@@ -42,18 +41,15 @@ export function WelcomeModal({
           aria-describedby="welcome-modal-description"
           className="dashboard-modal-surface my-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl overflow-y-auto rounded-[28px] border dashboard-border shadow-2xl"
         >
-          <div className="relative grid h-36 grid-cols-3 overflow-hidden rounded-t-[27px] bg-slate-950 sm:h-52">
-            {previewImages.map((image) => (
-              <div key={image.src} className="relative overflow-hidden">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  sizes="(max-width: 640px) 33vw, 300px"
-                  className="object-cover"
-                />
-              </div>
-            ))}
+          <div className="relative h-36 overflow-hidden rounded-t-[27px] bg-slate-950 sm:h-52">
+            <Image
+              src={bannerImage.src}
+              alt={bannerImage.alt}
+              fill
+              sizes="(max-width: 640px) 100vw, 896px"
+              className="object-cover"
+              priority
+            />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-slate-950/10" />
             <button
               type="button"

@@ -920,10 +920,13 @@ export default function Builder3Canvas({
     if (page?.slug && page.slug !== "home") {
       url.pathname = `${basePath}/${page.slug.replace(/^\/+|\/+$/g, "")}`;
     } else {
-      url.pathname = basePath;
+      // The Vite dev server's `base` is "/_v3preview/<port>/" (with a
+      // trailing slash) — an exact match on the bare root without it 404s
+      // (Vite's own base-URL guard), so the home case must keep the slash.
+      url.pathname = `${basePath}/`;
     }
 
-    return url.toString().replace(/\/$/, "");
+    return url.toString();
   })();
 
   const canonicalPageUrl = page?.slug && builderOrigin

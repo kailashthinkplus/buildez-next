@@ -93,6 +93,12 @@
 .dark .auth-proof b{color:#4973a8}
 
 .auth-form-side{position:relative;min-height:100svh;display:grid;place-items:center;padding:92px 48px 64px}
+/* .auth-blue-bg (globals.css) also sets min-height:100vh on this same
+   element; that rule lives in a Tailwind @layer while this file doesn't,
+   but the two still raced on some client-side mounts depending on chunk
+   load order, compressing the layout until a hard refresh. This scoped,
+   higher-specificity rule makes the outcome deterministic either way. */
+.auth-split-page .auth-form-side{min-height:100svh}
 .auth-form-side{background:radial-gradient(620px 540px at 15% 12%,rgba(29,78,216,.08),transparent 64%),radial-gradient(520px 440px at 90% 90%,rgba(59,130,246,.06),transparent 68%),linear-gradient(145deg,#fbfcfe,#f6f8fb 58%,#f2f4f8)}
 .dark .auth-form-side{background:radial-gradient(620px 540px at 15% 12%,rgba(48,133,255,.3),transparent 64%),radial-gradient(520px 440px at 90% 90%,rgba(17,74,170,.24),transparent 68%),linear-gradient(145deg,#071831,#030711 58%,#02050b)}
 .auth-form-side:before{content:"";position:absolute;inset:0;background-size:64px 64px;mask-image:linear-gradient(145deg,black,transparent 78%)}

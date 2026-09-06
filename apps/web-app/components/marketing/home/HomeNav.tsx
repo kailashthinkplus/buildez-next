@@ -65,8 +65,8 @@ export function HomeNav({ internal = false }: { internal?: boolean }) {
         </Link>
         <div className="nav-links">
           <Link href={platformHref}>Platform</Link>
-          <Link href={differenceHref}>Why Build Ezy</Link>
           <Link href={workflowHref}>How it works</Link>
+          <Link href={differenceHref}>Why Build Ezy</Link>
           <Link href="/pricing">Pricing</Link>
         </div>
         <div className="nav-actions">
@@ -108,8 +108,8 @@ export function HomeNav({ internal = false }: { internal?: boolean }) {
                 </div>
                 <span className="marketing-mobile-menu-label">Explore Build Ezy</span>
                 <Link href={platformHref} onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Platform</Link>
-                <Link href={differenceHref} onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Why Build Ezy</Link>
                 <Link href={workflowHref} onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>How it works</Link>
+                <Link href={differenceHref} onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Why Build Ezy</Link>
                 <Link href="/pricing" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Pricing</Link>
                 <div className="marketing-mobile-menu-divider" />
                 <div className="marketing-mobile-menu-actions">
