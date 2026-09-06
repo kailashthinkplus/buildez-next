@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { prisma } from "@buildez/db";
@@ -9,7 +9,7 @@ import { listProjectFiles, normalizeGeneratedProjectFile, readProjectFile } from
 const globalBuilds = globalThis as typeof globalThis & { __buildezV12PublishedBuilds?: Map<string, Promise<string>> };
 const activeBuilds = globalBuilds.__buildezV12PublishedBuilds ?? new Map<string, Promise<string>>();
 globalBuilds.__buildezV12PublishedBuilds = activeBuilds;
-const PUBLISHED_BOOTSTRAP_VERSION = "2";
+const PUBLISHED_BOOTSTRAP_VERSION = "3";
 
 function publishedBase(siteId: string) {
   return `/api/runtime/v12/${encodeURIComponent(siteId)}/`;
@@ -18,6 +18,42 @@ function publishedBase(siteId: string) {
 function addRouterBasename(content: string, siteId: string) {
   if (!content.includes("<BrowserRouter") || /<BrowserRouter\s+[^>]*\bbasename=/.test(content)) return content;
   return content.replace(/<BrowserRouter(?=\s|>)/g, `<BrowserRouter basename=${JSON.stringify(publishedBase(siteId).replace(/\/$/, ""))}`);
+}
+
+/*
+ * Sites built with react-router's <BrowserRouter> get a working basename
+ * baked into their bundle by addRouterBasename above, so react-router itself
+ * already strips the "/api/runtime/v12/<id>" prefix before matching routes.
+ * Sites that hand-roll their own routing (reading location.pathname and
+ * comparing it against literal route strings like "/" or "/about", which is
+ * common in AI-generated projects) have no such awareness — served from that
+ * subpath, pathname never equals "/", every route compare fails, and the
+ * app falls through to its own not-found view on first load. Internal
+ * navigation still "works" afterward only because it sets state directly
+ * rather than re-deriving it from the URL.
+ *
+ * A basename prop can't be retrofitted onto code we didn't write, so instead
+ * this checks whether react-router's basename actually made it into the
+ * built bundle (the literal basename string is expected to survive
+ * minification as-is, since it's just a string literal), and if not, the
+ * injected bootstrap below strips the subpath from location.pathname itself
+ * via history.replaceState before the app's own module script runs — same
+ * effect, applied at the browser rather than the router.
+ */
+async function hasWorkingRouterBasename(outputRoot: string, siteId: string): Promise<boolean> {
+  const needle = publishedBase(siteId).replace(/\/$/, "");
+  try {
+    const assetsDir = path.join(outputRoot, "assets");
+    const entries = await readdir(assetsDir);
+    for (const name of entries) {
+      if (!name.endsWith(".js")) continue;
+      const content = await readFile(path.join(assetsDir, name), "utf8");
+      if (content.includes(needle)) return true;
+    }
+  } catch {
+    // No assets directory or unreadable — treat as no basename present.
+  }
+  return false;
 }
 
 /*
@@ -45,11 +81,21 @@ async function injectCustomCodeBootstrap(outputRoot: string, siteId: string) {
 
   const basename = publishedBase(siteId).replace(/\/$/, "");
   const api = `/api/runtime/v12-custom-code/${encodeURIComponent(siteId)}`;
+  const hasBasename = await hasWorkingRouterBasename(outputRoot, siteId);
+  const normalizeEntryPathSnippet = hasBasename ? "" : `(function normalizeEntryPath(){
+try{
+var p=location.pathname,stripped=null;
+if(p===base)stripped="/";
+else if(p.indexOf(base+"/")===0)stripped=p.slice(base.length)||"/";
+if(stripped&&stripped!==p)history.replaceState(history.state,"",stripped+location.search+location.hash);
+}catch(e){}
+})();
+`;
   const script = `<script ${bootstrapMarker}>(function(){
 try{
 var base=${JSON.stringify(basename)};
 var api=${JSON.stringify(api)};
-function normalizeInternalLinks(root){
+${normalizeEntryPathSnippet}function normalizeInternalLinks(root){
 try{
 var links=[];
 if(root&&root.matches&&root.matches("a[href]"))links.push(root);
