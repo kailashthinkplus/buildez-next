@@ -12,7 +12,7 @@ export default function OnboardingClientLayout({
     <div className="flex min-h-screen w-full overflow-hidden">
       {/* SIDEBAR */}
       <aside className="w-[280px] shrink-0 border-r border-white/10 bg-white/5 backdrop-blur-xl">
-        <OnboardingSidebar />
+        <OnboardingSidebar className="h-full" />
       </aside>
 
       {/* MAIN COLUMN */}

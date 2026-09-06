@@ -3656,7 +3656,7 @@ All 3D subject experiences use a Higgsfield-generated video extracted into frame
         .filter((media) => /hero|keyframe|primary|opening/i.test(media.role))
         .map((media) => media.url)
     : [];
-  let acceptanceFailures = immersiveAcceptanceFailures(parsedResult.files, capabilityPlan, {
+  const checkAcceptance = () => immersiveAcceptanceFailures(parsedResult.files, capabilityPlan, {
     requiresExternalModel: false,
     requiresMultipleCameraViews: requiresMultipleCameraViews(effectivePrompt),
     photorealisticPrimaryMediaUrls,
@@ -3668,19 +3668,35 @@ All 3D subject experiences use a Higgsfield-generated video extracted into frame
       designArchitectPlan?.experience === "CINEMATIC" ||
       capabilityPlan.capabilities.includes("PARALLAX"),
   });
-  if (parsedResult.files.length && acceptanceFailures.length) {
-    // Targeted repair instead of a full-project regeneration: the model
-    // already produced a complete, mostly-correct project, so send it
-    // back only that project plus the specific failures and ask for the
-    // files that must change. This is both faster (much smaller
-    // max_output_tokens than a full rebuild) and safer (files unrelated
-    // to the failure are never touched, so a repair pass can't
-    // reintroduce a different regression elsewhere in the site).
+  let acceptanceFailures = checkAcceptance();
+  // Targeted repair instead of a full-project regeneration: the model
+  // already produced a complete, mostly-correct project, so send it back
+  // only that project plus the specific failures and ask for the files
+  // that must change. This is both faster (much smaller max_output_tokens
+  // than a full rebuild) and safer (files unrelated to the failure are
+  // never touched, so a repair pass can't reintroduce a different
+  // regression elsewhere in the site).
+  //
+  // A generation must never dead-end in a user-visible failure over this —
+  // the acceptance bar (cinematic depth, parallax, etc.) is a quality gate,
+  // not a hard requirement the model is guaranteed to satisfy on the first
+  // try, and the classifier upstream can call for it even on briefs that
+  // barely touch motion. So this retries a bounded number of times with
+  // progressively plainer, more explicit instructions, and if it still
+  // hasn't converged, ships the best build produced rather than failing
+  // the job — a working site that's a little short on cinematic flourish
+  // beats no site at all.
+  // Kept to 2: each repair call can run up to 165s, and this whole
+  // generate stage shares a single 9-minute job budget (see
+  // SAFE_GENERATION_BUDGET_MS in the agent/run route) with the initial
+  // generation call that already ran before this loop starts.
+  const MAX_ACCEPTANCE_REPAIR_ATTEMPTS = 2;
+  for (let attempt = 1; parsedResult.files.length && acceptanceFailures.length && attempt <= MAX_ACCEPTANCE_REPAIR_ATTEMPTS; attempt += 1) {
     input.onProgress?.(
-      "Correcting immersive depth",
-      "The first build did not contain the required 3D/parallax implementation",
+      "Working on your website",
+      "This is taking a little longer than expected — refining the build now",
     );
-    const repairText = `You are BuildEZ. REPAIR PASS.
+    const repairText = `You are BuildEZ. REPAIR PASS ${attempt} of ${MAX_ACCEPTANCE_REPAIR_ATTEMPTS}.
 
 The following project was just generated but failed acceptance checks. Treat it as the current state of the project.
 
@@ -3690,6 +3706,7 @@ ${frameSequence ? `The 3D subject MUST use a scroll-scrubbed 2D canvas drawing f
 
 ACCEPTANCE FAILURES TO FIX:
 ${acceptanceFailures.map((failure) => `- ${failure}`).join("\n")}
+${attempt > 1 ? "\nA previous repair attempt for these same failures was insufficient. Be concrete and literal: implement the exact mechanism described (e.g. a real scroll-driven transform on a real element with real depth values), not a stylistic approximation of it." : ""}
 
 Return ONLY the files that must change to fix these specific failures. Do not resend files that are already correct, and do not rewrite unrelated pages, sections, or content. Preserve all working functionality, styling, and content exactly as implemented except where a change is required to fix a listed failure.
 
@@ -3713,24 +3730,17 @@ Return JSON only: {"message":"specific fix summary","files":[{"path":"...","cont
       signal: input.signal,
       timeoutMs: 165_000,
     });
-    if (isIncompleteResponse(payload)) throw new TruncatedResponseError("The project repair response was cut off before it finished.");
-    parsedResult = parseResult(outputText(payload), true, parsedResult.files);
-    parsedResult = { ...parsedResult, files: withHiggsfieldFrames(parsedResult.files, frameSequence) };
-    acceptanceFailures = immersiveAcceptanceFailures(parsedResult.files, capabilityPlan, {
-      requiresExternalModel: false,
-      requiresMultipleCameraViews: requiresMultipleCameraViews(effectivePrompt),
-      photorealisticPrimaryMediaUrls,
-      allowUntexturedGeometry: allowsUntextured3DGeometry(effectivePrompt),
-      requiresCinematicNarrative:
-        input.creativeDirection.experienceType === "Immersive 3D / cinematic" ||
-        designArchitectPlan?.experience === "CINEMATIC" ||
-        capabilityPlan.capabilities.includes("PARALLAX"),
-      hasFrameSequence3D: Boolean(frameSequence),
-      frameSequenceUrls: frameSequence?.frameUrls,
-    });
-    if (acceptanceFailures.length) {
-      throw new Error(`Immersive generation did not pass acceptance: ${acceptanceFailures.join(" ")}`);
+    if (isIncompleteResponse(payload)) {
+      // A cut-off repair response is not itself an acceptance failure —
+      // keep the last good build and let the loop retry or exit cleanly.
+      continue;
     }
+    const repaired = parseResult(outputText(payload), true, parsedResult.files);
+    parsedResult = { ...repaired, files: withHiggsfieldFrames(repaired.files, frameSequence) };
+    acceptanceFailures = checkAcceptance();
+  }
+  if (acceptanceFailures.length) {
+    console.error(`[V12 generation] shipping build despite unresolved acceptance failures after ${MAX_ACCEPTANCE_REPAIR_ATTEMPTS} repair attempts:`, acceptanceFailures);
   }
   const durableCreativeUrls = new Map<string, string>();
   for (const sourceUrl of creativeMcpResultUrls(payload)) {

@@ -1398,14 +1398,14 @@ function ProTipsCarousel({ onClose, onSelectPrompt }: { onClose(): void; onSelec
     },
     {
       eyebrow: "Immersive experiences",
-      title: "Build rich 3D & animated websites",
+      title: "Build rich animated websites",
       body:
-        "Ask for cinematic scroll experiences, parallax, shaders, WebGL, interactive product showcases, 3D scenes and advanced motion.",
+        "Ask for cinematic scroll experiences, parallax depth, layered motion, interactive product showcases and advanced scroll-driven animation.",
       image: "/pro-tips/immersive-3d.webp",
-      alt: "Interactive 3D animated website experience",
+      alt: "Interactive animated website experience",
       accent: "from-violet-500/20 via-fuchsia-400/10 to-transparent",
       prompt:
-        "Build me an immersive, cinematic website with smooth scroll-triggered animations, parallax depth, subtle 3D/WebGL visuals, and an interactive product showcase section. Make it feel alive and premium, like a top design agency's site.",
+        "Build me an immersive, cinematic website with smooth scroll-triggered animations, layered parallax depth, and an interactive product showcase section. Make it feel alive and premium, like a top design agency's site.",
     },
     {
       eyebrow: "Traditional websites",
