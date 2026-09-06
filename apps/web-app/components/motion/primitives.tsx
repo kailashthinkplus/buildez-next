@@ -11,7 +11,7 @@ import { prefersReducedMotion } from "@/lib/motion";
 export function usePointerParallax<T extends HTMLElement>(ref: RefObject<T | null>, damping = 0.08) {
   useEffect(() => {
     const el = ref.current;
-    if (!el || prefersReducedMotion()) return;
+    if (!el || prefersReducedMotion() || window.matchMedia("(pointer: coarse)").matches) return;
 
     let targetX = 0;
     let targetY = 0;
@@ -22,17 +22,21 @@ export function usePointerParallax<T extends HTMLElement>(ref: RefObject<T | nul
     const move = (e: PointerEvent) => {
       targetX = (e.clientX / window.innerWidth - 0.5) * 2;
       targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+      if (!raf) raf = requestAnimationFrame(tick);
     };
     const tick = () => {
       curX += (targetX - curX) * damping;
       curY += (targetY - curY) * damping;
       el.style.setProperty("--mx", curX.toFixed(4));
       el.style.setProperty("--my", curY.toFixed(4));
-      raf = requestAnimationFrame(tick);
+      if (Math.abs(targetX - curX) > 0.001 || Math.abs(targetY - curY) > 0.001) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        raf = 0;
+      }
     };
 
     window.addEventListener("pointermove", move, { passive: true });
-    raf = requestAnimationFrame(tick);
     return () => {
       window.removeEventListener("pointermove", move);
       cancelAnimationFrame(raf);
@@ -47,8 +51,13 @@ export function usePointerParallax<T extends HTMLElement>(ref: RefObject<T | nul
  */
 export function useGlobalScrollFx() {
   useEffect(() => {
+    let animationFrame = 0;
     const onScroll = () => {
-      document.documentElement.style.setProperty("--scroll", String(window.scrollY));
+      if (animationFrame) return;
+      animationFrame = requestAnimationFrame(() => {
+        animationFrame = 0;
+        document.documentElement.style.setProperty("--scroll", String(window.scrollY));
+      });
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -61,6 +70,7 @@ export function useGlobalScrollFx() {
 
     return () => {
       window.removeEventListener("scroll", onScroll);
+      if (animationFrame) cancelAnimationFrame(animationFrame);
       observer.disconnect();
     };
   }, []);
@@ -74,14 +84,22 @@ export function ScrollProgress() {
     if (prefersReducedMotion()) return;
     const el = barRef.current;
     if (!el) return;
+    let animationFrame = 0;
     const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const p = max > 0 ? window.scrollY / max : 0;
-      el.style.transform = `scaleX(${p})`;
+      if (animationFrame) return;
+      animationFrame = requestAnimationFrame(() => {
+        animationFrame = 0;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const p = max > 0 ? window.scrollY / max : 0;
+        el.style.transform = `scaleX(${p})`;
+      });
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+    };
   }, []);
 
   return (

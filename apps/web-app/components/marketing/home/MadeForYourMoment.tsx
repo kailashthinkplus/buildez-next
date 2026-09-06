@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger, motion as tokens, prefersReducedMotion } from "@/lib/motion";
 import { AmbientGlow } from "@/components/motion/primitives";
+import { OptimizedR2Image } from "./OptimizedR2Image";
 
 const FRAME_CDN = "https://assets.getbuildez.com/marketing/homepage/moment";
 
@@ -87,7 +88,7 @@ export function MadeForYourMoment() {
           <div key={moment.title} className="moment-row">
             <div className="moment-visual">
               <AmbientGlow className="moment-glow" color={moment.glow} size={420} blur={130} opacity={0.22} />
-              <img src={`${FRAME_CDN}/${moment.image}.png`} alt={moment.alt} width="1200" height="675" loading="lazy" decoding="async" />
+              <OptimizedR2Image basePath={`${FRAME_CDN}/${moment.image}`} alt={moment.alt} />
             </div>
             <div className="moment-copy">
               <span className="moment-index">{moment.index}</span>

@@ -1,0 +1,35 @@
+# Build Ezy
+
+> Build Ezy is an AI-powered website operating system: design, launch, sell, and grow a business from one connected platform. No code required.
+
+Build Ezy lets anyone — solo founders, freelancers, agencies, and growing businesses — build a professional, responsive website with a visual drag-and-drop builder, then connect commerce, CRM, analytics, and AI agents without stitching together separate tools.
+
+## Key capabilities
+- Visual website builder with full control over layout, typography, color, media, and motion
+- AI website generation from a plain-language brief
+- AI agents that assist with content, design, and business workflows
+- Built-in CRM to manage leads, customers, and conversations
+- Smart commerce: products, orders, and payments in one flow
+- Business intelligence and live analytics
+- Responsive previews, custom domains, and professional publishing
+
+## Who it's for
+- Agencies managing multiple client sites from one workspace
+- Solo founders launching a first business presence
+- Freelancers building and maintaining client websites
+- Businesses that want their website, commerce, and analytics connected
+
+## Learn more
+- Homepage: https://getbuildezy.com
+- Pricing: https://getbuildezy.com/pricing
+- Frequently asked questions: https://getbuildezy.com/faq
+- Product updates: https://getbuildezy.com/changelog
+- Support: https://getbuildezy.com/support
+
+## Official identity
+- Product name: Build Ezy
+- Alternate spelling: BuildEzy
+- Official website: https://getbuildezy.com
+- LinkedIn: https://www.linkedin.com/company/build-ezy-india/
+- X: https://x.com/getbuildezy
+- Instagram: https://www.instagram.com/buildezy.ai/

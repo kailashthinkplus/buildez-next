@@ -17,7 +17,7 @@ export function PlatformOrbit() {
     const orbit = orbitRef.current;
     if (!orbit) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const compactDevice = window.matchMedia("(max-width: 900px), (pointer: coarse)").matches;
+    const compactDevice = window.matchMedia("(max-width: 1000px), (pointer: coarse)").matches;
     if (reducedMotion || compactDevice) return;
 
     let animationFrame = 0;

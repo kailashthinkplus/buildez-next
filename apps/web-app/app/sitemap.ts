@@ -26,6 +26,8 @@ const PLATFORM_MARKETING_ROUTES: Array<{ path: string; priority: number }> = [
   { path: "/report-bugs", priority: 0.2 },
 ];
 
+const HOMEPAGE_LAST_MODIFIED = new Date("2026-09-06T00:00:00.000Z");
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const headerList = await headers();
   const host = headerList.get("x-forwarded-host") || headerList.get("host") || "";
@@ -35,6 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const origin = `${protocol}://${host}`;
     return PLATFORM_MARKETING_ROUTES.map(({ path, priority }) => ({
       url: path === "/" ? origin : `${origin}${path}`,
+      ...(path === "/" ? { lastModified: HOMEPAGE_LAST_MODIFIED } : {}),
       changeFrequency: "weekly",
       priority,
     }));

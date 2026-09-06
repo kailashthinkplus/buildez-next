@@ -1,4 +1,7 @@
-const CRAFT_IMAGE = "https://assets.getbuildez.com/marketing/homepage/craft/live-preview.png";
+import { OptimizedR2Image } from "./OptimizedR2Image";
+
+const CRAFT_IMAGE = "https://assets.getbuildez.com/marketing/homepage/craft/live-preview";
+const CRAFT_FRONT_IMAGE = "https://assets.getbuildez.com/marketing/homepage/craft/front-canvas";
 
 export function CraftSection() {
   return (
@@ -10,17 +13,18 @@ export function CraftSection() {
             <span />
             <b />
           </div>
-          <img
+          <OptimizedR2Image
             className="fake-grid-image"
-            src={CRAFT_IMAGE}
+            basePath={CRAFT_IMAGE}
             alt="Customizing a website's design live in the Build Ezy builder"
-            width={1200}
-            height={675}
-            loading="lazy"
-            decoding="async"
           />
         </div>
         <div className="craft-card craft-front">
+          <OptimizedR2Image
+            className="craft-front-image"
+            basePath={CRAFT_FRONT_IMAGE}
+            alt="A designer editing a live website with the Build Ezy visual builder"
+          />
           <span className="selection-tag">Live canvas</span>
           <div className="portfolio-copy">
             <small>NEW COLLECTION</small>
@@ -30,11 +34,6 @@ export function CraftSection() {
               quiet living.
             </strong>
             <button>Discover the edit</button>
-          </div>
-          <div className="product-shape">
-            <i />
-            <i />
-            <i />
           </div>
         </div>
         <div className="tool-pill tool-one">↔ Responsive by default</div>

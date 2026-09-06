@@ -45,6 +45,7 @@ function CanvasPlayer({
   const [isMobile, setIsMobile] = useState(false);
   const [useAvif, setUseAvif] = useState(true);
   const [firstFrameReady, setFirstFrameReady] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 768px)");
@@ -71,6 +72,21 @@ function CanvasPlayer({
   const containerRef = useRef<HTMLDivElement>(null);
   const activeIndexRef = useRef(-1);
   const [frontIsA, setFrontIsA] = useState(true);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setShouldLoad(true);
+        observer.disconnect();
+      },
+      { rootMargin: "100% 0px" },
+    );
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
 
   const drawFrame = useCallback(
     (canvas: HTMLCanvasElement | null, img: HTMLImageElement | null) => {
@@ -109,6 +125,7 @@ function CanvasPlayer({
 
   // Preload: current frame first, then neighbors, then the rest in idle chunks.
   useEffect(() => {
+    if (!shouldLoad) return;
     let cancelled = false;
     imagesRef.current = [];
     activeIndexRef.current = -1;
@@ -160,7 +177,7 @@ function CanvasPlayer({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urls, manifest.frameCount]);
+  }, [urls, manifest.frameCount, shouldLoad]);
 
   // Advance frame + crossfade when progress moves to a new frame index.
   useEffect(() => {
@@ -193,7 +210,7 @@ function CanvasPlayer({
   return (
     <div ref={containerRef} className="cine-canvas-wrap">
       {posterSrc && !firstFrameReady && (
-        <img src={posterSrc} alt="" aria-hidden="true" className="cine-poster" style={{ objectFit: fit }} />
+        <img src={posterSrc} alt="" aria-hidden="true" className="cine-poster" style={{ objectFit: fit }} loading="lazy" decoding="async" />
       )}
       <canvas ref={canvasARef} className="cine-canvas" style={{ opacity: frontIsA ? 1 : 0 }} />
       <canvas ref={canvasBRef} className="cine-canvas" style={{ opacity: frontIsA ? 0 : 1 }} />

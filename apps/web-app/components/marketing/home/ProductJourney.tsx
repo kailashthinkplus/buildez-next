@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { OptimizedR2Image } from "./OptimizedR2Image";
 
 const FRAME_CDN = "https://assets.getbuildez.com/marketing/homepage/journey";
 
@@ -59,7 +60,7 @@ export function ProductJourney() {
                 <i>{stage.tag}</i>
                 <b>{stage.no}</b>
               </div>
-              <img src={`${FRAME_CDN}/${stage.image}.png`} alt={stage.alt} width="1200" height="675" loading="lazy" decoding="async" />
+              <OptimizedR2Image basePath={`${FRAME_CDN}/${stage.image}`} alt={stage.alt} />
               <figcaption>{stage.figcaption}</figcaption>
             </figure>
           ))}
