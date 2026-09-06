@@ -85,6 +85,26 @@ export async function middleware(req: NextRequest) {
   const host = (req.headers.get("x-forwarded-host") || req.headers.get("host") || "").split(":")[0].toLowerCase();
 
   /* ---------------------------------------------------------
+     🔌 BUILDER-V3 LIVE PREVIEW PROXY (dev-server parity with nginx)
+     In production, nginx's `location ~ ^/_v3preview/(41[0-9]{3})(/.*)?$`
+     proxies straight to the per-session Vite worker before a request ever
+     reaches Next — see infrastructure/nginx and previewWorker.mjs. `next dev`
+     has no such rule, so without this the request falls through to the
+     (runtime)/[...slug] catch-all, which treats "_v3preview" as a tenant
+     site slug and 404s. Mirror nginx's proxy_pass here so canvas/page
+     preview works locally too. Keep the full path (not stripped) when
+     forwarding — the Vite worker's own `base` is `/_v3preview/<port>/`.
+  --------------------------------------------------------- */
+  const v3PreviewMatch = pathname.match(/^\/_v3preview\/(41\d{3})(\/.*)?$/);
+  if (v3PreviewMatch) {
+    const target = req.nextUrl.clone();
+    target.protocol = "http:";
+    target.hostname = "127.0.0.1";
+    target.port = v3PreviewMatch[1];
+    return NextResponse.rewrite(target);
+  }
+
+  /* ---------------------------------------------------------
      🚨 ABSOLUTE EXCLUSIONS (CRITICAL FIX)
      NEVER rewrite, auth-check, or touch these
   --------------------------------------------------------- */

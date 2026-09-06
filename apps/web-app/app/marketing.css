@@ -85,7 +85,7 @@
 .hero{width:100%;max-width:none;background:radial-gradient(ellipse 76% 60% at 78% 44%,rgba(139,149,164,.12),transparent 63%),linear-gradient(180deg,#020202 0%,#08090b 58%,#020202 100%)}
 .hero:before{background-image:linear-gradient(rgba(185,191,201,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(185,191,201,.045) 1px,transparent 1px);background-size:72px 72px;mask-image:linear-gradient(105deg,transparent 8%,#000 48%,transparent 92%)}
 .hero:after{content:"";position:absolute;inset:auto 4% 4% 34%;height:38%;border:1px solid rgba(194,200,210,.08);border-radius:50%;transform:perspective(700px) rotateX(72deg);box-shadow:0 0 90px rgba(180,188,200,.045),inset 0 0 70px rgba(180,188,200,.035);pointer-events:none}
-.hero-glow{background:#aab1bc;opacity:.075;filter:blur(180px)}
+.hero-glow{background:#aab1bc;opacity:.16;filter:blur(180px)}
 .orb-one,.status-dot,.frame-bar span{background:#8e99a8;box-shadow:0 0 16px rgba(166,175,188,.5)}
 .world-shadow{background:#7b8593;opacity:.13}
 
@@ -175,12 +175,17 @@
 /* Keep mobile Safari below its compositor-memory ceiling. The active journey
    card remains fully visible while off-screen 3D layers and costly blur passes
    are removed on touch-sized devices. */
+@media(max-width:900px){
+  /* Scoped to narrow screens only (not pointer:coarse) — a coarse-pointer
+     laptop trackpad shouldn't lose this glow; it's one small blurred layer,
+     not part of the 3D/perspective work the block below removes for perf. */
+  .buildezy-marketing .hero-glow{display:none}
+}
 @media(max-width:900px),(pointer:coarse){
   .buildezy-marketing .world,
   .buildezy-marketing .frame-depth-stage,
   .buildezy-marketing .craft-scene,
   .buildezy-marketing .orbit-stage{perspective:none;transform-style:flat}
-  .buildezy-marketing .hero-glow,
   .buildezy-marketing .world-shadow,
   .buildezy-marketing .depth-frame:after,
   .buildezy-marketing .craft-scene:before{display:none}
@@ -387,7 +392,7 @@
 .buildezy-marketing .final-cta:before{content:"";position:absolute;left:50%;top:50%;width:min(72vw,780px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 38% 38%,rgba(56,122,216,.2),rgba(19,73,163,.07) 40%,transparent 69%);filter:blur(38px);pointer-events:none;animation:final-ambient-drift 18s ease-in-out infinite}
 .buildezy-marketing .cta-rings{animation:final-rings-breathe 13s ease-in-out infinite}
 @keyframes hero-grid-drift{to{background-position:68px 34px,34px 68px}}
-@keyframes hero-glow-drift{0%,100%{transform:translate3d(-2%,0,0) scale(.96);opacity:.1}50%{transform:translate3d(5%,3%,0) scale(1.06);opacity:.15}}
+@keyframes hero-glow-drift{0%,100%{transform:translate3d(-2%,0,0) scale(.96);opacity:.16}50%{transform:translate3d(5%,3%,0) scale(1.08);opacity:.26}}
 @keyframes final-ambient-drift{0%,100%{transform:translate3d(-52%,-49%,0) scale(.96);opacity:.64}50%{transform:translate3d(-47%,-52%,0) scale(1.07);opacity:.94}}
 @keyframes final-rings-breathe{0%,100%{transform:translate(-50%,-50%) scale(.985);opacity:.74}50%{transform:translate(-50%,-50%) scale(1.025);opacity:1}}
 @media(prefers-reduced-motion:reduce){
