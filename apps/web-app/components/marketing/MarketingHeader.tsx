@@ -29,9 +29,14 @@ export function MarketingHeader() {
         aria-expanded={menuOpen}
         onClick={() => setMenuOpen((value) => !value)}
       >
-        <span />
-        <span />
-        <span />
+        <svg className="marketing-menu-icon marketing-menu-icon-bars" viewBox="0 0 20 14" fill="none" aria-hidden="true">
+          <rect x="0" y="0" width="20" height="2.6" rx="1.3" fill="currentColor" />
+          <rect x="0" y="5.7" width="20" height="2.6" rx="1.3" fill="currentColor" />
+          <rect x="0" y="11.4" width="11" height="2.6" rx="1.3" fill="currentColor" />
+        </svg>
+        <svg className="marketing-menu-icon marketing-menu-icon-close" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M4 4L16 16M16 4L4 16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        </svg>
       </button>
 
       <Link href="/" className="marketing-standard-brand" aria-label="BuildEzy home">
