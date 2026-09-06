@@ -132,7 +132,7 @@ export default function Home() {
       <link
         rel="preload"
         as="image"
-        href="https://assets.getbuildez.com/marketing/homepage/hero/developer-building.avif?v=20260906-3"
+        href="https://assets.getbuildez.com/marketing/homepage/hero/developer-building.avif?v=20260906-4"
         type="image/avif"
         fetchPriority="high"
       />

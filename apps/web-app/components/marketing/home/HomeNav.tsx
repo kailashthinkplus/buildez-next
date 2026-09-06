@@ -60,9 +60,9 @@ export function HomeNav() {
         </a>
         <div className="nav-links">
           <a href="#platform">Platform</a>
-          <Link href="/pricing">Pricing</Link>
           <a href="#difference">Why Build Ezy</a>
           <a href="#workflow">How it works</a>
+          <Link href="/pricing">Pricing</Link>
         </div>
         <div className="nav-actions">
           <Link href="/app/login" className="login-link" onClick={() => logMarketingCtaClick("nav_login")}>
@@ -103,9 +103,9 @@ export function HomeNav() {
                 </div>
                 <span className="marketing-mobile-menu-label">Explore Build Ezy</span>
                 <a href="#platform" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Platform</a>
-                <Link href="/pricing" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Pricing</Link>
                 <a href="#difference" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Why Build Ezy</a>
                 <a href="#workflow" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>How it works</a>
+                <Link href="/pricing" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Pricing</Link>
                 <div className="marketing-mobile-menu-divider" />
                 <div className="marketing-mobile-menu-actions">
                   <Link

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BookOpen, CreditCard, Sparkles, Globe, ShoppingBag, AlertCircle, LayoutGrid, Search } from "lucide-react";
+import { ArrowRight, BookOpen, CreditCard, Sparkles, Globe, ShoppingBag, AlertCircle, LayoutGrid, Search } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { MarketingFooter } from "./MarketingFooter";
@@ -92,8 +92,8 @@ export function HelpCenter() {
         )}
 
         <section className="help-center-cta">
-          <div><h2>Still need a hand?</h2><p>Send us the details and we'll get back to you.</p></div>
-          <button type="button" onClick={() => setContactOpen(true)}>Contact support<span aria-hidden="true">→</span></button>
+          <div><h2>Still need a hand?</h2><p>Send us the details and we&apos;ll get back to you.</p></div>
+          <button type="button" onClick={() => setContactOpen(true)}>Contact support<ArrowRight size={16} aria-hidden="true" /></button>
         </section>
       </main>
       <MarketingFooter />
