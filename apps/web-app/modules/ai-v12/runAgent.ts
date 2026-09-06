@@ -3816,6 +3816,26 @@ Return JSON only: {"message":"specific fix summary","files":[{"path":"...","cont
       siteId: input.siteId,
       files: result.files,
     });
+
+    // Keep a named snapshot of every completed generation. The pre-mutation
+    // checkpoint above protects the previous design; this one makes the new
+    // result itself easy to identify and restore from Version history.
+    const promptName = input.prompt.replace(/\s+/g, " ").trim();
+    const shortenedPromptName = promptName.length > 96
+      ? `${promptName.slice(0, 93).trimEnd()}...`
+      : promptName;
+    try {
+      await createProjectCheckpoint({
+        siteId: input.siteId,
+        tenantId: input.tenantId,
+        userId: input.userId,
+        label: `AI generation - ${shortenedPromptName || "Generated website"}`,
+      });
+    } catch (checkpointError) {
+      // The generated project is already committed; a history-write problem
+      // must not turn a successful generation into a failed user request.
+      console.error("[AI generation] named checkpoint could not be created", checkpointError);
+    }
   }
   input.onProgress?.(
     result.files.length ? "Project committed" : "Discussion completed",

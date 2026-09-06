@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   AlignLeft, ArrowLeft, Blocks, Box, CalendarClock, Check, ChevronDown, ChevronsUpDown, CircleGauge,
   ClipboardList, Cloud, Code2, Columns3, Droplet, EyeOff, ExternalLink, Eye, FormInput, Grid3X3, Image as ImageIcon,
-  Images, Laptop, Layers, ListChecks, Loader2, Maximize2, Megaphone, MessagesSquare,
+  History, Images, Laptop, Layers, ListChecks, Loader2, Maximize2, Megaphone, MessagesSquare,
   Moon, MoreVertical, MousePointerClick, Package, PanelRightOpen, PanelsTopLeft, Plus, Redo2, RefreshCw,
   Settings, ShoppingCart, Smartphone, Sparkles, Star, Sun, Tablet, TextCursorInput,
   Type, Undo2, Video, Wand2, X, type LucideIcon,
@@ -245,6 +245,7 @@ export default function Builder3Canvas({
   const [scheduledPublishAt, setScheduledPublishAt] = useState<string | null>(page?.scheduledPublishAt ?? null);
   const [showCustomCodeModal, setShowCustomCodeModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showRestoreModal, setShowRestoreModal] = useState(false);
   const [customCss, setCustomCss] = useState(page?.customCss ?? "");
   const [customJs, setCustomJs] = useState(page?.customJs ?? "");
   const [savingCustomCode, setSavingCustomCode] = useState(false);
@@ -1144,6 +1145,12 @@ export default function Builder3Canvas({
                 >
                   <Code2 size={15} /> Custom CSS/JS
                 </button>
+                <button
+                  onClick={() => { setKebabMenuOpen(false); setShowRestoreModal(true); }}
+                  className="flex w-full items-center gap-2.5 border-t border-white/10 px-3.5 py-2.5 text-left text-sm text-white/75 hover:bg-white/10 hover:text-white"
+                >
+                  <History size={15} /> Restore a version
+                </button>
               </div>
             )}
           </div>
@@ -1825,6 +1832,25 @@ An uploaded codebase has already been imported into the current project. Read sr
           onSave={(value) => void saveSchedule(value)}
         />
       )}
+
+      {showRestoreModal && (
+        <VersionHistoryModal
+          siteId={siteId}
+          currentRevision={workspace?.revision}
+          onClose={() => setShowRestoreModal(false)}
+          onRestored={(revision, label) => {
+            setWorkspace(current => ({ ...current, revision }));
+            setSelection(undefined);
+            sendCanvas("BUILDEZ_SELECTION_CLEARED");
+            setUndoStack([]);
+            setRedoStack([]);
+            setSavedAt(new Date());
+            setPreviewGeneration(value => value + 1);
+            setShowRestoreModal(false);
+            showToast(`Restored ${label}`);
+          }}
+        />
+      )}
     </main>
   );
 }
@@ -1876,6 +1902,146 @@ function ScheduleModal({
         <div className="flex justify-end gap-2 border-t border-white/10 p-5">
           <button onClick={onCancel} className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/5">Cancel</button>
           <button onClick={() => onSave(value)} disabled={saving || !value} className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-40">{saving ? "Scheduling…" : "Schedule"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type VersionCheckpoint = {
+  id: string;
+  label: string | null;
+  revision: number;
+  createdAt: string;
+};
+
+function checkpointDisplayName(checkpoint: VersionCheckpoint, index: number) {
+  const label = checkpoint.label?.trim() || "";
+  if (label.startsWith("AI generation - ")) return label.slice("AI generation - ".length);
+  if (label.startsWith("Before AI generation - ")) return `Before ${label.slice("Before AI generation - ".length)}`;
+  if (label === "Before AI full-page generation") return "Previous full-page design";
+  if (label === "Before AI project update") return "Previous AI design";
+  return label || `Generated version ${index + 1}`;
+}
+
+function VersionHistoryModal({
+  siteId,
+  currentRevision,
+  onClose,
+  onRestored,
+}: {
+  siteId: string;
+  currentRevision?: number;
+  onClose(): void;
+  onRestored(revision: number, label: string): void;
+}) {
+  const [checkpoints, setCheckpoints] = useState<VersionCheckpoint[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [selected, setSelected] = useState<VersionCheckpoint | null>(null);
+  const [restoring, setRestoring] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/builder-v3/projects/${siteId}/checkpoints`, { cache: "no-store" })
+      .then(async response => {
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(apiErrorMessage(payload, "Versions could not be loaded"));
+        const data = payload?.data && typeof payload.data === "object" ? payload.data : payload;
+        const raw = Array.isArray(data?.checkpoints) ? data.checkpoints : [];
+        const byRevision = new Map<number, VersionCheckpoint>();
+        for (const item of raw as unknown[]) {
+          if (!item || typeof item !== "object") continue;
+          const value = item as Partial<VersionCheckpoint>;
+          const isGeneration = typeof value.label === "string" && /^(?:AI generation|Before AI)/.test(value.label);
+          if (!isGeneration || typeof value.id !== "string" || typeof value.revision !== "number" || typeof value.createdAt !== "string") continue;
+          const checkpoint = value as VersionCheckpoint;
+          const existing = byRevision.get(checkpoint.revision);
+          if (!existing || checkpoint.label?.startsWith("AI generation - ")) byRevision.set(checkpoint.revision, checkpoint);
+        }
+        const versions = [...byRevision.values()].sort((left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt));
+        if (!cancelled) setCheckpoints(versions);
+      })
+      .catch(reason => { if (!cancelled) setError(reason instanceof Error ? reason.message : "Versions could not be loaded"); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [siteId]);
+
+  async function restoreSelected() {
+    if (!selected || currentRevision === undefined || restoring) return;
+    setRestoring(true);
+    setError("");
+    try {
+      const safetyResponse = await fetch(`/api/builder-v3/projects/${siteId}/checkpoints`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ label: "Before version restore" }),
+      });
+      const safetyPayload = await safetyResponse.json().catch(() => ({}));
+      if (!safetyResponse.ok) throw new Error(apiErrorMessage(safetyPayload, "Could not protect the current version"));
+
+      const response = await fetch(`/api/builder-v3/projects/${siteId}/checkpoints`, {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ checkpointId: selected.id, expectedRevision: currentRevision }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(apiErrorMessage(payload, "Version could not be restored"));
+      const data = payload?.data && typeof payload.data === "object" ? payload.data : payload;
+      if (typeof data?.revision !== "number") throw new Error("Invalid restore response");
+      onRestored(data.revision, checkpointDisplayName(selected, checkpoints.indexOf(selected)));
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Version could not be restored");
+    } finally {
+      setRestoring(false);
+    }
+  }
+
+  return (
+    <div role="dialog" aria-modal="true" aria-labelledby="version-history-dialog-title" className="fixed inset-0 z-[40000] grid place-items-center bg-black/70 p-5 backdrop-blur-md" onMouseDown={event => { if (event.target === event.currentTarget && !restoring) onClose(); }}>
+      <div className="flex max-h-[82vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#11141c]/95 text-white shadow-2xl shadow-black/60 backdrop-blur-2xl">
+        <div className="flex items-start justify-between border-b border-white/10 p-5">
+          <div className="flex gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-full bg-blue-500/15 text-blue-300"><History size={18} /></span>
+            <div>
+              <h2 id="version-history-dialog-title" className="font-semibold">Generated versions</h2>
+              <p className="mt-1 text-sm text-white/50">Restore a design saved before or after an AI generation.</p>
+            </div>
+          </div>
+          <button onClick={onClose} disabled={restoring} aria-label="Close" className="rounded-lg p-2 text-white/45 hover:bg-white/10 hover:text-white disabled:opacity-40"><X size={18} /></button>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto p-5">
+          {loading ? (
+            <div className="flex items-center justify-center gap-2 py-12 text-sm text-white/50"><Loader2 size={16} className="animate-spin" /> Loading versions</div>
+          ) : checkpoints.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-white/10 px-5 py-10 text-center"><p className="text-sm font-medium text-white/75">No earlier generated versions yet</p><p className="mt-1 text-xs leading-5 text-white/40">Build Ezy automatically saves versions as you generate and refine this site.</p></div>
+          ) : (
+            <div className="divide-y divide-white/10 overflow-hidden rounded-xl border border-white/10">
+              {checkpoints.map((checkpoint, index) => {
+                const label = checkpointDisplayName(checkpoint, index);
+                return (
+                  <div key={checkpoint.id} className={`flex items-center gap-4 px-4 py-3.5 ${selected?.id === checkpoint.id ? "bg-blue-500/10" : "bg-white/[0.02]"}`}>
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white/[0.06] text-white/55"><History size={15} /></span>
+                    <div className="min-w-0 flex-1">
+                      <button type="button" onClick={() => setSelected(checkpoint)} className="block max-w-full truncate text-left text-sm font-medium text-blue-200 underline decoration-blue-300/30 underline-offset-4 hover:text-blue-100">{label}</button>
+                      <time dateTime={checkpoint.createdAt} className="mt-1 block text-[11px] text-white/35">{new Date(checkpoint.createdAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short", hour12: true })}</time>
+                    </div>
+                    <button type="button" onClick={() => setSelected(checkpoint)} className="shrink-0 text-xs font-semibold text-blue-300 hover:text-blue-200">Restore version</button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {error && <p role="alert" className="mt-4 rounded-lg border border-red-400/20 bg-red-500/10 px-3 py-2 text-xs text-red-200">{error}</p>}
+        </div>
+
+        <div className="flex items-center justify-between gap-4 border-t border-white/10 p-5">
+          <p className="text-xs text-white/40">Your current version is saved before restore.</p>
+          <div className="flex shrink-0 gap-2">
+            <button onClick={onClose} disabled={restoring} className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/5 disabled:opacity-40">Cancel</button>
+            <button onClick={() => void restoreSelected()} disabled={!selected || currentRevision === undefined || restoring} className="flex min-w-32 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-40">{restoring ? <><Loader2 size={15} className="animate-spin" /> Restoring</> : "Confirm restore"}</button>
+          </div>
         </div>
       </div>
     </div>
