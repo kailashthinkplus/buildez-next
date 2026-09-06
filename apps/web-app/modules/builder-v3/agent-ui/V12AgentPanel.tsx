@@ -84,7 +84,7 @@ export default function V12AgentPanel({
   selectedElementLabel?: string;
   autoFocus?: boolean;
   autoSubmit?: boolean;
-  onSubmit(prompt: string, mode: "auto" | "discuss", attachments: readonly File[], creativeDirection: CreativeDirection, context: V12AgentContext): Promise<void>;
+  onSubmit(prompt: string, mode: "auto" | "discuss", attachments: readonly File[], creativeDirection: CreativeDirection, context: V12AgentContext, displayText?: string): Promise<void>;
   onCancel(): void;
   onReset(): Promise<void>;
   onClose(): void;
@@ -204,6 +204,7 @@ export default function V12AgentPanel({
     submittedAttachments: File[],
     submitMode: "auto" | "discuss",
     submitContext: V12AgentContext,
+    displayText?: string,
   ) {
     if (
       running ||
@@ -241,7 +242,8 @@ export default function V12AgentPanel({
       submitMode,
       submittedAttachments,
       creativeDirection,
-      submitContext
+      submitContext,
+      displayText
     );
   }
 
@@ -886,7 +888,8 @@ export default function V12AgentPanel({
                           mode,
                           [],
                           creativeDirection,
-                          context
+                          context,
+                          action.label
                         )
                       }
                       className="rounded-full border border-blue-400/30 bg-blue-500/10 px-3 py-1.5 text-[11px] font-medium text-blue-100 transition hover:border-blue-300/50 hover:bg-blue-500/20 disabled:cursor-not-allowed disabled:opacity-40"
