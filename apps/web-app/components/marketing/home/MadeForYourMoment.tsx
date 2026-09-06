@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger, motion as tokens, prefersReducedMotion } from "@/lib/motion";
 import { AmbientGlow } from "@/components/motion/primitives";
 
-const FRAME_CDN = "/marketing/home-v3";
+const FRAME_CDN = "https://assets.getbuildez.com/marketing/homepage/moment";
 
 const MOMENTS = [
   {
@@ -13,8 +13,8 @@ const MOMENTS = [
     title: "Agencies",
     copy: "Move from client brief to polished launch in one connected workspace. Keep every brand distinct while making delivery repeatable.",
     features: ["Multi-site workflows", "Consistent design systems", "Faster client launches"],
-    image: "design",
-    alt: "Multi-site Build Ezy workspace used by an agency",
+    image: "agencies",
+    alt: "Creative agency team collaborating on multiple client websites built with Build Ezy",
     glow: "#5987c5",
   },
   {
@@ -23,8 +23,8 @@ const MOMENTS = [
     title: "Solo founders",
     copy: "Turn an idea into a credible business presence without assembling a complicated stack or waiting on multiple specialists.",
     features: ["Launch-ready foundations", "Domains and analytics", "Room to grow"],
-    image: "launch",
-    alt: "Published Build Ezy website for a solo founder",
+    image: "solo-founders",
+    alt: "Solo founder building their business website independently with Build Ezy",
     glow: "#e0836f",
   },
   {
@@ -33,8 +33,8 @@ const MOMENTS = [
     title: "Freelancers",
     copy: "Create standout work, manage client sites, and spend more time on craft instead of repetitive setup and maintenance.",
     features: ["Visual page building", "Reusable brand control", "Professional publishing"],
-    image: "sell",
-    alt: "Freelancer client site with connected commerce, built with Build Ezy",
+    image: "freelancers",
+    alt: "Freelance designer working on client website design with Build Ezy",
     glow: "#4fc99a",
   },
   {
@@ -43,8 +43,8 @@ const MOMENTS = [
     title: "Businesses",
     copy: "Bring your website, products, performance, and customer journey together as your operation becomes more ambitious.",
     features: ["Connected commerce", "Live performance insight", "Scalable page management"],
-    image: "grow",
-    alt: "Business analytics dashboard inside Build Ezy",
+    image: "businesses",
+    alt: "Business team reviewing growth dashboard for their Build Ezy website",
     glow: "#e0ab5c",
   },
 ] as const;
@@ -87,7 +87,7 @@ export function MadeForYourMoment() {
           <div key={moment.title} className="moment-row">
             <div className="moment-visual">
               <AmbientGlow className="moment-glow" color={moment.glow} size={420} blur={130} opacity={0.22} />
-              <img src={`${FRAME_CDN}/${moment.image}.webp`} alt={moment.alt} width="1200" height="675" loading="lazy" decoding="async" />
+              <img src={`${FRAME_CDN}/${moment.image}.png`} alt={moment.alt} width="1200" height="675" loading="lazy" decoding="async" />
             </div>
             <div className="moment-copy">
               <span className="moment-index">{moment.index}</span>

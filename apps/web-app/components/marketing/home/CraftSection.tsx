@@ -1,3 +1,5 @@
+const CRAFT_IMAGE = "https://assets.getbuildez.com/marketing/homepage/craft/live-preview.png";
+
 export function CraftSection() {
   return (
     <section className="craft-section" id="workflow">
@@ -8,12 +10,15 @@ export function CraftSection() {
             <span />
             <b />
           </div>
-          <div className="fake-grid">
-            <i />
-            <i />
-            <i />
-            <i />
-          </div>
+          <img
+            className="fake-grid-image"
+            src={CRAFT_IMAGE}
+            alt="Customizing a website's design live in the Build Ezy builder"
+            width={1200}
+            height={675}
+            loading="lazy"
+            decoding="async"
+          />
         </div>
         <div className="craft-card craft-front">
           <span className="selection-tag">Live canvas</span>

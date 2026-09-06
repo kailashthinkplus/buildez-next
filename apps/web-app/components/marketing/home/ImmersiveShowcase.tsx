@@ -5,7 +5,7 @@ import CinematicSequence from "@/components/cinematic/CinematicSequence";
 import { AmbientGlow, ScrollRevealText } from "@/components/motion/primitives";
 import { transitionFlythrough } from "@/components/cinematic/manifests";
 
-const WORDS = ["Step inside.", "Look closer.", "This is Build Ezy."];
+const WORDS = ["Immersive.", "Cinematic.", "Professional Premium Websites."];
 
 /**
  * The signature transition: the camera crosses through the website itself,

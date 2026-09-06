@@ -2,13 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const FRAME_CDN = "/marketing/home-v3";
+const FRAME_CDN = "https://assets.getbuildez.com/marketing/homepage/journey";
 
 const STAGES = [
-  { no: "01", title: "Design", caption: "Craft responsive pages visually, with every detail in view.", tag: "REAL BUILD EZY OUTPUT", image: "design", alt: "Website created with the Build Ezy visual builder", figcaption: "Build every breakpoint in one place." },
-  { no: "02", title: "Launch", caption: "Preview, connect your domain, and publish with confidence.", tag: "LIVE PREVIEW", image: "launch", alt: "Real responsive website preview in Build Ezy", figcaption: "Preview clearly before you publish." },
-  { no: "03", title: "Sell", caption: "Turn visits into orders with connected commerce.", tag: "CONNECTED COMMERCE", image: "sell", alt: "Real ecommerce website created with Build Ezy", figcaption: "Products and payments, connected." },
-  { no: "04", title: "Grow", caption: "Read live performance and make smarter next moves.", tag: "GROWTH EXPERIENCE", image: "grow", alt: "Real analytics website experience created with Build Ezy", figcaption: "Turn insight into your next move." },
+  { no: "01", title: "Design", caption: "Craft responsive pages visually, with every detail in view.", tag: "REAL BUILD EZY OUTPUT", image: "design", alt: "Designer building a website visually with Build Ezy", figcaption: "Build every breakpoint in one place." },
+  { no: "02", title: "Launch", caption: "Preview, connect your domain, and publish with confidence.", tag: "LIVE PREVIEW", image: "launch", alt: "Founder celebrating their freshly published Build Ezy website", figcaption: "Preview clearly before you publish." },
+  { no: "03", title: "Sell", caption: "Turn visits into orders with connected commerce.", tag: "CONNECTED COMMERCE", image: "sell", alt: "Entrepreneur managing orders from their Build Ezy store", figcaption: "Products and payments, connected." },
+  { no: "04", title: "Grow", caption: "Read live performance and make smarter next moves.", tag: "GROWTH EXPERIENCE", image: "grow", alt: "Business owner reviewing growth analytics for their Build Ezy site", figcaption: "Turn insight into your next move." },
 ] as const;
 
 export function ProductJourney() {
@@ -59,7 +59,7 @@ export function ProductJourney() {
                 <i>{stage.tag}</i>
                 <b>{stage.no}</b>
               </div>
-              <img src={`${FRAME_CDN}/${stage.image}.webp`} alt={stage.alt} width="1200" height="675" loading="lazy" decoding="async" />
+              <img src={`${FRAME_CDN}/${stage.image}.png`} alt={stage.alt} width="1200" height="675" loading="lazy" decoding="async" />
               <figcaption>{stage.figcaption}</figcaption>
             </figure>
           ))}

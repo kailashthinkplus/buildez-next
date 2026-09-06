@@ -5,11 +5,7 @@ import { usePointerParallax } from "@/components/motion/primitives";
 import { logMarketingCtaClick } from "@/modules/legal/MarketingAnalytics";
 import { Arrow } from "./Arrow";
 
-// A single frame pulled from the hero-approach Higgsfield generation
-// (already produced and uploaded — see components/cinematic/manifests/
-// hero-approach.json) used here as a static banner image instead of a
-// scroll-scrubbed sequence.
-const HERO_BANNER_IMAGE = "https://assets.getbuildez.com/marketing/homepage/hero-approach/poster.jpg";
+const HERO_BANNER_IMAGE = "https://assets.getbuildez.com/marketing/homepage/hero/developer-building.png";
 
 export function Hero() {
   const stageRef = useRef<HTMLElement>(null);
