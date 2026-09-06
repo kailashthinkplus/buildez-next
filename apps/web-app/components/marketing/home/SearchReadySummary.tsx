@@ -1,3 +1,8 @@
+"use client";
+
+import { useState } from "react";
+import { Plus } from "lucide-react";
+
 const ANSWERS = [
   {
     question: "What is Build Ezy?",
@@ -19,9 +24,21 @@ const ANSWERS = [
     answer:
       "No. You can start from a prompt or a visual foundation, edit directly on the page, preview responsive layouts, and publish without writing code.",
   },
+  {
+    question: "Can I connect my own domain?",
+    answer:
+      "Yes. Add a custom domain from your dashboard and Build Ezy handles verification and SSL automatically — your site goes live on your own address.",
+  },
+  {
+    question: "What happens if I need help?",
+    answer:
+      "Every plan includes support from our team for setup, domains, billing, and general questions, alongside in-app guidance as you build.",
+  },
 ] as const;
 
 export function SearchReadySummary() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
   return (
     <section className="answer-section" aria-labelledby="answer-section-title">
       <div className="answer-heading reveal">
@@ -33,12 +50,27 @@ export function SearchReadySummary() {
         </h2>
       </div>
       <dl className="answer-grid">
-        {ANSWERS.map(({ question, answer }) => (
-          <div className="answer-item reveal" key={question}>
-            <dt>{question}</dt>
-            <dd>{answer}</dd>
-          </div>
-        ))}
+        {ANSWERS.map(({ question, answer }, index) => {
+          const open = openIndex === index;
+          return (
+            <div className={`answer-item reveal${open ? " is-open" : ""}`} key={question}>
+              <dt>
+                <button
+                  type="button"
+                  className="answer-toggle"
+                  aria-expanded={open}
+                  onClick={() => setOpenIndex(open ? null : index)}
+                >
+                  <span>{question}</span>
+                  <Plus size={16} className="answer-toggle-icon" aria-hidden="true" />
+                </button>
+              </dt>
+              <dd>
+                <div className="answer-panel-inner">{answer}</div>
+              </dd>
+            </div>
+          );
+        })}
       </dl>
     </section>
   );

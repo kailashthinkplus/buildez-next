@@ -1389,7 +1389,7 @@ function ProTipsCarousel({ onClose, onSelectPrompt }: { onClose(): void; onSelec
       eyebrow: "Design to functional site",
       title: "Already have a UI design?",
       body:
-        "Upload a screenshot, Figma export, UI image or PDF and BuildEZ AI can recreate the design as a production-ready functional site.",
+        "Upload a screenshot, Figma export, UI image or PDF and Build Ezy AI can recreate the design as a production-ready functional site.",
       image: "/pro-tips/ui-to-code.webp",
       alt: "AI converting an existing UI design into website code",
       accent: "from-blue-500/20 via-sky-400/10 to-transparent",
@@ -1450,7 +1450,7 @@ function ProTipsCarousel({ onClose, onSelectPrompt }: { onClose(): void; onSelec
                 Pro tips
               </div>
               <div className="mt-0.5 text-xs text-white/45">
-                Get more from BuildEZ AI
+                Get more from Build Ezy AI
               </div>
             </div>
           </div>

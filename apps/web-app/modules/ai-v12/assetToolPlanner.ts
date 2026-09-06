@@ -26,11 +26,21 @@ export type V12AssetToolPlan = {
 };
 
 function fallbackPlan(
-  experience: V12ExperiencePlannerResult
+  experience: V12ExperiencePlannerResult,
+  brief: { siteName: string; prompt: string }
 ): V12AssetToolPlan {
   const immersive =
     experience.experience === "IMMERSIVE_3D" ||
     experience.experience === "CINEMATIC";
+
+  // This path only runs when the real planner call above fails outright
+  // (bad response, empty output, invalid JSON) — it should still be rare,
+  // but every site that hits it used to get the exact same two generic
+  // "premium hero visual" prompts, which have no concrete subject for the
+  // image model to render and reliably drifted toward generic scenery.
+  // Folding in the actual brief keeps even this degraded path specific to
+  // the site being built.
+  const briefSummary = brief.prompt.trim().slice(0, 240) || `a website for ${brief.siteName}`;
 
   return {
     needsGeneratedImages: true,
@@ -46,7 +56,7 @@ function fallbackPlan(
       {
         role: "hero visual",
         purpose: "Primary visual anchor",
-        prompt: "Create a brand-specific premium hero visual",
+        prompt: `Create a premium hero visual for ${brief.siteName}, a site built around this brief: ${briefSummary}. Depict a concrete subject relevant to that brief (the product, service, person, or setting it describes) — not an abstract landscape or generic stock scene.`,
         aspect: "landscape",
         medium: "editorial photography",
         useRequestedMedium: false,
@@ -54,7 +64,7 @@ function fallbackPlan(
       {
         role: "supporting visual",
         purpose: "Support the page narrative",
-        prompt: "Create a complementary supporting visual",
+        prompt: `Create a supporting visual for ${brief.siteName} that complements the hero image and stays on-subject for this brief: ${briefSummary}. Depict a concrete subject relevant to that brief — not an abstract landscape or generic stock scene.`,
         aspect: "landscape",
         medium: "editorial photography",
         useRequestedMedium: false,
@@ -189,7 +199,7 @@ export async function planV12AssetsAndTools(input: {
   researchContext?: string;
   signal?: AbortSignal;
 }): Promise<V12AssetToolPlan> {
-  const fallback = fallbackPlan(input.experiencePlan);
+  const fallback = fallbackPlan(input.experiencePlan, { siteName: input.siteName, prompt: input.prompt });
 
   const requestAssetToolPlan = (maxOutputTokens: number) =>
     fetch(
