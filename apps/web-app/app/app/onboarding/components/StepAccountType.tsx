@@ -48,10 +48,10 @@ export default function StepAccountType({
     "glass glass-hover p-7 text-left transition-all rounded-2xl border backdrop-blur-xl";
 
   const selectedCard =
-    "border-blue-500 bg-white/70 dark:bg-[rgba(59,130,246,0.12)] shadow-[0_0_0_1px_rgba(59,130,246,0.6)]";
+    "border-blue-500 shadow-[0_0_0_1px_rgba(59,130,246,0.6)]";
 
   const unselectedCard =
-    "border-black/10 dark:border-white/10 hover:border-blue-400/40 bg-white dark:bg-white/5";
+    "border-black/10 dark:border-white/10 hover:border-blue-400/40";
 
   return (
     <div className="max-w-5xl mx-auto text-left text-slate-900 dark:text-white">
