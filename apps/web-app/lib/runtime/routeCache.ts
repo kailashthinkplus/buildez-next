@@ -23,7 +23,14 @@ export async function cachedOrStale<T>(key: string, ttlMs: number, load: () => P
 
   try {
     const value = await load();
-    store.set(key, { value, expiresAt: now + ttlMs });
+    // A "not found" result (null, or an empty array from a findMany-style
+    // lookup) is cheap to re-check and, unlike a real hit, isn't a hot path
+    // worth caching — but caching it anyway turns any transient blip (a
+    // query racing a fresh publish/verification, a split-second replica
+    // lag) into a real 404 for the rest of the TTL, even after the
+    // underlying row exists. Only cache genuine hits.
+    const isEmpty = value == null || (Array.isArray(value) && value.length === 0);
+    if (!isEmpty) store.set(key, { value, expiresAt: now + ttlMs });
     return value;
   } catch (error) {
     if (hit) return hit.value;

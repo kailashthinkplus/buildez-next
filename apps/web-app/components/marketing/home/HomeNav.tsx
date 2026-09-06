@@ -6,15 +6,32 @@ import { createPortal } from "react-dom";
 import { useGlobalScrollFx } from "@/components/motion/primitives";
 import { logMarketingCtaClick } from "@/modules/legal/MarketingAnalytics";
 import { Arrow } from "./Arrow";
+import AccountMenu from "@/app/app/components/AccountMenu";
 
 export function HomeNav({ internal = false }: { internal?: boolean }) {
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
   const menuMounted = useSyncExternalStore(
     () => () => undefined,
     () => true,
     () => false,
   );
+
+  // Anonymous by default (safe for the common case); swapped to the account
+  // menu only once /api/profile confirms an active session, so a logged-out
+  // visitor never sees a flash of dashboard-only UI.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/profile", { credentials: "include", cache: "no-store" })
+      .then((response) => {
+        if (!cancelled && response.ok) setSignedIn(true);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Mounted once, here, for the whole homepage: drives the --scroll CSS var
   // (ambient orbit/craft drift) and the .reveal fade-in IntersectionObserver
@@ -70,12 +87,18 @@ export function HomeNav({ internal = false }: { internal?: boolean }) {
           <Link href="/pricing">Pricing</Link>
         </div>
         <div className="nav-actions">
-          <Link href="/app/login" className="login-link" onClick={() => logMarketingCtaClick("nav_login")}>
-            Log In
-          </Link>
-          <Link href="/app/signup" className="mini-cta" onClick={() => logMarketingCtaClick("nav_signup")}>
-            Signup <Arrow />
-          </Link>
+          {signedIn ? (
+            <AccountMenu compact={false} />
+          ) : (
+            <>
+              <Link href="/app/login" className="login-link" onClick={() => logMarketingCtaClick("nav_login")}>
+                Log In
+              </Link>
+              <Link href="/app/signup" className="mini-cta" onClick={() => logMarketingCtaClick("nav_signup")}>
+                Signup <Arrow />
+              </Link>
+            </>
+          )}
         </div>
       </nav>
       {menuMounted
@@ -113,28 +136,41 @@ export function HomeNav({ internal = false }: { internal?: boolean }) {
                 <Link href="/pricing" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>Pricing</Link>
                 <div className="marketing-mobile-menu-divider" />
                 <div className="marketing-mobile-menu-actions">
-                  <Link
-                    href="/app/login"
-                    className="marketing-mobile-menu-login"
-                    onClick={() => {
-                      logMarketingCtaClick("nav_login");
-                      setMenuOpen(false);
-                    }}
-                    tabIndex={menuOpen ? 0 : -1}
-                  >
-                    Log in
-                  </Link>
-                  <Link
-                    href="/app/signup"
-                    className="marketing-mobile-menu-cta"
-                    onClick={() => {
-                      logMarketingCtaClick("nav_signup");
-                      setMenuOpen(false);
-                    }}
-                    tabIndex={menuOpen ? 0 : -1}
-                  >
-                    Signup
-                  </Link>
+                  {signedIn ? (
+                    <Link
+                      href="/app/dashboard"
+                      className="marketing-mobile-menu-cta"
+                      onClick={() => setMenuOpen(false)}
+                      tabIndex={menuOpen ? 0 : -1}
+                    >
+                      Visit Dashboard
+                    </Link>
+                  ) : (
+                    <>
+                      <Link
+                        href="/app/login"
+                        className="marketing-mobile-menu-login"
+                        onClick={() => {
+                          logMarketingCtaClick("nav_login");
+                          setMenuOpen(false);
+                        }}
+                        tabIndex={menuOpen ? 0 : -1}
+                      >
+                        Log in
+                      </Link>
+                      <Link
+                        href="/app/signup"
+                        className="marketing-mobile-menu-cta"
+                        onClick={() => {
+                          logMarketingCtaClick("nav_signup");
+                          setMenuOpen(false);
+                        }}
+                        tabIndex={menuOpen ? 0 : -1}
+                      >
+                        Signup
+                      </Link>
+                    </>
+                  )}
                 </div>
                 <div className="marketing-mobile-menu-social" aria-label="Social media">
                   <a href="https://www.linkedin.com/company/build-ezy-india/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" tabIndex={menuOpen ? 0 : -1}>
