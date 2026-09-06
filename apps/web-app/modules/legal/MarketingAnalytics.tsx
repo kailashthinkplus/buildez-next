@@ -18,6 +18,14 @@ export function notifyAnalyticsConsentGranted() {
   }
 }
 
+/** Fire-and-forget CTA click tracking for the marketing homepage — a no-op until analytics is actually enabled/consented, same as page_view. */
+export function logMarketingCtaClick(ctaId: string, extra?: Record<string, unknown>) {
+  if (!firebaseAnalyticsEnabled) return;
+  getFirebaseAnalytics().then((analytics) => {
+    if (analytics) logEvent(analytics, "cta_click", { cta_id: ctaId, ...extra });
+  });
+}
+
 /**
  * GA4 (via Firebase Analytics), scoped to BuildEZ's public marketing pages
  * only — mount this in the marketing layout and the standalone homepage,

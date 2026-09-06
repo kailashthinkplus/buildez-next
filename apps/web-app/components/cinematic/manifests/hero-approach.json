@@ -1,0 +1,11 @@
+{
+  "id": "hero-approach",
+  "frameCount": 76,
+  "width": 1920,
+  "height": 1080,
+  "desktop": "https://assets.getbuildez.com/marketing/homepage/hero-approach/desktop/frame-{frame}.avif",
+  "desktopFallback": "https://assets.getbuildez.com/marketing/homepage/hero-approach/desktop/frame-{frame}.webp",
+  "mobile": "https://assets.getbuildez.com/marketing/homepage/hero-approach/mobile/frame-{frame}.avif",
+  "mobileFallback": "https://assets.getbuildez.com/marketing/homepage/hero-approach/mobile/frame-{frame}.webp",
+  "poster": "https://assets.getbuildez.com/marketing/homepage/hero-approach/poster.jpg"
+}
