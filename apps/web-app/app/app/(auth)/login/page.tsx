@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthSplitShell from "../AuthSplitShell";
@@ -30,6 +31,11 @@ function LoginForm() {
         const data = await res.json();
         throw new Error(data?.error || "Unable to sign in");
       }
+      try {
+        sessionStorage.setItem("buildezy:show-welcome", "1");
+      } catch {
+        // The dashboard remains usable when browser storage is unavailable.
+      }
       router.replace("/app");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Login failed");
@@ -53,7 +59,7 @@ function LoginForm() {
           <div className="auth-options"><label><input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} /> Remember me</label><button type="button" className="auth-text-button" onClick={() => router.push("/app/forgot-password")}>Forgot password?</button></div>
           <button className="auth-submit" type="submit" disabled={!email || !password || loading}>{loading ? "Signing in…" : "Sign in"}</button>
         </form>
-        <p className="auth-switch">New to Build Ezy? <a href="/app/signup">Create an account</a></p>
+        <p className="auth-switch">New to Build Ezy? <Link href="/app/signup">Create an account</Link></p>
       </div>
     </AuthSplitShell>
   );

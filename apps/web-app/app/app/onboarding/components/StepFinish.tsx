@@ -112,7 +112,7 @@ useEffect(() => {
       if (data.customDomainPending && data.siteSlug) {
         window.location.replace(`/app/${encodeURIComponent(data.siteSlug)}/settings?tab=domains`);
       } else {
-        window.location.replace("/app/dashboard");
+        window.location.replace("/app/dashboard?welcome=1");
       }
       return;
 

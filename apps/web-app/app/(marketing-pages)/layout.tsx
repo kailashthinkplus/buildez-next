@@ -2,6 +2,7 @@
 
 import "./marketing-pages.css";
 import "./unique-marketing-pages.css";
+import "../marketing.css";
 
 import { CookieConsentBanner } from "@/modules/legal/CookieConsentBanner";
 import { MarketingAnalytics, notifyAnalyticsConsentGranted } from "@/modules/legal/MarketingAnalytics";

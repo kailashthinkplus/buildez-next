@@ -29,6 +29,7 @@ import CreateSiteModal, {
 } from "../components/CreateSiteModal";
 import { WebsiteThumbnail } from "../components/WebsiteThumbnail";
 import WebsiteActionsMenu from "../components/WebsiteActionsMenu";
+import { WelcomeModal } from "../components/WelcomeModal";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
 import { withVerifiedDomainOverride } from "@/lib/runtime/site-live-url";
 import { stashPendingAttachments } from "@/modules/ai-v12/pendingAttachments";
@@ -69,6 +70,7 @@ export default function GlobalDashboardPage() {
     useState<CreateSiteIntent>("dashboard");
   const [pendingAiPrompt, setPendingAiPrompt] = useState("");
   const [aiDestinationOpen, setAiDestinationOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
 
   const matchingSites = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -197,6 +199,27 @@ export default function GlobalDashboardPage() {
 
   useEffect(() => {
     loadAnalytics();
+  }, []);
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    let requestedAfterLogin = query.get("welcome") === "1";
+
+    try {
+      requestedAfterLogin ||= sessionStorage.getItem("buildezy:show-welcome") === "1";
+      sessionStorage.removeItem("buildezy:show-welcome");
+    } catch {
+      // Storage can be unavailable in strict privacy contexts; the URL flag still works.
+    }
+
+    if (!requestedAfterLogin) return;
+
+    setWelcomeOpen(true);
+    if (query.has("welcome")) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete("welcome");
+      window.history.replaceState(window.history.state, "", `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`);
+    }
   }, []);
 
   function handleSiteCreated(
@@ -622,6 +645,19 @@ export default function GlobalDashboardPage() {
           if (createIntent === "ai") stashPendingAttachments([]);
         }}
         onCreated={handleSiteCreated}
+      />
+
+      <WelcomeModal
+        open={welcomeOpen}
+        onClose={() => setWelcomeOpen(false)}
+        onCreateWithAi={() => {
+          setWelcomeOpen(false);
+          openAiDestination();
+        }}
+        onCreateWebsite={() => {
+          setWelcomeOpen(false);
+          openCreateSite("dashboard");
+        }}
       />
     </>
   );

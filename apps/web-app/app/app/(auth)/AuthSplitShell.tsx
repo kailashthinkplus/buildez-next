@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 export default function AuthSplitShell({
@@ -51,6 +52,13 @@ export default function AuthSplitShell({
       <section className="auth-form-side auth-blue-bg">
         <div className="auth-form-glow" />
         <div className="auth-form-wrap">{children}</div>
+        <footer className="auth-page-footer">
+          <span>© {new Date().getFullYear()} BuildEZ</span>
+          <span aria-hidden="true">·</span>
+          <Link href="/terms">Terms</Link>
+          <span aria-hidden="true">·</span>
+          <Link href="/privacy">Privacy</Link>
+        </footer>
       </section>
     </main>
   );

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ChevronDown, X } from "lucide-react";
 
 import { MarketingFooter } from "./MarketingFooter";
 import { MarketingHeader } from "./MarketingHeader";
@@ -190,12 +190,12 @@ export function PublicPricingPage() {
                   <small>{plan.isCustom ? "Commercial terms are tailored to your organisation." : "No subscription charge."}</small>
                 )}
                 <ul>
-                  <li>{plan.maxSites.toLocaleString()} website{plan.maxSites === 1 ? "" : "s"}</li>
-                  <li>{plan.maxPages.toLocaleString()} pages</li>
-                  <li>{plan.aiCredits.toLocaleString()} AI credits</li>
-                  <li>{plan.teamMembers.toLocaleString()} team member{plan.teamMembers === 1 ? "" : "s"}</li>
-                  {plan.features.slice(0, 6).map((feature) => <li key={feature}>{feature}</li>)}
-                  {(plan.featureTable || []).filter((row) => !row.included).slice(0, 2).map((row) => <li key={row.key} className="plan-excluded">{row.label}</li>)}
+                  <li><Check aria-hidden="true" />{plan.maxSites.toLocaleString()} website{plan.maxSites === 1 ? "" : "s"}</li>
+                  <li><Check aria-hidden="true" />{plan.maxPages.toLocaleString()} pages</li>
+                  <li><Check aria-hidden="true" />{plan.aiCredits.toLocaleString()} AI credits</li>
+                  <li><Check aria-hidden="true" />{plan.teamMembers.toLocaleString()} team member{plan.teamMembers === 1 ? "" : "s"}</li>
+                  {plan.features.slice(0, 6).map((feature) => <li key={feature}><Check aria-hidden="true" />{feature}</li>)}
+                  {(plan.featureTable || []).filter((row) => !row.included).slice(0, 2).map((row) => <li key={row.key} className="plan-excluded"><X aria-hidden="true" />{row.label}</li>)}
                 </ul>
                 <Link className="plan-cta" href={plan.isCustom ? "/faq" : `/app/signup?plan=${encodeURIComponent(plan.code)}`}>
                   {plan.isCustom ? "Contact enterprise" : amount === 0 ? "Start free" : unavailable ? "Join BuildEzy" : `Choose ${plan.name}`}

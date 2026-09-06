@@ -28,9 +28,9 @@ export function CraftSection() {
             width={1200}
             height={855}
           />
+          <div className="tool-pill tool-two"><Check size={13} aria-hidden="true" />Ready to publish</div>
         </div>
         <div className="tool-pill tool-one"><MoveHorizontal size={13} aria-hidden="true" />Responsive by default</div>
-        <div className="tool-pill tool-two"><Check size={13} aria-hidden="true" />Ready to publish</div>
       </div>
       <div className="craft-copy reveal">
         <span className="section-no">02 / FROM IDEA TO LIVE</span>

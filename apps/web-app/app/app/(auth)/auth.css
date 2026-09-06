@@ -219,3 +219,14 @@
   .auth-split-page{height:auto;overflow:visible}
   .auth-form-side{height:auto;overflow:visible}
 }
+
+/* Legal links stay in the page flow below the form instead of floating over it. */
+.auth-form-side{display:flex;flex-direction:column;align-items:center}
+.auth-form-wrap{flex:0 0 auto;margin:auto 0}
+.auth-page-footer{position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:7px;width:100%;padding-top:28px;color:#667085;font-size:12px;line-height:1.5}
+.auth-page-footer a{color:inherit;text-decoration:none;transition:color .2s ease}
+.auth-page-footer a:hover{color:#1d4ed8;text-decoration:underline}
+.dark .auth-page-footer{color:#718197}
+.dark .auth-page-footer a:hover{color:#b8d7ff}
+@media(min-width:901px){.auth-form-side{justify-content:flex-start;padding-bottom:26px}.auth-form-wrap{margin:auto 0}}
+@media(max-width:900px){.auth-form-side{min-height:100svh;justify-content:flex-start;padding-bottom:22px}.auth-form-wrap{margin:auto 0}}
