@@ -89,22 +89,24 @@ export default function OnboardingHeader() {
           {/* PANEL */}
           <div
             className="
-              absolute top-0 left-0 w-[280px] h-full
+              absolute left-0 top-0 flex h-full
+              w-[min(320px,calc(100vw-24px))] flex-col overflow-hidden
               bg-[rgba(255,255,255,0.95)]
               dark:bg-[rgba(10,18,36,0.95)]
               backdrop-blur-2xl
               border-r border-black/10 dark:border-white/10
-              shadow-xl p-6 flex flex-col z-[70]
+              shadow-xl z-[70]
             "
           >
             <button
               onClick={() => setMobileOpen(false)}
-              className="self-end mb-6 p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10"
+              aria-label="Close onboarding menu"
+              className="absolute right-4 top-4 z-10 rounded-lg p-2 transition hover:bg-black/5 dark:hover:bg-white/10"
             >
               <X size={22} />
             </button>
 
-            <OnboardingSidebar activeStep={step} accountType={accountType} mobileMode className="flex-1 min-h-0 overflow-y-auto" />
+            <OnboardingSidebar activeStep={step} accountType={accountType} mobileMode className="min-h-0 flex-1 overflow-y-auto" />
           </div>
         </div>
       )}

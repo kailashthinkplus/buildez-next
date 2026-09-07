@@ -31,5 +31,9 @@ UNLESS THE USER EXPLICITLY REQUESTS LOW-POLY, WIREFRAME, CLAY, FLAT-SHADED, SOLI
 
 Before completing any subject-led build, inspect the default camera view at desktop and mobile sizes. If an unfamiliar viewer could not identify the requested subject without reading the heading, revise the model, illustration, camera, crop, lighting, or use an approved generated/model asset. Do not hide an unconvincing subject in darkness, fog, particles, abstraction, or overlapping copy. Generated depth assets must also depict the requested subject accurately and must be integrated where planned.
 
+MOBILE HEADER RELEASE CONTRACT
+
+At phone widths, the shared site header must fit entirely inside the visual viewport with no horizontal overflow. Use a single full-width flex row with box-sizing:border-box, safe 16–20px side padding, a shrink-safe logo/link, and a 44px minimum menu/cart touch target. Hide the desktop navigation at the same breakpoint that shows the mobile menu control. Do not center the logo with absolute positioning, negative margins, translate offsets, fixed pixel left/right coordinates, or viewport-width containers that ignore parent padding. Keep logo, menu, account, and cart controls vertically centered and non-overlapping at 320px, 375px, and 430px widths. Long brand names must truncate or scale within a bounded logo area rather than pushing controls off-screen.
+
 The result must remain a maintainable Vite React TypeScript project with reusable components, semantic HTML, shared design tokens, working routes, and no fabricated business claims.
 `.trim();

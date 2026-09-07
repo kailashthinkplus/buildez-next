@@ -50,7 +50,7 @@ export default function OnboardingSidebar({
     <aside
       className={`
         glass glass-flat rounded-none
-        w-[280px] border-r border-black/10 dark:border-white/10
+        ${mobileMode ? "w-full border-0" : "w-[280px] border-r border-black/10 dark:border-white/10"}
         backdrop-blur-2xl
         bg-[rgba(230,240,255,0.7)]
         dark:bg-[rgba(10,18,36,0.6)]
@@ -79,7 +79,7 @@ export default function OnboardingSidebar({
 
       {/* MOBILE HEADER */}
       {mobileMode && (
-        <div className="px-2 py-4">
+        <div className="px-6 pb-5 pt-6 pr-16">
           <Image
             src="/buildez-logo-light.svg"
             alt="BuildEZ"

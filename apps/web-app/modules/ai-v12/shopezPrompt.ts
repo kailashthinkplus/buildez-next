@@ -126,6 +126,12 @@ catalogue, pricing, inventory, customer-session, or checkout source of truth.
 
 Do not create a separate hardcoded React page for every product.
 
+Do not add /shop, /products, /products/:handle, /cart, /checkout, /account,
+category, collection, or individual product routes to src/buildez.pages.json.
+That registry is only for editable content pages in the BuildEZ Pages module;
+commerce application routes live in the generated router and are backed by
+ShopEZ.
+
 Do not create fake cart totals or fake checkout records.
 
 PRODUCT LIST SECTIONS
@@ -251,6 +257,11 @@ MEDIA
 
 Use product images returned by ShopEZ. Do not use Unsplash, Lorem Picsum,
 random-image services, image-search URLs, or unrelated stock photography.
+Never draw, approximate, or fake a product photograph with CSS gradients,
+SVG paths, canvas code, emoji, or other code-generated artwork. The platform
+creates missing ShopEZ product photography before this code-generation stage;
+if an image is still unavailable, render the product feed's deliberate empty
+media state instead of inventing one in source code.
 If editorial imagery is not supplied, reuse appropriate ShopEZ imagery or
 create the composition with the canonical theme and CSS.
 

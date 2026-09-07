@@ -51,7 +51,13 @@ export default function AuthSplitShell({
       </section>
       <section className="auth-form-side auth-blue-bg">
         <div className="auth-form-glow" />
-        <div className="auth-form-wrap">{children}</div>
+        <div className="auth-form-wrap">
+          <div className="auth-mobile-logo">
+            <Image src="/buildez-logo-light.svg" alt="BuildEZ" width={132} height={36} priority className="dark:hidden" />
+            <Image src="/buildez-logo-dark.svg" alt="" width={132} height={36} priority className="hidden dark:block" />
+          </div>
+          {children}
+        </div>
         <footer className="auth-page-footer">
           <span>© {new Date().getFullYear()} BuildEZ</span>
           <span aria-hidden="true">·</span>

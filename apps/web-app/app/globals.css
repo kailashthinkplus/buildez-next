@@ -879,6 +879,17 @@ html:not(.dark) .dashboard-shell aside .dashboard-muted { color:rgba(17,19,24,.8
 html:not(.dark) .dashboard-shell aside .dashboard-faint { color:rgba(17,19,24,.58); }
 html:not(.dark) .dashboard-shell aside a:not(.dashboard-nav-active):hover { color:#050608; }
 
+/* Home's cinematic mockup also uses the historical `dashboard-card` name.
+   Client navigation can briefly retain the marketing stylesheet, so keep
+   workspace overview cards in normal flow regardless of stylesheet order. */
+.global-dashboard-page .dashboard-card {
+  position: relative;
+  inset: auto;
+  width: auto;
+  height: auto;
+}
+.global-dashboard-page .dashboard-loading-card { height: 16rem; }
+
 html:not(.dark) .theme-toggle-button { box-shadow:none !important;filter:none !important; }
 .theme-toggle-button:hover svg { filter:drop-shadow(0 0 7px rgba(245,158,11,.24)); }
 

@@ -157,8 +157,8 @@ const PLANS: PlanSeed[] = [
       ["priority_support", "true"],
     ],
     pricing: [
-      { billingCycle: "monthly", amount: 14999 },
-      { billingCycle: "yearly", amount: 149990 },
+      { billingCycle: "monthly", amount: 9999 },
+      { billingCycle: "yearly", amount: 99990 },
     ],
     dodoProductNames: { monthly: "BuildEZ Business Monthly 2026", yearly: "BuildEZ Business Annual 2026" },
   },
@@ -189,8 +189,8 @@ const PLANS: PlanSeed[] = [
       ["agency_workspace", "true"],
     ],
     pricing: [
-      { billingCycle: "monthly", amount: 39999 },
-      { billingCycle: "yearly", amount: 399990 },
+      { billingCycle: "monthly", amount: 20999 },
+      { billingCycle: "yearly", amount: 209990 },
     ],
     dodoProductNames: { monthly: "BuildEZ Agency Monthly 2026", yearly: "BuildEZ Agency Annual 2026" },
   },

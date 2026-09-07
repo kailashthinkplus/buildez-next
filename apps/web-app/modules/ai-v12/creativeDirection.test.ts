@@ -17,6 +17,12 @@ test("creative direction defaults to photorealistic imagery", () => {
   assert.equal(parseCreativeDirection("not-json").imageStyle, "Photorealistic");
 });
 
+test("website generation carries a concrete mobile-header alignment contract", () => {
+  assert.match(WEBSITE_DEVELOPMENT_SKILL, /MOBILE HEADER RELEASE CONTRACT/);
+  assert.match(WEBSITE_DEVELOPMENT_SKILL, /320px, 375px, and 430px/);
+  assert.match(WEBSITE_DEVELOPMENT_SKILL, /no horizontal overflow/i);
+});
+
 test("creative direction preserves supported choices and bounds audience input", () => {
   const direction = parseCreativeDirection(JSON.stringify({
     experienceType: "Immersive 3D / cinematic",
