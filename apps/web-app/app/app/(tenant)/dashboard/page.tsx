@@ -247,7 +247,7 @@ export default function GlobalDashboardPage() {
 
   return (
     <>
-      <main className="mx-auto w-full max-w-[1540px] pb-16">
+      <main className="global-dashboard-page mx-auto w-full max-w-[1540px] pb-16">
         <section className="relative overflow-hidden rounded-[30px] border dashboard-border bg-[#07101d] text-white shadow-xl">
           <img
             src="/dashboard/buildez-workspace-aurora.svg"
@@ -303,7 +303,7 @@ export default function GlobalDashboardPage() {
         ) : null}
 
         {loading ? (
-          <div className="dashboard-card mt-5 flex h-64 items-center justify-center rounded-3xl">
+          <div className="dashboard-card dashboard-loading-card mt-5 flex h-64 items-center justify-center rounded-3xl">
             <Loader2 className="animate-spin dashboard-muted" />
           </div>
         ) : (

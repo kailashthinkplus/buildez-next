@@ -5,6 +5,8 @@ import {
   catalogMissingInputs,
   commerceProductIdentity,
   detectCommerceIntent,
+  isGeneratedCommerceRoute,
+  shouldUseCommercePipeline,
   type ExtractedCommerceProduct,
 } from "./commerce";
 
@@ -109,4 +111,29 @@ test("explicit transactional ecommerce still enables ShopEZ", () => {
     ).isEcommerce,
     true,
   );
+});
+
+test("keeps an explicit ecommerce choice across catalogue follow-up turns", () => {
+  assert.equal(shouldUseCommercePipeline({
+    forcedMode: null,
+    existingProductCount: 0,
+    persistedIntent: true,
+    architectRequired: false,
+    referenceDetected: false,
+  }), true);
+  assert.equal(shouldUseCommercePipeline({
+    forcedMode: "STATIC",
+    existingProductCount: 0,
+    persistedIntent: true,
+    architectRequired: true,
+    referenceDetected: true,
+  }), false);
+});
+
+test("recognizes ShopEZ runtime routes that must stay out of Pages", () => {
+  for (const route of ["/shop", "/products/:handle", "/products/serum", "/cart", "/checkout", "/account", "/collections/new"]) {
+    assert.equal(isGeneratedCommerceRoute(route), true, route);
+  }
+  assert.equal(isGeneratedCommerceRoute("/"), false);
+  assert.equal(isGeneratedCommerceRoute("/our-story"), false);
 });

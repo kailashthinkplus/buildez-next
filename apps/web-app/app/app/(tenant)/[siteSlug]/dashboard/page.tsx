@@ -8,7 +8,7 @@ import { ArrowRight, ArrowUpRight, BarChart3, Bot, CheckCircle2, CircleGauge, Co
 import CopilotPromptCard from "../../components/CopilotPromptCard";
 import { WebsiteThumbnail } from "../../components/WebsiteThumbnail";
 import { useWorkspace } from "../../components/WorkspaceContext";
-import type { InsightFinding, InsightReport } from "@/modules/insights/types";
+import type { InsightAgentId, InsightFinding, InsightReport } from "@/modules/insights/types";
 import { publishedSitePath } from "@/lib/runtime/published-site-path";
 import { withVerifiedDomainOverride } from "@/lib/runtime/site-live-url";
 import { stashPendingAttachments } from "@/modules/ai-v12/pendingAttachments";
@@ -183,7 +183,7 @@ export default function SiteDashboardPage() {
         </div>
       ) : null}
 
-      <RecommendationBar key={websiteId || siteSlug} siteId={websiteId} siteSlug={siteSlug} analytics={analytics} publishedPages={pages.published} verifiedDomain={website?.verifiedDomain} />
+      <RecommendationBar key={websiteId || siteSlug} siteId={websiteId} siteSlug={siteSlug} analytics={analytics} publishedPages={pages.published} />
 
       <section className="mb-6 mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Metric icon={Eye} label="Page views" value={analytics?.totals.pageViews || 0} change={analytics?.totals.pageViewsChange} tone="cyan" loading={loading} />
@@ -236,7 +236,7 @@ function PageRow({ name, path, value, width, tone }: { name: string; path: strin
   return <div className="rounded-xl p-3 dashboard-hover"><div className="flex justify-between text-sm"><div><span className="font-medium">{name}</span><span className="ml-2 text-xs dashboard-faint">{path}</span></div><span className="dashboard-muted">{value}</span></div><div className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/[.05] dark:bg-white/[.06]"><div className={`page-progress progress-${tone} h-full rounded-full`} style={{ width }} /></div></div>;
 }
 
-function RecommendationBar({ siteId, siteSlug, analytics, publishedPages, verifiedDomain }: { siteId?: string; siteSlug: string; analytics?: Analytics; publishedPages: number; verifiedDomain?: string | null }) {
+function RecommendationBar({ siteId, siteSlug, analytics, publishedPages }: { siteId?: string; siteSlug: string; analytics?: Analytics; publishedPages: number }) {
   const [report, setReport] = useState<InsightReport>();
   const [insightsLoading, setInsightsLoading] = useState(true);
   const [shopStatus, setShopStatus] = useState<{ enabled: boolean; hasPaymentGateway: boolean }>();
@@ -271,19 +271,19 @@ function RecommendationBar({ siteId, siteSlug, analytics, publishedPages, verifi
       items.push(...report.quickWins.slice(0, 2).map(finding => ({
         text: finding.description,
         action: finding.actionLabel,
-        href: insightFixHref(siteId, finding),
+        href: insightFixHref(siteSlug, finding),
         insight: true,
       })));
     }
     if (shopStatus?.enabled && !shopStatus.hasPaymentGateway) items.push({ text: "Shopez is live but no payment gateway is connected yet, so customers can't pay.", action: "Set up payments", href: `/app/${siteSlug}/shopez?view=payments` });
-    if (!publishedPages) items.push({ text: "Publish a page so visitors can discover and interact with this website.", action: "Manage pages", href: `/app/${siteSlug}/pages` });
-    if (!analytics?.totals.pageViews) items.push({ text: "No visits have been recorded yet. Publish and share the website to begin collecting insights.", action: "Open website", href: siteId ? withVerifiedDomainOverride(publishedSitePath(siteSlug), verifiedDomain) : `/app/${siteSlug}/pages` });
-    if ((analytics?.totals.bounceRate || 0) > 65) items.push({ text: `Bounce rate is ${analytics?.totals.bounceRate}%. Strengthen the opening message and primary action.`, action: "Review pages", href: `/app/${siteSlug}/pages` });
-    if ((analytics?.totals.pageViews || 0) > 10 && !analytics?.totals.conversions) items.push({ text: "Traffic is arriving, but no conversions are recorded. Add a clearer form or primary call to action.", action: "Open CRM", href: `/app/${siteSlug}/crm` });
-    if (items.length < 3) items.push({ text: "Review your traffic sources and top pages to decide what content to improve next.", action: "Open analytics", href: `/app/${siteSlug}/analytics` });
-    if (items.length < 3) items.push({ text: "Keep your brand, SEO, social sharing, and domain information current.", action: "Site settings", href: `/app/${siteSlug}/settings` });
+    if (!publishedPages) items.push({ text: "Publish a page so visitors can discover and interact with this website.", action: "Prepare to publish", href: agentRecommendationHref(siteSlug, "quality-agent", "Audit this website for launch readiness, fix anything blocking publication, and prepare its pages to be published."), insight: true });
+    if (!analytics?.totals.pageViews) items.push({ text: "No visits have been recorded yet. Publish and share the website to begin collecting insights.", action: "Plan first visits", href: agentRecommendationHref(siteSlug, "marketing-agent", "Help me publish and promote this website so it can attract its first qualified visitors. Identify and apply any website changes you can make directly."), insight: true });
+    if ((analytics?.totals.bounceRate || 0) > 65) items.push({ text: `Bounce rate is ${analytics?.totals.bounceRate}%. Strengthen the opening message and primary action.`, action: "Improve conversion", href: agentRecommendationHref(siteSlug, "conversion-agent", `The website bounce rate is ${analytics?.totals.bounceRate}%. Audit the opening message and primary action, then apply the highest-impact conversion fixes.`), insight: true });
+    if ((analytics?.totals.pageViews || 0) > 10 && !analytics?.totals.conversions) items.push({ text: "Traffic is arriving, but no conversions are recorded. Add a clearer form or primary call to action.", action: "Fix conversion path", href: agentRecommendationHref(siteSlug, "conversion-agent", "Traffic is arriving but no conversions are recorded. Audit the conversion path and apply a clearer form or primary call to action."), insight: true });
+    if (items.length < 3) items.push({ text: "Review your traffic sources and top pages to decide what content to improve next.", action: "Ask Marketing AI", href: agentRecommendationHref(siteSlug, "marketing-agent", "Review this website's traffic sources and top pages, recommend the next content improvements, and apply the website changes you can make directly."), insight: true });
+    if (items.length < 3) items.push({ text: "Keep your brand, SEO, social sharing, and domain information current.", action: "Run SEO review", href: agentRecommendationHref(siteSlug, "seo-agent", "Review this website's brand metadata, SEO, and social-sharing information. Apply the highest-impact fixes and confirm the updated score."), insight: true });
     return items.slice(0, 3);
-  }, [analytics, publishedPages, report, shopStatus, siteId, siteSlug, verifiedDomain]);
+  }, [analytics, publishedPages, report, shopStatus, siteId, siteSlug]);
 
   return <section className="ai-recommendations relative overflow-hidden rounded-2xl p-3">
     <div className="pointer-events-none absolute -right-16 -top-20 h-44 w-44 rounded-full bg-violet-500/10 blur-3xl" />
@@ -316,10 +316,22 @@ function RecommendationBar({ siteId, siteSlug, analytics, publishedPages, verifi
   </section>;
 }
 
-function insightFixHref(siteId: string, finding: InsightFinding) {
-  const query = new URLSearchParams({ panel: "ai", context: "Page", prompt: finding.fixPrompt });
-  if (finding.pageId) query.set("pageId", finding.pageId);
-  return `/app/builder-v3/${siteId}?${query.toString()}`;
+const INSIGHT_AGENT: Record<InsightFinding["category"], InsightAgentId> = {
+  seo: "seo-agent",
+  geo: "geo-agent",
+  performance: "speed-agent",
+  accessibility: "accessibility-agent",
+  conversion: "conversion-agent",
+  "best-practices": "quality-agent",
+};
+
+function agentRecommendationHref(siteSlug: string, agentId: InsightAgentId, prompt: string) {
+  const query = new URLSearchParams({ autoRun: "1", prompt });
+  return `/app/${siteSlug}/ai/${agentId}?${query.toString()}`;
+}
+
+function insightFixHref(siteSlug: string, finding: InsightFinding) {
+  return agentRecommendationHref(siteSlug, INSIGHT_AGENT[finding.category], finding.fixPrompt);
 }
 
 function Recommendation({ text, action, href, insight }: { text: string; action: string; href: string; insight?: boolean }) {

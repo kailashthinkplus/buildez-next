@@ -38,6 +38,7 @@ function countRecommendations(value: unknown): number {
 // not editable content, so they're excluded from the pages list wherever
 // ShopEZ is actually set up for the site.
 const RESERVED_COMMERCE_SLUGS = ["shop", "cart", "checkout", "account", "product-detail", "products", "product"];
+const RESERVED_COMMERCE_PREFIXES = ["shop/", "products/", "product/", "collections/", "collection/", "categories/", "category/", "cart/", "checkout/", "account/"];
 
 /* ============================================================
    GET — LIST PAGES
@@ -138,7 +139,10 @@ export const GET = async (request: NextRequest) => {
         ? {
             NOT: {
               siteId: { in: shopSiteIds },
-              slug: { in: RESERVED_COMMERCE_SLUGS },
+              OR: [
+                { slug: { in: RESERVED_COMMERCE_SLUGS } },
+                ...RESERVED_COMMERCE_PREFIXES.map((prefix) => ({ slug: { startsWith: prefix } })),
+              ],
             },
           }
         : {}),

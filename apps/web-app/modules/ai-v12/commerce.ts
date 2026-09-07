@@ -14,6 +14,28 @@ export type CommerceIntent = {
   signals: string[];
 };
 
+export function shouldUseCommercePipeline(input: {
+  forcedMode: "STATIC" | "ECOMMERCE" | null;
+  existingProductCount: number;
+  persistedIntent: boolean;
+  architectRequired: boolean;
+  referenceDetected: boolean;
+}) {
+  if (input.forcedMode === "STATIC") return input.existingProductCount > 0;
+  return input.forcedMode === "ECOMMERCE"
+    || input.existingProductCount > 0
+    || input.persistedIntent
+    || input.architectRequired
+    || input.referenceDetected;
+}
+
+/** Commerce application routes are generated runtime views backed by ShopEZ,
+ * not editable content pages in the BuildEZ Pages module. */
+export function isGeneratedCommerceRoute(route: string) {
+  const normalized = route.trim().toLowerCase().replace(/[?#].*$/, "").replace(/\/+$/, "") || "/";
+  return /^\/(?:shop|products?|collections?|categories?|cart|checkout|account)(?:\/|$)/.test(normalized);
+}
+
 export type ExtractedCommerceProduct = {
   title: string;
   description: string;

@@ -108,6 +108,8 @@
 .auth-form-glow{opacity:.12}
 .dark .auth-form-glow{opacity:.18}
 .auth-form-wrap{position:relative;z-index:1;width:min(470px,100%)}
+.auth-mobile-logo{display:none;justify-content:center;margin:0 auto 22px}
+.auth-mobile-logo img{height:auto;object-fit:contain}
 
 .auth-card{width:100%;padding:34px;border-radius:24px;backdrop-filter:blur(22px)}
 .auth-card{border:1px solid rgba(20,30,50,.1);background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(255,255,255,.8));box-shadow:0 24px 60px rgba(20,30,50,.1),inset 0 1px rgba(255,255,255,.6)}
@@ -200,6 +202,7 @@
 @media(max-width:900px){
   .auth-split-page{grid-template-columns:1fr}
   .auth-visual{display:none}
+  .auth-mobile-logo{display:flex}
   .auth-form-side{padding:92px 22px 56px}
   .auth-form-side{background:radial-gradient(600px 500px at 20% 12%,rgba(29,78,216,.12),transparent 65%),linear-gradient(145deg,#f7f9fc,#eef1f6 66%)}
   .dark .auth-form-side{background:radial-gradient(600px 500px at 20% 12%,rgba(45,130,255,.32),transparent 65%),linear-gradient(145deg,#071831,#02050b 66%)}

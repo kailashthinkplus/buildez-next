@@ -64,10 +64,12 @@ import {
   detectCommerceIntent,
   ensureShopezProductImages,
   getOrCreateAgentConversation,
+  isGeneratedCommerceRoute,
   persistCommerceAttachments,
   readCommerceContext,
   recordAgentMessage,
   saveCommerceContext,
+  shouldUseCommercePipeline,
   stageExtractedProducts,
   type ReferenceCommerceAnalysis,
 } from "./commerce";
@@ -761,6 +763,7 @@ function ensureActiveWebsitePageRoute(input: {
 async function syncGeneratedSiteMetadata(input: {
   siteId: string;
   files: readonly AgentFile[];
+  isEcommerce: boolean;
 }) {
   const themeFile = input.files.find((file) => file.path === "src/buildez.theme.json");
   const pagesFile = input.files.find((file) => file.path === "src/buildez.pages.json");
@@ -789,6 +792,7 @@ async function syncGeneratedSiteMetadata(input: {
       const page = object(item);
       const route = String(page.route || "").trim();
       if (!route.startsWith("/") || route.includes("..")) continue;
+      if (input.isEcommerce && isGeneratedCommerceRoute(route)) continue;
       const rawSlug = String(page.slug || "").trim().replace(/^\/+|\/+$/g, "");
       const slug = rawSlug || (route === "/" ? "home" : route.replace(/^\/+|\/+$/g, ""));
       if (!slug || slug.length > 180) continue;
@@ -2857,21 +2861,17 @@ ${businessContextBlock}
    *
    * Product imagery alone must never activate ShopEZ.
    */
-  const persistedCommerceForExistingSite =
-    !isFreshFullPageGeneration &&
-    commerceContext.intent;
-
-  const isEcommerce =
-    forcedCommerceMode === "STATIC"
-      ? existingProductCount > 0
-      : (
-        forcedCommerceMode === "ECOMMERCE" ||
-        existingProductCount > 0 ||
-        persistedCommerceForExistingSite ||
-        architectCommerceRequired ||
-        referenceCommerce.isEcommerce
-      );
-  let commercePrompt = isEcommerce ? buildShopezPrompt(site.slug) : "";
+  // A commerce choice often spans more than one request: select Online store,
+  // then choose sample products or upload a catalogue. Keep the persisted
+  // choice authoritative even while the project is still a fresh build.
+  const isEcommerce = shouldUseCommercePipeline({
+    forcedMode: forcedCommerceMode,
+    existingProductCount,
+    persistedIntent: commerceContext.intent,
+    architectRequired: architectCommerceRequired,
+    referenceDetected: referenceCommerce.isEcommerce,
+  });
+  const commercePrompt = isEcommerce ? buildShopezPrompt(site.slug) : "";
   if (isEcommerce) {
     input.onProgress?.(
       "Commerce intent confirmed",
@@ -3825,6 +3825,7 @@ Return JSON only: {"message":"specific fix summary","files":[{"path":"...","cont
     await syncGeneratedSiteMetadata({
       siteId: input.siteId,
       files: result.files,
+      isEcommerce,
     });
 
     // Keep a named snapshot of every completed generation. The pre-mutation
